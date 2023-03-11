@@ -191,6 +191,9 @@ public partial class MainWindow
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.SaveFolder(cancellationToken, folder); });
+            FLogger.AppendInformation();
+            FLogger.AppendText("Successfully saved ", Constants.WHITE);
+            FLogger.AppendLink(folder.PathAtThisPoint, UserSettings.Default.PropertiesDirectory, true);
         }
     }
 
@@ -199,6 +202,9 @@ public partial class MainWindow
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.TextureFolder(cancellationToken, folder); });
+            FLogger.AppendInformation();
+            FLogger.AppendText("Successfully saved ", Constants.WHITE);
+            FLogger.AppendLink(folder.PathAtThisPoint, UserSettings.Default.TextureDirectory, true);
         }
     }
 

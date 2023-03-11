@@ -578,8 +578,9 @@ public class CUE4ParseViewModel : ViewModel
             TabControl.SelectedTab.Directory = directory;
         }
 
-        var autoProperties = bulk == (EBulkType.Properties | EBulkType.Auto);
-        var autoTextures = bulk == (EBulkType.Textures | EBulkType.Auto);
+        var updateUi = !HasFlag(bulk, EBulkType.Auto);
+        var saveProperties = HasFlag(bulk, EBulkType.Properties);
+        var saveTextures = HasFlag(bulk, EBulkType.Textures);
         TabControl.SelectedTab.ClearImages();
         TabControl.SelectedTab.ResetDocumentText();
         TabControl.SelectedTab.ScrollTrigger = null;
@@ -590,7 +591,7 @@ public class CUE4ParseViewModel : ViewModel
             case "umap":
             {
                 var exports = Provider.LoadObjectExports(fullPath); // cancellationToken
-                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), autoProperties);
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), saveProperties, updateUi);
                 if (HasFlag(bulk, EBulkType.Properties)) break; // do not search for viewable exports if we are dealing with jsons
 
                 foreach (var e in exports)
@@ -633,7 +634,7 @@ public class CUE4ParseViewModel : ViewModel
                     using var stream = new MemoryStream(data) { Position = 0 };
                     using var reader = new StreamReader(stream);
 
-                    TabControl.SelectedTab.SetDocumentText(reader.ReadToEnd(), autoProperties);
+                    TabControl.SelectedTab.SetDocumentText(reader.ReadToEnd(), saveProperties, updateUi);
                 }
 
                 break;
@@ -643,7 +644,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
                     var metadata = new FTextLocalizationMetaDataResource(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(metadata, Formatting.Indented), autoProperties);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(metadata, Formatting.Indented), saveProperties, updateUi);
                 }
 
                 break;
@@ -653,7 +654,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
                     var locres = new FTextLocalizationResource(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(locres, Formatting.Indented), autoProperties);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(locres, Formatting.Indented), saveProperties, updateUi);
                 }
 
                 break;
@@ -663,7 +664,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
                     var registry = new FAssetRegistryState(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), autoProperties);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), saveProperties, updateUi);
                 }
 
                 break;
@@ -674,7 +675,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
                     var wwise = new WwiseReader(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(wwise, Formatting.Indented), autoProperties);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(wwise, Formatting.Indented), saveProperties, updateUi);
                     foreach (var (name, data) in wwise.WwiseEncodedMedias)
                     {
                         SaveAndPlaySound(fullPath.SubstringBeforeWithLast("/") + name, "WEM", data);
@@ -695,7 +696,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
                     var header = new FOodleDictionaryArchive(archive).Header;
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(header, Formatting.Indented), autoProperties);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(header, Formatting.Indented), saveProperties, updateUi);
                 }
 
                 break;
@@ -707,7 +708,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TrySaveAsset(fullPath, out var data))
                 {
                     using var stream = new MemoryStream(data) { Position = 0 };
-                    TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, SKBitmap.Decode(stream), autoTextures);
+                    TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, SKBitmap.Decode(stream), saveTextures, updateUi);
                 }
 
                 break;
@@ -727,7 +728,7 @@ public class CUE4ParseViewModel : ViewModel
                         canvas.DrawPicture(svg.Picture, paint);
                     }
 
-                    TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, bitmap, autoTextures);
+                    TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, bitmap, saveTextures, updateUi);
                 }
 
                 break;
@@ -744,7 +745,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
                     var ar = new FShaderCodeArchive(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), autoProperties);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), saveProperties, updateUi);
                 }
 
                 break;
@@ -766,7 +767,7 @@ public class CUE4ParseViewModel : ViewModel
 
         var exports = Provider.LoadObjectExports(fullPath); // cancellationToken
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(""); // json
-        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), false);
+        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), false, false);
 
         foreach (var e in exports)
         {
@@ -778,7 +779,8 @@ public class CUE4ParseViewModel : ViewModel
     private bool CheckExport(CancellationToken cancellationToken, UObject export, EBulkType bulk = EBulkType.None) // return true once you wanna stop searching for exports
     {
         var isNone = bulk == EBulkType.None;
-        var loadTextures = isNone || HasFlag(bulk, EBulkType.Textures);
+        var updateUi = !HasFlag(bulk, EBulkType.Auto);
+        var saveTextures = HasFlag(bulk, EBulkType.Textures);
         switch (export)
         {
             case USolarisDigest solarisDigest when isNone:
@@ -787,12 +789,12 @@ public class CUE4ParseViewModel : ViewModel
 
                 TabControl.AddTab($"{solarisDigest.ProjectName}.verse");
                 TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("verse");
-                TabControl.SelectedTab.SetDocumentText(solarisDigest.ReadableCode, false);
+                TabControl.SelectedTab.SetDocumentText(solarisDigest.ReadableCode, false, false);
                 return true;
             }
-            case UTexture2D { IsVirtual: false } texture when loadTextures:
+            case UTexture2D { IsVirtual: false } texture when isNone:
             {
-                TabControl.SelectedTab.AddImage(texture, HasFlag(bulk, EBulkType.Auto));
+                TabControl.SelectedTab.AddImage(texture, saveTextures, updateUi);
                 return false;
             }
             case UAkMediaAssetData when isNone:
@@ -845,16 +847,16 @@ public class CUE4ParseViewModel : ViewModel
             }
             default:
             {
-                if (!loadTextures)
-                    return false;
+                if (!isNone && !saveTextures) return false;
 
                 using var package = new CreatorPackage(export, UserSettings.Default.CosmeticStyle);
                 if (!package.TryConstructCreator(out var creator))
                     return false;
 
                 creator.ParseForInfo();
-                TabControl.SelectedTab.AddImage(export.Name, false, creator.Draw(), HasFlag(bulk, EBulkType.Auto));
+                TabControl.SelectedTab.AddImage(export.Name, false, creator.Draw(), saveTextures, updateUi);
                 return true;
+
             }
         }
     }
@@ -943,19 +945,22 @@ public class CUE4ParseViewModel : ViewModel
                 }
             });
 
+            Log.Information("{FileName} successfully exported", fileName);
             if (updateUi)
             {
-                Log.Information("{FileName} successfully exported", fileName);
                 FLogger.AppendInformation();
                 FLogger.AppendText("Successfully exported ", Constants.WHITE);
                 FLogger.AppendLink(fileName, path, true);
             }
         }
-        else if (updateUi)
+        else
         {
             Log.Error("{FileName} could not be exported", fileName);
-            FLogger.AppendError();
-            FLogger.AppendText($"Could not export '{fileName}'", Constants.WHITE, true);
+            if (updateUi)
+            {
+                FLogger.AppendError();
+                FLogger.AppendText($"Could not export '{fileName}'", Constants.WHITE, true);
+            }
         }
     }
 

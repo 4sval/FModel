@@ -43,14 +43,14 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     foreach (var asset in assetItems)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Properties | EBulkType.Auto);
+                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Properties);
                     }
                     break;
                 case "Assets_Save_Textures":
                     foreach (var asset in assetItems)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Textures | EBulkType.Auto);
+                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Textures);
                     }
                     break;
                 case "Assets_Save_Models":

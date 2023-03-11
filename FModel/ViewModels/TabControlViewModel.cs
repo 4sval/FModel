@@ -230,21 +230,21 @@ public class TabItem : ViewModel
         });
     }
 
-    public void AddImage(UTexture2D texture, bool bulkTexture)
-        => AddImage(texture.Name, texture.bRenderNearestNeighbor, texture.Decode(UserSettings.Default.OverridedPlatform), bulkTexture);
+    public void AddImage(UTexture2D texture, bool save, bool updateUi)
+        => AddImage(texture.Name, texture.bRenderNearestNeighbor, texture.Decode(UserSettings.Default.OverridedPlatform), save, updateUi);
 
-    public void AddImage(string name, bool rnn, SKBitmap[] img, bool bulkTexture)
+    public void AddImage(string name, bool rnn, SKBitmap[] img, bool save, bool updateUi)
     {
-        foreach (var i in img) AddImage(name, rnn, i, bulkTexture);
+        foreach (var i in img) AddImage(name, rnn, i, save, updateUi);
     }
 
-    public void AddImage(string name, bool rnn, SKBitmap img, bool bulkTexture)
+    public void AddImage(string name, bool rnn, SKBitmap img, bool save, bool updateUi)
     {
         Application.Current.Dispatcher.Invoke(() =>
         {
             var t = new TabImage(name, rnn, img);
-            if (bulkTexture)
-                SaveImage(t);
+            if (save) SaveImage(t, updateUi);
+            if (!updateUi) return;
 
             _images.Add(t);
             SelectedImage ??= t;
@@ -256,15 +256,14 @@ public class TabItem : ViewModel
     public void GoPreviousImage() => SelectedImage = _images.Previous(SelectedImage);
     public void GoNextImage() => SelectedImage = _images.Next(SelectedImage);
 
-    public void SetDocumentText(string text, bool bulkSave)
+    public void SetDocumentText(string text, bool save, bool updateUi)
     {
         Application.Current.Dispatcher.Invoke(() =>
         {
             Document ??= new TextDocument();
             Document.Text = text;
 
-            if (bulkSave)
-                SaveProperty();
+            if (save) SaveProperty(updateUi);
         });
     }
 
@@ -277,30 +276,8 @@ public class TabItem : ViewModel
         });
     }
 
-    public void SaveImages()
-    {
-        switch (_images.Count)
-        {
-            case 1:
-                SaveImage();
-                break;
-            case > 1:
-                var directory = Path.Combine(UserSettings.Default.TextureDirectory,
-                    UserSettings.Default.KeepDirectoryStructure ? Directory : "").Replace('\\', '/');
-                System.IO.Directory.CreateDirectory(directory);
-
-                foreach (var image in _images)
-                {
-                    if (image == null) return;
-                    var fileName = $"{image.ExportName}.png";
-                    SaveImage(image, Path.Combine(directory, fileName), fileName);
-                }
-                break;
-        }
-    }
-
-    public void SaveImage() => SaveImage(SelectedImage);
-    private void SaveImage(TabImage image)
+    public void SaveImage() => SaveImage(SelectedImage, true);
+    private void SaveImage(TabImage image, bool updateUi)
     {
         if (image == null) return;
         var fileName = $"{image.ExportName}.png";
@@ -309,13 +286,13 @@ public class TabItem : ViewModel
 
         System.IO.Directory.CreateDirectory(path.SubstringBeforeLast('/'));
 
-        SaveImage(image, path, fileName);
+        SaveImage(image, path, fileName, updateUi);
     }
 
-    private void SaveImage(TabImage image, string path, string fileName)
+    private void SaveImage(TabImage image, string path, string fileName, bool updateUi)
     {
         SaveImage(image, path);
-        SaveCheck(path, fileName);
+        SaveCheck(path, fileName, updateUi);
     }
 
     private void SaveImage(TabImage image, string path)
@@ -324,7 +301,7 @@ public class TabItem : ViewModel
         fs.Write(image.ImageBuffer, 0, image.ImageBuffer.Length);
     }
 
-    public void SaveProperty()
+    public void SaveProperty(bool updateUi)
     {
         var fileName = Path.ChangeExtension(Header, ".json");
         var directory = Path.Combine(UserSettings.Default.PropertiesDirectory,
@@ -333,23 +310,29 @@ public class TabItem : ViewModel
         System.IO.Directory.CreateDirectory(directory.SubstringBeforeLast('/'));
 
         Application.Current.Dispatcher.Invoke(() => File.WriteAllText(directory, Document.Text));
-        SaveCheck(directory, fileName);
+        SaveCheck(directory, fileName, updateUi);
     }
 
-    private void SaveCheck(string path, string fileName)
+    private void SaveCheck(string path, string fileName, bool updateUi)
     {
         if (File.Exists(path))
         {
             Log.Information("{FileName} successfully saved", fileName);
-            FLogger.AppendInformation();
-            FLogger.AppendText("Successfully saved ", Constants.WHITE);
-            FLogger.AppendLink(fileName, path, true);
+            if (updateUi)
+            {
+                FLogger.AppendInformation();
+                FLogger.AppendText("Successfully saved ", Constants.WHITE);
+                FLogger.AppendLink(fileName, path, true);
+            }
         }
         else
         {
             Log.Error("{FileName} could not be saved", fileName);
-            FLogger.AppendError();
-            FLogger.AppendText($"Could not save '{fileName}'", Constants.WHITE, true);
+            if (updateUi)
+            {
+                FLogger.AppendError();
+                FLogger.AppendText($"Could not save '{fileName}'", Constants.WHITE, true);
+            }
         }
     }
 }

@@ -37,13 +37,13 @@ public class TabCommand : ViewModelCommand<TabItem>
             case "Asset_Save_Properties":
                 await _threadWorkerView.Begin(cancellationToken =>
                 {
-                    _applicationView.CUE4Parse.Extract(cancellationToken, contextViewModel.FullPath, false, EBulkType.Properties | EBulkType.Auto);
+                    _applicationView.CUE4Parse.Extract(cancellationToken, contextViewModel.FullPath, false, EBulkType.Properties);
                 });
                 break;
             case "Asset_Save_Textures":
                 await _threadWorkerView.Begin(cancellationToken =>
                 {
-                    _applicationView.CUE4Parse.Extract(cancellationToken, contextViewModel.FullPath, false, EBulkType.Textures | EBulkType.Auto);
+                    _applicationView.CUE4Parse.Extract(cancellationToken, contextViewModel.FullPath, false, EBulkType.Textures);
                 });
                 break;
             case "Asset_Save_Models":

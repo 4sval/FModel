@@ -33,7 +33,7 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             case "Directory_ArchivesInfo":
                 contextViewModel.CUE4Parse.TabControl.AddTab("Archives Info");
                 contextViewModel.CUE4Parse.TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("json");
-                contextViewModel.CUE4Parse.TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(contextViewModel.CUE4Parse.GameDirectory.DirectoryFiles, Formatting.Indented), false);
+                contextViewModel.CUE4Parse.TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(contextViewModel.CUE4Parse.GameDirectory.DirectoryFiles, Formatting.Indented), false, false);
                 break;
             case "Views_3dViewer":
                 contextViewModel.CUE4Parse.SnooperViewer.Run();
