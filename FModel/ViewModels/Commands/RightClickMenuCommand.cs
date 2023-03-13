@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Linq;
+using System.Threading;
 using FModel.Framework;
 using FModel.Services;
 
@@ -28,6 +29,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                 case "Assets_Extract_New_Tab":
                     foreach (var asset in assetItems)
                     {
+                        Thread.Sleep(10);
                         cancellationToken.ThrowIfCancellationRequested();
                         contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, true);
                     }
@@ -35,6 +37,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                 case "Assets_Export_Data":
                     foreach (var asset in assetItems)
                     {
+                        Thread.Sleep(10);
                         cancellationToken.ThrowIfCancellationRequested();
                         contextViewModel.CUE4Parse.ExportData(asset.FullPath);
                     }
@@ -42,6 +45,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                 case "Assets_Save_Properties":
                     foreach (var asset in assetItems)
                     {
+                        Thread.Sleep(10);
                         cancellationToken.ThrowIfCancellationRequested();
                         contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Properties);
                     }
@@ -49,6 +53,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                 case "Assets_Save_Textures":
                     foreach (var asset in assetItems)
                     {
+                        Thread.Sleep(10);
                         cancellationToken.ThrowIfCancellationRequested();
                         contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Textures);
                     }
@@ -56,6 +61,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                 case "Assets_Save_Models":
                     foreach (var asset in assetItems)
                     {
+                        Thread.Sleep(10);
                         cancellationToken.ThrowIfCancellationRequested();
                         contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Meshes | EBulkType.Auto);
                     }
@@ -63,6 +69,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                 case "Assets_Save_Animations":
                     foreach (var asset in assetItems)
                     {
+                        Thread.Sleep(10);
                         cancellationToken.ThrowIfCancellationRequested();
                         contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Animations | EBulkType.Auto);
                     }

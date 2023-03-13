@@ -295,6 +295,7 @@ public class SnimGui
     - WASD to move around
     - Shift to move faster
     - XC to zoom
+    - Z to animate selected model
     - Left Mouse Button pressed to look around
     - Right Click to select a model in the world
 

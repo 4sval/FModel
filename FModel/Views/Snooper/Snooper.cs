@@ -159,6 +159,12 @@ public class Snooper : GameWindow
         var delta = (float) e.Time;
         Renderer.CameraOp.Modify(KeyboardState, delta);
 
+        if (KeyboardState.IsKeyPressed(Keys.Z))
+        {
+            Renderer.Options.RemoveAnimations();
+            Renderer.Options.AnimateMesh(true);
+            WindowShouldClose(true, false);
+        }
         if (KeyboardState.IsKeyPressed(Keys.Space))
             Renderer.Options.Tracker.IsPaused = !Renderer.Options.Tracker.IsPaused;
         if (KeyboardState.IsKeyPressed(Keys.Delete))

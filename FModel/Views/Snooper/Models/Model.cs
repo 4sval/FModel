@@ -256,8 +256,8 @@ public class Model : IDisposable
         foreach (var socket in Sockets)
         {
             var boneMatrix = Matrix4x4.Identity;
-            if (HasSkeleton && Skeleton.BonesIndicesByLoweredName.TryGetValue(socket.BoneName.Text.ToLower(), out var boneIndices))
-                boneMatrix = Skeleton.GetBoneMatrix(boneIndices);
+            if (HasSkeleton && Skeleton.BonesByLoweredName.TryGetValue(socket.BoneName.Text.ToLower(), out var bone))
+                boneMatrix = Skeleton.GetBoneMatrix(bone);
 
             var socketRelation = boneMatrix * worldMatrix;
             foreach (var info in socket.AttachedModels)

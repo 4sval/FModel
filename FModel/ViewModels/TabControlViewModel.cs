@@ -6,7 +6,6 @@ using FModel.ViewModels.Commands;
 using FModel.Views.Resources.Controls;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
-using Microsoft.Win32;
 using Serilog;
 using SkiaSharp;
 using System.Collections.Generic;
@@ -17,7 +16,6 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse_Conversion.Textures;
-using Ookii.Dialogs.Wpf;
 
 namespace FModel.ViewModels;
 
