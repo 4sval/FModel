@@ -106,7 +106,7 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
         if (parent.IsExpanded != isExpanded)
         {
             parent.IsExpanded = isExpanded;
-            Thread.Sleep(10);
+            Thread.Yield();
         }
 
         cancellationToken.ThrowIfCancellationRequested();
