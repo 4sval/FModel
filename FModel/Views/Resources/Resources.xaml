@@ -247,7 +247,7 @@
     </Style>
 
     <Style x:Key="AssetsFolderTreeView" TargetType="TreeView" BasedOn="{StaticResource {x:Type TreeView}}">
-        <Setter Property="ItemsSource" Value="{Binding CUE4Parse.AssetsFolder.FoldersView, IsAsync=True}" />
+        <Setter Property="ItemsSource" Value="{Binding CUE4Parse.AssetsFolder.FoldersView}" />
         <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode" Value="NeverExpand"/>
         <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement" Value="Docked"/>
         <Setter Property="adonisExtensions:ScrollViewerExtension.HorizontalScrollBarExpansionMode" Value="NeverExpand"/>
@@ -255,7 +255,7 @@
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="ItemTemplate">
             <Setter.Value>
-                <HierarchicalDataTemplate ItemsSource="{Binding FoldersView, IsAsync=True}">
+                <HierarchicalDataTemplate ItemsSource="{Binding FoldersView}">
                     <StackPanel Orientation="Horizontal">
                         <Image x:Name="TreeImage" Source="/FModel;component/Resources/folder.png"
                                Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3.5 0" />

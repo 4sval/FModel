@@ -327,7 +327,7 @@
                                 </StackPanel>
                             </Grid>
                             <Separator Grid.Row="1" Style="{StaticResource CustomSeparator}" Margin="0" />
-                            <TreeView Grid.Row="2" x:Name="AssetsFolderName" Style="{StaticResource AssetsFolderTreeView}" PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick">
+                            <TreeView Grid.Row="2" x:Name="AssetsFolderName" Style="{StaticResource AssetsFolderTreeView}" PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" ScrollViewer.CanContentScroll="True">
                                 <TreeView.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="Extract Folder's Packages" Click="OnFolderExtractClick">
