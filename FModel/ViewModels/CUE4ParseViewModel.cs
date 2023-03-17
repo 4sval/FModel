@@ -16,7 +16,7 @@ using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
-using CUE4Parse.UE4.Assets.Exports.Solaris;
+using CUE4Parse.UE4.Assets.Exports.Verse;
 using CUE4Parse.UE4.Assets.Exports.Sound;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
@@ -781,13 +781,13 @@ public class CUE4ParseViewModel : ViewModel
         var saveTextures = HasFlag(bulk, EBulkType.Textures);
         switch (export)
         {
-            case USolarisDigest solarisDigest when isNone:
+            case UVerseDigest verseDigest when isNone:
             {
                 if (!TabControl.CanAddTabs) return false;
 
-                TabControl.AddTab($"{solarisDigest.ProjectName}.verse");
+                TabControl.AddTab($"{verseDigest.ProjectName}.verse");
                 TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("verse");
-                TabControl.SelectedTab.SetDocumentText(solarisDigest.ReadableCode, false, false);
+                TabControl.SelectedTab.SetDocumentText(verseDigest.ReadableCode, false, false);
                 return true;
             }
             case UTexture2D { IsVirtual: false } texture when isNone:

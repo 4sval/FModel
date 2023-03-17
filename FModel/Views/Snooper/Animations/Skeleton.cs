@@ -62,7 +62,7 @@ public class Skeleton : IDisposable
 
     public void Animate(CAnimSet anim, bool rotationOnly)
     {
-        TrackSkeleton(anim);
+        MapSkeleton(anim);
 
         _animatedBonesTransform = new Transform[anim.Sequences.Count][][];
         for (int s = 0; s < _animatedBonesTransform.Length; s++)
@@ -74,9 +74,9 @@ public class Skeleton : IDisposable
                 _animatedBonesTransform[s][bone.Index] = new Transform[sequence.NumFrames];
 
                 var skeletonBoneIndex = bone.SkeletonIndex;
-                bone.IsAnimated[s] = sequence.OriginalSequence.FindTrackForBoneIndex(skeletonBoneIndex) >= 0;
-                if (!bone.IsAnimated[s])
+                if (sequence.OriginalSequence.FindTrackForBoneIndex(skeletonBoneIndex) < 0)
                 {
+                    bone.IsAnimated |= false;
                     for (int frame = 0; frame < _animatedBonesTransform[s][bone.Index].Length; frame++)
                     {
                         _animatedBonesTransform[s][bone.Index][frame] = new Transform
@@ -88,6 +88,7 @@ public class Skeleton : IDisposable
                 }
                 else
                 {
+                    bone.IsAnimated |= true;
                     for (int frame = 0; frame < _animatedBonesTransform[s][bone.Index].Length; frame++)
                     {
                         var boneOrientation = bone.Rest.Rotation;
@@ -162,7 +163,7 @@ public class Skeleton : IDisposable
         }
     }
 
-    private void TrackSkeleton(CAnimSet anim)
+    private void MapSkeleton(CAnimSet anim)
     {
         ResetAnimatedData();
 
@@ -174,19 +175,18 @@ public class Skeleton : IDisposable
                 continue;
 
             bone.SkeletonIndex = boneIndex;
+            bone.IsAnimated = false;
         }
 
-        var seqCount = anim.Sequences.Count;
+#if DEBUG
         foreach ((var boneName, var bone) in BonesByLoweredName)
         {
-            bone.IsAnimated = new bool[seqCount];
-#if DEBUG
             if (bone.IsRoot || bone.IsMapped) // assuming root bone always is mapped
                 continue;
 
             Log.Warning($"{Name} Bone Mismatch: {boneName} ({bone.Index}) was not present in the anim's target skeleton");
-#endif
         }
+#endif
     }
 
     public void ResetAnimatedData(bool full = false)
@@ -194,7 +194,7 @@ public class Skeleton : IDisposable
         foreach (var bone in BonesByLoweredName.Values)
         {
             bone.SkeletonIndex = -1;
-            bone.IsAnimated = null;
+            bone.IsAnimated = false;
         }
 
         if (!full) return;

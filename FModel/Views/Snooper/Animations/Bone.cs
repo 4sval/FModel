@@ -8,7 +8,7 @@ public class Bone
     public string LoweredParentName;
 
     public int SkeletonIndex = -1;
-    public bool[] IsAnimated;
+    public bool IsAnimated;
 
     public Bone(int i, int p, Transform t)
     {
@@ -21,5 +21,5 @@ public class Bone
     public bool IsMapped => SkeletonIndex > -1;
     public bool IsNative => Index == SkeletonIndex;
 
-    public override string ToString() => $"Mesh Ref '{Index}' is Skel Ref '{SkeletonIndex}' ({IsNative})";
+    public override string ToString() => $"Mesh Ref '{Index}' is Skel Ref '{SkeletonIndex}' ({IsAnimated})";
 }

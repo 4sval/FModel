@@ -159,7 +159,9 @@ public class Snooper : GameWindow
         var delta = (float) e.Time;
         Renderer.CameraOp.Modify(KeyboardState, delta);
 
-        if (KeyboardState.IsKeyPressed(Keys.Z))
+        if (KeyboardState.IsKeyPressed(Keys.Z) &&
+            Renderer.Options.TryGetModel(out var selectedModel) &&
+            selectedModel.HasSkeleton)
         {
             Renderer.Options.RemoveAnimations();
             Renderer.Options.AnimateMesh(true);
