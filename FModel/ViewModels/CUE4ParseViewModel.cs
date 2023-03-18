@@ -507,7 +507,7 @@ public class CUE4ParseViewModel : ViewModel
     {
         foreach (var asset in assetItems)
         {
-            Thread.Sleep(10);
+            Thread.Yield();
             cancellationToken.ThrowIfCancellationRequested();
             Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs);
         }
@@ -517,7 +517,7 @@ public class CUE4ParseViewModel : ViewModel
     {
         foreach (var asset in folder.AssetsList.Assets)
         {
-            Thread.Sleep(10);
+            Thread.Yield();
             cancellationToken.ThrowIfCancellationRequested();
             try
             {

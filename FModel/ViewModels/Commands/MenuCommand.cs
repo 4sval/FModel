@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using AdonisUI.Controls;
 using FModel.Extensions;
@@ -79,19 +80,13 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             case "ToolBox_Expand_All":
                 await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
                 {
-                    foreach (var folder in contextViewModel.CUE4Parse.AssetsFolder.Folders)
-                    {
-                        LoopFolders(cancellationToken, folder, true);
-                    }
+                    SetFoldersIsExpanded(contextViewModel.CUE4Parse.AssetsFolder, true, cancellationToken);
                 });
                 break;
             case "ToolBox_Collapse_All":
                 await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
                 {
-                    foreach (var folder in contextViewModel.CUE4Parse.AssetsFolder.Folders)
-                    {
-                        LoopFolders(cancellationToken, folder, false);
-                    }
+                    SetFoldersIsExpanded(contextViewModel.CUE4Parse.AssetsFolder, false, cancellationToken);
                 });
                 break;
             case TreeItem selectedFolder:
@@ -101,15 +96,44 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
         }
     }
 
-    private void LoopFolders(CancellationToken cancellationToken, TreeItem parent, bool isExpanded)
+    private static void SetFoldersIsExpanded(AssetsFolderViewModel root, bool isExpanded, CancellationToken cancellationToken)
     {
-        if (parent.IsExpanded != isExpanded)
+        LinkedList<TreeItem> nodes = new();
+        foreach (TreeItem folder in root.Folders)
         {
-            parent.IsExpanded = isExpanded;
-            Thread.Sleep(10);
+            nodes.AddLast(folder);
         }
 
-        cancellationToken.ThrowIfCancellationRequested();
-        foreach (var f in parent.Folders) LoopFolders(cancellationToken, f, isExpanded);
+        LinkedListNode<TreeItem> current = nodes.First;
+        while (current != null)
+        {
+            TreeItem folder = current.Value;
+
+            // Collapse top-down (reduce layout updates)
+            if (!isExpanded)
+            {
+                folder.IsExpanded = isExpanded;
+                Thread.Yield();
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+
+            foreach (TreeItem child in folder.Folders)
+            {
+                nodes.AddLast(child);
+            }
+
+            current = current.Next;
+        }
+
+        // Expand bottom-up (reduce layout updates)
+        if (isExpanded)
+        {
+            for (LinkedListNode<TreeItem> node = nodes.Last; node != null; node = node.Previous)
+            {
+                node.Value.IsExpanded = isExpanded;
+                Thread.Yield();
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+        }
     }
 }

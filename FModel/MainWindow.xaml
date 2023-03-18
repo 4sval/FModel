@@ -4,6 +4,8 @@
         xmlns:local="clr-namespace:FModel"
         xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
         xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+        xmlns:settings="clr-namespace:FModel.Settings"
+        xmlns:services="clr-namespace:FModel.Services"
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
@@ -95,7 +97,7 @@
                 </MenuItem>
                 <Separator />
                 <MenuItem Header="Auto Open Sounds" IsCheckable="True" StaysOpenOnClick="True"
-                          IsChecked="{Binding IsAutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}" />
+                          IsChecked="{Binding IsAutoOpenSounds, Source={x:Static settings:UserSettings.Default}}" />
             </MenuItem>
             <MenuItem Header="Views">
                 <MenuItem Header="3D Viewer" Command="{Binding MenuCommand}" CommandParameter="Views_3dViewer">
@@ -221,7 +223,7 @@
 
                                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Loading Mode" VerticalAlignment="Center" />
                                 <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding LoadingModes.Modes}" IsEnabled="{Binding Status.IsReady}"
-                                          SelectedItem="{Binding LoadingMode, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}">
+                                          SelectedItem="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
                                             <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
@@ -327,7 +329,7 @@
                                 </StackPanel>
                             </Grid>
                             <Separator Grid.Row="1" Style="{StaticResource CustomSeparator}" Margin="0" />
-                            <TreeView Grid.Row="2" x:Name="AssetsFolderName" Style="{StaticResource AssetsFolderTreeView}" PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick">
+                            <TreeView Grid.Row="2" x:Name="AssetsFolderName" Style="{StaticResource AssetsFolderTreeView}" PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" ScrollViewer.CanContentScroll="True">
                                 <TreeView.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="Extract Folder's Packages" Click="OnFolderExtractClick">
@@ -671,7 +673,7 @@
 
                     <TabControl Grid.Row="0" x:Name="TabControlName" Style="{StaticResource GameFilesTabControl}" />
                     <Expander Grid.Row="1" Margin="0 5 0 5" ExpandDirection="Down"
-                              IsExpanded="{Binding IsLoggerExpanded, Source={x:Static local:Settings.UserSettings.Default}}">
+                              IsExpanded="{Binding IsLoggerExpanded, Source={x:Static settings:UserSettings.Default}}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -734,7 +736,7 @@
                             <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             <Setter Property="Foreground" Value="White" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding StatusChangeAttempted, Source={x:Static local:Services.ApplicationService.ThreadWorkerView}}" Value="True">
+                        <DataTrigger Binding="{Binding StatusChangeAttempted, Source={x:Static services:ApplicationService.ThreadWorkerView}}" Value="True">
                             <DataTrigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard Duration="0:0:0.8">
@@ -751,7 +753,7 @@
                                 </BeginStoryboard>
                             </DataTrigger.EnterActions>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding OperationCancelled, Source={x:Static local:Services.ApplicationService.ThreadWorkerView}}" Value="True">
+                        <DataTrigger Binding="{Binding OperationCancelled, Source={x:Static services:ApplicationService.ThreadWorkerView}}" Value="True">
                             <DataTrigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard Duration="0:0:1">
@@ -780,7 +782,7 @@
                                 </DataTrigger>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding CanBeCanceled, Source={x:Static local:Services.ApplicationService.ThreadWorkerView}}" Value="True" />
+                                        <Condition Binding="{Binding CanBeCanceled, Source={x:Static services:ApplicationService.ThreadWorkerView}}" Value="True" />
                                         <Condition Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Loading}" />
                                     </MultiDataTrigger.Conditions>
                                     <Setter Property="Text" Value="{Binding Status.Label, StringFormat='{}{0} …    ESC to Cancel'}" />
@@ -805,7 +807,7 @@
                         <StatusBarItem.Style>
                             <Style TargetType="StatusBarItem">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsAutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}" Value="False">
+                                    <DataTrigger Binding="{Binding IsAutoOpenSounds, Source={x:Static settings:UserSettings.Default}}" Value="False">
                                         <Setter Property="Visibility" Value="Hidden" />
                                     </DataTrigger>
                                 </Style.Triggers>
