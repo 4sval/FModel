@@ -96,28 +96,26 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
         }
     }
 
-    private static void SetFoldersIsExpanded(AssetsFolderViewModel root, bool isExpanded, CancellationToken cancellationToken)
+    private void SetFoldersIsExpanded(AssetsFolderViewModel root, bool expand, CancellationToken cancellationToken)
     {
-        LinkedList<TreeItem> nodes = new();
+        var nodes = new LinkedList<TreeItem>();
         foreach (TreeItem folder in root.Folders)
-        {
             nodes.AddLast(folder);
-        }
 
-        LinkedListNode<TreeItem> current = nodes.First;
+        var current = nodes.First;
         while (current != null)
         {
-            TreeItem folder = current.Value;
+            var folder = current.Value;
 
             // Collapse top-down (reduce layout updates)
-            if (!isExpanded)
+            if (!expand && folder.IsExpanded)
             {
-                folder.IsExpanded = isExpanded;
+                folder.IsExpanded = false;
                 Thread.Yield();
                 cancellationToken.ThrowIfCancellationRequested();
             }
 
-            foreach (TreeItem child in folder.Folders)
+            foreach (var child in folder.Folders)
             {
                 nodes.AddLast(child);
             }
@@ -125,15 +123,14 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             current = current.Next;
         }
 
+        if (!expand) return;
+
         // Expand bottom-up (reduce layout updates)
-        if (isExpanded)
+        for (var node = nodes.Last; node != null; node = node.Previous)
         {
-            for (LinkedListNode<TreeItem> node = nodes.Last; node != null; node = node.Previous)
-            {
-                node.Value.IsExpanded = isExpanded;
-                Thread.Yield();
-                cancellationToken.ThrowIfCancellationRequested();
-            }
+            node.Value.IsExpanded = true;
+            Thread.Yield();
+            cancellationToken.ThrowIfCancellationRequested();
         }
     }
 }

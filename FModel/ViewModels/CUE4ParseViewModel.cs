@@ -298,41 +298,38 @@ public class CUE4ParseViewModel : ViewModel
     /// load virtual files system from GameDirectory
     /// </summary>
     /// <returns></returns>
-    public async Task LoadVfs(IEnumerable<FileItem> aesKeys)
+    public void LoadVfs(CancellationToken token, IEnumerable<FileItem> aesKeys)
     {
-        await _threadWorkerView.Begin(cancellationToken =>
+        GameDirectory.DeactivateAll();
+
+        // load files using UnloadedVfs to include non-encrypted vfs
+        foreach (var key in aesKeys)
         {
-            GameDirectory.DeactivateAll();
+            token.ThrowIfCancellationRequested(); // cancel if needed
 
-            // load files using UnloadedVfs to include non-encrypted vfs
-            foreach (var key in aesKeys)
+            var k = key.Key.Trim();
+            if (k.Length != 66) k = Constants.ZERO_64_CHAR;
+            Provider.SubmitKey(key.Guid, new FAesKey(k));
+        }
+
+        // files in MountedVfs will be enabled
+        foreach (var file in GameDirectory.DirectoryFiles)
+        {
+            token.ThrowIfCancellationRequested();
+            if (Provider.MountedVfs.FirstOrDefault(x => x.Name == file.Name) is not { } vfs)
             {
-                cancellationToken.ThrowIfCancellationRequested(); // cancel if needed
+                if (Provider.UnloadedVfs.FirstOrDefault(x => x.Name == file.Name) is IoStoreReader store)
+                    file.FileCount = (int) store.Info.TocEntryCount - 1;
 
-                var k = key.Key.Trim();
-                if (k.Length != 66) k = Constants.ZERO_64_CHAR;
-                Provider.SubmitKey(key.Guid, new FAesKey(k));
+                continue;
             }
 
-            // files in MountedVfs will be enabled
-            foreach (var file in GameDirectory.DirectoryFiles)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                if (Provider.MountedVfs.FirstOrDefault(x => x.Name == file.Name) is not { } vfs)
-                {
-                    if (Provider.UnloadedVfs.FirstOrDefault(x => x.Name == file.Name) is IoStoreReader store)
-                        file.FileCount = (int) store.Info.TocEntryCount - 1;
+            file.IsEnabled = true;
+            file.MountPoint = vfs.MountPoint;
+            file.FileCount = vfs.FileCount;
+        }
 
-                    continue;
-                }
-
-                file.IsEnabled = true;
-                file.MountPoint = vfs.MountPoint;
-                file.FileCount = vfs.FileCount;
-            }
-
-            Game = Helper.IAmThePanda(Provider.GameName) ? FGame.PandaGame : Provider.GameName.ToEnum(Game);
-        });
+        Game = Helper.IAmThePanda(Provider.GameName) ? FGame.PandaGame : Provider.GameName.ToEnum(Game);
     }
 
     public void ClearProvider()

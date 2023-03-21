@@ -15,7 +15,7 @@ FModel is actively maintained and developed by a dedicated community of contribu
 ### Installation:
 For installation, follow the instructions from [here](https://github.com/4sval/FModel/wiki/Installing-FModel)
 
-### Support:
+### Sponsorship:
 <p>
   <a href="https://www.jetbrains.com/">
     <img src="https://cdn.fmodel.app/i/svg/jetbrains.svg" width="256px">

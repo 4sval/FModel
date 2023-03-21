@@ -14,10 +14,18 @@
         Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.75'}">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
-            <Setter Property="Title" Value="FModel" />
+            <Setter Property="Title" Value="{Binding DataContext.InitialWindowTitle, RelativeSource={RelativeSource Self}}" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding DataContext.TitleExtra, RelativeSource={RelativeSource Self}, Converter={x:Static converters:IsNullToBoolReversedConverter.Instance}}" Value="True">
-                    <Setter Property="Title" Value="{Binding DataContext.TitleExtra, RelativeSource={RelativeSource Self}, StringFormat={}FModel {0}}" />
+                    <Setter Property="Title">
+                        <Setter.Value>
+                            <MultiBinding StringFormat="{}{0} - {1} {2}">
+                                <Binding Path="DataContext.InitialWindowTitle" RelativeSource="{RelativeSource Self}" />
+                                <Binding Path="DataContext.GameDisplayName" RelativeSource="{RelativeSource Self}" />
+                                <Binding Path="DataContext.TitleExtra" RelativeSource="{RelativeSource Self}" />
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
                 </DataTrigger>
             </Style.Triggers>
         </Style>

@@ -63,7 +63,7 @@ public partial class MainWindow
 
         await _applicationView.CUE4Parse.Initialize();
         await _applicationView.AesManager.InitAes();
-        await _applicationView.AesManager.UpdateProvider(true);
+        await _applicationView.UpdateProvider(true);
 #if !DEBUG
         await _applicationView.CUE4Parse.InitInformation();
 #endif
@@ -73,15 +73,12 @@ public partial class MainWindow
         await _applicationView.InitOodle();
 
         if (UserSettings.Default.DiscordRpc == EDiscordRpc.Always)
-            _discordHandler.Initialize(_applicationView.CUE4Parse.Provider.GameName);
+            _discordHandler.Initialize(_applicationView.GameDisplayName);
 
 #if DEBUG
-        await _threadWorkerView.Begin(cancellationToken =>
-            _applicationView.CUE4Parse.Extract(cancellationToken,
-                "ShooterGame/Content/Characters/BountyHunter/S0/Ability_4/1P/Models/AB_BountyHunter_S0_4_TrailCreature_Skelmesh.uasset"));
-        await _threadWorkerView.Begin(cancellationToken =>
-            _applicationView.CUE4Parse.Extract(cancellationToken,
-                "ShooterGame/Content/Characters/BountyHunter/S0/Ability_4/1P/Anims/FP_BountyHunter_S0_4_Aim_S.uasset"));
+        // await _threadWorkerView.Begin(cancellationToken =>
+        //     _applicationView.CUE4Parse.Extract(cancellationToken,
+        //         "Discovery/Content/Discovery/Items/Charms/Charm_Skateboard_01/SM_Charm_Skateboard_01_A.uasset"));
 #endif
     }
 

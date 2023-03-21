@@ -25,7 +25,7 @@ public class ApplicationViewModel : ViewModel
     public EBuildKind Build
     {
         get => _build;
-        private set
+        private init
         {
             SetProperty(ref _build, value);
             RaisePropertyChanged(nameof(TitleExtra));
@@ -36,7 +36,7 @@ public class ApplicationViewModel : ViewModel
     public FStatus Status
     {
         get => _status;
-        set => SetProperty(ref _status, value);
+        private init => SetProperty(ref _status, value);
     }
 
     public RightClickMenuCommand RightClickMenuCommand => _rightClickMenuCommand ??= new RightClickMenuCommand(this);
@@ -46,9 +46,10 @@ public class ApplicationViewModel : ViewModel
     public CopyCommand CopyCommand => _copyCommand ??= new CopyCommand(this);
     private CopyCommand _copyCommand;
 
+    public string InitialWindowTitle => $"FModel {UserSettings.Default.UpdateMode}";
+    public string GameDisplayName => CUE4Parse.Provider.GameDisplayName ?? "Unknown";
     public string TitleExtra =>
-        $"{UserSettings.Default.UpdateMode} - {CUE4Parse.Game.GetDescription()} (" + // FModel {UpdateMode} - {FGame} ({UE}) ({Build})
-        $"{(CUE4Parse.Game == FGame.Unknown && UserSettings.Default.ManualGames.TryGetValue(UserSettings.Default.GameDirectory, out var settings) ? settings.OverridedGame : UserSettings.Default.OverridedGame[CUE4Parse.Game])})" +
+        $"({(CUE4Parse.Game == FGame.Unknown && UserSettings.Default.ManualGames.TryGetValue(UserSettings.Default.GameDirectory, out var settings) ? settings.OverridedGame : UserSettings.Default.OverridedGame[CUE4Parse.Game])})" +
         $"{(Build != EBuildKind.Release ? $" ({Build})" : "")}";
 
     public LoadingModesViewModel LoadingModes { get; }
@@ -79,6 +80,7 @@ public class ApplicationViewModel : ViewModel
             //A hard exit is preferable to an unhandled expection in this case
             Environment.Exit(0);
         }
+
         CUE4Parse = new CUE4ParseViewModel(UserSettings.Default.GameDirectory);
         CustomDirectories = new CustomDirectoriesViewModel(CUE4Parse.Game, UserSettings.Default.GameDirectory);
         SettingsView = new SettingsViewModel(CUE4Parse.Game);
@@ -101,6 +103,21 @@ public class ApplicationViewModel : ViewModel
         if (!bAlreadyLaunched || gameDirectory == gameLauncherViewModel.SelectedDetectedGame.GameDirectory) return;
 
         RestartWithWarning();
+    }
+
+    public async Task UpdateProvider(bool isLaunch)
+    {
+        if (!isLaunch && !AesManager.HasChange) return;
+
+        CUE4Parse.ClearProvider();
+        await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
+        {
+            CUE4Parse.LoadVfs(cancellationToken, AesManager.AesKeys);
+            CUE4Parse.Provider.LoadIniConfigs();
+            // ConsoleVariables - a.StripAdditiveRefPose=1
+            AesManager.SetAesKeys();
+        });
+        RaisePropertyChanged(nameof(GameDisplayName));
     }
 
     public void RestartWithWarning()
