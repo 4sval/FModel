@@ -569,7 +569,11 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
     {
         wavFilePath = string.Empty;
         var vgmFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "test.exe");
-        if (!File.Exists(vgmFilePath)) return false;
+        if (!File.Exists(vgmFilePath))
+        {
+            vgmFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "vgmstream-cli.exe");
+            if (!File.Exists(vgmFilePath)) return false;
+        }
 
         Directory.CreateDirectory(SelectedAudioFile.FilePath.SubstringBeforeLast("/"));
         File.WriteAllBytes(SelectedAudioFile.FilePath, SelectedAudioFile.Data);
