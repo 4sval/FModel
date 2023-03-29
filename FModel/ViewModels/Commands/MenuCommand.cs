@@ -77,12 +77,12 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             case "ToolBox_Open_Output_Directory":
                 Process.Start(new ProcessStartInfo { FileName = UserSettings.Default.OutputDirectory, UseShellExecute = true });
                 break;
-            case "ToolBox_Expand_All":
-                await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
-                {
-                    SetFoldersIsExpanded(contextViewModel.CUE4Parse.AssetsFolder, true, cancellationToken);
-                });
-                break;
+            // case "ToolBox_Expand_All":
+            //     await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
+            //     {
+            //         SetFoldersIsExpanded(contextViewModel.CUE4Parse.AssetsFolder, true, cancellationToken);
+            //     });
+            //     break;
             case "ToolBox_Collapse_All":
                 await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
                 {

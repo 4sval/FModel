@@ -318,15 +318,15 @@
                                             </Canvas>
                                         </Viewbox>
                                     </Button>
-                                    <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Expand All (not appropriate for huge amount of folders)" Padding="4"
-                                            Command="{Binding MenuCommand}" CommandParameter="ToolBox_Expand_All">
-                                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
-                                            <Canvas Width="24" Height="24">
-                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource UnfoldIcon}" />
-                                            </Canvas>
-                                        </Viewbox>
-                                    </Button>
-                                    <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Collapse All (not appropriate for huge amount of folders)" Padding="4"
+                                    <!-- <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Expand All (not appropriate for huge amount of folders)" Padding="4" -->
+                                    <!--         Command="{Binding MenuCommand}" CommandParameter="ToolBox_Expand_All"> -->
+                                    <!--     <Viewbox Width="16" Height="16" HorizontalAlignment="Center"> -->
+                                    <!--         <Canvas Width="24" Height="24"> -->
+                                    <!--             <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource UnfoldIcon}" /> -->
+                                    <!--         </Canvas> -->
+                                    <!--     </Viewbox> -->
+                                    <!-- </Button> -->
+                                    <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Collapse All" Padding="4"
                                             Command="{Binding MenuCommand}" CommandParameter="ToolBox_Collapse_All">
                                         <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                             <Canvas Width="24" Height="24">
@@ -337,7 +337,7 @@
                                 </StackPanel>
                             </Grid>
                             <Separator Grid.Row="1" Style="{StaticResource CustomSeparator}" Margin="0" />
-                            <TreeView Grid.Row="2" x:Name="AssetsFolderName" Style="{StaticResource AssetsFolderTreeView}" PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" ScrollViewer.CanContentScroll="True">
+                            <TreeView Grid.Row="2" x:Name="AssetsFolderName" Style="{StaticResource AssetsFolderTreeView}" PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick">
                                 <TreeView.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="Extract Folder's Packages" Click="OnFolderExtractClick">
