@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace FModel.Views.Resources.Controls;
@@ -20,6 +22,7 @@ public class FLogger : ITextFormatter
 {
     public static CustomRichTextBox Logger;
     private static readonly BrushConverter _brushConverter = new();
+    private static int _previous;
 
     public static void AppendInformation() => AppendText("[INF] ", Constants.BLUE);
     public static void AppendWarning() => AppendText("[WRN] ", Constants.YELLOW);
@@ -30,20 +33,50 @@ public class FLogger : ITextFormatter
     {
         Application.Current.Dispatcher.Invoke(delegate
         {
-            var textRange = new TextRange(Logger.Document.ContentEnd, Logger.Document.ContentEnd)
-            {
-                Text = newLine ? $"{message}{Environment.NewLine}" : message
-            };
-
             try
             {
-                textRange.ApplyPropertyValue(TextElement.ForegroundProperty, _brushConverter.ConvertFromString(color));
+                Logger.Document.ContentEnd.InsertTextInRun(message);
+                if (newLine) Logger.Document.ContentEnd.InsertLineBreak();
+
+                Logger.Selection.Select(Logger.Document.ContentStart.GetPositionAtOffset(_previous), Logger.Document.ContentEnd);
+                Logger.Selection.ApplyPropertyValue(TextElement.ForegroundProperty, _brushConverter.ConvertFromString(color));
             }
             finally
             {
-                Logger.ScrollToEnd();
+                Finally();
             }
         });
+    }
+
+    public static void AppendLink(string message, string url, bool newLine = false)
+    {
+        Application.Current.Dispatcher.Invoke(delegate
+        {
+            try
+            {
+                new Hyperlink(new Run(newLine ? $"{message}{Environment.NewLine}" : message), Logger.Document.ContentEnd)
+                {
+                    NavigateUri = new Uri(url),
+                    OverridesDefaultStyle = true,
+                    Style = new Style(typeof(Hyperlink)) { Setters =
+                    {
+                        new Setter(FrameworkContentElement.CursorProperty, Cursors.Hand),
+                        new Setter(TextBlock.TextDecorationsProperty, TextDecorations.Underline),
+                        new Setter(TextElement.ForegroundProperty, Brushes.Cornsilk)
+                    }}
+                }.Click += (sender, _) => Process.Start("explorer.exe", $"/select, \"{((Hyperlink)sender).NavigateUri.AbsoluteUri}\"");
+            }
+            finally
+            {
+                Finally();
+            }
+        });
+    }
+
+    private static void Finally()
+    {
+        Logger.ScrollToEnd();
+        _previous = Math.Abs(Logger.Document.ContentEnd.GetOffsetToPosition(Logger.Document.ContentStart)) - 2;
     }
 
     public string GetText(FlowDocument document)

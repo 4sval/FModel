@@ -37,27 +37,41 @@ public partial class SettingsView
 
     private async void OnClick(object sender, RoutedEventArgs e)
     {
-        var whatShouldIDo = _applicationView.SettingsView.Save();
-        if (whatShouldIDo == SettingsOut.Restart)
+        var restart = _applicationView.SettingsView.Save(out var whatShouldIDo);
+        if (restart)
             _applicationView.RestartWithWarning();
 
         Close();
 
-        switch (whatShouldIDo)
+        foreach (var dOut in whatShouldIDo)
         {
-            case SettingsOut.ReloadLocres:
-                _applicationView.CUE4Parse.LocalizedResourcesCount = 0;
-                await _applicationView.CUE4Parse.LoadLocalizedResources();
-                break;
-            case SettingsOut.CheckForUpdates:
-                ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(UserSettings.Default.UpdateMode);
-                break;
+            switch (dOut)
+            {
+                case SettingsOut.ReloadLocres:
+                    _applicationView.CUE4Parse.LocalizedResourcesCount = 0;
+                    await _applicationView.CUE4Parse.LoadLocalizedResources();
+                    break;
+                case SettingsOut.ReloadMappings:
+                    await _applicationView.CUE4Parse.InitMappings();
+                    break;
+                case SettingsOut.CheckForUpdates:
+                    ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(UserSettings.Default.UpdateMode);
+                    break;
+            }
         }
     }
 
     private void OnBrowseOutput(object sender, RoutedEventArgs e)
     {
-        if (TryBrowse(out var path)) UserSettings.Default.OutputDirectory = path;
+        if (!TryBrowse(out var path)) return;
+        UserSettings.Default.OutputDirectory = path;
+        if (_applicationView.SettingsView.UseCustomOutputFolders) return;
+
+        path = Path.Combine(path, "Exports");
+        UserSettings.Default.RawDataDirectory = path;
+        UserSettings.Default.PropertiesDirectory = path;
+        UserSettings.Default.TextureDirectory = path;
+        UserSettings.Default.AudioDirectory = path;
     }
 
     private void OnBrowseDirectories(object sender, RoutedEventArgs e)
@@ -90,7 +104,7 @@ public partial class SettingsView
         if (TryBrowse(out var path)) UserSettings.Default.ModelDirectory = path;
     }
 
-    private async void OnBrowseMappings(object sender, RoutedEventArgs e)
+    private void OnBrowseMappings(object sender, RoutedEventArgs e)
     {
         var openFileDialog = new OpenFileDialog
         {
@@ -99,9 +113,10 @@ public partial class SettingsView
             Filter = "USMAP Files (*.usmap)|*.usmap|All Files (*.*)|*.*"
         };
 
-        if (!openFileDialog.ShowDialog().GetValueOrDefault()) return;
-        UserSettings.Default.MappingFilePath = openFileDialog.FileName;
-        await _applicationView.CUE4Parse.InitBenMappings();
+        if (!openFileDialog.ShowDialog().GetValueOrDefault())
+            return;
+
+        _applicationView.SettingsView.MappingEndpoint.FilePath = openFileDialog.FileName;
     }
 
     private bool TryBrowse(out string path)
@@ -144,27 +159,54 @@ public partial class SettingsView
 
     private void OpenCustomVersions(object sender, RoutedEventArgs e)
     {
-        var dictionary = new DictionaryEditor(
+        var editor = new DictionaryEditor(
             _applicationView.SettingsView.SelectedCustomVersions,
             "Versioning Configuration (Custom Versions)",
             _applicationView.SettingsView.EnableElements);
-        var result = dictionary.ShowDialog();
+        var result = editor.ShowDialog();
         if (!result.HasValue || !result.Value)
             return;
 
-        _applicationView.SettingsView.SelectedCustomVersions = dictionary.CustomVersions;
+        _applicationView.SettingsView.SelectedCustomVersions = editor.CustomVersions;
     }
 
     private void OpenOptions(object sender, RoutedEventArgs e)
     {
-        var dictionary = new DictionaryEditor(
+        var editor = new DictionaryEditor(
             _applicationView.SettingsView.SelectedOptions,
             "Versioning Configuration (Options)",
             _applicationView.SettingsView.EnableElements);
-        var result = dictionary.ShowDialog();
+        var result = editor.ShowDialog();
         if (!result.HasValue || !result.Value)
             return;
 
-        _applicationView.SettingsView.SelectedOptions = dictionary.Options;
+        _applicationView.SettingsView.SelectedOptions = editor.Options;
+    }
+
+    private void OpenMapStructTypes(object sender, RoutedEventArgs e)
+    {
+        var editor = new DictionaryEditor(
+            _applicationView.SettingsView.SelectedMapStructTypes,
+            "MapStructTypes",
+            _applicationView.SettingsView.EnableElements);
+        var result = editor.ShowDialog();
+        if (!result.HasValue || !result.Value)
+            return;
+
+        _applicationView.SettingsView.SelectedMapStructTypes = editor.MapStructTypes;
+    }
+
+    private void OpenAesEndpoint(object sender, RoutedEventArgs e)
+    {
+        var editor = new EndpointEditor(
+            _applicationView.SettingsView.AesEndpoint, "Endpoint Configuration (AES)", EEndpointType.Aes);
+        editor.ShowDialog();
+    }
+
+    private void OpenMappingEndpoint(object sender, RoutedEventArgs e)
+    {
+        var editor = new EndpointEditor(
+            _applicationView.SettingsView.MappingEndpoint, "Endpoint Configuration (Mapping)", EEndpointType.Mapping);
+        editor.ShowDialog();
     }
 }

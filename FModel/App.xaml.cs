@@ -2,9 +2,9 @@
 using Microsoft.Win32;
 using Serilog;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using FModel.Framework;
@@ -89,14 +89,18 @@ public partial class App
         Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Logs"));
         Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"));
 
+#if DEBUG
+        Log.Logger = new LoggerConfiguration().WriteTo.Console(theme: AnsiConsoleTheme.Literate).CreateLogger();
+#else
         Log.Logger = new LoggerConfiguration().WriteTo.Console(theme: AnsiConsoleTheme.Literate).WriteTo.File(
             Path.Combine(UserSettings.Default.OutputDirectory, "Logs", $"FModel-Log-{DateTime.Now:yyyy-MM-dd}.txt"),
             outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [FModel] [{Level:u3}] {Message:lj}{NewLine}{Exception}").CreateLogger();
+#endif
 
         Log.Information("Version {Version}", Constants.APP_VERSION);
         Log.Information("{OS}", GetOperatingSystemProductName());
         Log.Information("{RuntimeVer}", RuntimeInformation.FrameworkDescription);
-        Log.Information("Culture {SysLang}", Thread.CurrentThread.CurrentUICulture);
+        Log.Information("Culture {SysLang}", CultureInfo.CurrentCulture);
     }
 
     private void AppExit(object sender, ExitEventArgs e)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -93,7 +93,7 @@ public class BackupManagerViewModel : ViewModel
         await _threadWorkerView.Begin(_ =>
         {
             var fullPath = Path.Combine(Path.Combine(UserSettings.Default.OutputDirectory, "Backups"), SelectedBackup.FileName);
-            _apiEndpointView.BenbotApi.DownloadFile(SelectedBackup.DownloadUrl, fullPath);
+            _apiEndpointView.DownloadFile(SelectedBackup.DownloadUrl, fullPath);
             SaveCheck(fullPath, SelectedBackup.FileName, "downloaded", "download");
         });
     }
@@ -104,7 +104,8 @@ public class BackupManagerViewModel : ViewModel
         {
             Log.Information("{FileName} successfully {Type}", fileName, type1);
             FLogger.AppendInformation();
-            FLogger.AppendText($"Successfully {type1} '{fileName}'", Constants.WHITE, true);
+            FLogger.AppendText($"Successfully {type1} ", Constants.WHITE);
+            FLogger.AppendLink(fileName, fullPath, true);
         }
         else
         {

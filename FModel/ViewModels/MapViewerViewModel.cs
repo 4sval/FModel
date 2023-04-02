@@ -175,7 +175,7 @@ public class MapViewerViewModel : ViewModel
     }
 
     private const int _widthHeight = 2048;
-    private const int _brRadius = 135000;
+    private const int _brRadius = 141000;
     private const int _prRadius = 51000;
     private int _mapIndex;
     public int MapIndex // 0 is BR, 1 is PR
@@ -368,8 +368,9 @@ public class MapViewerViewModel : ViewModel
 
     private FVector2D GetMapPosition(FVector vector, int mapRadius)
     {
-        var nx = (vector.Y + mapRadius) / (mapRadius * 2) * _widthHeight;
-        var ny = (1 - (vector.X + mapRadius) / (mapRadius * 2)) * _widthHeight;
+        const int wh = 2048 + 128 + 32;
+        var nx = (vector.Y + mapRadius) / (mapRadius * 2) * wh;
+        var ny = (1 - (vector.X + mapRadius) / (mapRadius * 2)) * wh;
         return new FVector2D(nx, ny);
     }
 
@@ -471,7 +472,7 @@ public class MapViewerViewModel : ViewModel
             var patrolsPathBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
             using var c = new SKCanvas(patrolsPathBitmap);
 
-            var exports = Utils.LoadExports("/NPCLibrary/LevelOverlays/Artemis_Overlay_S21_NPCLibrary");
+            var exports = Utils.LoadExports("/NPCLibrary/LevelOverlays/Artemis_Overlay_S22_NPCLibrary");
             foreach (var export in exports)
             {
                 if (!export.ExportType.Equals("FortAthenaPatrolPath", StringComparison.OrdinalIgnoreCase) ||
@@ -822,7 +823,7 @@ public class MapViewerViewModel : ViewModel
             var bountyBoardsBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
             using var c = new SKCanvas(bountyBoardsBitmap);
 
-            var exports = Utils.LoadExports("/Bounties/Maps/BB_Overlay_S19_ServiceStations");
+            var exports = Utils.LoadExports("/Bounties/Maps/BB_Overlay_ServiceStations");
             foreach (var export in exports)
             {
                 if (!export.ExportType.Equals("B_Bounties_Spawner_BountyBoard_C", StringComparison.OrdinalIgnoreCase)) continue;

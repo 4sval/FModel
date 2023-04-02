@@ -4,9 +4,9 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
                     xmlns:soundOut="clr-namespace:CSCore.SoundOut;assembly=CSCore"
-                    xmlns:sharpDx="clr-namespace:SharpDX.Direct3D11;assembly=SharpDX.Direct3D11"
                     xmlns:audioControls="clr-namespace:FModel.Views.Resources.Controls.Aup"
                     xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+                    xmlns:settings="clr-namespace:FModel.Settings"
                     xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
                     xmlns:folding="clr-namespace:ICSharpCode.AvalonEdit.Folding;assembly=ICSharpCode.AvalonEdit"
                     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
@@ -29,6 +29,8 @@
     <Geometry x:Key="ExportIcon">M19.41,7.41l-4.83-4.83C14.21,2.21,13.7,2,13.17,2H6C4.9,2,4.01,2.9,4.01,4L4,20c0,1.1,0.89,2,1.99,2H18c1.1,0,2-0.9,2-2 V8.83C20,8.3,19.79,7.79,19.41,7.41z M14.8,15H13v3c0,0.55-0.45,1-1,1s-1-0.45-1-1v-3H9.21c-0.45,0-0.67-0.54-0.35-0.85l2.8-2.79 c0.2-0.19,0.51-0.19,0.71,0l2.79,2.79C15.46,14.46,15.24,15,14.8,15z M14,9c-0.55,0-1-0.45-1-1V3.5L18.5,9H14z</Geometry>
     <Geometry x:Key="SaveIcon">M16.17,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V7.83c0-0.53-0.21-1.04-0.59-1.41l-2.83-2.83 C17.21,3.21,16.7,3,16.17,3z M12,18c-1.66,0-3-1.34-3-3s1.34-3,3-3s3,1.34,3,3S13.66,18,12,18z M14,10H7c-0.55,0-1-0.45-1-1V7 c0-0.55,0.45-1,1-1h7c0.55,0,1,0.45,1,1v2C15,9.55,14.55,10,14,10z</Geometry>
     <Geometry x:Key="TextureIcon">M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M6.6,16.2l2-2.67 c0.2-0.27,0.6-0.27,0.8,0L11.25,16l2.6-3.47c0.2-0.27,0.6-0.27,0.8,0l2.75,3.67c0.25,0.33,0.01,0.8-0.4,0.8H7 C6.59,17,6.35,16.53,6.6,16.2z</Geometry>
+    <Geometry x:Key="ModelIcon">M12 6q-.825 0-1.412-.588Q10 4.825 10 4t.588-1.413Q11.175 2 12 2t1.413.587Q14 3.175 14 4q0 .825-.587 1.412Q12.825 6 12 6ZM9 22V9H3V7h18v2h-6v13h-2v-6h-2v6Z</Geometry>
+    <Geometry x:Key="AnimationIcon">M9 22q-1.45 0-2.725-.55Q5 20.9 4.05 19.95q-.95-.95-1.5-2.225Q2 16.45 2 15q0-2.025 1.05-3.7Q4.1 9.625 5.8 8.75q.5-.975 1.238-1.713Q7.775 6.3 8.75 5.8q.825-1.7 2.525-2.75T15 2q1.45 0 2.725.55Q19 3.1 19.95 4.05q.95.95 1.5 2.225Q22 7.55 22 9q0 2.125-1.05 3.75t-2.75 2.5q-.5.975-1.238 1.712-.737.738-1.712 1.238-.875 1.7-2.55 2.75Q11.025 22 9 22Zm0-2q.825 0 1.588-.25Q11.35 19.5 12 19q-1.45 0-2.725-.55Q8 17.9 7.05 16.95q-.95-.95-1.5-2.225Q5 13.45 5 12q-.5.65-.75 1.412Q4 14.175 4 15q0 1.05.4 1.95.4.9 1.075 1.575.675.675 1.575 1.075.9.4 1.95.4Zm3-3q.825 0 1.613-.25.787-.25 1.437-.75-1.475 0-2.75-.562-1.275-.563-2.225-1.513-.95-.95-1.513-2.225Q8 10.425 8 8.95q-.5.65-.75 1.437Q7 11.175 7 12q0 1.05.388 1.95.387.9 1.087 1.575.675.7 1.575 1.088.9.387 1.95.387Zm3-3q.45 0 .863-.075.412-.075.837-.225.55-1.5.163-2.888-.388-1.387-1.338-2.337-.95-.95-2.337-1.338Q11.8 6.75 10.3 7.3q-.15.425-.225.837Q10 8.55 10 9q0 1.05.387 1.95.388.9 1.088 1.575.675.7 1.575 1.088.9.387 1.95.387Zm4-1.95q.5-.65.75-1.438Q20 9.825 20 9q0-1.05-.387-1.95-.388-.9-1.088-1.575-.675-.7-1.575-1.088Q16.05 4 15 4q-.875 0-1.637.25-.763.25-1.413.75 1.475 0 2.75.562 1.275.563 2.225 1.513.95.95 1.513 2.225.562 1.275.562 2.75Z</Geometry>
     <Geometry x:Key="CopyIcon">M3,7L3,7C2.45,7,2,7.45,2,8v13c0,1.1,0.9,2,2,2h11c0.55,0,1-0.45,1-1v0c0-0.55-0.45-1-1-1H4V8C4,7.45,3.55,7,3,7z M15.59,1.59C15.21,1.21,14.7,1,14.17,1H8C6.9,1,6.01,1.9,6.01,3L6,17c0,1.1,0.89,2,1.99,2H19c1.1,0,2-0.9,2-2V7.83 c0-0.53-0.21-1.04-0.59-1.41L15.59,1.59z M14,7V2.5L19.5,8H15C14.45,8,14,7.55,14,7z</Geometry>
     <Geometry x:Key="DirectoriesIcon">M14.4,6l-0.24-1.2C14.07,4.34,13.66,4,13.18,4H6C5.45,4,5,4.45,5,5v15c0,0.55,0.45,1,1,1l0,0c0.55,0,1-0.45,1-1v-6h5.6 l0.24,1.2c0.09,0.47,0.5,0.8,0.98,0.8H19c0.55,0,1-0.45,1-1V7c0-0.55-0.45-1-1-1H14.4z</Geometry>
     <Geometry x:Key="DirectoriesAddIcon">M20 1v3h3v2h-3v3h-2V6h-3V4h3V1h2zm-8 12c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm2-9.75V7h3v3h2.92c.05.39.08.79.08 1.2 0 3.32-2.67 7.25-8 11.8-5.33-4.55-8-8.48-8-11.8C4 6.22 7.8 3 12 3c.68 0 1.35.08 2 .25z</Geometry>
@@ -65,13 +67,7 @@
     <Geometry x:Key="FoldIcon">M8.12 19.3c.39.39 1.02.39 1.41 0L12 16.83l2.47 2.47c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-3.17-3.17c-.39-.39-1.02-.39-1.41 0l-3.17 3.17c-.4.38-.4 1.02-.01 1.41zm7.76-14.6c-.39-.39-1.02-.39-1.41 0L12 7.17 9.53 4.7c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.03 0 1.42l3.17 3.17c.39.39 1.02.39 1.41 0l3.17-3.17c.4-.39.4-1.03.01-1.42z</Geometry>
     <Geometry x:Key="UnfoldIcon">M12 5.83l2.46 2.46c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L12.7 3.7c-.39-.39-1.02-.39-1.41 0L8.12 6.88c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 5.83zm0 12.34l-2.46-2.46c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l3.17 3.18c.39.39 1.02.39 1.41 0l3.17-3.17c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0L12 18.17z</Geometry>
     <Geometry x:Key="LocateMeIcon">M11.71,17.99C8.53,17.84,6,15.22,6,12c0-3.31,2.69-6,6-6c3.22,0,5.84,2.53,5.99,5.71l-2.1-0.63C15.48,9.31,13.89,8,12,8 c-2.21,0-4,1.79-4,4c0,1.89,1.31,3.48,3.08,3.89L11.71,17.99z M22,12c0,0.3-0.01,0.6-0.04,0.9l-1.97-0.59C20,12.21,20,12.1,20,12 c0-4.42-3.58-8-8-8s-8,3.58-8,8s3.58,8,8,8c0.1,0,0.21,0,0.31-0.01l0.59,1.97C12.6,21.99,12.3,22,12,22C6.48,22,2,17.52,2,12 C2,6.48,6.48,2,12,2S22,6.48,22,12z M18.23,16.26l2.27-0.76c0.46-0.15,0.45-0.81-0.01-0.95l-7.6-2.28 c-0.38-0.11-0.74,0.24-0.62,0.62l2.28,7.6c0.14,0.47,0.8,0.48,0.95,0.01l0.76-2.27l3.91,3.91c0.2,0.2,0.51,0.2,0.71,0l1.27-1.27 c0.2-0.2,0.2-0.51,0-0.71L18.23,16.26z</Geometry>
-    <Geometry x:Key="MeshIcon">M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm8 7h-5v12c0 .55-.45 1-1 1s-1-.45-1-1v-5h-2v5c0 .55-.45 1-1 1s-1-.45-1-1V9H4c-.55 0-1-.45-1-1s.45-1 1-1h16c.55 0 1 .45 1 1s-.45 1-1 1z</Geometry>
-    <Geometry x:Key="MaterialIcon">M11 9h2v2h-2V9zm-2 2h2v2H9v-2zm4 0h2v2h-2v-2zm2-2h2v2h-2V9zM7 9h2v2H7V9zm12-6H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 18H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm2-7h-2v2h2v2h-2v-2h-2v2h-2v-2h-2v2H9v-2H7v2H5v-2h2v-2H5V6c0-.55.45-1 1-1h12c.55 0 1 .45 1 1v5z</Geometry>
-    <Geometry x:Key="VisibleIcon">M12 4C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z</Geometry>
-    <Geometry x:Key="NotVisibleIcon">M12 6.5c2.76 0 5 2.24 5 5 0 .51-.1 1-.24 1.46l3.06 3.06c1.39-1.23 2.49-2.77 3.18-4.53C21.27 7.11 17 4 12 4c-1.27 0-2.49.2-3.64.57l2.17 2.17c.47-.14.96-.24 1.47-.24zM2.71 3.16c-.39.39-.39 1.02 0 1.41l1.97 1.97C3.06 7.83 1.77 9.53 1 11.5 2.73 15.89 7 19 12 19c1.52 0 2.97-.3 4.31-.82l2.72 2.72c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L4.13 3.16c-.39-.39-1.03-.39-1.42 0zM12 16.5c-2.76 0-5-2.24-5-5 0-.77.18-1.5.49-2.14l1.57 1.57c-.03.18-.06.37-.06.57 0 1.66 1.34 3 3 3 .2 0 .38-.03.57-.07L14.14 16c-.65.32-1.37.5-2.14.5zm2.97-5.33c-.15-1.4-1.25-2.49-2.64-2.64l2.64 2.64z</Geometry>
-    <Geometry x:Key="WireframeIcon">M3 5h2V3c-1.1 0-2 .9-2 2zm0 8h2v-2H3v2zm4 8h2v-2H7v2zM3 9h2V7H3v2zm10-6h-2v2h2V3zm6 0v2h2c0-1.1-.9-2-2-2zM5 21v-2H3c0 1.1.9 2 2 2zm-2-4h2v-2H3v2zM9 3H7v2h2V3zm2 18h2v-2h-2v2zm8-8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2zm0-12h2V7h-2v2zm0 8h2v-2h-2v2zm-4 4h2v-2h-2v2zm0-16h2V3h-2v2zM8 17h8c.55 0 1-.45 1-1V8c0-.55-.45-1-1-1H8c-.55 0-1 .45-1 1v8c0 .55.45 1 1 1zm1-8h6v6H9V9z</Geometry>
-    <Geometry x:Key="NotWireframeIcon">M3,13h2v-2H3V13z M7,21h2v-2H7V21z M13,3h-2v2h2V3z M19,3v2h2C21,3.9,20.1,3,19,3z M5,21v-2H3C3,20.1,3.9,21,5,21z M3,17h2 v-2H3V17z M11,21h2v-2h-2V21z M19,13h2v-2h-2V13z M19,9h2V7h-2V9z M15,5h2V3h-2V5z M7.83,5L7,4.17V3h2v2H7.83z M19.83,17L19,16.17 V15h2v2H19.83z M9,15v-3.17L12.17,15H9z M2.1,3.51c-0.39,0.39-0.39,1.02,0,1.41L4.17,7H3v2h2V7.83l2,2V16c0,0.55,0.45,1,1,1h6.17 l2,2H15v2h2v-1.17l2.07,2.07c0.39,0.39,1.02,0.39,1.41,0c0.39-0.39,0.39-1.02,0-1.41L3.51,3.51C3.12,3.12,2.49,3.12,2.1,3.51z M17,8c0-0.55-0.45-1-1-1H9.83l2,2H15v3.17l2,2V8z</Geometry>
-    <Geometry x:Key="OverwriteIcon">M16 17.01V11c0-.55-.45-1-1-1s-1 .45-1 1v6.01h-1.79c-.45 0-.67.54-.35.85l2.79 2.78c.2.19.51.19.71 0l2.79-2.78c.32-.31.09-.85-.35-.85H16zM8.65 3.35L5.86 6.14c-.32.31-.1.85.35.85H8V13c0 .55.45 1 1 1s1-.45 1-1V6.99h1.79c.45 0 .67-.54.35-.85L9.35 3.35c-.19-.19-.51-.19-.7 0z</Geometry>
+    <Geometry x:Key="MeshIcon">M1.8 6q-.525 0-.887-.35Q.55 5.3.55 4.8V4q0-1.425 1.012-2.438Q2.575.55 4 .55h.8q.5 0 .85.362.35.363.35.888 0 .5-.35.85T4.8 3H4q-.425 0-.712.287Q3 3.575 3 4v.8q0 .5-.35.85T1.8 6ZM4 23.45q-1.425 0-2.438-1.012Q.55 21.425.55 20v-.8q0-.5.363-.85.362-.35.887-.35.5 0 .85.35t.35.85v.8q0 .425.288.712Q3.575 21 4 21h.8q.5 0 .85.35t.35.85q0 .525-.35.887-.35.363-.85.363Zm15.2 0q-.5 0-.85-.363-.35-.362-.35-.887 0-.5.35-.85t.85-.35h.8q.425 0 .712-.288Q21 20.425 21 20v-.8q0-.5.35-.85t.85-.35q.525 0 .888.35.362.35.362.85v.8q0 1.425-1.012 2.438Q21.425 23.45 20 23.45ZM22.2 6q-.5 0-.85-.35T21 4.8V4q0-.425-.288-.713Q20.425 3 20 3h-.8q-.5 0-.85-.35T18 1.8q0-.525.35-.888.35-.362.85-.362h.8q1.425 0 2.438 1.012Q23.45 2.575 23.45 4v.8q0 .5-.362.85-.363.35-.888.35ZM12 17.35l1-.575v-4.1l3.55-2.075V9.425l-1-.575L12 10.925 8.45 8.85l-1 .575V10.6L11 12.675v4.1Zm-1.325 2.325-4.55-2.65q-.625-.35-.975-.963-.35-.612-.35-1.337V9.45q0-.725.35-1.337.35-.613.975-.963l4.55-2.65Q11.3 4.15 12 4.15t1.325.35l4.55 2.65q.625.35.975.963.35.612.35 1.337v5.275q0 .725-.35 1.337-.35.613-.975.963l-4.55 2.65q-.625.35-1.325.35t-1.325-.35Z</Geometry>
 
     <Style x:Key="TabItemFillSpace" TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
         <Setter Property="Width">
@@ -187,19 +183,19 @@
                     </Setter.Value>
                 </Setter>
             </DataTrigger>
-            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static local:Settings.UserSettings.Default}}" Value="{x:Static local:ELoadingMode.Single}">
+            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}" Value="{x:Static local:ELoadingMode.Single}">
                 <Setter Property="SelectionMode" Value="Single" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static local:Settings.UserSettings.Default}}" Value="{x:Static local:ELoadingMode.Multiple}">
+            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}" Value="{x:Static local:ELoadingMode.Multiple}">
                 <Setter Property="SelectionMode" Value="Extended" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static local:Settings.UserSettings.Default}}" Value="{x:Static local:ELoadingMode.All}">
+            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}" Value="{x:Static local:ELoadingMode.All}">
                 <Setter Property="SelectionMode" Value="Extended" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static local:Settings.UserSettings.Default}}" Value="{x:Static local:ELoadingMode.AllButNew}">
+            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}" Value="{x:Static local:ELoadingMode.AllButNew}">
                 <Setter Property="SelectionMode" Value="Extended" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static local:Settings.UserSettings.Default}}" Value="{x:Static local:ELoadingMode.AllButModified}">
+            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}" Value="{x:Static local:ELoadingMode.AllButModified}">
                 <Setter Property="SelectionMode" Value="Extended" />
             </DataTrigger>
         </Style.Triggers>
@@ -619,110 +615,6 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="ModelsComboBox" TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
-        <Setter Property="ItemsSource" Value="{Binding ModelViewer.LoadedModelsView, IsAsync=True}" />
-        <Setter Property="SelectedItem" Value="{Binding ModelViewer.SelectedModel, Mode=TwoWay}" />
-        <Setter Property="ItemTemplate">
-            <Setter.Value>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Export.Name}" />
-                </DataTemplate>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="ItemContainerStyle">
-            <Setter.Value>
-                <Style TargetType="{x:Type ComboBoxItem}" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
-                    <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}}" />
-                </Style>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style x:Key="MaterialsListBox" TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
-        <Setter Property="ItemsSource" Value="{Binding ModelViewer.SelectedModel.Group3d, IsAsync=True}" />
-        <Setter Property="SelectedItem" Value="{Binding ModelViewer.SelectedModel.SelectedGeometry}" />
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode" Value="NeverExpand"/>
-        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement" Value="Docked"/>
-        <Setter Property="ItemTemplate">
-            <Setter.Value>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="25" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-
-                        <Image Grid.Column="0" Source="/FModel;component/Resources/materialicon.png" Width="16" Height="16" Margin="5 0" HorizontalAlignment="Center" />
-                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding DisplayName}" TextTrimming="CharacterEllipsis" />
-                        <ToggleButton Grid.Column="3" IsChecked="{Binding IsRendering}" Padding="3" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
-                            <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
-                                <Canvas Width="24" Height="24">
-                                    <Path x:Name="SvgIcon1" Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource VisibleIcon}" />
-                                </Canvas>
-                            </Viewbox>
-                        </ToggleButton>
-                        <ToggleButton Grid.Column="4" IsChecked="{Binding FillMode, Converter={x:Static converters:BoolToFillModeConverter.Instance}}" Padding="3" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
-                            <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
-                                <Canvas Width="24" Height="24">
-                                    <Path x:Name="SvgIcon2" Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource WireframeIcon}" />
-                                </Canvas>
-                            </Viewbox>
-                        </ToggleButton>
-                        <Rectangle Grid.Column="5" Width="19" Height="22" Fill="{Binding Material, Converter={x:Static converters:TagToColorConverter.Instance}}"
-                                   Visibility="{Binding DataContext.ModelViewer.SelectedModel.ShowMaterialColor,
-                                   RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:Views.ModelViewer}},
-                                   Converter={StaticResource BoolToVisibilityConverter}}" />
-                    </Grid>
-                    <DataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding IsRendering}" Value="True">
-                            <Setter TargetName="SvgIcon1" Property="Data" Value="{StaticResource VisibleIcon}" />
-                            <Setter TargetName="SvgIcon1" Property="Fill" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding IsRendering}" Value="False">
-                            <Setter TargetName="SvgIcon1" Property="Data" Value="{StaticResource NotVisibleIcon}" />
-                            <Setter TargetName="SvgIcon1" Property="Fill" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding FillMode}" Value="{x:Static sharpDx:FillMode.Solid}">
-                            <Setter TargetName="SvgIcon2" Property="Data" Value="{StaticResource WireframeIcon}" />
-                            <Setter TargetName="SvgIcon2" Property="Fill" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding FillMode}" Value="{x:Static sharpDx:FillMode.Wireframe}">
-                            <Setter TargetName="SvgIcon2" Property="Data" Value="{StaticResource NotWireframeIcon}" />
-                            <Setter TargetName="SvgIcon2" Property="Fill" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
-                        </DataTrigger>
-                    </DataTemplate.Triggers>
-                </DataTemplate>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="ItemContainerStyle">
-            <Setter.Value>
-                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="Padding" Value="0" />
-                </Style>
-            </Setter.Value>
-        </Setter>
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding ModelViewer.SelectedModel.Group3d.Count, FallbackValue=0}" Value="0">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate>
-                            <Grid>
-                                <TextBlock Text="No material found in the mesh" FontWeight="SemiBold" TextAlignment="Center"
-                                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
-                            </Grid>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </DataTrigger>
-        </Style.Triggers>
-    </Style>
-
     <Style x:Key="GameFilesTabControl" TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
         <Setter Property="ItemsSource" Value="{Binding CUE4Parse.TabControl.TabsItems, IsAsync=True}" />
         <Setter Property="SelectedItem" Value="{Binding CUE4Parse.TabControl.SelectedTab}" />
@@ -756,7 +648,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="{Binding AvalonImageSize, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                            <ColumnDefinition Width="{Binding AvalonImageSize, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" />
                         </Grid.ColumnDefinitions>
 
                         <controls:AvalonEditor x:Name="DynamicArea" Grid.Column="0" DataContext="{Binding SelectedItem, ElementName=TabControlName}" />
@@ -937,6 +829,52 @@
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <Separator />
+                                <MenuItem Header="Export Raw Data (.uasset)" Command="{Binding TabCommand}" CommandParameter="Asset_Export_Data">
+                                    <MenuItem.Icon>
+                                        <Viewbox Width="16" Height="16">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExportIcon}" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Save Properties (.json)" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Properties">
+                                    <MenuItem.Icon>
+                                        <Viewbox Width="16" Height="16">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SaveIcon}" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Save Texture (.png)" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Textures">
+                                    <MenuItem.Icon>
+                                        <Viewbox Width="16" Height="16">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Save Model (.psk)" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Models">
+                                    <MenuItem.Icon>
+                                        <Viewbox Width="16" Height="16">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ModelIcon}" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Save Animation (.psa)" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Animations">
+                                    <MenuItem.Icon>
+                                        <Viewbox Width="16" Height="16">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource AnimationIcon}" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <Separator />
                                 <MenuItem Header="Open Properties" Command="{Binding TabCommand}" CommandParameter="Open_Properties">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
@@ -948,7 +886,6 @@
                                         </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <Separator />
                                 <MenuItem Header="Jump to Package Folder" Command="{Binding GoToCommand}" CommandParameter="{Binding Directory}">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
@@ -958,7 +895,7 @@
                                         </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Copy Package Name" Command="{Binding TabCommand}" CommandParameter="Copy_Asset_Name">
+                                <MenuItem Header="Copy Package Path" Command="{Binding TabCommand}" CommandParameter="Copy_Asset_Path">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
                                             <Canvas Width="24" Height="24">
@@ -1431,6 +1368,7 @@
     <Style x:Key="CustomRichTextBox" TargetType="RichTextBox">
         <Setter Property="Height" Value="175" />
         <Setter Property="IsReadOnly" Value="True" />
+        <Setter Property="IsDocumentEnabled" Value="True" />
         <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
         <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" />
         <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>

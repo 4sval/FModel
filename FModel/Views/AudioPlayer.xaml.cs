@@ -90,4 +90,9 @@ public partial class AudioPlayer
         var filters = textBox.Text.Trim().Split(' ');
         _applicationView.AudioPlayer.AudioFilesView.Filter = o => { return o is AudioFile audio && filters.All(x => audio.FileName.Contains(x, StringComparison.OrdinalIgnoreCase)); };
     }
+
+    private void OnActivatedDeactivated(object sender, EventArgs e)
+    {
+        _applicationView.AudioPlayer.HideToggle();
+    }
 }

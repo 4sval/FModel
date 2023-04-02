@@ -4,6 +4,8 @@
         xmlns:local="clr-namespace:FModel"
         xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
         xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+        xmlns:settings="clr-namespace:FModel.Settings"
+        xmlns:services="clr-namespace:FModel.Services"
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
@@ -12,10 +14,18 @@
         Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.75'}">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
-            <Setter Property="Title" Value="FModel" />
+            <Setter Property="Title" Value="{Binding DataContext.InitialWindowTitle, RelativeSource={RelativeSource Self}}" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding DataContext.TitleExtra, RelativeSource={RelativeSource Self}, Converter={x:Static converters:IsNullToBoolReversedConverter.Instance}}" Value="True">
-                    <Setter Property="Title" Value="{Binding DataContext.TitleExtra, RelativeSource={RelativeSource Self}, StringFormat={}FModel {0}}" />
+                    <Setter Property="Title">
+                        <Setter.Value>
+                            <MultiBinding StringFormat="{}{0} - {1} {2}">
+                                <Binding Path="DataContext.InitialWindowTitle" RelativeSource="{RelativeSource Self}" />
+                                <Binding Path="DataContext.GameDisplayName" RelativeSource="{RelativeSource Self}" />
+                                <Binding Path="DataContext.TitleExtra" RelativeSource="{RelativeSource Self}" />
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -46,7 +56,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="AES" Command="{Binding MenuCommand}" CommandParameter="Directory_AES" IsEnabled="{Binding IsReady}">
+                <MenuItem Header="AES" Command="{Binding MenuCommand}" CommandParameter="Directory_AES" IsEnabled="{Binding Status.IsReady}">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -55,7 +65,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Backup" Command="{Binding MenuCommand}" CommandParameter="Directory_Backup" IsEnabled="{Binding IsReady}">
+                <MenuItem Header="Backup" Command="{Binding MenuCommand}" CommandParameter="Directory_Backup" IsEnabled="{Binding Status.IsReady}">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -64,7 +74,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Archives Info" Command="{Binding MenuCommand}" CommandParameter="Directory_ArchivesInfo" IsEnabled="{Binding IsReady}">
+                <MenuItem Header="Archives Info" Command="{Binding MenuCommand}" CommandParameter="Directory_ArchivesInfo" IsEnabled="{Binding Status.IsReady}">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -75,7 +85,7 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="Packages">
-                <MenuItem Header="Search" IsEnabled="{Binding IsReady}" InputGestureText="Ctrl+Shift+F" Click="OnSearchViewClick">
+                <MenuItem Header="Search" IsEnabled="{Binding Status.IsReady}" InputGestureText="Ctrl+Shift+F" Click="OnSearchViewClick">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -84,7 +94,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Directories" ItemsSource="{Binding CustomDirectories.Directories}" IsEnabled="{Binding IsReady}">
+                <MenuItem Header="Directories" ItemsSource="{Binding CustomDirectories.Directories}" IsEnabled="{Binding Status.IsReady}">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -94,71 +104,19 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator />
-                <MenuItem Header="Export Raw Data" Command="{Binding RightClickMenuCommand}">
-                    <MenuItem.CommandParameter>
-                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                            <Binding Source="Assets_Export_Data" />
-                            <Binding Path="SelectedItems" ElementName="AssetsListName" />
-                        </MultiBinding>
-                    </MenuItem.CommandParameter>
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExportIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Save Property" Command="{Binding RightClickMenuCommand}">
-                    <MenuItem.CommandParameter>
-                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                            <Binding Source="Assets_Save_Properties" />
-                            <Binding Path="SelectedItems" ElementName="AssetsListName" />
-                        </MultiBinding>
-                    </MenuItem.CommandParameter>
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SaveIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Save Texture" Command="{Binding RightClickMenuCommand}">
-                    <MenuItem.CommandParameter>
-                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                            <Binding Source="Assets_Save_Texture" />
-                            <Binding Path="SelectedItems" ElementName="AssetsListName" />
-                        </MultiBinding>
-                    </MenuItem.CommandParameter>
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Auto">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource StatusBarIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                    <MenuItem Header="Save Properties" IsCheckable="True" StaysOpenOnClick="True"
-                              InputGestureText="{Binding AutoSaveProps, Source={x:Static local:Settings.UserSettings.Default}}"
-                              IsChecked="{Binding IsAutoSaveProps, Source={x:Static local:Settings.UserSettings.Default}}" />
-                    <MenuItem Header="Save Textures" IsCheckable="True" StaysOpenOnClick="True"
-                              InputGestureText="{Binding AutoSaveTextures, Source={x:Static local:Settings.UserSettings.Default}}"
-                              IsChecked="{Binding IsAutoSaveTextures, Source={x:Static local:Settings.UserSettings.Default}}" />
-                    <MenuItem Header="Open Sounds" IsCheckable="True" StaysOpenOnClick="True"
-                              InputGestureText="{Binding AutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}"
-                              IsChecked="{Binding IsAutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}" />
-                </MenuItem>
+                <MenuItem Header="Auto Open Sounds" IsCheckable="True" StaysOpenOnClick="True"
+                          IsChecked="{Binding IsAutoOpenSounds, Source={x:Static settings:UserSettings.Default}}" />
             </MenuItem>
             <MenuItem Header="Views">
+                <MenuItem Header="3D Viewer" Command="{Binding MenuCommand}" CommandParameter="Views_3dViewer">
+                    <MenuItem.Icon>
+                        <Viewbox Width="16" Height="16">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource MeshIcon}" />
+                            </Canvas>
+                        </Viewbox>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="Audio Player" Command="{Binding MenuCommand}" CommandParameter="Views_AudioPlayer">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
@@ -168,7 +126,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Map Viewer" Command="{Binding MenuCommand}" CommandParameter="Views_MapViewer" IsEnabled="{Binding IsReady}">
+                <MenuItem Header="Map Viewer" Command="{Binding MenuCommand}" CommandParameter="Views_MapViewer" IsEnabled="{Binding Status.IsReady}">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -272,8 +230,8 @@
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Loading Mode" VerticalAlignment="Center" />
-                                <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding LoadingModes.Modes}" IsEnabled="{Binding IsReady}"
-                                          SelectedItem="{Binding LoadingMode, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}">
+                                <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding LoadingModes.Modes}" IsEnabled="{Binding Status.IsReady}"
+                                          SelectedItem="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
                                             <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
@@ -281,7 +239,7 @@
                                     </ComboBox.ItemTemplate>
                                 </ComboBox>
                                 <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Content="Load"
-                                        Command="{Binding LoadingModes.LoadCommand}" IsEnabled="{Binding IsReady}"
+                                        Command="{Binding LoadingModes.LoadCommand}" IsEnabled="{Binding Status.IsReady}"
                                         CommandParameter="{Binding SelectedItems, ElementName=DirectoryFilesListBox}" />
                             </Grid>
                             <Grid DockPanel.Dock="Top">
@@ -360,15 +318,15 @@
                                             </Canvas>
                                         </Viewbox>
                                     </Button>
-                                    <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Expand All (not appropriate for huge amount of folders)" Padding="4"
-                                            Command="{Binding MenuCommand}" CommandParameter="ToolBox_Expand_All">
-                                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
-                                            <Canvas Width="24" Height="24">
-                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource UnfoldIcon}" />
-                                            </Canvas>
-                                        </Viewbox>
-                                    </Button>
-                                    <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Collapse All (not appropriate for huge amount of folders)" Padding="4"
+                                    <!-- <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Expand All (not appropriate for huge amount of folders)" Padding="4" -->
+                                    <!--         Command="{Binding MenuCommand}" CommandParameter="ToolBox_Expand_All"> -->
+                                    <!--     <Viewbox Width="16" Height="16" HorizontalAlignment="Center"> -->
+                                    <!--         <Canvas Width="24" Height="24"> -->
+                                    <!--             <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource UnfoldIcon}" /> -->
+                                    <!--         </Canvas> -->
+                                    <!--     </Viewbox> -->
+                                    <!-- </Button> -->
+                                    <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Collapse All" Padding="4"
                                             Command="{Binding MenuCommand}" CommandParameter="ToolBox_Collapse_All">
                                         <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                             <Canvas Width="24" Height="24">
@@ -391,7 +349,8 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Export Folder's Packages Raw Data" Click="OnFolderExportClick">
+                                        <Separator />
+                                        <MenuItem Header="Export Folder's Packages Raw Data (.uasset)" Click="OnFolderExportClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -400,11 +359,38 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Save Folder's Packages Properties" Click="OnFolderSaveClick">
+                                        <MenuItem Header="Save Folder's Packages Properties (.json)" Click="OnFolderSaveClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
                                                         <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SaveIcon}" />
+                                                    </Canvas>
+                                                </Viewbox>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Save Folder's Packages Textures (.png)" Click="OnFolderTextureClick">
+                                            <MenuItem.Icon>
+                                                <Viewbox Width="16" Height="16">
+                                                    <Canvas Width="24" Height="24">
+                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
+                                                    </Canvas>
+                                                </Viewbox>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Save Folder's Packages Models (.psk)" Click="OnFolderModelClick">
+                                            <MenuItem.Icon>
+                                                <Viewbox Width="16" Height="16">
+                                                    <Canvas Width="24" Height="24">
+                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ModelIcon}" />
+                                                    </Canvas>
+                                                </Viewbox>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Save Folder's Packages Animations (.psa)" Click="OnFolderAnimationClick">
+                                            <MenuItem.Icon>
+                                                <Viewbox Width="16" Height="16">
+                                                    <Canvas Width="24" Height="24">
+                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource AnimationIcon}" />
                                                     </Canvas>
                                                 </Viewbox>
                                             </MenuItem.Icon>
@@ -450,7 +436,7 @@
                                     <TextBlock Grid.Row="0" Grid.Column="1" Text="Packages Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                     <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.FoldersView.Count, ElementName=AssetsFolderName, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                     <TextBlock Grid.Row="1" Grid.Column="1" Text="Folders Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding SelectedItem.Package, ElementName=AssetsFolderName, FallbackValue='None'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding SelectedItem.Archive, ElementName=AssetsFolderName, FallbackValue='None'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                     <TextBlock Grid.Row="2" Grid.Column="1" Text="Included In Archive" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                     <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.MountPoint, ElementName=AssetsFolderName, FallbackValue='/', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                     <TextBlock Grid.Row="3" Grid.Column="1" Text="Archive Mount Point" VerticalAlignment="Center" HorizontalAlignment="Right" />
@@ -519,7 +505,8 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="Export Raw Data" Command="{Binding DataContext.RightClickMenuCommand}">
+                                            <Separator />
+                                            <MenuItem Header="Export Raw Data (.uasset)" Command="{Binding DataContext.RightClickMenuCommand}">
                                                 <MenuItem.CommandParameter>
                                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                         <Binding Source="Assets_Export_Data" />
@@ -534,7 +521,7 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="Save Properties" Command="{Binding DataContext.RightClickMenuCommand}">
+                                            <MenuItem Header="Save Properties (.json)" Command="{Binding DataContext.RightClickMenuCommand}">
                                                 <MenuItem.CommandParameter>
                                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                         <Binding Source="Assets_Save_Properties" />
@@ -549,10 +536,10 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="Save Texture" Command="{Binding DataContext.RightClickMenuCommand}">
+                                            <MenuItem Header="Save Texture (.png)" Command="{Binding DataContext.RightClickMenuCommand}">
                                                 <MenuItem.CommandParameter>
                                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                        <Binding Source="Assets_Save_Texture" />
+                                                        <Binding Source="Assets_Save_Textures" />
                                                         <Binding Path="SelectedItems" />
                                                     </MultiBinding>
                                                 </MenuItem.CommandParameter>
@@ -560,6 +547,36 @@
                                                     <Viewbox Width="16" Height="16">
                                                         <Canvas Width="24" Height="24">
                                                             <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Save Model (.psk)" Command="{Binding DataContext.RightClickMenuCommand}">
+                                                <MenuItem.CommandParameter>
+                                                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                        <Binding Source="Assets_Save_Models" />
+                                                        <Binding Path="SelectedItems" />
+                                                    </MultiBinding>
+                                                </MenuItem.CommandParameter>
+                                                <MenuItem.Icon>
+                                                    <Viewbox Width="16" Height="16">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ModelIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Save Animation (.psa)" Command="{Binding DataContext.RightClickMenuCommand}">
+                                                <MenuItem.CommandParameter>
+                                                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                        <Binding Source="Assets_Save_Animations" />
+                                                        <Binding Path="SelectedItems" />
+                                                    </MultiBinding>
+                                                </MenuItem.CommandParameter>
+                                                <MenuItem.Icon>
+                                                    <Viewbox Width="16" Height="16">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource AnimationIcon}" />
                                                         </Canvas>
                                                     </Viewbox>
                                                 </MenuItem.Icon>
@@ -640,7 +657,7 @@
                                         <TextBlock Grid.Row="2" Grid.Column="1" Text="Compression Method" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                         <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.IsEncrypted, ElementName=AssetsListName, FallbackValue='False'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                         <TextBlock Grid.Row="3" Grid.Column="1" Text="Is Encrypted" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                        <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding SelectedItem.Package, ElementName=AssetsListName, FallbackValue='None'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding SelectedItem.Archive, ElementName=AssetsListName, FallbackValue='None'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                         <TextBlock Grid.Row="4" Grid.Column="1" Text="Included In Archive" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                     </Grid>
                                 </StackPanel>
@@ -664,7 +681,7 @@
 
                     <TabControl Grid.Row="0" x:Name="TabControlName" Style="{StaticResource GameFilesTabControl}" />
                     <Expander Grid.Row="1" Margin="0 5 0 5" ExpandDirection="Down"
-                              IsExpanded="{Binding IsLoggerExpanded, Source={x:Static local:Settings.UserSettings.Default}}">
+                              IsExpanded="{Binding IsLoggerExpanded, Source={x:Static settings:UserSettings.Default}}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -703,31 +720,31 @@
                 <Style TargetType="{x:Type StatusBar}" BasedOn="{StaticResource {x:Type StatusBar}}">
                     <Style.Triggers>
                         <!--don't mind me, MultiDataTrigger just sucks-->
-                        <DataTrigger Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Ready}">
+                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Ready}">
                             <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
                             <Setter Property="Foreground" Value="White" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Completed}">
+                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Completed}">
                             <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
                             <Setter Property="Foreground" Value="White" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Loading}">
+                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Loading}">
                             <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}" />
                             <Setter Property="Foreground" Value="White" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Stopping}">
+                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Stopping}">
                             <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}" />
                             <Setter Property="Foreground" Value="White" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Stopped}">
+                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Stopped}">
                             <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             <Setter Property="Foreground" Value="White" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Failed}">
+                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Failed}">
                             <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             <Setter Property="Foreground" Value="White" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding StatusChangeAttempted, Source={x:Static local:Services.ApplicationService.ThreadWorkerView}}" Value="True">
+                        <DataTrigger Binding="{Binding StatusChangeAttempted, Source={x:Static services:ApplicationService.ThreadWorkerView}}" Value="True">
                             <DataTrigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard Duration="0:0:0.8">
@@ -744,7 +761,7 @@
                                 </BeginStoryboard>
                             </DataTrigger.EnterActions>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding OperationCancelled, Source={x:Static local:Services.ApplicationService.ThreadWorkerView}}" Value="True">
+                        <DataTrigger Binding="{Binding OperationCancelled, Source={x:Static services:ApplicationService.ThreadWorkerView}}" Value="True">
                             <DataTrigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard Duration="0:0:1">
@@ -766,17 +783,17 @@
                 <TextBlock>
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Text" Value="{Binding Status}" />
+                            <Setter Property="Text" Value="{Binding Status.Label}" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Loading}">
-                                    <Setter Property="Text" Value="{Binding Status, StringFormat='{}{0} …'}" />
+                                <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Loading}">
+                                    <Setter Property="Text" Value="{Binding Status.Label, StringFormat='{}{0} …'}" />
                                 </DataTrigger>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding CanBeCanceled, Source={x:Static local:Services.ApplicationService.ThreadWorkerView}}" Value="True" />
-                                        <Condition Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Loading}" />
+                                        <Condition Binding="{Binding CanBeCanceled, Source={x:Static services:ApplicationService.ThreadWorkerView}}" Value="True" />
+                                        <Condition Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Loading}" />
                                     </MultiDataTrigger.Conditions>
-                                    <Setter Property="Text" Value="{Binding Status, StringFormat='{}{0} …    ESC to Cancel'}" />
+                                    <Setter Property="Text" Value="{Binding Status.Label, StringFormat='{}{0} …    ESC to Cancel'}" />
                                 </MultiDataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -794,37 +811,11 @@
                         </Viewbox>
                     </StatusBarItem>
 
-                    <StatusBarItem Width="30" HorizontalContentAlignment="Stretch" ToolTip="Auto Save Properties Enabled">
-                        <StatusBarItem.Style>
-                            <Style TargetType="StatusBarItem">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsAutoSaveProps, Source={x:Static local:Settings.UserSettings.Default}}" Value="False">
-                                        <Setter Property="Visibility" Value="Hidden" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </StatusBarItem.Style>
-                        <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="PRP" />
-                    </StatusBarItem>
-
-                    <StatusBarItem Width="30" HorizontalContentAlignment="Stretch" ToolTip="Auto Save Textures Enabled">
-                        <StatusBarItem.Style>
-                            <Style TargetType="StatusBarItem">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsAutoSaveTextures, Source={x:Static local:Settings.UserSettings.Default}}" Value="False">
-                                        <Setter Property="Visibility" Value="Hidden" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </StatusBarItem.Style>
-                        <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="TEX" />
-                    </StatusBarItem>
-
                     <StatusBarItem Width="30" HorizontalContentAlignment="Stretch" ToolTip="Auto Open Sounds Enabled">
                         <StatusBarItem.Style>
                             <Style TargetType="StatusBarItem">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsAutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}" Value="False">
+                                    <DataTrigger Binding="{Binding IsAutoOpenSounds, Source={x:Static settings:UserSettings.Default}}" Value="False">
                                         <Setter Property="Visibility" Value="Hidden" />
                                     </DataTrigger>
                                 </Style.Triggers>

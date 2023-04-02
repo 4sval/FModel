@@ -51,7 +51,7 @@ public class AesManagerViewModel : ViewModel
                 DynamicKeys = null
             };
 
-            _mainKey.Key = FixKey(_keysFromSettings.MainKey);
+            _mainKey.Key = Helper.FixKey(_keysFromSettings.MainKey);
             AesKeys = new FullyObservableCollection<FileItem>(EnumerateAesKeys());
             AesKeys.ItemPropertyChanged += AesKeysOnItemPropertyChanged;
             AesKeysView = new ListCollectionView(AesKeys) { SortDescriptions = { new SortDescription("Name", ListSortDirection.Ascending) } };
@@ -63,11 +63,11 @@ public class AesManagerViewModel : ViewModel
         if (e.PropertyName != "Key" || sender is not FullyObservableCollection<FileItem> collection)
             return;
 
-        var key = FixKey(collection[e.CollectionIndex].Key);
+        var key = Helper.FixKey(collection[e.CollectionIndex].Key);
         if (e.CollectionIndex == 0)
         {
             if (!HasChange)
-                HasChange = FixKey(_keysFromSettings.MainKey) != key;
+                HasChange = Helper.FixKey(_keysFromSettings.MainKey) != key;
 
             _keysFromSettings.MainKey = key;
         }
@@ -79,7 +79,7 @@ public class AesManagerViewModel : ViewModel
                 new()
                 {
                     Key = key,
-                    FileName = collection[e.CollectionIndex].Name,
+                    Name = collection[e.CollectionIndex].Name,
                     Guid = collection[e.CollectionIndex].Guid.ToString()
                 }
             };
@@ -87,7 +87,7 @@ public class AesManagerViewModel : ViewModel
         else if (_keysFromSettings.DynamicKeys.FirstOrDefault(x => x.Guid == collection[e.CollectionIndex].Guid.ToString()) is { } d)
         {
             if (!HasChange)
-                HasChange = FixKey(d.Key) != key;
+                HasChange = Helper.FixKey(d.Key) != key;
 
             d.Key = key;
         }
@@ -97,35 +97,18 @@ public class AesManagerViewModel : ViewModel
             _keysFromSettings.DynamicKeys.Add(new DynamicKey
             {
                 Key = key,
-                FileName = collection[e.CollectionIndex].Name,
+                Name = collection[e.CollectionIndex].Name,
                 Guid = collection[e.CollectionIndex].Guid.ToString()
             });
         }
     }
 
-    public async Task UpdateProvider(bool isLaunch)
+    public void SetAesKeys()
     {
-        if (!isLaunch && !HasChange) return;
-
-        _cue4Parse.ClearProvider();
-        await _cue4Parse.LoadVfs(AesKeys);
-
         if (_cue4Parse.Game == FGame.Unknown && UserSettings.Default.ManualGames.ContainsKey(UserSettings.Default.GameDirectory))
             UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].AesKeys = _keysFromSettings;
         else UserSettings.Default.AesKeys[_cue4Parse.Game] = _keysFromSettings;
-
         Log.Information("{@Json}", UserSettings.Default);
-    }
-
-    private string FixKey(string key)
-    {
-        if (string.IsNullOrEmpty(key))
-            return string.Empty;
-
-        if (key.StartsWith("0x"))
-            key = key[2..];
-
-        return "0x" + key.ToUpper().Trim();
     }
 
     private IEnumerable<FileItem> EnumerateAesKeys()
@@ -145,7 +128,7 @@ public class AesManagerViewModel : ViewModel
                 k = dynamicKey.Key;
             }
 
-            file.Key = FixKey(k);
+            file.Key = Helper.FixKey(k);
             yield return file;
         }
     }

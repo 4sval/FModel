@@ -47,7 +47,12 @@ public class BaseMaterialInstance : BaseIcon
         }
 
         if (Preview == null)
+        {
+            if (material.TryGetValue(out FPackageIndex parent, "Parent"))
+                Utils.TryGetPackageIndexExport(parent, out material);
+
             goto texture_finding;
+        }
 
         foreach (var vectorParameter in material.VectorParameterValues)
         {

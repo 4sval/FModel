@@ -6,6 +6,7 @@ public enum ESourceProperty
 {
     FftData,
     PlaybackState,
+    HideToggle,
     Length,
     Position,
     WaveformData,

@@ -35,11 +35,11 @@ public class AssetItem : ViewModel
         private set => SetProperty(ref _size, value);
     }
 
-    private string _package;
-    public string Package
+    private string _archive;
+    public string Archive
     {
-        get => _package;
-        private set => SetProperty(ref _package, value);
+        get => _archive;
+        private set => SetProperty(ref _archive, value);
     }
 
     private CompressionMethod _compression;
@@ -49,13 +49,13 @@ public class AssetItem : ViewModel
         private set => SetProperty(ref _compression, value);
     }
 
-    public AssetItem(string fullPath, bool isEncrypted, long offset, long size, string package, CompressionMethod compression)
+    public AssetItem(string fullPath, bool isEncrypted, long offset, long size, string archive, CompressionMethod compression)
     {
         FullPath = fullPath;
         IsEncrypted = isEncrypted;
         Offset = offset;
         Size = size;
-        Package = package;
+        Archive = archive;
         Compression = compression;
     }
 

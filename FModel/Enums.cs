@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+using System;
+using System.ComponentModel;
 
 namespace FModel;
 
@@ -18,10 +19,9 @@ public enum EErrorKind
 
 public enum SettingsOut
 {
-    Restart,
     ReloadLocres,
-    CheckForUpdates,
-    Nothing
+    ReloadMappings,
+    CheckForUpdates
 }
 
 public enum EStatusKind
@@ -91,7 +91,13 @@ public enum FGame
     [Description("GTA: The Trilogy - Definitive Edition")]
     Gameface,
     [Description("Sea of Thieves")]
-    Athena
+    Athena,
+    [Description("Your Beloved ™ Panda")]
+    PandaGame,
+    [Description("Tower of Fantasy")]
+    Hotta,
+    [Description("eFootball 2023")]
+    eFootball
 }
 
 public enum ELoadingMode
@@ -138,4 +144,22 @@ public enum EIconStyle
     Cataba,
     // [Description("Community")]
     // CommunityMade
+}
+
+public enum EEndpointType
+{
+    Aes,
+    Mapping
+}
+
+[Flags]
+public enum EBulkType
+{
+    None =          0,
+    Auto =          1 << 0,
+    Properties =    1 << 1,
+    Textures =      1 << 2,
+    Meshes =        1 << 3,
+    Skeletons =     1 << 4,
+    Animations =    1 << 5
 }

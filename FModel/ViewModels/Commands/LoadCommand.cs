@@ -105,8 +105,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
     private void FilterDirectoryFilesToDisplay(CancellationToken cancellationToken, IEnumerable<FileItem> directoryFiles)
     {
         HashSet<string> filter;
-        if (directoryFiles == null)
-            filter = null;
+        if (directoryFiles == null) filter = null;
         else
         {
             filter = new HashSet<string>();
@@ -132,12 +131,19 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
             if (hasFilter)
             {
                 if (filter.Contains(entry.Vfs.Name))
+                {
                     entries.Add(entry);
+                    _applicationView.Status.UpdateStatusLabel(entry.Vfs.Name);
+                }
             }
             else
+            {
                 entries.Add(entry);
+                _applicationView.Status.UpdateStatusLabel(entry.Vfs.Name);
+            }
         }
 
+        _applicationView.Status.UpdateStatusLabel("Folders & Packages");
         _applicationView.CUE4Parse.AssetsFolder.BulkPopulate(entries);
     }
 
@@ -171,7 +177,8 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
         using var archive = new FStreamArchive(fileStream.Name, memoryStream);
         var entries = new List<VfsEntry>();
 
-        switch (UserSettings.Default.LoadingMode)
+        var mode = UserSettings.Default.LoadingMode;
+        switch (mode)
         {
             case ELoadingMode.AllButNew:
             {
@@ -192,6 +199,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
                         entry.Path.EndsWith(".ubulk") || entry.Path.EndsWith(".uptnl")) continue;
 
                     entries.Add(entry);
+                    _applicationView.Status.UpdateStatusLabel(entry.Vfs.Name);
                 }
 
                 break;
@@ -215,12 +223,14 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
                         continue;
 
                     entries.Add(entry);
+                    _applicationView.Status.UpdateStatusLabel(entry.Vfs.Name);
                 }
 
                 break;
             }
         }
 
+        _applicationView.Status.UpdateStatusLabel($"{mode.ToString()[6..]} Folders & Packages");
         _applicationView.CUE4Parse.AssetsFolder.BulkPopulate(entries);
     }
 }

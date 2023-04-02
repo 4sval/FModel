@@ -29,6 +29,8 @@ public partial class PropertiesPopout
         MyAvalonEditor.FontSize = contextViewModel.FontSize;
         MyAvalonEditor.SyntaxHighlighting = contextViewModel.Highlighter;
         MyAvalonEditor.ScrollToVerticalOffset(contextViewModel.ScrollPosition);
+        MyAvalonEditor.TextArea.TextView.LinkTextBackgroundBrush = null;
+        MyAvalonEditor.TextArea.TextView.LinkTextForegroundBrush = Brushes.Cornsilk;
         MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new GamePathElementGenerator());
         MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new HexColorElementGenerator());
         _manager = new JsonFoldingStrategies(MyAvalonEditor);
@@ -67,7 +69,7 @@ public partial class PropertiesPopout
             _ => fontSize
         };
     }
-        
+
     private void OnPreviewKeyDown(object sender, KeyEventArgs e)
     {
         switch (e.Key)

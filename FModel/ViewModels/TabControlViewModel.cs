@@ -6,7 +6,6 @@ using FModel.ViewModels.Commands;
 using FModel.Views.Resources.Controls;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
-using Microsoft.Win32;
 using Serilog;
 using SkiaSharp;
 using System.Collections.Generic;
@@ -63,6 +62,12 @@ public class TabImage : ViewModel
 
     private void SetImage(SKBitmap bitmap)
     {
+        if (bitmap is null)
+        {
+            ImageBuffer = null;
+            Image = null;
+            return;
+        }
         _bmp = bitmap;
         using var data = _bmp.Encode(NoAlpha ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
         using var stream = new MemoryStream(ImageBuffer = data.ToArray(), false);
@@ -94,6 +99,8 @@ public class TabItem : ViewModel
         get => _directory;
         set => SetProperty(ref _directory, value);
     }
+
+    public string FullPath => this.Directory + "/" + this.Header;
 
     private bool _hasSearchOpen;
     public bool HasSearchOpen
@@ -221,20 +228,21 @@ public class TabItem : ViewModel
         });
     }
 
-    public void AddImage(UTexture2D texture) => AddImage(texture.Name, texture.bRenderNearestNeighbor, texture.Decode(UserSettings.Default.OverridedPlatform));
+    public void AddImage(UTexture2D texture, bool save, bool updateUi)
+        => AddImage(texture.Name, texture.bRenderNearestNeighbor, texture.Decode(UserSettings.Default.OverridedPlatform), save, updateUi);
 
-    public void AddImage(string name, bool rnn, SKBitmap[] img)
+    public void AddImage(string name, bool rnn, SKBitmap[] img, bool save, bool updateUi)
     {
-        foreach (var i in img) AddImage(name, rnn, i);
+        foreach (var i in img) AddImage(name, rnn, i, save, updateUi);
     }
 
-    public void AddImage(string name, bool rnn, SKBitmap img)
+    public void AddImage(string name, bool rnn, SKBitmap img, bool save, bool updateUi)
     {
         Application.Current.Dispatcher.Invoke(() =>
         {
             var t = new TabImage(name, rnn, img);
-            if (UserSettings.Default.IsAutoSaveTextures)
-                SaveImage(t, true);
+            if (save) SaveImage(t, updateUi);
+            if (!updateUi) return;
 
             _images.Add(t);
             SelectedImage ??= t;
@@ -246,15 +254,14 @@ public class TabItem : ViewModel
     public void GoPreviousImage() => SelectedImage = _images.Previous(SelectedImage);
     public void GoNextImage() => SelectedImage = _images.Next(SelectedImage);
 
-    public void SetDocumentText(string text, bool bulkSave)
+    public void SetDocumentText(string text, bool save, bool updateUi)
     {
         Application.Current.Dispatcher.Invoke(() =>
         {
             Document ??= new TextDocument();
             Document.Text = text;
 
-            if (UserSettings.Default.IsAutoSaveProps || bulkSave)
-                SaveProperty(true);
+            if (save) SaveProperty(updateUi);
         });
     }
 
@@ -267,82 +274,63 @@ public class TabItem : ViewModel
         });
     }
 
-    public void SaveImage(bool autoSave) => SaveImage(SelectedImage, autoSave);
-
-    private void SaveImage(TabImage image, bool autoSave)
+    public void SaveImage() => SaveImage(SelectedImage, true);
+    private void SaveImage(TabImage image, bool updateUi)
     {
         if (image == null) return;
         var fileName = $"{image.ExportName}.png";
-        var directory = Path.Combine(UserSettings.Default.TextureDirectory,
+        var path = Path.Combine(UserSettings.Default.TextureDirectory,
             UserSettings.Default.KeepDirectoryStructure ? Directory : "", fileName!).Replace('\\', '/');
 
-        if (!autoSave)
-        {
-            var saveFileDialog = new SaveFileDialog
-            {
-                Title = "Save Texture",
-                FileName = fileName,
-                InitialDirectory = UserSettings.Default.TextureDirectory,
-                Filter = "PNG Files (*.png)|*.png|All Files (*.*)|*.*"
-            };
-            var result = saveFileDialog.ShowDialog();
-            if (!result.HasValue || !result.Value) return;
-            directory = saveFileDialog.FileName;
-        }
-        else
-        {
-            System.IO.Directory.CreateDirectory(directory.SubstringBeforeLast('/'));
-        }
+        System.IO.Directory.CreateDirectory(path.SubstringBeforeLast('/'));
 
-        using (var fs = new FileStream(directory, FileMode.Create, FileAccess.Write, FileShare.Read))
-        {
-            fs.Write(image.ImageBuffer, 0, image.ImageBuffer.Length);
-        }
-
-        SaveCheck(directory, fileName);
+        SaveImage(image, path, fileName, updateUi);
     }
 
-    public void SaveProperty(bool autoSave)
+    private void SaveImage(TabImage image, string path, string fileName, bool updateUi)
+    {
+        SaveImage(image, path);
+        SaveCheck(path, fileName, updateUi);
+    }
+
+    private void SaveImage(TabImage image, string path)
+    {
+        using var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read);
+        fs.Write(image.ImageBuffer, 0, image.ImageBuffer.Length);
+    }
+
+    public void SaveProperty(bool updateUi)
     {
         var fileName = Path.ChangeExtension(Header, ".json");
         var directory = Path.Combine(UserSettings.Default.PropertiesDirectory,
             UserSettings.Default.KeepDirectoryStructure ? Directory : "", fileName).Replace('\\', '/');
 
-        if (!autoSave)
-        {
-            var saveFileDialog = new SaveFileDialog
-            {
-                Title = "Save Property",
-                FileName = fileName,
-                InitialDirectory = UserSettings.Default.PropertiesDirectory,
-                Filter = "JSON Files (*.json)|*.json|INI Files (*.ini)|*.ini|XML Files (*.xml)|*.xml|All Files (*.*)|*.*"
-            };
-            var result = saveFileDialog.ShowDialog();
-            if (!result.HasValue || !result.Value) return;
-            directory = saveFileDialog.FileName;
-        }
-        else
-        {
-            System.IO.Directory.CreateDirectory(directory.SubstringBeforeLast('/'));
-        }
+        System.IO.Directory.CreateDirectory(directory.SubstringBeforeLast('/'));
 
         Application.Current.Dispatcher.Invoke(() => File.WriteAllText(directory, Document.Text));
-        SaveCheck(directory, fileName);
+        SaveCheck(directory, fileName, updateUi);
     }
 
-    private void SaveCheck(string path, string fileName)
+    private void SaveCheck(string path, string fileName, bool updateUi)
     {
         if (File.Exists(path))
         {
             Log.Information("{FileName} successfully saved", fileName);
-            FLogger.AppendInformation();
-            FLogger.AppendText($"Successfully saved '{fileName}'", Constants.WHITE, true);
+            if (updateUi)
+            {
+                FLogger.AppendInformation();
+                FLogger.AppendText("Successfully saved ", Constants.WHITE);
+                FLogger.AppendLink(fileName, path, true);
+            }
         }
         else
         {
             Log.Error("{FileName} could not be saved", fileName);
-            FLogger.AppendError();
-            FLogger.AppendText($"Could not save '{fileName}'", Constants.WHITE, true);
+            if (updateUi)
+            {
+                FLogger.AppendError();
+                FLogger.AppendText($"Could not save '{fileName}'", Constants.WHITE, true);
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,9 +10,9 @@ using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Versions;
-using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Textures;
 using FModel.Framework;
+using FModel.Extensions;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels;
@@ -93,6 +94,7 @@ public static class Utils
             switch (textureParameter.ParameterInfo.Name.Text)
             {
                 case "MainTex":
+                case "Texture":
                 case "TextureA":
                 case "TextureB":
                 case "OfferImage":
@@ -117,12 +119,14 @@ public static class Utils
     {
         var ratioX = width / me.Width;
         var ratioY = height / me.Height;
-        var ratio = ratioX < ratioY ? ratioX : ratioY;
+        return ResizeWithRatio(me, ratioX < ratioY ? ratioX : ratioY);
+    }
+    public static SKBitmap ResizeWithRatio(this SKBitmap me, double ratio)
+    {
         return me.Resize(Convert.ToInt32(me.Width * ratio), Convert.ToInt32(me.Height * ratio));
     }
 
     public static SKBitmap Resize(this SKBitmap me, int size) => me.Resize(size, size);
-
     public static SKBitmap Resize(this SKBitmap me, int width, int height)
     {
         var bmp = new SKBitmap(new SKImageInfo(width, height), SKBitmapAllocFlags.ZeroPixels);
@@ -180,6 +184,11 @@ public static class Utils
     {
         return _applicationView.CUE4Parse.Provider.GetLocalizedString(@namespace, key, defaultValue);
     }
+    public static string GetLocalizedResource<T>(T @enum) where T : Enum
+    {
+        var resource = _applicationView.CUE4Parse.Provider.GetLocalizedString("", @enum.GetDescription(), @enum.ToString());
+        return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(resource.ToLower());
+    }
 
     public static string GetFullPath(string partialPath)
     {
@@ -194,6 +203,9 @@ public static class Utils
 
         return string.Empty;
     }
+
+    public static string FixPath(string weirdPath) =>
+        _applicationView.CUE4Parse.Provider.FixPath(weirdPath, StringComparison.Ordinal);
 
     public static void DrawCenteredMultilineText(SKCanvas c, string text, int maxCount, int size, int margin, SKTextAlign side, SKRect area, SKPaint paint)
     {
