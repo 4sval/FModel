@@ -37,7 +37,8 @@ public class TabImage : ViewModel
         get => _image;
         set
         {
-            if (_image == value) return;
+            if (_image == value)
+                return;
             SetProperty(ref _image, value);
         }
     }
@@ -178,7 +179,8 @@ public class TabItem : ViewModel
         get => _highlighter;
         set
         {
-            if (_highlighter == value) return;
+            if (_highlighter == value)
+                return;
             SetProperty(ref _highlighter, value);
         }
     }
@@ -189,7 +191,8 @@ public class TabItem : ViewModel
         get => _selectedImage;
         set
         {
-            if (_selectedImage == value) return;
+            if (_selectedImage == value)
+                return;
             SetProperty(ref _selectedImage, value);
             RaisePropertyChanged("HasImage");
             RaisePropertyChanged("Page");
@@ -233,7 +236,8 @@ public class TabItem : ViewModel
 
     public void AddImage(string name, bool rnn, SKBitmap[] img, bool save, bool updateUi)
     {
-        foreach (var i in img) AddImage(name, rnn, i, save, updateUi);
+        foreach (var i in img)
+            AddImage(name, rnn, i, save, updateUi);
     }
 
     public void AddImage(string name, bool rnn, SKBitmap img, bool save, bool updateUi)
@@ -241,8 +245,10 @@ public class TabItem : ViewModel
         Application.Current.Dispatcher.Invoke(() =>
         {
             var t = new TabImage(name, rnn, img);
-            if (save) SaveImage(t, updateUi);
-            if (!updateUi) return;
+            if (save)
+                SaveImage(t, updateUi);
+            if (!updateUi)
+                return;
 
             _images.Add(t);
             SelectedImage ??= t;
@@ -256,13 +262,15 @@ public class TabItem : ViewModel
 
     public void SetDocumentText(string text, bool save, bool updateUi)
     {
-        Application.Current.Dispatcher.Invoke(() =>
-        {
-            Document ??= new TextDocument();
-            Document.Text = text;
-
-            if (save) SaveProperty(updateUi);
-        });
+        //moved out for speed
+        if (save)
+            SaveProperty(updateUi, text);
+        else
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                Document ??= new TextDocument();
+                Document.Text = text;
+            });
     }
 
     public void ResetDocumentText()
@@ -277,7 +285,8 @@ public class TabItem : ViewModel
     public void SaveImage() => SaveImage(SelectedImage, true);
     private void SaveImage(TabImage image, bool updateUi)
     {
-        if (image == null) return;
+        if (image == null)
+            return;
         var fileName = $"{image.ExportName}.png";
         var path = Path.Combine(UserSettings.Default.TextureDirectory,
             UserSettings.Default.KeepDirectoryStructure ? Directory : "", fileName!).Replace('\\', '/');
@@ -299,15 +308,15 @@ public class TabItem : ViewModel
         fs.Write(image.ImageBuffer, 0, image.ImageBuffer.Length);
     }
 
-    public void SaveProperty(bool updateUi)
+    public void SaveProperty(bool updateUi, string text)
     {
         var fileName = Path.ChangeExtension(Header, ".json");
         var directory = Path.Combine(UserSettings.Default.PropertiesDirectory,
             UserSettings.Default.KeepDirectoryStructure ? Directory : "", fileName).Replace('\\', '/');
 
         System.IO.Directory.CreateDirectory(directory.SubstringBeforeLast('/'));
-
-        Application.Current.Dispatcher.Invoke(() => File.WriteAllText(directory, Document.Text));
+        //moved out for speed
+        File.WriteAllText(directory, text);
         SaveCheck(directory, fileName, updateUi);
     }
 
@@ -362,11 +371,12 @@ public class TabControlViewModel : ViewModel
 
     public void AddTab(string header = null, string directory = null)
     {
-        if (!CanAddTabs) return;
+        if (!CanAddTabs)
+            return;
 
         var h = header ?? "New Tab";
         var d = directory ?? string.Empty;
-        if (SelectedTab is { Header : "New Tab" })
+        if (SelectedTab is { Header: "New Tab" })
         {
             SelectedTab.Header = h;
             SelectedTab.Directory = d;
