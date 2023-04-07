@@ -391,6 +391,7 @@ public class CUE4ParseViewModel : ViewModel
             }
             else if (endpoint.IsValid)
             {
+                if(string.IsNullOrEmpty(endpoint.Path)) return;
                 var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
                 var mappings = _apiEndpointView.DynamicApi.GetMappings(cancellationToken, endpoint.Url, endpoint.Path);
                 if (mappings is { Length: > 0 })

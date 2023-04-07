@@ -1,4 +1,4 @@
-﻿using AdonisUI.Controls;
+using AdonisUI.Controls;
 using Microsoft.Win32;
 using Serilog;
 using System;
@@ -41,6 +41,7 @@ public partial class App
         {
             UserSettings.Default = JsonConvert.DeserializeObject<UserSettings>(
                 File.ReadAllText(UserSettings.FilePath), JsonNetSerializer.SerializerSettings);
+            ApplicationService.ApplicationView.CUE4Parse.Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
         }
         catch
         {
