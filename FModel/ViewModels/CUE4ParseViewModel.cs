@@ -585,7 +585,7 @@ public class CUE4ParseViewModel : ViewModel
             case "uasset":
             case "umap":
             {
-                var exports = Provider.LoadObjectExports(fullPath); // cancellationToken
+                var exports = Provider.LoadAllObjects(fullPath);
                 TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), saveProperties, updateUi);
                 if (HasFlag(bulk, EBulkType.Properties)) break; // do not search for viewable exports if we are dealing with jsons
 
@@ -760,7 +760,7 @@ public class CUE4ParseViewModel : ViewModel
         TabControl.AddTab(fullPath.SubstringAfterLast('/'), fullPath.SubstringBeforeLast('/'));
         TabControl.SelectedTab.ScrollTrigger = objectName;
 
-        var exports = Provider.LoadObjectExports(fullPath); // cancellationToken
+        var exports = Provider.LoadAllObjects(fullPath);
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(""); // json
         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), false, false);
 
