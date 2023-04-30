@@ -97,7 +97,9 @@ public enum FGame
     [Description("Tower of Fantasy")]
     Hotta,
     [Description("eFootball 2023")]
-    eFootball
+    eFootball,
+    [Description("Omega Strikers")]
+    OmegaStrikers
 }
 
 public enum ELoadingMode
