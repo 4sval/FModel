@@ -37,7 +37,7 @@ public class BaseUserControl : UCreator
 
     public override void ParseForInfo()
     {
-        if (Object.TryGetValue(out FText optionDisplayName, "OptionDisplayName", "OptionalText"))
+        if (Object.TryGetValue(out FText optionDisplayName, "OptionDisplayName", "OptionText"))
             DisplayName = optionDisplayName.Text.ToUpperInvariant();
         if (Object.TryGetValue(out FText optionDescription, "OptionDescription", "OptionToolTip"))
         {
