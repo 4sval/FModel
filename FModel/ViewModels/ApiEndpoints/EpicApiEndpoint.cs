@@ -1,15 +1,10 @@
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-
 using EpicManifestParser.Objects;
-
 using FModel.Framework;
 using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
-
 using RestSharp;
-
 using Serilog;
 
 namespace FModel.ViewModels.ApiEndpoints;
@@ -20,9 +15,7 @@ public class EpicApiEndpoint : AbstractApiProvider
     private const string _BASIC_TOKEN = "basic MzQ0NmNkNzI2OTRjNGE0NDg1ZDgxYjc3YWRiYjIxNDE6OTIwOWQ0YTVlMjVhNDU3ZmI5YjA3NDg5ZDMxM2I0MWE=";
     private const string _LAUNCHER_ASSETS = "https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/public/assets/v2/platform/Windows/namespace/fn/catalogItem/4fe75bbc5a674f4f9b356b5c90567da5/app/Fortnite/label/Live";
 
-    public EpicApiEndpoint(RestClient client) : base(client)
-    {
-    }
+    public EpicApiEndpoint(RestClient client) : base(client) { }
 
     public async Task<ManifestInfo> GetManifestAsync(CancellationToken token)
     {

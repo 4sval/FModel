@@ -6,10 +6,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using AdonisUI.Controls;
 using CUE4Parse.UE4.Readers;
-using CUE4Parse.UE4.Vfs;
+using CUE4Parse.UE4.VirtualFileSystem;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
@@ -32,9 +31,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
     private DiscordHandler _discordHandler => DiscordService.DiscordHandler;
 
-    public LoadCommand(LoadingModesViewModel contextViewModel) : base(contextViewModel)
-    {
-    }
+    public LoadCommand(LoadingModesViewModel contextViewModel) : base(contextViewModel) { }
 
     public override async void Execute(LoadingModesViewModel contextViewModel, object parameter)
     {

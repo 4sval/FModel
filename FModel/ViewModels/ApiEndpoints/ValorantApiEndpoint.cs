@@ -1,4 +1,4 @@
-﻿using CUE4Parse.UE4.Exceptions;
+using CUE4Parse.UE4.Exceptions;
 using CUE4Parse.UE4.Readers;
 using FModel.Settings;
 using Ionic.Zlib;
@@ -21,9 +21,7 @@ public class ValorantApiEndpoint : AbstractApiProvider
 {
     private const string _URL = "https://fmodel.fortnite-api.com/valorant/v2/manifest";
 
-    public ValorantApiEndpoint(RestClient client) : base(client)
-    {
-    }
+    public ValorantApiEndpoint(RestClient client) : base(client) { }
 
     public async Task<VManifest> GetManifestAsync(CancellationToken token)
     {

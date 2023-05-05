@@ -110,6 +110,8 @@ public class CreatorPackage : IDisposable
             case "FortCreativeWeaponRangedItemDefinition":
             case "FortCreativeRealEstatePlotItemDefinition":
             case "AthenaDanceItemDefinition_AdHocSquadsJoin_C":
+            case "StWFortAccoladeItemDefinition":
+            case "FortSmartBuildingItemDefinition":
                 creator = _style switch
                 {
                     EIconStyle.Cataba => new BaseCommunity(_object, _style, "Cataba"),
@@ -149,6 +151,7 @@ public class CreatorPackage : IDisposable
             case "FortFeatItemDefinition":
             case "FortQuestItemDefinition":
             case "FortQuestItemDefinition_Athena":
+            case "FortQuestItemDefinition_Campaign":
             case "AthenaDailyQuestDefinition":
             case "FortUrgentQuestItemDefinition":
                 creator = new Bases.FN.BaseQuest(_object, _style);
@@ -163,6 +166,7 @@ public class CreatorPackage : IDisposable
             case "FortItemAccessTokenType":
                 creator = new BaseItemAccessToken(_object, _style);
                 return true;
+            case "FortCreativeOption":
             case "PlaylistUserOptionEnum":
             case "PlaylistUserOptionBool":
             case "PlaylistUserOptionString":

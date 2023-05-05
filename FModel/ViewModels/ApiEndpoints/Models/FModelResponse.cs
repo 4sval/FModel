@@ -39,7 +39,7 @@ public class Version
     [J] public int UeVer { get; private set; }
     [J] public Dictionary<string, int> CustomVersions { get; private set; }
     [J] public Dictionary<string, bool> Options { get; private set; }
-    [J] public Dictionary<string, KeyValuePair<string, string>> MapStructTypes { get; private set; }
+    [J] public Dictionary<string, KeyValuePair<string, string>> MapStructTypes { get; private set; } = new();
 }
 
 [DebuggerDisplay("{" + nameof(Mode) + "}")]

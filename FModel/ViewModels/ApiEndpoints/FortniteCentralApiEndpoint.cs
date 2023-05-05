@@ -9,9 +9,7 @@ namespace FModel.ViewModels.ApiEndpoints;
 
 public class FortniteCentralApiEndpoint : AbstractApiProvider
 {
-    public FortniteCentralApiEndpoint(RestClient client) : base(client)
-    {
-    }
+    public FortniteCentralApiEndpoint(RestClient client) : base(client) { }
 
     public async Task<Dictionary<string, Dictionary<string, string>>> GetHotfixesAsync(CancellationToken token, string language = "en")
     {

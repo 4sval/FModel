@@ -12,14 +12,12 @@ namespace FModel.ViewModels.ApiEndpoints;
 
 public class DynamicApiEndpoint : AbstractApiProvider
 {
-    public DynamicApiEndpoint(RestClient client) : base(client)
-    {
-    }
+    public DynamicApiEndpoint(RestClient client) : base(client) { }
 
     public async Task<AesResponse> GetAesKeysAsync(CancellationToken token, string url, string path)
     {
         var body = await GetRequestBody(token, url).ConfigureAwait(false);
-        var tokens = body.SelectTokens(path);
+        var tokens = body.SelectTokens(path).ToArray();
 
         var ret = new AesResponse { MainKey = Helper.FixKey(tokens.ElementAtOrDefault(0)?.ToString()) };
         if (tokens.ElementAtOrDefault(1) is JArray dynamicKeys)
@@ -32,10 +30,12 @@ public class DynamicApiEndpoint : AbstractApiProvider
                 ret.DynamicKeys.Add(new DynamicKey
                 {
                     Name = dynamicKey["name"]?.ToString(),
-                    Guid = guid.ToString(), Key = Helper.FixKey(key.ToString())
+                    Guid = guid.ToString(),
+                    Key = Helper.FixKey(key.ToString())
                 });
             }
         }
+
         return ret;
     }
 
@@ -47,9 +47,9 @@ public class DynamicApiEndpoint : AbstractApiProvider
     public async Task<MappingsResponse[]> GetMappingsAsync(CancellationToken token, string url, string path)
     {
         var body = await GetRequestBody(token, url).ConfigureAwait(false);
-        var tokens = body.SelectTokens(path);
+        var tokens = body.SelectTokens(path).ToArray();
 
-        var ret = new MappingsResponse[] {new()};
+        var ret = new MappingsResponse[] { new() };
         ret[0].Url = tokens.ElementAtOrDefault(0)?.ToString();
         if (tokens.ElementAtOrDefault(1) is not { } fileName)
             fileName = ret[0].Url?.SubstringAfterLast("/");
