@@ -63,10 +63,10 @@ public partial class MainWindow
 
         await _applicationView.CUE4Parse.Initialize();
         await _applicationView.AesManager.InitAes();
-        await _applicationView.UpdateProvider(true);
 #if !DEBUG
         await _applicationView.CUE4Parse.InitInformation();
 #endif
+        await _applicationView.UpdateProvider(true);
         await _applicationView.CUE4Parse.InitMappings();
         await _applicationView.InitImGuiSettings(newOrUpdated);
         await _applicationView.InitVgmStream();
@@ -76,9 +76,9 @@ public partial class MainWindow
             _discordHandler.Initialize(_applicationView.GameDisplayName);
 
 #if DEBUG
-        await _threadWorkerView.Begin(cancellationToken =>
-            _applicationView.CUE4Parse.Extract(cancellationToken,
-                "FortniteGame/Content/Athena/Environments/Landscape/Material/M_Athena_Terrain_Master.o.uasset"));
+        // await _threadWorkerView.Begin(cancellationToken =>
+        //     _applicationView.CUE4Parse.Extract(cancellationToken,
+        //         "fortnitegame/Content/Characters/Player/Female/Medium/Bodies/F_MED_Dieselpunk_01/Meshes/F_MED_Dieselpunk_01.uasset"));
 #endif
     }
 

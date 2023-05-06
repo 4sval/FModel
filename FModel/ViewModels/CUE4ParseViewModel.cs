@@ -46,6 +46,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using Serilog;
 using SkiaSharp;
+using UE4Config.Parsing;
 using Application = System.Windows.Application;
 
 namespace FModel.ViewModels;
@@ -330,6 +331,19 @@ public class CUE4ParseViewModel : ViewModel
         }
 
         Game = Helper.IAmThePanda(Provider.GameName) ? FGame.PandaGame : Provider.GameName.ToEnum(Game);
+    }
+
+    public void VerifyCva()
+    {
+        Provider.LoadIniConfigs();
+
+        var inst = new List<InstructionToken>();
+        Provider.DefaultEngine.FindPropertyInstructions("ConsoleVariables", "a.StripAdditiveRefPose", inst);
+        if (inst.Count > 0 && inst[0].Value.Equals("1"))
+        {
+            FLogger.AppendWarning();
+            FLogger.AppendText("Additive animations have their reference pose stripped, which will lead to inaccurate preview and export", Constants.WHITE, true);
+        }
     }
 
     public void ClearProvider()

@@ -113,14 +113,13 @@ public class ApplicationViewModel : ViewModel
         await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
         {
             CUE4Parse.LoadVfs(cancellationToken, AesManager.AesKeys);
-            CUE4Parse.Provider.LoadIniConfigs();
+            CUE4Parse.VerifyCva();
             var vfcCount = CUE4Parse.Provider.LoadVirtualCache();
             if (vfcCount > 0)
             {
                 FLogger.AppendInformation();
-                FLogger.AppendText($"VFC loaded {vfcCount} cached packages data", Constants.WHITE, true);
+                FLogger.AppendText($"VFC loaded {vfcCount} cached packages", Constants.WHITE, true);
             }
-            // ConsoleVariables - a.StripAdditiveRefPose=1
             AesManager.SetAesKeys();
         });
         RaisePropertyChanged(nameof(GameDisplayName));
