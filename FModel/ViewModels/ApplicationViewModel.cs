@@ -114,6 +114,12 @@ public class ApplicationViewModel : ViewModel
         {
             CUE4Parse.LoadVfs(cancellationToken, AesManager.AesKeys);
             CUE4Parse.Provider.LoadIniConfigs();
+            var vfcCount = CUE4Parse.Provider.LoadVirtualCache();
+            if (vfcCount > 0)
+            {
+                FLogger.AppendInformation();
+                FLogger.AppendText($"VFC loaded {vfcCount} cached packages data", Constants.WHITE, true);
+            }
             // ConsoleVariables - a.StripAdditiveRefPose=1
             AesManager.SetAesKeys();
         });
