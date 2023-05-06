@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -63,17 +64,23 @@ public partial class MainWindow
 
         await _applicationView.CUE4Parse.Initialize();
         await _applicationView.AesManager.InitAes();
+        await _applicationView.UpdateProvider(true);
 #if !DEBUG
         await _applicationView.CUE4Parse.InitInformation();
 #endif
-        await _applicationView.UpdateProvider(true);
-        await _applicationView.CUE4Parse.InitMappings();
-        await _applicationView.InitImGuiSettings(newOrUpdated);
-        await _applicationView.InitVgmStream();
-        await _applicationView.InitOodle();
-
-        if (UserSettings.Default.DiscordRpc == EDiscordRpc.Always)
-            _discordHandler.Initialize(_applicationView.GameDisplayName);
+        await Task.WhenAll(
+            Task.Run(() => _applicationView.CUE4Parse.VerifyCva()),
+            Task.Run(() => _applicationView.CUE4Parse.VerifyVfc()),
+            _applicationView.CUE4Parse.InitMappings(),
+            _applicationView.InitImGuiSettings(newOrUpdated),
+            _applicationView.InitVgmStream(),
+            _applicationView.InitOodle(),
+            Task.Run(() =>
+            {
+                if (UserSettings.Default.DiscordRpc == EDiscordRpc.Always)
+                    _discordHandler.Initialize(_applicationView.GameDisplayName);
+            })
+        ).ConfigureAwait(false);
 
 #if DEBUG
         // await _threadWorkerView.Begin(cancellationToken =>

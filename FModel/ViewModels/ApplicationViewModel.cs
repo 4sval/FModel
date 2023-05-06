@@ -113,13 +113,7 @@ public class ApplicationViewModel : ViewModel
         await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
         {
             CUE4Parse.LoadVfs(cancellationToken, AesManager.AesKeys);
-            CUE4Parse.VerifyCva();
-            var vfcCount = CUE4Parse.Provider.LoadVirtualCache();
-            if (vfcCount > 0)
-            {
-                FLogger.AppendInformation();
-                FLogger.AppendText($"VFC loaded {vfcCount} cached packages", Constants.WHITE, true);
-            }
+            CUE4Parse.Provider.LoadIniConfigs();
             AesManager.SetAesKeys();
         });
         RaisePropertyChanged(nameof(GameDisplayName));

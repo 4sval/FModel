@@ -6,9 +6,11 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using AdonisUI.Controls;
 using CUE4Parse.UE4.Readers;
 using CUE4Parse.UE4.VirtualFileSystem;
+using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
@@ -43,59 +45,54 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
             return;
         }
 
-        if (_applicationView.CUE4Parse.Game == FGame.FortniteGame &&
-            _applicationView.CUE4Parse.Provider.MappingsContainer == null)
-        {
-            FLogger.AppendError();
-            FLogger.AppendText("Mappings could not get pulled, extracting packages might not work properly. If so, either press F12, restart, or come back later.", Constants.WHITE, true);
-        }
-
 #if DEBUG
         var loadingTime = Stopwatch.StartNew();
 #endif
         _applicationView.CUE4Parse.AssetsFolder.Folders.Clear();
         _applicationView.CUE4Parse.SearchVm.SearchResults.Clear();
         MainWindow.YesWeCats.LeftTabControl.SelectedIndex = 1; // folders tab
-
-        await _applicationView.CUE4Parse.LoadLocalizedResources(); // load locres if not already loaded
-        await _applicationView.CUE4Parse.LoadVirtualPaths(); // load virtual paths if not already loaded
         Helper.CloseWindow<AdonisWindow>("Search View"); // close search window if opened
 
-        await _threadWorkerView.Begin(cancellationToken =>
-        {
-            // filter what to show
-            switch (UserSettings.Default.LoadingMode)
+        await Task.WhenAll(
+            _applicationView.CUE4Parse.LoadLocalizedResources(), // load locres if not already loaded,
+            _applicationView.CUE4Parse.LoadVirtualPaths(), // load virtual paths if not already loaded
+            Task.Run(() => Utils.Typefaces = new Typefaces(_applicationView.CUE4Parse)),
+            _threadWorkerView.Begin(cancellationToken =>
             {
-                case ELoadingMode.Single:
-                case ELoadingMode.Multiple:
+                // filter what to show
+                switch (UserSettings.Default.LoadingMode)
                 {
-                    var l = (IList) parameter;
-                    if (l.Count < 1) return;
+                    case ELoadingMode.Single:
+                    case ELoadingMode.Multiple:
+                    {
+                        var l = (IList) parameter;
+                        if (l.Count < 1) return;
 
-                    var directoryFilesToShow = l.Cast<FileItem>();
-                    FilterDirectoryFilesToDisplay(cancellationToken, directoryFilesToShow);
-                    break;
+                        var directoryFilesToShow = l.Cast<FileItem>();
+                        FilterDirectoryFilesToDisplay(cancellationToken, directoryFilesToShow);
+                        break;
+                    }
+                    case ELoadingMode.All:
+                    {
+                        FilterDirectoryFilesToDisplay(cancellationToken, null);
+                        break;
+                    }
+                    case ELoadingMode.AllButNew:
+                    case ELoadingMode.AllButModified:
+                    {
+                        FilterNewOrModifiedFilesToDisplay(cancellationToken);
+                        break;
+                    }
+                    default: throw new ArgumentOutOfRangeException();
                 }
-                case ELoadingMode.All:
-                {
-                    FilterDirectoryFilesToDisplay(cancellationToken, null);
-                    break;
-                }
-                case ELoadingMode.AllButNew:
-                case ELoadingMode.AllButModified:
-                {
-                    FilterNewOrModifiedFilesToDisplay(cancellationToken);
-                    break;
-                }
-                default: throw new ArgumentOutOfRangeException();
-            }
 
-            _discordHandler.UpdatePresence(_applicationView.CUE4Parse);
-        });
+                _discordHandler.UpdatePresence(_applicationView.CUE4Parse);
+            })
+        ).ConfigureAwait(false);
 #if DEBUG
         loadingTime.Stop();
         FLogger.AppendDebug();
-        FLogger.AppendText($"{_applicationView.CUE4Parse.SearchVm.SearchResults.Count} packages, {_applicationView.CUE4Parse.LocalizedResourcesCount} localized resources, and {_applicationView.CUE4Parse.VirtualPathCount} virtual paths loaded in {loadingTime.Elapsed.TotalSeconds.ToString("F3", CultureInfo.InvariantCulture)} seconds", Constants.WHITE, true);
+        FLogger.AppendText($"{_applicationView.CUE4Parse.SearchVm.SearchResults.Count} packages loaded in {loadingTime.Elapsed.TotalSeconds.ToString("F3", CultureInfo.InvariantCulture)} seconds", Constants.WHITE, true);
 #endif
     }
 

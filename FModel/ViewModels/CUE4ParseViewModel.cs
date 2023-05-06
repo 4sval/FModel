@@ -119,9 +119,6 @@ public class CUE4ParseViewModel : ViewModel
     public AssetsFolderViewModel AssetsFolder { get; }
     public SearchViewModel SearchVm { get; }
     public TabControlViewModel TabControl { get; }
-    public int LocalizedResourcesCount { get; set; }
-    public bool HotfixedResourcesDone { get; set; }
-    public int VirtualPathCount { get; set; }
 
     public CUE4ParseViewModel(string gameDirectory)
     {
@@ -333,19 +330,6 @@ public class CUE4ParseViewModel : ViewModel
         Game = Helper.IAmThePanda(Provider.GameName) ? FGame.PandaGame : Provider.GameName.ToEnum(Game);
     }
 
-    public void VerifyCva()
-    {
-        Provider.LoadIniConfigs();
-
-        var inst = new List<InstructionToken>();
-        Provider.DefaultEngine.FindPropertyInstructions("ConsoleVariables", "a.StripAdditiveRefPose", inst);
-        if (inst.Count > 0 && inst[0].Value.Equals("1"))
-        {
-            FLogger.AppendWarning();
-            FLogger.AppendText("Additive animations have their reference pose stripped, which will lead to inaccurate preview and export", Constants.WHITE, true);
-        }
-    }
-
     public void ClearProvider()
     {
         if (Provider == null) return;
@@ -387,15 +371,15 @@ public class CUE4ParseViewModel : ViewModel
         });
     }
 
-    public async Task InitMappings()
+    public Task InitMappings()
     {
         if (!UserSettings.IsEndpointValid(Game, EEndpointType.Mapping, out var endpoint))
         {
             Provider.MappingsContainer = null;
-            return;
+            return Task.CompletedTask;
         }
 
-        await _threadWorkerView.Begin(cancellationToken =>
+        return Task.Run(() =>
         {
             if (endpoint.Overwrite && File.Exists(endpoint.FilePath))
             {
@@ -406,7 +390,7 @@ public class CUE4ParseViewModel : ViewModel
             else if (endpoint.IsValid)
             {
                 var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
-                var mappings = _apiEndpointView.DynamicApi.GetMappings(cancellationToken, endpoint.Url, endpoint.Path);
+                var mappings = _apiEndpointView.DynamicApi.GetMappings(default, endpoint.Url, endpoint.Path);
                 if (mappings is { Length: > 0 })
                 {
                     foreach (var mapping in mappings)
@@ -440,11 +424,38 @@ public class CUE4ParseViewModel : ViewModel
         });
     }
 
+    private bool _cvaVerifDone { get; set; }
+    public void VerifyCva()
+    {
+        if (_cvaVerifDone) return;
+        _cvaVerifDone = true;
+
+        var inst = new List<InstructionToken>();
+        Provider.DefaultEngine.FindPropertyInstructions("ConsoleVariables", "a.StripAdditiveRefPose", inst);
+        if (inst.Count > 0 && inst[0].Value.Equals("1"))
+        {
+            FLogger.AppendWarning();
+            FLogger.AppendText("Additive animations have their reference pose stripped, which will lead to inaccurate preview and export", Constants.WHITE, true);
+        }
+    }
+
+    private int _vfcCount { get; set; }
+    public void VerifyVfc()
+    {
+        if (_vfcCount > 0) return;
+
+        _vfcCount = Provider.LoadVirtualCache();
+        if (_vfcCount > 0)
+        {
+            FLogger.AppendInformation();
+            FLogger.AppendText($"VFC loaded {_vfcCount} cached packages", Constants.WHITE, true);
+        }
+    }
+
+    public int LocalizedResourcesCount { get; set; }
     public async Task LoadLocalizedResources()
     {
-        await LoadGameLocalizedResources();
-        await LoadHotfixedLocalizedResources();
-        await _threadWorkerView.Begin(_ => Utils.Typefaces = new Typefaces(this));
+        await Task.WhenAll(LoadGameLocalizedResources(), LoadHotfixedLocalizedResources()).ConfigureAwait(false);
         if (LocalizedResourcesCount > 0)
         {
             FLogger.AppendInformation();
@@ -457,37 +468,34 @@ public class CUE4ParseViewModel : ViewModel
         }
     }
 
-    private async Task LoadGameLocalizedResources()
+    private bool _localResourcesDone { get; set; }
+    private Task LoadGameLocalizedResources()
     {
-        if (LocalizedResourcesCount > 0) return;
-        await _threadWorkerView.Begin(cancellationToken =>
+        if (_localResourcesDone) return Task.CompletedTask;
+        return Task.Run(() =>
         {
-            LocalizedResourcesCount = Provider.LoadLocalization(UserSettings.Default.AssetLanguage, cancellationToken);
+            LocalizedResourcesCount += Provider.LoadLocalization(UserSettings.Default.AssetLanguage);
+            _localResourcesDone = true;
         });
     }
 
-    /// <summary>
-    /// Load hotfixed localized resources
-    /// </summary>
-    /// <remarks>Functions only when LoadLocalizedResources is used prior to this.</remarks>
-    private async Task LoadHotfixedLocalizedResources()
+    private bool _hotfixedResourcesDone { get; set; }
+    private Task LoadHotfixedLocalizedResources()
     {
-        if (Game != FGame.FortniteGame || HotfixedResourcesDone) return;
-        await _threadWorkerView.Begin(cancellationToken =>
+        if (Game != FGame.FortniteGame || _hotfixedResourcesDone) return Task.CompletedTask;
+        return Task.Run(() =>
         {
-            var hotfixes = ApplicationService.ApiEndpointView.CentralApi.GetHotfixes(cancellationToken, Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
+            var hotfixes = ApplicationService.ApiEndpointView.CentralApi.GetHotfixes(default, Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
             if (hotfixes == null) return;
 
-            HotfixedResourcesDone = true;
+            _hotfixedResourcesDone = true;
             foreach (var entries in hotfixes)
             {
-                cancellationToken.ThrowIfCancellationRequested();
                 if (!Provider.LocalizedResources.ContainsKey(entries.Key))
                     Provider.LocalizedResources[entries.Key] = new Dictionary<string, string>();
 
                 foreach (var keyValue in entries.Value)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
                     Provider.LocalizedResources[entries.Key][keyValue.Key] = keyValue.Value;
                     LocalizedResourcesCount++;
                 }
@@ -495,16 +503,17 @@ public class CUE4ParseViewModel : ViewModel
         });
     }
 
-    public async Task LoadVirtualPaths()
+    private int _virtualPathCount { get; set; }
+    public Task LoadVirtualPaths()
     {
-        if (VirtualPathCount > 0) return;
-        await _threadWorkerView.Begin(cancellationToken =>
+        if (_virtualPathCount > 0) return Task.CompletedTask;
+        return Task.Run(() =>
         {
-            VirtualPathCount = Provider.LoadVirtualPaths(UserSettings.Default.OverridedGame[Game].GetVersion(), cancellationToken);
-            if (VirtualPathCount > 0)
+            _virtualPathCount = Provider.LoadVirtualPaths(UserSettings.Default.OverridedGame[Game].GetVersion());
+            if (_virtualPathCount > 0)
             {
                 FLogger.AppendInformation();
-                FLogger.AppendText($"{VirtualPathCount} virtual paths loaded", Constants.WHITE, true);
+                FLogger.AppendText($"{_virtualPathCount} virtual paths loaded", Constants.WHITE, true);
             }
             else
             {
