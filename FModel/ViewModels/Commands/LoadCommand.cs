@@ -40,8 +40,8 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
         if (_applicationView.CUE4Parse.GameDirectory.HasNoFile) return;
         if (_applicationView.CUE4Parse.Provider.Files.Count <= 0)
         {
-            FLogger.AppendError();
-            FLogger.AppendText("An encrypted archive has been found. In order to decrypt it, please specify a working AES encryption key", Constants.WHITE, true);
+            FLogger.Append(ELog.Error, () =>
+                FLogger.Text("An encrypted archive has been found. In order to decrypt it, please specify a working AES encryption key", Constants.WHITE, true));
             return;
         }
 
@@ -91,8 +91,8 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
         ).ConfigureAwait(false);
 #if DEBUG
         loadingTime.Stop();
-        FLogger.AppendDebug();
-        FLogger.AppendText($"{_applicationView.CUE4Parse.SearchVm.SearchResults.Count} packages loaded in {loadingTime.Elapsed.TotalSeconds.ToString("F3", CultureInfo.InvariantCulture)} seconds", Constants.WHITE, true);
+        FLogger.Append(ELog.Debug, () =>
+            FLogger.Text($"{_applicationView.CUE4Parse.SearchVm.SearchResults.Count} packages loaded in {loadingTime.Elapsed.TotalSeconds.ToString("F3", CultureInfo.InvariantCulture)} seconds", Constants.WHITE, true));
 #endif
     }
 
@@ -153,8 +153,8 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
 
         if (!openFileDialog.ShowDialog().GetValueOrDefault()) return;
 
-        FLogger.AppendInformation();
-        FLogger.AppendText($"Backup file older than current game is '{openFileDialog.FileName.SubstringAfterLast("\\")}'", Constants.WHITE, true);
+        FLogger.Append(ELog.Information, () =>
+            FLogger.Text($"Backup file older than current game is '{openFileDialog.FileName.SubstringAfterLast("\\")}'", Constants.WHITE, true));
 
         using var fileStream = new FileStream(openFileDialog.FileName, FileMode.Open);
         using var memoryStream = new MemoryStream();

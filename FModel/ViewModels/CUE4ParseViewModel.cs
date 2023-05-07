@@ -251,10 +251,10 @@ public class CUE4ParseViewModel : ViewModel
                                     , it => new FStreamArchive(it, manifest.FileManifests.First(x => x.Name.Equals(it)).GetStream(), p.Versions));
                             }
 
-                            FLogger.AppendInformation();
-                            FLogger.AppendText($"Fortnite has been loaded successfully in {manifest.ParseTime.TotalMilliseconds}ms", Constants.WHITE, true);
-                            FLogger.AppendWarning();
-                            FLogger.AppendText($"Mappings must match '{manifest.BuildVersion}' in order to avoid errors", Constants.WHITE, true);
+                            FLogger.Append(ELog.Information, () =>
+                                FLogger.Text($"Fortnite has been loaded successfully in {manifest.ParseTime.TotalMilliseconds}ms", Constants.WHITE, true));
+                            FLogger.Append(ELog.Warning, () =>
+                                FLogger.Text($"Mappings must match '{manifest.BuildVersion}' in order to avoid errors", Constants.WHITE, true));
                             break;
                         }
                         case "ValorantLive":
@@ -270,8 +270,8 @@ public class CUE4ParseViewModel : ViewModel
                                 p.Initialize(manifestInfo.Paks[i].GetFullName(), new[] { manifestInfo.GetPakStream(i) });
                             }
 
-                            FLogger.AppendInformation();
-                            FLogger.AppendText($"Valorant '{manifestInfo.Header.GameVersion}' has been loaded successfully", Constants.WHITE, true);
+                            FLogger.Append(ELog.Information, () =>
+                                FLogger.Text($"Valorant '{manifestInfo.Header.GameVersion}' has been loaded successfully", Constants.WHITE, true));
                             break;
                         }
                     }
@@ -364,10 +364,13 @@ public class CUE4ParseViewModel : ViewModel
             var info = _apiEndpointView.FModelApi.GetNews(cancellationToken, Provider.GameName);
             if (info == null) return;
 
-            for (var i = 0; i < info.Messages.Length; i++)
+            FLogger.Append(ELog.None, () =>
             {
-                FLogger.AppendText(info.Messages[i], info.Colors[i], bool.Parse(info.NewLines[i]));
-            }
+                for (var i = 0; i < info.Messages.Length; i++)
+                {
+                    FLogger.Text(info.Messages[i], info.Colors[i], bool.Parse(info.NewLines[i]));
+                }
+            });
         });
     }
 
@@ -384,8 +387,8 @@ public class CUE4ParseViewModel : ViewModel
             if (endpoint.Overwrite && File.Exists(endpoint.FilePath))
             {
                 Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(endpoint.FilePath);
-                FLogger.AppendInformation();
-                FLogger.AppendText($"Mappings pulled from '{endpoint.FilePath.SubstringAfterLast("\\")}'", Constants.WHITE, true);
+                FLogger.Append(ELog.Information, () =>
+                    FLogger.Text($"Mappings pulled from '{endpoint.FilePath.SubstringAfterLast("\\")}'", Constants.WHITE, true));
             }
             else if (endpoint.IsValid)
             {
@@ -404,8 +407,8 @@ public class CUE4ParseViewModel : ViewModel
                         }
 
                         Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(mappingPath);
-                        FLogger.AppendInformation();
-                        FLogger.AppendText($"Mappings pulled from '{mapping.FileName}'", Constants.WHITE, true);
+                        FLogger.Append(ELog.Information, () =>
+                            FLogger.Text($"Mappings pulled from '{mapping.FileName}'", Constants.WHITE, true));
                         break;
                     }
                 }
@@ -417,8 +420,8 @@ public class CUE4ParseViewModel : ViewModel
 
                     var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
                     Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
-                    FLogger.AppendWarning();
-                    FLogger.AppendText($"Mappings pulled from '{latestUsmapInfo.Name}'", Constants.WHITE, true);
+                    FLogger.Append(ELog.Warning, () =>
+                        FLogger.Text($"Mappings pulled from '{latestUsmapInfo.Name}'", Constants.WHITE, true));
                 }
             }
         });
@@ -434,8 +437,8 @@ public class CUE4ParseViewModel : ViewModel
         Provider.DefaultEngine.FindPropertyInstructions("ConsoleVariables", "a.StripAdditiveRefPose", inst);
         if (inst.Count > 0 && inst[0].Value.Equals("1"))
         {
-            FLogger.AppendWarning();
-            FLogger.AppendText("Additive animations have their reference pose stripped, which will lead to inaccurate preview and export", Constants.WHITE, true);
+            FLogger.Append(ELog.Warning, () =>
+                FLogger.Text("Additive animations have their reference pose stripped, which will lead to inaccurate preview and export", Constants.WHITE, true));
         }
     }
 
@@ -446,10 +449,8 @@ public class CUE4ParseViewModel : ViewModel
 
         _vfcCount = Provider.LoadVirtualCache();
         if (_vfcCount > 0)
-        {
-            FLogger.AppendInformation();
-            FLogger.AppendText($"VFC loaded {_vfcCount} cached packages", Constants.WHITE, true);
-        }
+            FLogger.Append(ELog.Information, () =>
+                FLogger.Text($"VFC loaded {_vfcCount} cached packages", Constants.WHITE, true));
     }
 
     public int LocalizedResourcesCount { get; set; }
@@ -458,13 +459,13 @@ public class CUE4ParseViewModel : ViewModel
         await Task.WhenAll(LoadGameLocalizedResources(), LoadHotfixedLocalizedResources()).ConfigureAwait(false);
         if (LocalizedResourcesCount > 0)
         {
-            FLogger.AppendInformation();
-            FLogger.AppendText($"{LocalizedResourcesCount} localized resources loaded for '{UserSettings.Default.AssetLanguage.GetDescription()}'", Constants.WHITE, true);
+            FLogger.Append(ELog.Information, () =>
+                FLogger.Text($"{LocalizedResourcesCount} localized resources loaded for '{UserSettings.Default.AssetLanguage.GetDescription()}'", Constants.WHITE, true));
         }
         else
         {
-            FLogger.AppendWarning();
-            FLogger.AppendText($"Could not load localized resources in '{UserSettings.Default.AssetLanguage.GetDescription()}', language may not exist", Constants.WHITE, true);
+            FLogger.Append(ELog.Warning, () =>
+                FLogger.Text($"Could not load localized resources in '{UserSettings.Default.AssetLanguage.GetDescription()}', language may not exist", Constants.WHITE, true));
         }
     }
 
@@ -512,13 +513,13 @@ public class CUE4ParseViewModel : ViewModel
             _virtualPathCount = Provider.LoadVirtualPaths(UserSettings.Default.OverridedGame[Game].GetVersion());
             if (_virtualPathCount > 0)
             {
-                FLogger.AppendInformation();
-                FLogger.AppendText($"{_virtualPathCount} virtual paths loaded", Constants.WHITE, true);
+                FLogger.Append(ELog.Information, () =>
+                    FLogger.Text($"{_virtualPathCount} virtual paths loaded", Constants.WHITE, true));
             }
             else
             {
-                FLogger.AppendWarning();
-                FLogger.AppendText("Could not load virtual paths, plugin manifest may not exist", Constants.WHITE, true);
+                FLogger.Append(ELog.Warning, () =>
+                    FLogger.Text("Could not load virtual paths, plugin manifest may not exist", Constants.WHITE, true));
             }
         });
     }
@@ -754,8 +755,8 @@ public class CUE4ParseViewModel : ViewModel
             case "ufont":
             case "otf":
             case "ttf":
-                FLogger.AppendWarning();
-                FLogger.AppendText($"Export '{fileName}' raw data and change its extension if you want it to be an installable font file", Constants.WHITE, true);
+                FLogger.Append(ELog.Warning, () =>
+                    FLogger.Text($"Export '{fileName}' raw data and change its extension if you want it to be an installable font file", Constants.WHITE, true));
                 break;
             case "ushaderbytecode":
             case "ushadercode":
@@ -770,8 +771,8 @@ public class CUE4ParseViewModel : ViewModel
             }
             default:
             {
-                FLogger.AppendWarning();
-                FLogger.AppendText($"The package '{fileName}' is of an unknown type.", Constants.WHITE, true);
+                FLogger.Append(ELog.Warning, () =>
+                    FLogger.Text($"The package '{fileName}' is of an unknown type.", Constants.WHITE, true));
                 break;
             }
         }
@@ -934,15 +935,16 @@ public class CUE4ParseViewModel : ViewModel
         if (toSave.TryWriteToDir(toSaveDirectory, out var label, out var savedFilePath))
         {
             Log.Information("Successfully saved {FilePath}", savedFilePath);
-            FLogger.AppendInformation();
-            FLogger.AppendText("Successfully saved ", Constants.WHITE);
-            FLogger.AppendLink(label, savedFilePath, true);
+            FLogger.Append(ELog.Information, () =>
+            {
+                FLogger.Text("Successfully saved ", Constants.WHITE);
+                FLogger.Link(label, savedFilePath, true);
+            });
         }
         else
         {
-            Log.Warning("{FileName} could not be saved", export.Name);
-            FLogger.AppendWarning();
-            FLogger.AppendText($"Could not save '{export.Name}'", Constants.WHITE, true);
+            Log.Error("{FileName} could not be saved", export.Name);
+            FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{export.Name}'", Constants.WHITE, true));
         }
     }
 
@@ -966,19 +968,18 @@ public class CUE4ParseViewModel : ViewModel
             Log.Information("{FileName} successfully exported", fileName);
             if (updateUi)
             {
-                FLogger.AppendInformation();
-                FLogger.AppendText("Successfully exported ", Constants.WHITE);
-                FLogger.AppendLink(fileName, path, true);
+                FLogger.Append(ELog.Information, () =>
+                {
+                    FLogger.Text("Successfully exported ", Constants.WHITE);
+                    FLogger.Link(fileName, path, true);
+                });
             }
         }
         else
         {
             Log.Error("{FileName} could not be exported", fileName);
             if (updateUi)
-            {
-                FLogger.AppendError();
-                FLogger.AppendText($"Could not export '{fileName}'", Constants.WHITE, true);
-            }
+                FLogger.Append(ELog.Error, () => FLogger.Text($"Could not export '{fileName}'", Constants.WHITE, true));
         }
     }
 

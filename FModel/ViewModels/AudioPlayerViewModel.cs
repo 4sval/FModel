@@ -328,15 +328,16 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         if (File.Exists(path))
         {
             Log.Information("{FileName} successfully saved", fileToSave.FileName);
-            FLogger.AppendInformation();
-            FLogger.AppendText("Successfully saved ", Constants.WHITE);
-            FLogger.AppendLink(fileToSave.FileName, path, true);
+            FLogger.Append(ELog.Information, () =>
+            {
+                FLogger.Text("Successfully saved ", Constants.WHITE);
+                FLogger.Link(fileToSave.FileName, path, true);
+            });
         }
         else
         {
             Log.Error("{FileName} could not be saved", fileToSave.FileName);
-            FLogger.AppendError();
-            FLogger.AppendText($"Could not save '{fileToSave.FileName}'", Constants.WHITE, true);
+            FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{fileToSave.FileName}'", Constants.WHITE, true));
         }
     }
 

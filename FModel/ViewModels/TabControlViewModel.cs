@@ -318,19 +318,18 @@ public class TabItem : ViewModel
             Log.Information("{FileName} successfully saved", fileName);
             if (updateUi)
             {
-                FLogger.AppendInformation();
-                FLogger.AppendText("Successfully saved ", Constants.WHITE);
-                FLogger.AppendLink(fileName, path, true);
+                FLogger.Append(ELog.Information, () =>
+                {
+                    FLogger.Text("Successfully saved ", Constants.WHITE);
+                    FLogger.Link(fileName, path, true);
+                });
             }
         }
         else
         {
             Log.Error("{FileName} could not be saved", fileName);
             if (updateUi)
-            {
-                FLogger.AppendError();
-                FLogger.AppendText($"Could not save '{fileName}'", Constants.WHITE, true);
-            }
+                FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{fileName}'", Constants.WHITE, true));
         }
     }
 }

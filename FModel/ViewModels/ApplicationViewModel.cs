@@ -175,8 +175,7 @@ public class ApplicationViewModel : ViewModel
         }
         else
         {
-            FLogger.AppendError();
-            FLogger.AppendText("Could not download VgmStream", Constants.WHITE, true);
+            FLogger.Append(ELog.Error, () => FLogger.Text("Could not download VgmStream", Constants.WHITE, true));
         }
     }
 
@@ -216,8 +215,7 @@ public class ApplicationViewModel : ViewModel
         await ApplicationService.ApiEndpointView.DownloadFileAsync("https://cdn.fmodel.app/d/configurations/imgui.ini", imgui);
         if (new FileInfo(imgui).Length == 0)
         {
-            FLogger.AppendError();
-            FLogger.AppendText("Could not download ImGui settings", Constants.WHITE, true);
+            FLogger.Append(ELog.Error, () => FLogger.Text("Could not download ImGui settings", Constants.WHITE, true));
         }
     }
 }

@@ -105,34 +105,36 @@ public class ThreadWorkerViewModel : ViewModel
 
                     Log.Error("{Exception}", e);
 
-                    FLogger.AppendError();
-                    if ((e.InnerException ?? e) is { TargetSite.DeclaringType: not null } exception)
+                    FLogger.Append(ELog.Error, () =>
                     {
-                        if (exception.TargetSite.ToString() == "CUE4Parse.FileProvider.GameFile get_Item(System.String)")
+                        if ((e.InnerException ?? e) is { TargetSite.DeclaringType: not null } exception)
                         {
-                            FLogger.AppendText(e.Message, Constants.WHITE, true);
-                        }
-                        else
-                        {
-                            var t = exception.GetType();
-                            FLogger.AppendText(t.Namespace + _dot, Constants.GRAY);
-                            FLogger.AppendText(t.Name, Constants.WHITE);
-                            FLogger.AppendText(_colon + " ", Constants.GRAY);
-                            FLogger.AppendText(exception.Message, Constants.RED, true);
-
-                            FLogger.AppendText(_at, _gray);
-                            FLogger.AppendText(exception.TargetSite.DeclaringType.FullName + _dot, Constants.GRAY);
-                            FLogger.AppendText(exception.TargetSite.Name, Constants.YELLOW);
-
-                            var p = exception.TargetSite.GetParameters();
-                            var parameters = new string[p.Length];
-                            for (int i = 0; i < parameters.Length; i++)
+                            if (exception.TargetSite.ToString() == "CUE4Parse.FileProvider.GameFile get_Item(System.String)")
                             {
-                                parameters[i] = p[i].ParameterType.Name + " " + p[i].Name;
+                                FLogger.Text(e.Message, Constants.WHITE, true);
                             }
-                            FLogger.AppendText("(" + string.Join(", ", parameters) + ")", Constants.GRAY, true);
+                            else
+                            {
+                                var t = exception.GetType();
+                                FLogger.Text(t.Namespace + _dot, Constants.GRAY);
+                                FLogger.Text(t.Name, Constants.WHITE);
+                                FLogger.Text(_colon + " ", Constants.GRAY);
+                                FLogger.Text(exception.Message, Constants.RED, true);
+
+                                FLogger.Text(_at, _gray);
+                                FLogger.Text(exception.TargetSite.DeclaringType.FullName + _dot, Constants.GRAY);
+                                FLogger.Text(exception.TargetSite.Name, Constants.YELLOW);
+
+                                var p = exception.TargetSite.GetParameters();
+                                var parameters = new string[p.Length];
+                                for (int i = 0; i < parameters.Length; i++)
+                                {
+                                    parameters[i] = p[i].ParameterType.Name + " " + p[i].Name;
+                                }
+                                FLogger.Text("(" + string.Join(", ", parameters) + ")", Constants.GRAY, true);
+                            }
                         }
-                    }
+                    });
                     return;
                 }
             }

@@ -177,9 +177,11 @@ public partial class MainWindow
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExportFolder(cancellationToken, folder); });
-            FLogger.AppendInformation();
-            FLogger.AppendText("Successfully exported ", Constants.WHITE);
-            FLogger.AppendLink(folder.PathAtThisPoint, UserSettings.Default.RawDataDirectory, true);
+            FLogger.Append(ELog.Information, () =>
+            {
+                FLogger.Text("Successfully exported ", Constants.WHITE);
+                FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.RawDataDirectory, true);
+            });
         }
     }
 
@@ -188,9 +190,11 @@ public partial class MainWindow
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.SaveFolder(cancellationToken, folder); });
-            FLogger.AppendInformation();
-            FLogger.AppendText("Successfully saved ", Constants.WHITE);
-            FLogger.AppendLink(folder.PathAtThisPoint, UserSettings.Default.PropertiesDirectory, true);
+            FLogger.Append(ELog.Information, () =>
+            {
+                FLogger.Text("Successfully saved ", Constants.WHITE);
+                FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.PropertiesDirectory, true);
+            });
         }
     }
 
@@ -199,9 +203,11 @@ public partial class MainWindow
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.TextureFolder(cancellationToken, folder); });
-            FLogger.AppendInformation();
-            FLogger.AppendText("Successfully saved ", Constants.WHITE);
-            FLogger.AppendLink(folder.PathAtThisPoint, UserSettings.Default.TextureDirectory, true);
+            FLogger.Append(ELog.Information, () =>
+            {
+                FLogger.Text("Successfully saved ", Constants.WHITE);
+                FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.TextureDirectory, true);
+            });
         }
     }
 
@@ -226,8 +232,8 @@ public partial class MainWindow
         if (AssetsFolderName.SelectedItem is not TreeItem folder) return;
 
         _applicationView.CustomDirectories.Add(new CustomDirectory(folder.Header, folder.PathAtThisPoint));
-        FLogger.AppendInformation();
-        FLogger.AppendText($"Successfully saved '{folder.PathAtThisPoint}' as a new custom directory", Constants.WHITE, true);
+        FLogger.Append(ELog.Information, () =>
+            FLogger.Text($"Successfully saved '{folder.PathAtThisPoint}' as a new custom directory", Constants.WHITE, true));
     }
 
     private void OnCopyDirectoryPathClick(object sender, RoutedEventArgs e)
