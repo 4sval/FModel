@@ -31,6 +31,7 @@ using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
+using CUE4Parse.FileProvider.Objects;
 using EpicManifestParser.Objects;
 using FModel.Creator;
 using FModel.Extensions;
@@ -428,7 +429,7 @@ public class CUE4ParseViewModel : ViewModel
     }
 
     private bool _cvaVerifDone { get; set; }
-    public void VerifyCva()
+    public void VerifyConsoleVariables()
     {
         if (_cvaVerifDone) return;
         _cvaVerifDone = true;
@@ -443,14 +444,54 @@ public class CUE4ParseViewModel : ViewModel
     }
 
     private int _vfcCount { get; set; }
-    public void VerifyVfc()
+    public void VerifyVirtualCache()
     {
         if (_vfcCount > 0) return;
 
         _vfcCount = Provider.LoadVirtualCache();
         if (_vfcCount > 0)
-            FLogger.Append(ELog.Information, () =>
-                FLogger.Text($"VFC loaded {_vfcCount} cached packages", Constants.WHITE, true));
+            FLogger.Append(ELog.Information,
+                () => FLogger.Text($"{_vfcCount} cached packages loaded", Constants.WHITE, true));
+    }
+
+    public void VerifyContentBuildManifest()
+    {
+        if (!Provider.GameName.Equals("fortnitegame", StringComparison.OrdinalIgnoreCase)) return;
+
+        var persistentDownloadDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "FortniteGame/Saved/PersistentDownloadDir");
+        if (!Directory.Exists(persistentDownloadDir)) return;
+
+        var cachedManifest = new DirectoryInfo(Path.Combine(persistentDownloadDir, "ManifestCache")).GetFiles("*.manifest");
+        if (cachedManifest.Length <= 0)
+            return;
+
+        var manifest = new Manifest(File.ReadAllBytes(cachedManifest[0].FullName), new ManifestOptions
+        {
+            ChunkBaseUri = new Uri("http://epicgames-download1.akamaized.net/Builds/Fortnite/Content/CloudDir/ChunksV4/", UriKind.Absolute),
+            ChunkCacheDirectory = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"))
+        });
+
+        var onDemandFiles = new Dictionary<string, GameFile>();
+        foreach (var fileManifest in manifest.FileManifests)
+        {
+            if (Provider.Files.TryGetValue(fileManifest.Name, out _)) continue;
+
+            var onDemandFile = new StreamedGameFile(fileManifest.Name, fileManifest.GetStream(), Provider.Versions);
+            if (Provider.IsCaseInsensitive) onDemandFiles[onDemandFile.Path.ToLowerInvariant()] = onDemandFile;
+            else onDemandFiles[onDemandFile.Path] = onDemandFile;
+        }
+
+        (Provider.Files as FileProviderDictionary)?.AddFiles(onDemandFiles);
+        if (onDemandFiles.Count > 0)
+            FLogger.Append(ELog.Information,
+                () => FLogger.Text($"{onDemandFiles.Count} streamed packages loaded", Constants.WHITE, true));
+#if DEBUG
+
+        var missing = manifest.FileManifests.Count - onDemandFiles.Count;
+        if (missing != _vfcCount) // false positive if Provider.LoadVirtualCache takes too much time???
+            FLogger.Append(ELog.Warning,
+                () => FLogger.Text($"{missing} packages went missing while loading VFC & CBM", Constants.WHITE, true));
+#endif
     }
 
     public int LocalizedResourcesCount { get; set; }
