@@ -69,9 +69,9 @@ public partial class MainWindow
         await _applicationView.CUE4Parse.InitInformation();
 #endif
         await Task.WhenAll(
-            Task.Run(() => _applicationView.CUE4Parse.VerifyConsoleVariables()),
-            Task.Run(() => _applicationView.CUE4Parse.VerifyVirtualCache()),
-            Task.Run(() => _applicationView.CUE4Parse.VerifyContentBuildManifest()),
+            _applicationView.CUE4Parse.VerifyConsoleVariables(),
+            _applicationView.CUE4Parse.VerifyVirtualCache(),
+            _applicationView.CUE4Parse.VerifyContentBuildManifest(),
             _applicationView.CUE4Parse.InitMappings(),
             _applicationView.InitImGuiSettings(newOrUpdated),
             _applicationView.InitVgmStream(),
@@ -84,9 +84,9 @@ public partial class MainWindow
         ).ConfigureAwait(false);
 
 #if DEBUG
-        await _threadWorkerView.Begin(cancellationToken =>
-            _applicationView.CUE4Parse.Extract(cancellationToken,
-                "fortnitegame/Content/Characters/Player/Female/Medium/Bodies/F_MED_Ballerina/Meshes/F_MED_Ballerina.uasset"));
+        // await _threadWorkerView.Begin(cancellationToken =>
+        //     _applicationView.CUE4Parse.Extract(cancellationToken,
+        //         "fortnitegame/Content/Characters/Player/Female/Medium/Bodies/F_MED_Ballerina/Meshes/F_MED_Ballerina.uasset"));
 #endif
     }
 

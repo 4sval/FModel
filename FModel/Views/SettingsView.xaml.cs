@@ -49,6 +49,8 @@ public partial class SettingsView
             {
                 case SettingsOut.ReloadLocres:
                     _applicationView.CUE4Parse.LocalizedResourcesCount = 0;
+                    _applicationView.CUE4Parse.LocalResourcesDone = false;
+                    _applicationView.CUE4Parse.HotfixedResourcesDone = false;
                     await _applicationView.CUE4Parse.LoadLocalizedResources();
                     break;
                 case SettingsOut.ReloadMappings:

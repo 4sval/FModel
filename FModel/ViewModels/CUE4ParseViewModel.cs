@@ -120,6 +120,7 @@ public class CUE4ParseViewModel : ViewModel
     public AssetsFolderViewModel AssetsFolder { get; }
     public SearchViewModel SearchVm { get; }
     public TabControlViewModel TabControl { get; }
+    public ConfigIni BuildInfo { get; }
 
     public CUE4ParseViewModel(string gameDirectory)
     {
@@ -204,6 +205,7 @@ public class CUE4ParseViewModel : ViewModel
         AssetsFolder = new AssetsFolderViewModel();
         SearchVm = new SearchViewModel();
         TabControl = new TabControlViewModel();
+        BuildInfo = new ConfigIni(nameof(BuildInfo));
     }
 
     public async Task Initialize()
@@ -244,18 +246,19 @@ public class CUE4ParseViewModel : ViewModel
 
                             foreach (var fileManifest in manifest.FileManifests)
                             {
+                                if (fileManifest.Name.Equals("Cloud/BuildInfo.ini", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    BuildInfo.Read(new StreamReader(fileManifest.GetStream()));
+                                    continue;
+                                }
                                 if (!_fnLive.IsMatch(fileManifest.Name)) continue;
 
-                                //var casStream = manifest.FileManifests.FirstOrDefault(x => x.Name.Equals(fileManifest.Name.Replace(".utoc", ".ucas")));
-                                //p.Initialize(fileManifest.Name, new[] {fileManifest.GetStream(), casStream.GetStream()});
                                 p.Initialize(fileManifest.Name, new Stream[] { fileManifest.GetStream() }
                                     , it => new FStreamArchive(it, manifest.FileManifests.First(x => x.Name.Equals(it)).GetStream(), p.Versions));
                             }
 
                             FLogger.Append(ELog.Information, () =>
                                 FLogger.Text($"Fortnite has been loaded successfully in {manifest.ParseTime.TotalMilliseconds}ms", Constants.WHITE, true));
-                            FLogger.Append(ELog.Warning, () =>
-                                FLogger.Text($"Mappings must match '{manifest.BuildVersion}' in order to avoid errors", Constants.WHITE, true));
                             break;
                         }
                         case "ValorantLive":
@@ -280,6 +283,9 @@ public class CUE4ParseViewModel : ViewModel
                     break;
                 case DefaultFileProvider d:
                     d.Initialize();
+
+                    var buildInfoPath = Path.Combine(UserSettings.Default.GameDirectory, "..\\..\\..\\Cloud\\BuildInfo.ini");
+                    if (File.Exists(buildInfoPath)) BuildInfo.Read(new StringReader(File.ReadAllText(buildInfoPath)));
                     break;
             }
 
@@ -429,108 +435,133 @@ public class CUE4ParseViewModel : ViewModel
     }
 
     private bool _cvaVerifDone { get; set; }
-    public void VerifyConsoleVariables()
+    public Task VerifyConsoleVariables()
     {
-        if (_cvaVerifDone) return;
-        _cvaVerifDone = true;
+        if (_cvaVerifDone)
+            return Task.CompletedTask;
 
-        var inst = new List<InstructionToken>();
-        Provider.DefaultEngine.FindPropertyInstructions("ConsoleVariables", "a.StripAdditiveRefPose", inst);
-        if (inst.Count > 0 && inst[0].Value.Equals("1"))
+        return Task.Run(() =>
         {
-            FLogger.Append(ELog.Warning, () =>
-                FLogger.Text("Additive animations have their reference pose stripped, which will lead to inaccurate preview and export", Constants.WHITE, true));
-        }
+            var inst = new List<InstructionToken>();
+            Provider.DefaultEngine.FindPropertyInstructions("ConsoleVariables", "a.StripAdditiveRefPose", inst);
+            if (inst.Count > 0 && inst[0].Value.Equals("1"))
+            {
+                FLogger.Append(ELog.Warning, () =>
+                    FLogger.Text("Additive animations have their reference pose stripped, which will lead to inaccurate preview and export", Constants.WHITE, true));
+            }
+            _cvaVerifDone = true;
+        });
     }
 
     private int _vfcCount { get; set; }
-    public void VerifyVirtualCache()
+    public Task VerifyVirtualCache()
     {
-        if (_vfcCount > 0) return;
-
-        _vfcCount = Provider.LoadVirtualCache();
         if (_vfcCount > 0)
-            FLogger.Append(ELog.Information,
-                () => FLogger.Text($"{_vfcCount} cached packages loaded", Constants.WHITE, true));
+            return Task.CompletedTask;
+
+        return Task.Run(() =>
+        {
+            _vfcCount = Provider.LoadVirtualCache();
+            if (_vfcCount > 0)
+                FLogger.Append(ELog.Information,
+                    () => FLogger.Text($"{_vfcCount} cached packages loaded", Constants.WHITE, true));
+        });
     }
 
-    public void VerifyContentBuildManifest()
+    public Task VerifyContentBuildManifest()
     {
-        if (!Provider.GameName.Equals("fortnitegame", StringComparison.OrdinalIgnoreCase)) return;
+        if (!Provider.GameName.Equals("fortnitegame", StringComparison.OrdinalIgnoreCase))
+            return Task.CompletedTask;
 
-        var persistentDownloadDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "FortniteGame/Saved/PersistentDownloadDir");
-        if (!Directory.Exists(persistentDownloadDir)) return;
-
-        var cachedManifest = new DirectoryInfo(Path.Combine(persistentDownloadDir, "ManifestCache")).GetFiles("*.manifest");
-        if (cachedManifest.Length <= 0)
-            return;
-
-        var manifest = new Manifest(File.ReadAllBytes(cachedManifest[0].FullName), new ManifestOptions
+        return Task.Run(() =>
         {
-            ChunkBaseUri = new Uri("http://epicgames-download1.akamaized.net/Builds/Fortnite/Content/CloudDir/ChunksV4/", UriKind.Absolute),
-            ChunkCacheDirectory = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"))
-        });
+            var inst = new List<InstructionToken>();
+            BuildInfo.FindPropertyInstructions("Content", "Label", inst);
+            if (inst.Count <= 0) return;
 
-        var onDemandFiles = new Dictionary<string, GameFile>();
-        foreach (var fileManifest in manifest.FileManifests)
-        {
-            if (Provider.Files.TryGetValue(fileManifest.Name, out _)) continue;
+            var manifestInfo = _apiEndpointView.EpicApi.GetContentBuildManifest(default, inst[0].Value);
+            var manifestDir = new DirectoryInfo(Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "FortniteGame/Saved/PersistentDownloadDir/ManifestCache"));
+            var manifestPath = Path.Combine(manifestDir.FullName, manifestInfo?.FileName ?? "");
 
-            var onDemandFile = new StreamedGameFile(fileManifest.Name, fileManifest.GetStream(), Provider.Versions);
-            if (Provider.IsCaseInsensitive) onDemandFiles[onDemandFile.Path.ToLowerInvariant()] = onDemandFile;
-            else onDemandFiles[onDemandFile.Path] = onDemandFile;
-        }
+            byte[] manifestData;
+            if (File.Exists(manifestPath))
+            {
+                manifestData = File.ReadAllBytes(manifestPath);
+            }
+            else if (manifestInfo != null)
+            {
+                manifestData = manifestInfo.DownloadManifestData();
+                File.WriteAllBytes(manifestPath, manifestData);
+            }
+            else if (manifestDir.Exists && manifestDir.GetFiles("*.manifest") is { Length: > 0} cachedManifests)
+            {
+                manifestData = File.ReadAllBytes(cachedManifests[0].FullName);
+            }
+            else return;
 
-        (Provider.Files as FileProviderDictionary)?.AddFiles(onDemandFiles);
-        if (onDemandFiles.Count > 0)
-            FLogger.Append(ELog.Information,
-                () => FLogger.Text($"{onDemandFiles.Count} streamed packages loaded", Constants.WHITE, true));
-#if DEBUG
+            var manifest = new Manifest(manifestData, new ManifestOptions
+            {
+                ChunkBaseUri = new Uri("http://epicgames-download1.akamaized.net/Builds/Fortnite/Content/CloudDir/ChunksV4/", UriKind.Absolute),
+                ChunkCacheDirectory = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"))
+            });
 
-        var missing = manifest.FileManifests.Count - onDemandFiles.Count;
-        if (missing != _vfcCount) // false positive if Provider.LoadVirtualCache takes too much time???
-            FLogger.Append(ELog.Warning,
-                () => FLogger.Text($"{missing} packages went missing while loading VFC & CBM", Constants.WHITE, true));
-#endif
+            var onDemandFiles = new Dictionary<string, GameFile>();
+            foreach (var fileManifest in manifest.FileManifests)
+            {
+                if (Provider.Files.TryGetValue(fileManifest.Name, out _)) continue;
+
+                var onDemandFile = new StreamedGameFile(fileManifest.Name, fileManifest.GetStream(), Provider.Versions);
+                if (Provider.IsCaseInsensitive) onDemandFiles[onDemandFile.Path.ToLowerInvariant()] = onDemandFile;
+                else onDemandFiles[onDemandFile.Path] = onDemandFile;
+            }
+
+            (Provider.Files as FileProviderDictionary)?.AddFiles(onDemandFiles);
+            if (onDemandFiles.Count > 0)
+                FLogger.Append(ELog.Information,
+                    () => FLogger.Text($"{onDemandFiles.Count} streamed packages loaded", Constants.WHITE, true));
+    #if DEBUG
+
+            var missing = manifest.FileManifests.Count - onDemandFiles.Count;
+            if (missing != _vfcCount) // false positive if Provider.LoadVirtualCache takes too much time???
+                FLogger.Append(ELog.Warning,
+                    () => FLogger.Text($"{missing} packages went missing while loading VFC & CBM", Constants.WHITE, true));
+    #endif
+            });
     }
 
     public int LocalizedResourcesCount { get; set; }
+    public bool LocalResourcesDone { get; set; }
+    public bool HotfixedResourcesDone { get; set; }
     public async Task LoadLocalizedResources()
     {
+        var snapshot = LocalizedResourcesCount;
         await Task.WhenAll(LoadGameLocalizedResources(), LoadHotfixedLocalizedResources()).ConfigureAwait(false);
-        if (LocalizedResourcesCount > 0)
+        if (snapshot != LocalizedResourcesCount)
         {
             FLogger.Append(ELog.Information, () =>
                 FLogger.Text($"{LocalizedResourcesCount} localized resources loaded for '{UserSettings.Default.AssetLanguage.GetDescription()}'", Constants.WHITE, true));
         }
-        else
-        {
-            FLogger.Append(ELog.Warning, () =>
-                FLogger.Text($"Could not load localized resources in '{UserSettings.Default.AssetLanguage.GetDescription()}', language may not exist", Constants.WHITE, true));
-        }
     }
-
-    private bool _localResourcesDone { get; set; }
     private Task LoadGameLocalizedResources()
     {
-        if (_localResourcesDone) return Task.CompletedTask;
+        if (LocalResourcesDone) return Task.CompletedTask;
         return Task.Run(() =>
         {
             LocalizedResourcesCount += Provider.LoadLocalization(UserSettings.Default.AssetLanguage);
-            _localResourcesDone = true;
+            LocalResourcesDone = true;
         });
     }
-
-    private bool _hotfixedResourcesDone { get; set; }
     private Task LoadHotfixedLocalizedResources()
     {
-        if (Game != FGame.FortniteGame || _hotfixedResourcesDone) return Task.CompletedTask;
+        if (!Provider.GameName.Equals("fortnitegame", StringComparison.OrdinalIgnoreCase) || HotfixedResourcesDone) return Task.CompletedTask;
         return Task.Run(() =>
         {
             var hotfixes = ApplicationService.ApiEndpointView.CentralApi.GetHotfixes(default, Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
             if (hotfixes == null) return;
 
-            _hotfixedResourcesDone = true;
+            HotfixedResourcesDone = true;
             foreach (var entries in hotfixes)
             {
                 if (!Provider.LocalizedResources.ContainsKey(entries.Key))
