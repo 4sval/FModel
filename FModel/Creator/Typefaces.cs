@@ -201,7 +201,7 @@ public class Typefaces
                 Description = OnTheFly(_SPELLBREAK_BASE_PATH + _MONTSERRAT_SEMIBOLD + _EXT);
                 break;
             }
-            case FGame.PandaGame:
+            case FGame.MultiVersus:
             {
                 DisplayName = OnTheFly(_PANDAGAME_BASE_PATH + language switch
                 {
