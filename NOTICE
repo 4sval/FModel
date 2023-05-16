@@ -18,7 +18,6 @@ This software includes material developed by the following third-party libraries
 - Serilog (https://github.com/serilog/serilog/blob/dev/LICENSE) - Copyright 2013-2015 Serilog Contributors. Licensed under the Apache License 2.0.
 - SixLabors.ImageSharp (https://github.com/SixLabors/ImageSharp/blob/main/LICENSE) - Copyright (c) Six Labors. Licensed under the Apache License 2.0.
 - SkiaSharp (https://github.com/mono/SkiaSharp/blob/main/LICENSE.md) - Copyright (c) 2015-2016 Xamarin, Inc. & 2017-2018 Microsoft Corporation. Licensed under the MIT License.
-- UAssetAPI (https://github.com/atenfyr/UAssetAPI/blob/master/LICENSE) - Copyright (c) 2023 Atenfyr. Licensed under the MIT License.
 
 ---------------------------------------------------------------------------
 

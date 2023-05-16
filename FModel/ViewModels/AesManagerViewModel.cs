@@ -108,7 +108,7 @@ public class AesManagerViewModel : ViewModel
         if (_cue4Parse.Game == FGame.Unknown && UserSettings.Default.ManualGames.ContainsKey(UserSettings.Default.GameDirectory))
             UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].AesKeys = _keysFromSettings;
         else UserSettings.Default.AesKeys[_cue4Parse.Game] = _keysFromSettings;
-        Log.Information("{@Json}", UserSettings.Default);
+        // Log.Information("{@Json}", UserSettings.Default);
     }
 
     private IEnumerable<FileItem> EnumerateAesKeys()

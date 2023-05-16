@@ -167,17 +167,6 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedTextureExportFormat, value);
     }
 
-    private bool _selectedReadScriptData;
-    public bool SelectedReadScriptData
-    {
-        get => _selectedReadScriptData;
-        set
-        {
-            SetProperty(ref _selectedReadScriptData, value);
-            ApplicationService.ApplicationView.CUE4Parse.Provider.ReadScriptData = value;
-        }
-    }
-
     public ReadOnlyObservableCollection<EUpdateMode> UpdateModes { get; private set; }
     public ObservableCollection<string> Presets { get; private set; }
     public ReadOnlyObservableCollection<EGame> UeGames { get; private set; }
@@ -219,7 +208,6 @@ public class SettingsViewModel : ViewModel
     private ELodFormat _lodExportFormatSnapshot;
     private EMaterialFormat _materialExportFormatSnapshot;
     private ETextureFormat _textureExportFormatSnapshot;
-    private bool _readScriptDataSnapshot;
 
     private bool _mappingsUpdate = false;
 
@@ -274,7 +262,6 @@ public class SettingsViewModel : ViewModel
         _lodExportFormatSnapshot = UserSettings.Default.LodExportFormat;
         _materialExportFormatSnapshot = UserSettings.Default.MaterialExportFormat;
         _textureExportFormatSnapshot = UserSettings.Default.TextureExportFormat;
-        _readScriptDataSnapshot = UserSettings.Default.ReadScriptData;
 
         SelectedUpdateMode = _updateModeSnapshot;
         SelectedPreset = _presetSnapshot;
@@ -291,7 +278,6 @@ public class SettingsViewModel : ViewModel
         SelectedLodExportFormat = _lodExportFormatSnapshot;
         SelectedMaterialExportFormat = _materialExportFormatSnapshot;
         SelectedTextureExportFormat = _textureExportFormatSnapshot;
-        SelectedReadScriptData = _readScriptDataSnapshot;
         SelectedAesReload = UserSettings.Default.AesReload;
         SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
 
@@ -408,7 +394,6 @@ public class SettingsViewModel : ViewModel
         UserSettings.Default.LodExportFormat = SelectedLodExportFormat;
         UserSettings.Default.MaterialExportFormat = SelectedMaterialExportFormat;
         UserSettings.Default.TextureExportFormat = SelectedTextureExportFormat;
-        UserSettings.Default.ReadScriptData = SelectedReadScriptData;
         UserSettings.Default.AesReload = SelectedAesReload;
         UserSettings.Default.DiscordRpc = SelectedDiscordRpc;
 

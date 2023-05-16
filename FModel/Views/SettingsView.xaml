@@ -210,19 +210,15 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="14" Grid.Column="0" Text="Serialize Script Bytecode" VerticalAlignment="Center" Margin="0 0 0 5"
-                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" />
-                    <CheckBox Grid.Row="14" Grid.Column="2" Margin="0 5 0 10"
-                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
-                              Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding SettingsView.SelectedReadScriptData , Mode=TwoWay}" />
+                    <TextBlock Grid.Row="14" Grid.Column="0" Text="Serialize Script Bytecode" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="14" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                              IsChecked="{Binding ReadScriptData, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"/>
 
                     <TextBlock Grid.Row="15" Grid.Column="0" Text="Keep Directory Structure" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Auto-save packages following their game directory" />
                     <CheckBox Grid.Row="15" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding KeepDirectoryStructure, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"/>
 
-                    <TextBlock Grid.Row="16" Grid.Column="0" Text="Local Mapping File" VerticalAlignment="Center" Margin="0 0 0 5"
-                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" />
+                    <TextBlock Grid.Row="16" Grid.Column="0" Text="Local Mapping File" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <CheckBox Grid.Row="16" Grid.Column="2" Margin="0 5 0 10"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                               Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"

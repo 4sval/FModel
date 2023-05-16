@@ -61,6 +61,8 @@ public partial class SettingsView
                     break;
             }
         }
+
+        _applicationView.CUE4Parse.Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
     }
 
     private void OnBrowseOutput(object sender, RoutedEventArgs e)

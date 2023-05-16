@@ -41,7 +41,6 @@ public partial class App
         {
             UserSettings.Default = JsonConvert.DeserializeObject<UserSettings>(
                 File.ReadAllText(UserSettings.FilePath), JsonNetSerializer.SerializerSettings);
-            ApplicationService.ApplicationView.CUE4Parse.Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
         }
         catch
         {
