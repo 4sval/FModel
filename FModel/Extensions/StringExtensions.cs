@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 namespace FModel.Extensions;
 
@@ -107,6 +108,37 @@ public static class StringExtensions
             lineNum++;
             if (line.Equals(lineToFind, StringComparison.OrdinalIgnoreCase))
                 return lineNum;
+        }
+
+        return 1;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int GetKismetLineNumber(this string s, string input)
+    {
+        var match = Regex.Match(input, @"^(.+)\[(\d+)\]$");
+        var name = match.Groups[1].Value;
+        int index = int.Parse(match.Groups[2].Value);
+        var lineToFind = $"    \"Name\": \"{name}\",";
+        var offset = $"\"StatementIndex\": {index}";
+        using var reader = new StringReader(s);
+        var lineNum = 0;
+        string line;
+
+        while ((line = reader.ReadLine()) != null)
+        {
+            lineNum++;
+            if (line.Equals(lineToFind, StringComparison.OrdinalIgnoreCase))
+            {
+                var objectLine = lineNum;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    lineNum++;
+                    if (line.Contains(offset, StringComparison.OrdinalIgnoreCase))
+                        return lineNum;
+                }
+                return objectLine;
+            }
         }
 
         return 1;

@@ -226,6 +226,13 @@ namespace FModel.Settings
             set => SetProperty(ref _imageMergerMargin, value);
         }
 
+        private bool _readScriptData;
+        public bool ReadScriptData
+        {
+            get => _readScriptData;
+            set => SetProperty(ref _readScriptData, value);
+        }
+
         // <gameDirectory as string, settings>
         // can't refactor to use this data layout for everything
         // because it will wipe old user settings that relies on FGame
