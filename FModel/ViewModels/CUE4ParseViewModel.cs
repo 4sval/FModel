@@ -56,9 +56,10 @@ public class CUE4ParseViewModel : ViewModel
 {
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
     private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
-    private readonly Regex _package = new(@"^(?!global|pakchunk.+optional\-).+(pak|utoc)$", // should be universal
+    private const string _ARCHIVE_NAME_REGEX = @"(?!global|pakchunk.+(optional|ondemand)\-).+(pak|utoc)";
+    private readonly Regex _archive = new($"^{_ARCHIVE_NAME_REGEX}$", // should be universal
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-    private readonly Regex _fnLive = new(@"^FortniteGame(/|\\)Content(/|\\)Paks(/|\\)(pakchunk(?:0|10.*|20.*|\w+)-WindowsClient|global)\.(pak|utoc)$",
+    private readonly Regex _fnLive = new($@"^FortniteGame(/|\\)Content(/|\\)Paks(/|\\){_ARCHIVE_NAME_REGEX.Replace("(optional|ondemand)", "optional")}$",
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private FGame _game;
@@ -293,7 +294,7 @@ public class CUE4ParseViewModel : ViewModel
             foreach (var vfs in Provider.UnloadedVfs) // push files from the provider to the ui
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                if (vfs.Length <= 365 || !_package.IsMatch(vfs.Name)) continue;
+                if (vfs.Length <= 365 || !_archive.IsMatch(vfs.Name)) continue;
 
                 GameDirectory.Add(vfs);
             }
@@ -457,7 +458,7 @@ public class CUE4ParseViewModel : ViewModel
     private int _vfcCount { get; set; }
     public Task VerifyVirtualCache()
     {
-        if (_vfcCount > 0)
+        if (Provider is StreamedFileProvider { LiveGame: "FortniteLive" } || _vfcCount > 0)
             return Task.CompletedTask;
 
         return Task.Run(() =>
@@ -471,7 +472,7 @@ public class CUE4ParseViewModel : ViewModel
 
     public Task VerifyContentBuildManifest()
     {
-        if (!Provider.GameName.Equals("fortnitegame", StringComparison.OrdinalIgnoreCase))
+        if (Provider is not StreamedFileProvider { LiveGame: "FortniteLive" })
             return Task.CompletedTask;
 
         return Task.Run(() =>
@@ -525,9 +526,9 @@ public class CUE4ParseViewModel : ViewModel
     #if DEBUG
 
             var missing = manifest.FileManifests.Count - onDemandFiles.Count;
-            if (missing != _vfcCount) // false positive if Provider.LoadVirtualCache takes too much time???
-                FLogger.Append(ELog.Warning,
-                    () => FLogger.Text($"{missing} packages went missing while loading VFC & CBM", Constants.WHITE, true));
+            if (missing > 0)
+                FLogger.Append(ELog.Debug,
+                    () => FLogger.Text($"{missing} packages were already loaded before the CBM", Constants.WHITE, true));
     #endif
             });
     }
