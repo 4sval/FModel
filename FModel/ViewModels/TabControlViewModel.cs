@@ -260,6 +260,7 @@ public class TabItem : ViewModel
         {
             Document ??= new TextDocument();
             Document.Text = text;
+            Document.UndoStack.ClearAll();
 
             if (save) SaveProperty(updateUi);
         });
