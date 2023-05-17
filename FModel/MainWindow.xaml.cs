@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -193,8 +194,8 @@ public partial class MainWindow
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.SaveFolder(cancellationToken, folder); });
             FLogger.Append(ELog.Information, () =>
             {
-                FLogger.Text("Successfully saved ", Constants.WHITE);
-                FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.PropertiesDirectory, true);
+                FLogger.Text("Properties successfully saved from ", Constants.WHITE);
+                FLogger.Link(folder.PathAtThisPoint, System.IO.Path.Combine(UserSettings.Default.PropertiesDirectory, folder.PathAtThisPoint), true);
             });
         }
     }

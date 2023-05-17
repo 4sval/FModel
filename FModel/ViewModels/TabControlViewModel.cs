@@ -314,23 +314,25 @@ public class TabItem : ViewModel
 
     private void SaveCheck(string path, string fileName, bool updateUi)
     {
+        string internalPath = string.Concat(Directory, fileName);
+
         if (File.Exists(path))
         {
-            Log.Information("{FileName} successfully saved", fileName);
+            Log.Information("{FileName} successfully saved", internalPath);
             if (updateUi)
             {
                 FLogger.Append(ELog.Information, () =>
                 {
                     FLogger.Text("Successfully saved ", Constants.WHITE);
-                    FLogger.Link(fileName, path, true);
+                    FLogger.Link(internalPath, path, true);
                 });
             }
         }
         else
         {
-            Log.Error("{FileName} could not be saved", fileName);
+            Log.Error("{FileName} could not be saved", internalPath);
             if (updateUi)
-                FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{fileName}'", Constants.WHITE, true));
+                FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{internalPath}'", Constants.WHITE, true));
         }
     }
 }
