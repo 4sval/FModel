@@ -349,3 +349,5 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+/FModel/FModel.csproj
+/FModel/FModel.sln
