@@ -56,10 +56,9 @@ public class CUE4ParseViewModel : ViewModel
 {
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
     private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
-    private const string _ARCHIVE_NAME_REGEX = @"(?!global|pakchunk.+(optional|ondemand)\-).+(pak|utoc)";
-    private readonly Regex _archive = new($"^{_ARCHIVE_NAME_REGEX}$", // should be universal
+    private readonly Regex _hiddenArchives = new(@"^(?!global|pakchunk.+(optional|ondemand)\-).+(pak|utoc)$", // should be universal
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-    private readonly Regex _fnLive = new($@"^FortniteGame(/|\\)Content(/|\\)Paks(/|\\){_ARCHIVE_NAME_REGEX.Replace("(optional|ondemand)", "optional")}$",
+    private readonly Regex _fnLive = new(@"^FortniteGame(/|\\)Content(/|\\)Paks(/|\\)",
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private FGame _game;
@@ -294,7 +293,7 @@ public class CUE4ParseViewModel : ViewModel
             foreach (var vfs in Provider.UnloadedVfs) // push files from the provider to the ui
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                if (vfs.Length <= 365 || !_archive.IsMatch(vfs.Name)) continue;
+                if (vfs.Length <= 365 || !_hiddenArchives.IsMatch(vfs.Name)) continue;
 
                 GameDirectory.Add(vfs);
             }
@@ -472,9 +471,17 @@ public class CUE4ParseViewModel : ViewModel
 
     public Task VerifyContentBuildManifest()
     {
-        if (Provider is not StreamedFileProvider { LiveGame: "FortniteLive" })
+        if (Provider is not DefaultFileProvider || !Provider.GameName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase))
             return Task.CompletedTask;
 
+        var persistentDownloadDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "FortniteGame/Saved/PersistentDownloadDir");
+        var vfcMetadata = Path.Combine(persistentDownloadDir, "VFC", "vfc.meta");
+        if (!File.Exists(vfcMetadata))
+            return Task.CompletedTask;
+
+        // load if local fortnite with ondemand disabled
+        // VFC folder is created at launch if ondemand
+        // VFC folder is deleted at launch if not ondemand anymore
         return Task.Run(() =>
         {
             var inst = new List<InstructionToken>();
@@ -482,9 +489,7 @@ public class CUE4ParseViewModel : ViewModel
             if (inst.Count <= 0) return;
 
             var manifestInfo = _apiEndpointView.EpicApi.GetContentBuildManifest(default, inst[0].Value);
-            var manifestDir = new DirectoryInfo(Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "FortniteGame/Saved/PersistentDownloadDir/ManifestCache"));
+            var manifestDir = new DirectoryInfo(Path.Combine(persistentDownloadDir, "ManifestCache"));
             var manifestPath = Path.Combine(manifestDir.FullName, manifestInfo?.FileName ?? "");
 
             byte[] manifestData;
@@ -523,14 +528,14 @@ public class CUE4ParseViewModel : ViewModel
             if (onDemandFiles.Count > 0)
                 FLogger.Append(ELog.Information,
                     () => FLogger.Text($"{onDemandFiles.Count} streamed packages loaded", Constants.WHITE, true));
-    #if DEBUG
+#if DEBUG
 
             var missing = manifest.FileManifests.Count - onDemandFiles.Count;
             if (missing > 0)
                 FLogger.Append(ELog.Debug,
-                    () => FLogger.Text($"{missing} packages were already loaded before the CBM", Constants.WHITE, true));
-    #endif
-            });
+                    () => FLogger.Text($"{missing} packages were already loaded by regular archives", Constants.WHITE, true));
+#endif
+        });
     }
 
     public int LocalizedResourcesCount { get; set; }
