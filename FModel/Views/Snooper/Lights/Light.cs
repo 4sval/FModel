@@ -30,20 +30,37 @@ public abstract class Light : IDisposable
     };
     public readonly FGuid Model;
     public readonly Texture Icon;
-    public readonly Transform Transform;
+    public Transform Transform;
 
     public Vector4 Color;
     public float Intensity;
     public bool IsSetup;
 
-    public Light(FGuid model, Texture icon, UObject parent, UObject light, FVector position)
+    public Light(Texture icon, UObject light)
     {
-        var p = light.GetOrDefault("RelativeLocation", parent.GetOrDefault("RelativeLocation", FVector.ZeroVector));
-        var r = light.GetOrDefault("RelativeRotation", parent.GetOrDefault("RelativeRotation", FRotator.ZeroRotator));
+        Transform = new Transform
+        {
+            Position = light.GetOrDefault("RelativeLocation", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO,
+            Rotation = light.GetOrDefault("RelativeRotation", FRotator.ZeroRotator).Quaternion(),
+            Scale = light.GetOrDefault("RelativeScale3D", FVector.OneVector)
+        };
 
-        Transform = Transform.Identity;
-        Transform.Scale = new FVector(0.2f);
-        Transform.Position = position + r.RotateVector(p.ToMapVector()) * Constants.SCALE_DOWN_RATIO;
+        Model = new FGuid((uint) light.GetFullName().GetHashCode());
+        Icon = icon;
+
+        Color = light.GetOrDefault("LightColor", new FColor(0xFF, 0xFF, 0xFF, 0xFF));
+        Intensity = light.GetOrDefault("Intensity", 1.0f);
+    }
+
+    public Light(FGuid model, Texture icon, UObject parent, UObject light, Transform transform)
+    {
+        Transform = new Transform
+        {
+            Relation = transform.Matrix,
+            Position = light.GetOrDefault("RelativeLocation", parent.GetOrDefault("RelativeLocation", FVector.ZeroVector)) * Constants.SCALE_DOWN_RATIO,
+            Rotation = light.GetOrDefault("RelativeRotation", parent.GetOrDefault("RelativeRotation", FRotator.ZeroRotator)).Quaternion(),
+            Scale = light.GetOrDefault("RelativeScale3D", parent.GetOrDefault("RelativeScale3D", FVector.OneVector))
+        };
 
         Model = model;
         Icon = icon;
@@ -57,6 +74,13 @@ public abstract class Light : IDisposable
         var instanceMatrix = new [] {Transform.Matrix};
         _matrixVbo = new BufferObject<Matrix4x4>(instanceMatrix, BufferTarget.ArrayBuffer);
         _vao.BindInstancing(); // VertexAttributePointer
+    }
+
+    public void UpdateMatrices()
+    {
+        _matrixVbo.Bind();
+        _matrixVbo.Update(0, Transform.Matrix);
+        _matrixVbo.Unbind();
     }
 
     public void Setup()
@@ -75,6 +99,8 @@ public abstract class Light : IDisposable
 
     public void Render(Shader shader)
     {
+        GL.Disable(EnableCap.CullFace);
+
         _vao.Bind();
 
         Icon?.Bind(TextureUnit.Texture0);
@@ -82,12 +108,14 @@ public abstract class Light : IDisposable
         shader.SetUniform("uColor", Color);
 
         GL.DrawArrays(PrimitiveType.Triangles, 0, Indices.Length);
+
+        GL.Enable(EnableCap.CullFace);
     }
 
     public virtual void Render(int i, Shader shader)
     {
         shader.SetUniform($"uLights[{i}].Base.Color", Color);
-        shader.SetUniform($"uLights[{i}].Base.Position", Transform.Position);
+        shader.SetUniform($"uLights[{i}].Base.Position", Transform.Matrix.Translation);
         shader.SetUniform($"uLights[{i}].Base.Intensity", Intensity);
     }
 

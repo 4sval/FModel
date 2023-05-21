@@ -29,6 +29,7 @@ public class GameSelectorViewModel : ViewModel
         public EGame OverridedGame { get; set; }
         public List<FCustomVersion> OverridedCustomVersions { get; set; }
         public Dictionary<string, bool> OverridedOptions { get; set; }
+        public Dictionary<string, KeyValuePair<string, string>> OverridedMapStructTypes { get; set; }
         public IList<CustomDirectory> CustomDirectories { get; set; }
     }
 
@@ -74,6 +75,7 @@ public class GameSelectorViewModel : ViewModel
             OverridedGame = EGame.GAME_UE4_LATEST,
             OverridedCustomVersions = null,
             OverridedOptions = null,
+            OverridedMapStructTypes = null,
             CustomDirectories = new List<CustomDirectory>()
         };
 
@@ -116,6 +118,7 @@ public class GameSelectorViewModel : ViewModel
         yield return GetMojangGame("MinecraftDungeons", "\\dungeons\\dungeons\\Dungeons\\Content\\Paks");
         yield return GetSteamGame(381210, "\\DeadByDaylight\\Content\\Paks"); // Dead By Daylight
         yield return GetSteamGame(578080, "\\TslGame\\Content\\Paks"); // PUBG
+        yield return GetSteamGame(1172380, "\\SwGame\\Content\\Paks"); // STAR WARS Jedi: Fallen Order™
         yield return GetSteamGame(677620, "\\PortalWars\\Content\\Paks"); // Splitgate
         yield return GetSteamGame(1172620, "\\Athena\\Content\\Paks"); // Sea of Thieves
         yield return GetSteamGame(1665460, "\\pak"); // eFootball 2023

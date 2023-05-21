@@ -29,6 +29,6 @@ public partial class AesManager
 
     private async void OnClosing(object sender, CancelEventArgs e)
     {
-        await _applicationView.AesManager.UpdateProvider(false);
+        await _applicationView.UpdateProvider(false);
     }
 }

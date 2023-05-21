@@ -1,10 +1,12 @@
-﻿using System;
+using System;
+using System.Text.RegularExpressions;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
 using FModel.Extensions;
 using FModel.Services;
 using FModel.ViewModels;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 
 namespace FModel.Views.Resources.Controls;
@@ -68,8 +70,20 @@ public class GamePathVisualLineText : VisualLineText
             var fullPath = _applicationView.CUE4Parse.Provider.FixPath(package, StringComparison.Ordinal);
             if (a.ParentVisualLine.Document.FileName.Equals(fullPath.SubstringBeforeLast('.'), StringComparison.OrdinalIgnoreCase))
             {
-                var lineNumber = a.ParentVisualLine.Document.Text.GetLineNumber(obj);
-                var line = a.ParentVisualLine.Document.GetLineByNumber(lineNumber);
+                int lineNumber;
+                DocumentLine line;
+
+                if (Regex.IsMatch(obj, @"^(.+)\[(\d+)\]$"))
+                {
+                    lineNumber = a.ParentVisualLine.Document.Text.GetKismetLineNumber(obj);
+                    line = a.ParentVisualLine.Document.GetLineByNumber(lineNumber);
+                }
+                else
+                {
+                    lineNumber = a.ParentVisualLine.Document.Text.GetLineNumber(obj);
+                    line = a.ParentVisualLine.Document.GetLineByNumber(lineNumber);
+                }
+                
                 AvalonEditor.YesWeEditor.Select(line.Offset, line.Length);
                 AvalonEditor.YesWeEditor.ScrollToLine(lineNumber);
             }

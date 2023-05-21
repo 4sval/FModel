@@ -76,6 +76,13 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedOptions, value);
     }
 
+    private Dictionary<string, KeyValuePair<string, string>> _selectedMapStructTypes;
+    public Dictionary<string, KeyValuePair<string, string>> SelectedMapStructTypes
+    {
+        get => _selectedMapStructTypes;
+        set => SetProperty(ref _selectedMapStructTypes, value);
+    }
+
     private FEndpoint _aesEndpoint;
     public FEndpoint AesEndpoint
     {
@@ -192,6 +199,7 @@ public class SettingsViewModel : ViewModel
     private EGame _ueGameSnapshot;
     private List<FCustomVersion> _customVersionsSnapshot;
     private Dictionary<string, bool> _optionsSnapshot;
+    private Dictionary<string, KeyValuePair<string, string>> _mapStructTypesSnapshot;
     private ELanguage _assetLanguageSnapshot;
     private ECompressedAudio _compressedAudioSnapshot;
     private EIconStyle _cosmeticStyleSnapshot;
@@ -225,12 +233,14 @@ public class SettingsViewModel : ViewModel
             _ueGameSnapshot = settings.OverridedGame;
             _customVersionsSnapshot = settings.OverridedCustomVersions;
             _optionsSnapshot = settings.OverridedOptions;
+            _mapStructTypesSnapshot = settings.OverridedMapStructTypes;
         }
         else
         {
             _ueGameSnapshot = UserSettings.Default.OverridedGame[_game];
             _customVersionsSnapshot = UserSettings.Default.OverridedCustomVersions[_game];
             _optionsSnapshot = UserSettings.Default.OverridedOptions[_game];
+            _mapStructTypesSnapshot = UserSettings.Default.OverridedMapStructTypes[_game];
         }
 
         if (UserSettings.Default.CustomEndpoints.TryGetValue(_game, out var endpoints))
@@ -259,6 +269,7 @@ public class SettingsViewModel : ViewModel
         SelectedUeGame = _ueGameSnapshot;
         SelectedCustomVersions = _customVersionsSnapshot;
         SelectedOptions = _optionsSnapshot;
+        SelectedMapStructTypes = _mapStructTypesSnapshot;
         SelectedAssetLanguage = _assetLanguageSnapshot;
         SelectedCompressedAudio = _compressedAudioSnapshot;
         SelectedCosmeticStyle = _cosmeticStyleSnapshot;
@@ -317,6 +328,12 @@ public class SettingsViewModel : ViewModel
         {
             SelectedOptions[k] = v;
         }
+
+        SelectedMapStructTypes = new Dictionary<string, KeyValuePair<string, string>>();
+        foreach (var (k, v) in version.MapStructTypes)
+        {
+            SelectedMapStructTypes[k] = v;
+        }
     }
 
     public void ResetPreset()
@@ -324,6 +341,7 @@ public class SettingsViewModel : ViewModel
         SelectedUeGame = _ueGameSnapshot;
         SelectedCustomVersions = _customVersionsSnapshot;
         SelectedOptions = _optionsSnapshot;
+        SelectedMapStructTypes = _mapStructTypesSnapshot;
     }
 
     public bool Save(out List<SettingsOut> whatShouldIDo)
@@ -340,6 +358,7 @@ public class SettingsViewModel : ViewModel
 
         if (_ueGameSnapshot != SelectedUeGame || _customVersionsSnapshot != SelectedCustomVersions ||
             _uePlatformSnapshot != SelectedUePlatform || _optionsSnapshot != SelectedOptions || // combobox
+            _mapStructTypesSnapshot != SelectedMapStructTypes ||
             _outputSnapshot != UserSettings.Default.OutputDirectory || // textbox
             _rawDataSnapshot != UserSettings.Default.RawDataDirectory || // textbox
             _propertiesSnapshot != UserSettings.Default.PropertiesDirectory || // textbox
@@ -357,12 +376,14 @@ public class SettingsViewModel : ViewModel
             UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].OverridedGame = SelectedUeGame;
             UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].OverridedCustomVersions = SelectedCustomVersions;
             UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].OverridedOptions = SelectedOptions;
+            UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].OverridedMapStructTypes = SelectedMapStructTypes;
         }
         else
         {
             UserSettings.Default.OverridedGame[_game] = SelectedUeGame;
             UserSettings.Default.OverridedCustomVersions[_game] = SelectedCustomVersions;
             UserSettings.Default.OverridedOptions[_game] = SelectedOptions;
+            UserSettings.Default.OverridedMapStructTypes[_game] = SelectedMapStructTypes;
         }
 
         UserSettings.Default.AssetLanguage = SelectedAssetLanguage;

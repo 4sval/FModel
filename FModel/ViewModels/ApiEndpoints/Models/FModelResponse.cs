@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Diagnostics;
 using CUE4Parse.UE4.Versions;
 using FModel.Creator;
@@ -39,6 +39,7 @@ public class Version
     [J] public int UeVer { get; private set; }
     [J] public Dictionary<string, int> CustomVersions { get; private set; }
     [J] public Dictionary<string, bool> Options { get; private set; }
+    [J] public Dictionary<string, KeyValuePair<string, string>> MapStructTypes { get; private set; } = new();
 }
 
 [DebuggerDisplay("{" + nameof(Mode) + "}")]

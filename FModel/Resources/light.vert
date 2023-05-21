@@ -10,6 +10,13 @@ out vec2 fTexCoords;
 
 void main()
 {
-    gl_Position = uProjection * uView * vInstanceMatrix * vec4(inverse(mat3(uView)) * vPos, 1.0);
-    fTexCoords = -vPos.xy;
+    float scale = 0.075;
+    mat4 result;
+    result[0] = vec4(scale, 0.0, 0.0, 0.0);
+    result[1] = vec4(0.0, scale, 0.0, 0.0);
+    result[2] = vec4(0.0, 0.0, scale, 0.0);
+    result[3] = vInstanceMatrix[3];
+
+    gl_Position = uProjection * uView * result * vec4(inverse(mat3(uView)) * vPos, 1.0);
+    fTexCoords = -vPos.xy * 0.5 + 0.5; // fits the whole rectangle
 }

@@ -8,9 +8,7 @@ namespace FModel.ViewModels.ApiEndpoints;
 
 public class FortniteApiEndpoint : AbstractApiProvider
 {
-    public FortniteApiEndpoint(RestClient client) : base(client)
-    {
-    }
+    public FortniteApiEndpoint(RestClient client) : base(client) { }
 
     public async Task<PlaylistResponse> GetPlaylistAsync(string playlistId)
     {

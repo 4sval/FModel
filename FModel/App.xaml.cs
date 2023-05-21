@@ -1,4 +1,4 @@
-﻿using AdonisUI.Controls;
+using AdonisUI.Controls;
 using Microsoft.Win32;
 using Serilog;
 using System;

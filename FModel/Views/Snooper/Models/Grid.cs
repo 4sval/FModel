@@ -43,6 +43,7 @@ public class Grid : IDisposable
 
     public void Render(Matrix4x4 viewMatrix, Matrix4x4 projMatrix, float near, float far)
     {
+        GL.Disable(EnableCap.CullFace);
         GL.Disable(EnableCap.DepthTest);
         _vao.Bind();
 
@@ -55,6 +56,7 @@ public class Grid : IDisposable
 
         GL.DrawArrays(PrimitiveType.Triangles, 0, Indices.Length);
         GL.Enable(EnableCap.DepthTest);
+        GL.Enable(EnableCap.CullFace);
     }
 
     public void Dispose()

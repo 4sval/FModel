@@ -26,7 +26,7 @@ public class StringToGameConverter : IValueConverter
             "MinecraftDungeons" => FGame.Dungeons,
             "shoebill" => FGame.SwGame,
             "a99769d95d8f400baad1f67ab5dfe508" => FGame.Platform,
-            "711c5e95dc094ca58e5f16bd48e751d6" => FGame.PandaGame,
+            "711c5e95dc094ca58e5f16bd48e751d6" => FGame.MultiVersus,
             "9361c8c6d2f34b42b5f2f61093eedf48" => FGame.TslGame,
             381210 => FGame.DeadByDaylight,
             578080 => FGame.TslGame,

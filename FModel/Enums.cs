@@ -92,8 +92,10 @@ public enum FGame
     Gameface,
     [Description("Sea of Thieves")]
     Athena,
-    [Description("Your Beloved ™ Panda")]
+    [Description("DEPRECATED")]
     PandaGame,
+    [Description("MultiVersus")]
+    MultiVersus,
     [Description("Tower of Fantasy")]
     Hotta,
     [Description("eFootball 2023")]

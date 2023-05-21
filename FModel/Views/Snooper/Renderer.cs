@@ -7,21 +7,34 @@ using CUE4Parse_Conversion.Animations;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
+using CUE4Parse.UE4.Assets.Exports.Component.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
+using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
+using FModel.Creator;
+using FModel.Extensions;
 using FModel.Settings;
+using FModel.Views.Snooper.Animations;
 using FModel.Views.Snooper.Buffers;
 using FModel.Views.Snooper.Lights;
 using FModel.Views.Snooper.Models;
-using FModel.Views.Snooper.Models.Animations;
 using FModel.Views.Snooper.Shading;
 
 namespace FModel.Views.Snooper;
+
+public enum VertexColor
+{
+    Default,
+    Sections,
+    Colors,
+    Normals,
+    TextureCoordinates
+}
 
 public class Renderer : IDisposable
 {
@@ -30,12 +43,15 @@ public class Renderer : IDisposable
     private Shader _shader;
     private Shader _outline;
     private Shader _light;
+    private bool _saveCameraMode;
 
     public bool ShowSkybox;
     public bool ShowGrid;
     public bool ShowLights;
-    public int VertexColor;
+    public bool AnimateWithRotationOnly;
+    public VertexColor Color;
 
+    public Camera CameraOp { get; }
     public PickingTexture Picking { get; }
     public Options Options { get; }
 
@@ -44,25 +60,36 @@ public class Renderer : IDisposable
         _skybox = new Skybox();
         _grid = new Grid();
 
+        CameraOp = new Camera();
         Picking = new PickingTexture(width, height);
         Options = new Options();
 
         ShowSkybox = UserSettings.Default.ShowSkybox;
         ShowGrid = UserSettings.Default.ShowGrid;
-        VertexColor = 0; // default
+        AnimateWithRotationOnly = UserSettings.Default.AnimateWithRotationOnly;
+        Color = VertexColor.Default;
     }
 
-    public Camera Load(CancellationToken cancellationToken, UObject export)
+    public void Load(CancellationToken cancellationToken, UObject export)
     {
         ShowLights = false;
-        return export switch
+        _saveCameraMode = export is not UWorld;
+        CameraOp.Mode = _saveCameraMode ? UserSettings.Default.CameraMode : Camera.WorldMode.FlyCam;
+        switch (export)
         {
-            UStaticMesh st => LoadStaticMesh(st),
-            USkeletalMesh sk => LoadSkeletalMesh(sk),
-            UMaterialInstance mi => LoadMaterialInstance(mi),
-            UWorld wd => LoadWorld(cancellationToken, wd, Transform.Identity),
-            _ => throw new ArgumentOutOfRangeException(nameof(export))
-        };
+            case UStaticMesh st:
+                LoadStaticMesh(st);
+                break;
+            case USkeletalMesh sk:
+                LoadSkeletalMesh(sk);
+                break;
+            case UMaterialInstance mi:
+                LoadMaterialInstance(mi);
+                break;
+            case UWorld wd:
+                LoadWorld(cancellationToken, wd, Transform.Identity);
+                break;
+        }
     }
 
     public void Swap(UMaterialInstance unrealMaterial)
@@ -71,17 +98,108 @@ public class Renderer : IDisposable
 
         model.Materials[section.MaterialIndex].SwapMaterial(unrealMaterial);
         Application.Current.Dispatcher.Invoke(() => model.Materials[section.MaterialIndex].Setup(Options, model.UvCount));
-        Options.SwapMaterial(false);
     }
 
-    public void Animate(UAnimSequence animSequence)
+    public void Animate(UObject anim) => Animate(anim, Options.SelectedModel);
+    private void Animate(UObject anim, FGuid guid)
     {
-        if (!Options.TryGetModel(out var model) || !model.Skeleton.IsLoaded ||
-            model.Skeleton?.RefSkel.ConvertAnims(animSequence) is not { } anim || anim.Sequences.Count == 0)
+        if (!Options.TryGetModel(guid, out var model) || !model.HasSkeleton)
             return;
 
-        model.Skeleton.Anim = new Animation(anim);
-        Options.AnimateMesh(false);
+        float maxElapsedTime;
+        switch (anim)
+        {
+            case UAnimSequence animSequence when animSequence.Skeleton.TryLoad(out USkeleton skeleton):
+            {
+                var animSet = skeleton.ConvertAnims(animSequence);
+                var animation = new Animation(animSequence, animSet, guid);
+                maxElapsedTime = animation.TotalElapsedTime;
+                model.Skeleton.Animate(animSet, AnimateWithRotationOnly);
+                Options.AddAnimation(animation);
+                break;
+            }
+            case UAnimMontage animMontage when animMontage.Skeleton.TryLoad(out USkeleton skeleton):
+            {
+                var animSet = skeleton.ConvertAnims(animMontage);
+                var animation = new Animation(animMontage, animSet, guid);
+                maxElapsedTime = animation.TotalElapsedTime;
+                model.Skeleton.Animate(animSet, AnimateWithRotationOnly);
+                Options.AddAnimation(animation);
+
+                foreach (var notifyEvent in animMontage.Notifies)
+                {
+                    if (!notifyEvent.NotifyStateClass.TryLoad(out UObject notifyClass) ||
+                        !notifyClass.TryGetValue(out FPackageIndex meshProp, "SkeletalMeshProp", "StaticMeshProp", "Mesh") ||
+                        !meshProp.TryLoad(out UObject export)) continue;
+
+                    var t = Transform.Identity;
+                    if (notifyClass.TryGetValue(out FTransform offset, "Offset"))
+                    {
+                        t.Rotation = offset.Rotation;
+                        t.Position = offset.Translation * Constants.SCALE_DOWN_RATIO;
+                        t.Scale = offset.Scale3D;
+                    }
+
+                    switch (export)
+                    {
+                        case UStaticMesh st:
+                        {
+                            guid = st.LightingGuid;
+                            if (Options.TryGetModel(guid, out var instancedModel))
+                                instancedModel.AddInstance(t);
+                            else if (st.TryConvert(out var mesh))
+                                Options.Models[guid] = new Model(st, mesh, t);
+                            break;
+                        }
+                        case USkeletalMesh sk:
+                        {
+                            guid = Guid.NewGuid();
+                            if (!Options.Models.ContainsKey(guid) && sk.TryConvert(out var mesh))
+                                Options.Models[guid] = new Model(sk, mesh, t);
+                            break;
+                        }
+                        default:
+                            throw new ArgumentException();
+                    }
+
+                    if (!Options.TryGetModel(guid, out var addedModel))
+                        continue;
+
+                    addedModel.IsAnimatedProp = true;
+                    if (notifyClass.TryGetValue(out UObject skeletalMeshPropAnimation, "SkeletalMeshPropAnimation", "Animation"))
+                        Animate(skeletalMeshPropAnimation, guid);
+                    if (notifyClass.TryGetValue(out FName socketName, "SocketName"))
+                    {
+                        t = Transform.Identity;
+                        if (notifyClass.TryGetValue(out FVector location, "LocationOffset", "Location"))
+                            t.Position = location * Constants.SCALE_DOWN_RATIO;
+                        if (notifyClass.TryGetValue(out FRotator rotation, "RotationOffset", "Rotation"))
+                            t.Rotation = rotation.Quaternion();
+                        if (notifyClass.TryGetValue(out FVector scale, "Scale"))
+                            t.Scale = scale;
+
+                        var s = new Socket($"TL_{addedModel.Name}", socketName, t, true);
+                        model.Sockets.Add(s);
+                        addedModel.AttachModel(model, s, new SocketAttachementInfo { Guid = guid, Instance = addedModel.SelectedInstance });
+                    }
+                }
+                break;
+            }
+            case UAnimComposite animComposite when animComposite.Skeleton.TryLoad(out USkeleton skeleton):
+            {
+                var animSet = skeleton.ConvertAnims(animComposite);
+                var animation = new Animation(animComposite, animSet, guid);
+                maxElapsedTime = animation.TotalElapsedTime;
+                model.Skeleton.Animate(animSet, AnimateWithRotationOnly);
+                Options.AddAnimation(animation);
+                break;
+            }
+            default:
+                throw new ArgumentException();
+        }
+
+        Options.Tracker.IsPaused = false;
+        Options.Tracker.SafeSetMaxElapsedTime(maxElapsedTime);
     }
 
     public void Setup()
@@ -97,21 +215,33 @@ public class Renderer : IDisposable
         Options.SetupModelsAndLights();
     }
 
-    public void Render(Camera cam)
+    public void Render(float deltaSeconds)
     {
-        var viewMatrix = cam.GetViewMatrix();
-        var projMatrix = cam.GetProjectionMatrix();
+        var viewMatrix = CameraOp.GetViewMatrix();
+        var projMatrix = CameraOp.GetProjectionMatrix();
 
         if (ShowSkybox) _skybox.Render(viewMatrix, projMatrix);
-        if (ShowGrid) _grid.Render(viewMatrix, projMatrix, cam.Near, cam.Far);
+        if (ShowGrid) _grid.Render(viewMatrix, projMatrix, CameraOp.Near, CameraOp.Far);
 
-        _shader.Render(viewMatrix, cam.Position, projMatrix);
-        for (int i = 0; i < 6; i++)
-            _shader.SetUniform($"bVertexColors[{i}]", i == VertexColor);
+        _shader.Render(viewMatrix, CameraOp.Position, projMatrix);
+        for (int i = 0; i < 5; i++)
+            _shader.SetUniform($"bVertexColors[{i}]", i == (int) Color);
+
+        // update animations
+        if (Options.Animations.Count > 0) Options.Tracker.Update(deltaSeconds);
+        foreach (var animation in Options.Animations)
+        {
+            animation.TimeCalculation(Options.Tracker.ElapsedTime);
+            foreach (var guid in animation.AttachedModels.Where(guid => Options.Models[guid].HasSkeleton))
+            {
+                Options.Models[guid].Skeleton.UpdateAnimationMatrices(animation.CurrentSequence, animation.FrameInSequence);
+            }
+        }
 
         // render model pass
         foreach (var model in Options.Models.Values)
         {
+            model.UpdateMatrices(Options);
             if (!model.Show) continue;
             model.Render(_shader);
         }
@@ -132,67 +262,79 @@ public class Renderer : IDisposable
         // outline pass
         if (Options.TryGetModel(out var selected) && selected.Show)
         {
-            _outline.Render(viewMatrix, cam.Position, projMatrix);
-            selected.Outline(_outline);
+            _outline.Render(viewMatrix, CameraOp.Position, projMatrix);
+            selected.Render(_outline, true);
         }
 
         // picking pass (dedicated FBO, binding to 0 afterward)
         Picking.Render(viewMatrix, projMatrix, Options.Models);
     }
 
-    private Camera SetupCamera(FBox box)
-    {
-        var far = box.Max.AbsMax();
-        var center = box.GetCenter();
-        return new Camera(
-            new Vector3(0f, center.Z, box.Max.Y * 3),
-            new Vector3(center.X, center.Z, center.Y),
-            0.01f, far * 50f, far / 1.5f);
-    }
-
-    private Camera LoadStaticMesh(UStaticMesh original)
+    private void LoadStaticMesh(UStaticMesh original)
     {
         var guid = original.LightingGuid;
         if (Options.TryGetModel(guid, out var model))
         {
             model.AddInstance(Transform.Identity);
             Application.Current.Dispatcher.Invoke(() => model.SetupInstances());
-            return null;
+            return;
         }
 
         if (!original.TryConvert(out var mesh))
-            return null;
+            return;
 
         Options.Models[guid] = new Model(original, mesh);
         Options.SelectModel(guid);
-        return SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
+        SetupCamera(Options.Models[guid].Box);
     }
 
-    private Camera LoadSkeletalMesh(USkeletalMesh original)
+    private void LoadSkeletalMesh(USkeletalMesh original)
     {
-        var guid = Guid.NewGuid();
-        if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh)) return null;
+        var guid = new FGuid((uint) original.GetFullName().GetHashCode());
+        if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh)) return;
 
         Options.Models[guid] = new Model(original, mesh);
         Options.SelectModel(guid);
-        return SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
+        SetupCamera(Options.Models[guid].Box);
     }
 
-    private Camera LoadMaterialInstance(UMaterialInstance original)
+    private void LoadMaterialInstance(UMaterialInstance original)
     {
-        var guid = Guid.NewGuid();
-        if (Options.Models.ContainsKey(guid)) return null;
+        if (!Utils.TryLoadObject("Engine/Content/EditorMeshes/EditorCube.EditorCube", out UStaticMesh editorCube))
+            return;
 
-        Options.Models[guid] = new Cube(original);
+        var guid = editorCube.LightingGuid;
+        if (Options.TryGetModel(guid, out var model))
+        {
+            model.Materials[0].SwapMaterial(original);
+            Application.Current.Dispatcher.Invoke(() => model.Materials[0].Setup(Options, model.UvCount));
+            return;
+        }
+
+        if (!editorCube.TryConvert(out var mesh))
+            return;
+
+        Options.Models[guid] = new Cube(mesh, original);
         Options.SelectModel(guid);
-        return SetupCamera(new FBox(new FVector(-.65f), new FVector(.65f)));
+        SetupCamera(Options.Models[guid].Box);
     }
 
-    private Camera LoadWorld(CancellationToken cancellationToken, UWorld original, Transform transform)
+    private void SetupCamera(FBox box) => CameraOp.Setup(box);
+
+    private void LoadWorld(CancellationToken cancellationToken, UWorld original, Transform transform)
     {
-        var cam = new Camera(new Vector3(0f, 5f, 5f), Vector3.Zero, 0.01f, 1000f, 5f);
+        CameraOp.Setup(new FBox(FVector.ZeroVector, new FVector(0, 10, 10)));
         if (original.PersistentLevel.Load<ULevel>() is not { } persistentLevel)
-            return cam;
+            return;
+
+        if (persistentLevel.TryGetValue(out FSoftObjectPath runtimeCell, "WorldPartitionRuntimeCell") &&
+            Utils.TryLoadObject(runtimeCell.AssetPathName.Text.SubstringBeforeWithLast(".") + runtimeCell.SubPathString.SubstringAfterLast("."), out UObject worldPartition))
+        {
+            var position = worldPartition.GetOrDefault("Position", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO;
+            var box = worldPartition.GetOrDefault("ContentBounds", new FBox(FVector.ZeroVector, FVector.OneVector));
+            box *= MathF.Pow(Constants.SCALE_DOWN_RATIO, 2);
+            CameraOp.Teleport(new Vector3(position.X, position.Z, position.Y), box, true);
+        }
 
         var length = persistentLevel.Actors.Length;
         for (var i = 0; i < length; i++)
@@ -204,57 +346,58 @@ public class Renderer : IDisposable
                 continue;
 
             Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} ... {i}/{length}");
-            WorldCamera(actor, ref cam);
-            // WorldLight(actor);
+            WorldCamera(actor);
+            WorldLight(actor);
             WorldMesh(actor, transform);
             AdditionalWorlds(actor, transform.Matrix, cancellationToken);
         }
         Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} ... {length}/{length}");
-        return cam;
     }
 
-    private void WorldCamera(UObject actor, ref Camera cam)
+    private void WorldCamera(UObject actor)
     {
         if (actor.ExportType != "LevelBounds" || !actor.TryGetValue(out FPackageIndex boxComponent, "BoxComponent") ||
             boxComponent.Load() is not { } boxObject) return;
 
-        var direction = boxObject.GetOrDefault("RelativeLocation", FVector.ZeroVector).ToMapVector() * Constants.SCALE_DOWN_RATIO;
-        var position = boxObject.GetOrDefault("RelativeScale3D", FVector.OneVector).ToMapVector() / 2f * Constants.SCALE_DOWN_RATIO;
-        var far = position.AbsMax();
-        cam = new Camera(
-            new Vector3(position.X, position.Y, position.Z),
-            new Vector3(direction.X, direction.Y, direction.Z),
-            0.01f, far * 25f, Math.Max(5f, far / 10f));
+        var direction = boxObject.GetOrDefault("RelativeLocation", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO;
+        var position = boxObject.GetOrDefault("RelativeScale3D", FVector.OneVector) / 2f * Constants.SCALE_DOWN_RATIO;
+        CameraOp.Setup(new FBox(direction, position));
     }
 
     private void WorldLight(UObject actor)
     {
-        // if (!actor.TryGetValue(out FPackageIndex lightComponent, "LightComponent") ||
-        //     lightComponent.Load() is not { } lightObject) return;
-        //
-        // Cache.Lights.Add(new PointLight(Cache.Icons["pointlight"], lightObject, FVector.ZeroVector));
+        if (!actor.TryGetValue(out FPackageIndex lightComponent, "LightComponent") ||
+            lightComponent.Load() is not { } lightObject) return;
+
+        switch (actor.ExportType)
+        {
+            case "PointLight":
+                Options.Lights.Add(new PointLight(Options.Icons["pointlight"], lightObject));
+                break;
+            case "SpotLight":
+                Options.Lights.Add(new SpotLight(Options.Icons["spotlight"], lightObject));
+                break;
+            case "RectLight":
+            case "SkyLight":
+            case "DirectionalLight":
+                break;
+        }
     }
 
     private void WorldMesh(UObject actor, Transform transform)
     {
         if (!actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent", "StaticMesh", "Mesh", "LightMesh") ||
-            staticMeshComponent.Load() is not { } staticMeshComp) return;
-
-        if (!staticMeshComp.TryGetValue(out FPackageIndex staticMesh, "StaticMesh") && actor.Class is UBlueprintGeneratedClass)
-            foreach (var actorExp in actor.Class.Owner.GetExports())
-                if (actorExp.TryGetValue(out staticMesh, "StaticMesh"))
-                    break;
-
-        if (staticMesh?.Load() is not UStaticMesh m || m.Materials.Length < 1)
+            !staticMeshComponent.TryLoad(out UStaticMeshComponent staticMeshComp) ||
+            !staticMeshComp.GetStaticMesh().TryLoad(out UStaticMesh m) || m.Materials.Length < 1)
             return;
 
         var guid = m.LightingGuid;
         var t = new Transform
         {
             Relation = transform.Matrix,
-            Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector).ToMapVector() * Constants.SCALE_DOWN_RATIO,
-            Rotation = staticMeshComp.GetOrDefault("RelativeRotation", FRotator.ZeroRotator),
-            Scale = staticMeshComp.GetOrDefault("RelativeScale3D", FVector.OneVector).ToMapVector()
+            Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO,
+            Rotation = staticMeshComp.GetOrDefault("RelativeRotation", FRotator.ZeroRotator).Quaternion(),
+            Scale = staticMeshComp.GetOrDefault("RelativeScale3D", FVector.OneVector)
         };
 
         if (Options.TryGetModel(guid, out var model))
@@ -264,6 +407,8 @@ public class Renderer : IDisposable
         else if (m.TryConvert(out var mesh))
         {
             model = new Model(m, mesh, t);
+            model.TwoSided = actor.GetOrDefault("bMirrored", staticMeshComp.GetOrDefault("bDisallowMeshPaintPerInstance", model.TwoSided));
+
             if (actor.TryGetValue(out FPackageIndex baseMaterial, "BaseMaterial") &&
                 actor.TryGetAllValues(out FPackageIndex[] textureData, "TextureData"))
             {
@@ -300,6 +445,7 @@ public class Renderer : IDisposable
                     }
                 }
             }
+
             if (staticMeshComp.TryGetValue(out FPackageIndex[] overrideMaterials, "OverrideMaterials"))
             {
                 var max = model.Sections.Length - 1;
@@ -311,18 +457,19 @@ public class Renderer : IDisposable
                     model.Materials[model.Sections[j].MaterialIndex].SwapMaterial(unrealMaterial);
                 }
             }
+
             Options.Models[guid] = model;
         }
 
         if (actor.TryGetValue(out FPackageIndex treasureLight, "PointLight", "TreasureLight") &&
             treasureLight.TryLoad(out var pl1) && pl1.Template.TryLoad(out var pl2))
         {
-            Options.Lights.Add(new PointLight(guid, Options.Icons["pointlight"], pl1, pl2, t.Position));
+            Options.Lights.Add(new PointLight(guid, Options.Icons["pointlight"], pl1, pl2, t));
         }
         if (actor.TryGetValue(out FPackageIndex spotLight, "SpotLight") &&
             spotLight.TryLoad(out var sl1) && sl1.Template.TryLoad(out var sl2))
         {
-            Options.Lights.Add(new SpotLight(guid, Options.Icons["spotlight"], sl1, sl2, t.Position));
+            Options.Lights.Add(new SpotLight(guid, Options.Icons["spotlight"], sl1, sl2, t));
         }
     }
 
@@ -342,20 +489,32 @@ public class Renderer : IDisposable
         var transform = new Transform
         {
             Relation = relation,
-            Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector).ToMapVector() * Constants.SCALE_DOWN_RATIO,
-            Rotation = staticMeshComp.GetOrDefault("RelativeRotation", FRotator.ZeroRotator),
-            Scale = FVector.OneVector.ToMapVector()
+            Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO,
+            Rotation = staticMeshComp.GetOrDefault("RelativeRotation", FRotator.ZeroRotator).Quaternion()
         };
 
         for (int j = 0; j < additionalWorlds.Length; j++)
-            if (Creator.Utils.TryLoadObject(additionalWorlds[j].AssetPathName.Text, out UWorld w))
+            if (Utils.TryLoadObject(additionalWorlds[j].AssetPathName.Text, out UWorld w))
                 LoadWorld(cancellationToken, w, transform);
+    }
+
+    public void WindowResized(int width, int height)
+    {
+        CameraOp.AspectRatio = width / (float) height;
+        Picking.WindowResized(width, height);
     }
 
     public void Save()
     {
+        Options.ResetModelsLightsAnimations();
+        Options.SelectModel(Guid.Empty);
+        Options.SwapMaterial(false);
+        Options.AnimateMesh(false);
+
+        if (_saveCameraMode) UserSettings.Default.CameraMode = CameraOp.Mode;
         UserSettings.Default.ShowSkybox = ShowSkybox;
         UserSettings.Default.ShowGrid = ShowGrid;
+        UserSettings.Default.AnimateWithRotationOnly = AnimateWithRotationOnly;
     }
 
     public void Dispose()

@@ -83,6 +83,7 @@ public class Skybox : IDisposable
 
     public void Render(Matrix4x4 viewMatrix, Matrix4x4 projMatrix)
     {
+        GL.Disable(EnableCap.CullFace);
         GL.DepthFunc(DepthFunction.Lequal);
 
         _vao.Bind();
@@ -101,6 +102,7 @@ public class Skybox : IDisposable
         GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
 
         GL.DepthFunc(DepthFunction.Less);
+        GL.Enable(EnableCap.CullFace);
     }
 
     public void Dispose()

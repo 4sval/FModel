@@ -42,7 +42,7 @@ public class Shader : IDisposable
         var handle = GL.CreateShader(type);
 
         var content = reader.ReadToEnd();
-        if (file.Equals("default.frag") && GL.GetInteger(GetPName.MaxTextureUnits) == 0)
+        if (file.Equals("default.frag") && GL.GetInteger(GetPName.MaxTextureCoords) == 0)
             content = content.Replace("#define MAX_UV_COUNT 8", "#define MAX_UV_COUNT 1");
 
         GL.ShaderSource(handle, content);

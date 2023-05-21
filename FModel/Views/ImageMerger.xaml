@@ -38,7 +38,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                
+
                 <ListBox x:Name="ImagesListBox" Grid.Row="0" SelectionMode="Extended" />
                 <Separator Grid.Row="1" Style="{StaticResource CustomSeparator}" Tag="COMMANDS" />
                 <Grid Grid.Row="2" Margin="0 0 0 10">
@@ -51,10 +51,10 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    
+
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Images Per Row" VerticalAlignment="Center" Margin="0 0 10 0" />
                     <Slider x:Name="SizeSlider" Grid.Row="0" Grid.Column="1" TickPlacement="None" AutoToolTipPlacement="BottomRight"
-                            IsMoveToPointEnabled="True" Minimum="2" Maximum="20" TickFrequency="1" MouseUp="Click_DrawPreview" Thumb.DragCompleted="DrawPreview"/>
+                            IsMoveToPointEnabled="True" Minimum="1" Maximum="20" TickFrequency="1" MouseUp="Click_DrawPreview" Thumb.DragCompleted="DrawPreview"/>
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Margin Between Images" VerticalAlignment="Center" Margin="0 0 10 0" />
                     <Slider Grid.Row="2" Grid.Column="1" Value="{Binding ImageMergerMargin, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
                             TickPlacement="None" AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" Minimum="0" Maximum="50" TickFrequency="1"

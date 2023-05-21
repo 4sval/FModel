@@ -155,6 +155,82 @@
                                 </MenuItem.Icon>
                             </MenuItem>
                             <Separator />
+                            <MenuItem Header="Export Raw Data (.uasset)" Command="{Binding DataContext.RightClickMenuCommand}">
+                                <MenuItem.CommandParameter>
+                                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                        <Binding Source="Assets_Export_Data" />
+                                        <Binding Path="SelectedItems" />
+                                    </MultiBinding>
+                                </MenuItem.CommandParameter>
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExportIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Save Properties (.json)" Command="{Binding DataContext.RightClickMenuCommand}">
+                                <MenuItem.CommandParameter>
+                                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                        <Binding Source="Assets_Save_Properties" />
+                                        <Binding Path="SelectedItems" />
+                                    </MultiBinding>
+                                </MenuItem.CommandParameter>
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SaveIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Save Texture (.png)" Command="{Binding DataContext.RightClickMenuCommand}">
+                                <MenuItem.CommandParameter>
+                                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                        <Binding Source="Assets_Save_Textures" />
+                                        <Binding Path="SelectedItems" />
+                                    </MultiBinding>
+                                </MenuItem.CommandParameter>
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Save Model (.psk)" Command="{Binding DataContext.RightClickMenuCommand}">
+                                <MenuItem.CommandParameter>
+                                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                        <Binding Source="Assets_Save_Models" />
+                                        <Binding Path="SelectedItems" />
+                                    </MultiBinding>
+                                </MenuItem.CommandParameter>
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ModelIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Save Animation (.psa)" Command="{Binding DataContext.RightClickMenuCommand}">
+                                <MenuItem.CommandParameter>
+                                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                        <Binding Source="Assets_Save_Animations" />
+                                        <Binding Path="SelectedItems" />
+                                    </MultiBinding>
+                                </MenuItem.CommandParameter>
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource AnimationIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <Separator />
                             <MenuItem Header="Copy">
                                 <MenuItem.Icon>
                                     <Viewbox Width="16" Height="16">

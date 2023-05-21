@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using AdonisUI.Controls;
 using FModel.Extensions;
@@ -33,7 +34,7 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             case "Directory_ArchivesInfo":
                 contextViewModel.CUE4Parse.TabControl.AddTab("Archives Info");
                 contextViewModel.CUE4Parse.TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("json");
-                contextViewModel.CUE4Parse.TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(contextViewModel.CUE4Parse.GameDirectory.DirectoryFiles, Formatting.Indented), false);
+                contextViewModel.CUE4Parse.TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(contextViewModel.CUE4Parse.GameDirectory.DirectoryFiles, Formatting.Indented), false, false);
                 break;
             case "Views_3dViewer":
                 contextViewModel.CUE4Parse.SnooperViewer.Run();
@@ -76,22 +77,16 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             case "ToolBox_Open_Output_Directory":
                 Process.Start(new ProcessStartInfo { FileName = UserSettings.Default.OutputDirectory, UseShellExecute = true });
                 break;
-            case "ToolBox_Expand_All":
-                await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
-                {
-                    foreach (var folder in contextViewModel.CUE4Parse.AssetsFolder.Folders)
-                    {
-                        LoopFolders(cancellationToken, folder, true);
-                    }
-                });
-                break;
+            // case "ToolBox_Expand_All":
+            //     await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
+            //     {
+            //         SetFoldersIsExpanded(contextViewModel.CUE4Parse.AssetsFolder, true, cancellationToken);
+            //     });
+            //     break;
             case "ToolBox_Collapse_All":
                 await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
                 {
-                    foreach (var folder in contextViewModel.CUE4Parse.AssetsFolder.Folders)
-                    {
-                        LoopFolders(cancellationToken, folder, false);
-                    }
+                    SetFoldersIsExpanded(contextViewModel.CUE4Parse.AssetsFolder, false, cancellationToken);
                 });
                 break;
             case TreeItem selectedFolder:
@@ -101,15 +96,41 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
         }
     }
 
-    private void LoopFolders(CancellationToken cancellationToken, TreeItem parent, bool isExpanded)
+    private void SetFoldersIsExpanded(AssetsFolderViewModel root, bool expand, CancellationToken cancellationToken)
     {
-        if (parent.IsExpanded != isExpanded)
+        var nodes = new LinkedList<TreeItem>();
+        foreach (TreeItem folder in root.Folders)
+            nodes.AddLast(folder);
+
+        var current = nodes.First;
+        while (current != null)
         {
-            parent.IsExpanded = isExpanded;
-            Thread.Sleep(10);
+            var folder = current.Value;
+
+            // Collapse top-down (reduce layout updates)
+            if (!expand && folder.IsExpanded)
+            {
+                folder.IsExpanded = false;
+                Thread.Yield();
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+
+            foreach (var child in folder.Folders)
+            {
+                nodes.AddLast(child);
+            }
+
+            current = current.Next;
         }
 
-        cancellationToken.ThrowIfCancellationRequested();
-        foreach (var f in parent.Folders) LoopFolders(cancellationToken, f, isExpanded);
+        if (!expand) return;
+
+        // Expand bottom-up (reduce layout updates)
+        for (var node = nodes.Last; node != null; node = node.Previous)
+        {
+            node.Value.IsExpanded = true;
+            Thread.Yield();
+            cancellationToken.ThrowIfCancellationRequested();
+        }
     }
 }

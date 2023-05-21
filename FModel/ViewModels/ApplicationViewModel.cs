@@ -25,7 +25,7 @@ public class ApplicationViewModel : ViewModel
     public EBuildKind Build
     {
         get => _build;
-        private set
+        private init
         {
             SetProperty(ref _build, value);
             RaisePropertyChanged(nameof(TitleExtra));
@@ -36,7 +36,7 @@ public class ApplicationViewModel : ViewModel
     public FStatus Status
     {
         get => _status;
-        set => SetProperty(ref _status, value);
+        private init => SetProperty(ref _status, value);
     }
 
     public RightClickMenuCommand RightClickMenuCommand => _rightClickMenuCommand ??= new RightClickMenuCommand(this);
@@ -46,9 +46,10 @@ public class ApplicationViewModel : ViewModel
     public CopyCommand CopyCommand => _copyCommand ??= new CopyCommand(this);
     private CopyCommand _copyCommand;
 
+    public string InitialWindowTitle => $"FModel {UserSettings.Default.UpdateMode}";
+    public string GameDisplayName => CUE4Parse.Provider.GameDisplayName ?? "Unknown";
     public string TitleExtra =>
-        $"{UserSettings.Default.UpdateMode} - {CUE4Parse.Game.GetDescription()} (" + // FModel {UpdateMode} - {FGame} ({UE}) ({Build})
-        $"{(CUE4Parse.Game == FGame.Unknown && UserSettings.Default.ManualGames.TryGetValue(UserSettings.Default.GameDirectory, out var settings) ? settings.OverridedGame : UserSettings.Default.OverridedGame[CUE4Parse.Game])})" +
+        $"({(CUE4Parse.Game == FGame.Unknown && UserSettings.Default.ManualGames.TryGetValue(UserSettings.Default.GameDirectory, out var settings) ? settings.OverridedGame : UserSettings.Default.OverridedGame[CUE4Parse.Game])})" +
         $"{(Build != EBuildKind.Release ? $" ({Build})" : "")}";
 
     public LoadingModesViewModel LoadingModes { get; }
@@ -73,6 +74,13 @@ public class ApplicationViewModel : ViewModel
         LoadingModes = new LoadingModesViewModel();
 
         AvoidEmptyGameDirectoryAndSetEGame(false);
+        if (UserSettings.Default.GameDirectory is null)
+        {
+            //If no game is selected, many things will break before a shutdown request is processed in the normal way.
+            //A hard exit is preferable to an unhandled expection in this case
+            Environment.Exit(0);
+        }
+
         CUE4Parse = new CUE4ParseViewModel(UserSettings.Default.GameDirectory);
         CustomDirectories = new CustomDirectoriesViewModel(CUE4Parse.Game, UserSettings.Default.GameDirectory);
         SettingsView = new SettingsViewModel(CUE4Parse.Game);
@@ -95,6 +103,20 @@ public class ApplicationViewModel : ViewModel
         if (!bAlreadyLaunched || gameDirectory == gameLauncherViewModel.SelectedDetectedGame.GameDirectory) return;
 
         RestartWithWarning();
+    }
+
+    public async Task UpdateProvider(bool isLaunch)
+    {
+        if (!isLaunch && !AesManager.HasChange) return;
+
+        CUE4Parse.ClearProvider();
+        await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
+        {
+            CUE4Parse.LoadVfs(cancellationToken, AesManager.AesKeys);
+            CUE4Parse.Provider.LoadIniConfigs();
+            AesManager.SetAesKeys();
+        });
+        RaisePropertyChanged(nameof(GameDisplayName));
     }
 
     public void RestartWithWarning()
@@ -153,8 +175,7 @@ public class ApplicationViewModel : ViewModel
         }
         else
         {
-            FLogger.AppendError();
-            FLogger.AppendText("Could not download VgmStream", Constants.WHITE, true);
+            FLogger.Append(ELog.Error, () => FLogger.Text("Could not download VgmStream", Constants.WHITE, true));
         }
     }
 
@@ -186,16 +207,15 @@ public class ApplicationViewModel : ViewModel
         }
     }
 
-    public async Task InitImGuiSettings()
+    public async Task InitImGuiSettings(bool forceDownload)
     {
         var imgui = Path.Combine(/*UserSettings.Default.OutputDirectory, ".data", */"imgui.ini");
-        if (File.Exists(imgui)) return;
+        if (File.Exists(imgui) && !forceDownload) return;
 
         await ApplicationService.ApiEndpointView.DownloadFileAsync("https://cdn.fmodel.app/d/configurations/imgui.ini", imgui);
         if (new FileInfo(imgui).Length == 0)
         {
-            FLogger.AppendError();
-            FLogger.AppendText("Could not download ImGui settings", Constants.WHITE, true);
+            FLogger.Append(ELog.Error, () => FLogger.Text("Could not download ImGui settings", Constants.WHITE, true));
         }
     }
 }

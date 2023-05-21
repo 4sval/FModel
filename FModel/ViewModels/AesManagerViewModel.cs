@@ -103,18 +103,12 @@ public class AesManagerViewModel : ViewModel
         }
     }
 
-    public async Task UpdateProvider(bool isLaunch)
+    public void SetAesKeys()
     {
-        if (!isLaunch && !HasChange) return;
-
-        _cue4Parse.ClearProvider();
-        await _cue4Parse.LoadVfs(AesKeys);
-
         if (_cue4Parse.Game == FGame.Unknown && UserSettings.Default.ManualGames.ContainsKey(UserSettings.Default.GameDirectory))
             UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].AesKeys = _keysFromSettings;
         else UserSettings.Default.AesKeys[_cue4Parse.Game] = _keysFromSettings;
-
-        Log.Information("{@Json}", UserSettings.Default);
+        // Log.Information("{@Json}", UserSettings.Default);
     }
 
     private IEnumerable<FileItem> EnumerateAesKeys()

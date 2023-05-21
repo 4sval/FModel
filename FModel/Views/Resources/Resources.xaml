@@ -6,6 +6,7 @@
                     xmlns:soundOut="clr-namespace:CSCore.SoundOut;assembly=CSCore"
                     xmlns:audioControls="clr-namespace:FModel.Views.Resources.Controls.Aup"
                     xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+                    xmlns:settings="clr-namespace:FModel.Settings"
                     xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
                     xmlns:folding="clr-namespace:ICSharpCode.AvalonEdit.Folding;assembly=ICSharpCode.AvalonEdit"
                     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
@@ -182,19 +183,19 @@
                     </Setter.Value>
                 </Setter>
             </DataTrigger>
-            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static local:Settings.UserSettings.Default}}" Value="{x:Static local:ELoadingMode.Single}">
+            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}" Value="{x:Static local:ELoadingMode.Single}">
                 <Setter Property="SelectionMode" Value="Single" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static local:Settings.UserSettings.Default}}" Value="{x:Static local:ELoadingMode.Multiple}">
+            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}" Value="{x:Static local:ELoadingMode.Multiple}">
                 <Setter Property="SelectionMode" Value="Extended" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static local:Settings.UserSettings.Default}}" Value="{x:Static local:ELoadingMode.All}">
+            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}" Value="{x:Static local:ELoadingMode.All}">
                 <Setter Property="SelectionMode" Value="Extended" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static local:Settings.UserSettings.Default}}" Value="{x:Static local:ELoadingMode.AllButNew}">
+            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}" Value="{x:Static local:ELoadingMode.AllButNew}">
                 <Setter Property="SelectionMode" Value="Extended" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static local:Settings.UserSettings.Default}}" Value="{x:Static local:ELoadingMode.AllButModified}">
+            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}" Value="{x:Static local:ELoadingMode.AllButModified}">
                 <Setter Property="SelectionMode" Value="Extended" />
             </DataTrigger>
         </Style.Triggers>
@@ -647,7 +648,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="{Binding AvalonImageSize, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                            <ColumnDefinition Width="{Binding AvalonImageSize, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" />
                         </Grid.ColumnDefinitions>
 
                         <controls:AvalonEditor x:Name="DynamicArea" Grid.Column="0" DataContext="{Binding SelectedItem, ElementName=TabControlName}" />
@@ -1367,6 +1368,7 @@
     <Style x:Key="CustomRichTextBox" TargetType="RichTextBox">
         <Setter Property="Height" Value="175" />
         <Setter Property="IsReadOnly" Value="True" />
+        <Setter Property="IsDocumentEnabled" Value="True" />
         <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
         <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" />
         <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>

@@ -43,10 +43,9 @@ struct Parameters
     bool HasAo;
 
     vec4 EmissiveRegion;
-    float Specular;
-    float Roughness;
+    float RoughnessMin;
+    float RoughnessMax;
     float EmissiveMult;
-    float UVScale;
 };
 
 struct BaseLight
@@ -91,6 +90,7 @@ uniform Light uLights[MAX_LIGHT_COUNT];
 uniform int uNumLights;
 uniform int uUvCount;
 uniform bool uHasVertexColors;
+uniform vec3 uSectionColor;
 uniform bool bVertexColors[6];
 uniform vec3 uViewPos;
 
@@ -101,11 +101,6 @@ int LayerToIndex()
     return clamp(int(fTexLayer), 0, uUvCount - 1);
 }
 
-vec2 ScaledTexCoords()
-{
-    return fTexCoords * uParameters.UVScale;
-}
-
 vec4 SamplerToVector(sampler2D s, vec2 coords)
 {
     return texture(s, coords);
@@ -113,7 +108,7 @@ vec4 SamplerToVector(sampler2D s, vec2 coords)
 
 vec4 SamplerToVector(sampler2D s)
 {
-    return SamplerToVector(s, ScaledTexCoords());
+    return SamplerToVector(s, fTexCoords);
 }
 
 vec3 ComputeNormals(int layer)
@@ -153,7 +148,7 @@ vec3 CalcLight(int layer, vec3 normals, vec3 position, vec3 color, float attenua
 {
     vec3 fLambert = SamplerToVector(uParameters.Diffuse[layer].Sampler).rgb * uParameters.Diffuse[layer].Color.rgb;
     vec3 specular_masks = SamplerToVector(uParameters.SpecularMasks[layer].Sampler).rgb;
-    float roughness = max(0.0f, specular_masks.b * uParameters.Roughness);
+    float roughness = mix(uParameters.RoughnessMin, uParameters.RoughnessMax, specular_masks.b);
 
     vec3 l = normalize(uViewPos - fPos);
 
@@ -174,11 +169,11 @@ vec3 CalcLight(int layer, vec3 normals, vec3 position, vec3 color, float attenua
 
     vec3 specBrdfNom = ggxDistribution(roughness, nDotH) * geomSmith(roughness, nDotL) * geomSmith(roughness, nDotV) * f;
     float specBrdfDenom = 4.0 * nDotV * nDotL + 0.0001;
-    vec3 specBrdf = uParameters.Specular * specular_masks.r * specBrdfNom / specBrdfDenom;
+    vec3 specBrdf = specBrdfNom / specBrdfDenom;
 
     vec3 diffuseBrdf = fLambert;
     if (!global) diffuseBrdf = kD * fLambert / PI;
-    return (diffuseBrdf + specBrdf) * color * nDotL * attenuation;
+    return (diffuseBrdf + specBrdf) * color * attenuation * nDotL;
 }
 
 vec3 CalcBaseLight(int layer, vec3 normals, BaseLight base, float attenuation, bool global)
@@ -217,21 +212,23 @@ vec3 CalcSpotLight(int layer, vec3 normals, Light light)
 
 void main()
 {
-    if (bVertexColors[2] && uHasVertexColors)
+    if (bVertexColors[1])
+    {
+        FragColor = vec4(uSectionColor, 1.0);
+    }
+    else if (bVertexColors[2] && uHasVertexColors)
     {
         FragColor = fColor;
     }
     else if (bVertexColors[3])
     {
-        FragColor = vec4(fNormal, 1);
+        int layer = LayerToIndex();
+        vec3 normals = ComputeNormals(layer);
+        FragColor = vec4(normals, 1.0);
     }
     else if (bVertexColors[4])
     {
-        FragColor = vec4(fTangent, 1);
-    }
-    else if (bVertexColors[5])
-    {
-        FragColor = vec4(fTexCoords, 0, 1);
+        FragColor = vec4(fTexCoords, 0.0, 1.0);
     }
     else
     {
@@ -248,10 +245,10 @@ void main()
                 vec3 color = uParameters.Ao.ColorBoost.Color * uParameters.Ao.ColorBoost.Exponent;
                 result = mix(result, result * color, m.b);
             }
-            result = mix(result * m.r * uParameters.Ao.AmbientOcclusion, result, m.g);
+            result = vec3(uParameters.Ao.AmbientOcclusion) * result * m.r;
         }
 
-        vec2 coords = ScaledTexCoords();
+        vec2 coords = fTexCoords;
         if (coords.x > uParameters.EmissiveRegion.x &&
             coords.y > uParameters.EmissiveRegion.y &&
             coords.x < uParameters.EmissiveRegion.z &&
@@ -265,7 +262,6 @@ void main()
             result += uParameters.Emissive[layer].Color.rgb * emissive.rgb * uParameters.EmissiveMult;
         }
 
-        if (!bVertexColors[1])
         {
             result += CalcLight(layer, normals, uViewPos, vec3(0.75), 1.0, false);
 

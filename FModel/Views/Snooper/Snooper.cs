@@ -1,9 +1,8 @@
 using System;
 using System.ComponentModel;
-using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Windows;
+using System.Windows.Forms;
 using CUE4Parse.UE4.Assets.Exports;
 using FModel.Views.Snooper.Buffers;
 using ImGuiNET;
@@ -14,24 +13,22 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
+using Application = System.Windows.Application;
+using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
 
 namespace FModel.Views.Snooper;
 
 public class Snooper : GameWindow
 {
-    public Camera Camera;
     public readonly FramebufferObject Framebuffer;
     public readonly Renderer Renderer;
 
     private readonly SnimGui _gui;
 
-    private float _previousSpeed;
-
     private bool _init;
 
     public Snooper(GameWindowSettings gwSettings, NativeWindowSettings nwSettings) : base(gwSettings, nwSettings)
     {
-        Camera = new Camera();
         Framebuffer = new FramebufferObject(ClientSize);
         Renderer = new Renderer(ClientSize.X, ClientSize.Y);
 
@@ -41,13 +38,7 @@ public class Snooper : GameWindow
 
     public bool TryLoadExport(CancellationToken cancellationToken, UObject export)
     {
-        var newCamera = Renderer.Load(cancellationToken, export) ?? new Camera();
-        if (newCamera.Speed > _previousSpeed)
-        {
-            newCamera.Zoom = Camera.Zoom;
-            Camera = newCamera;
-            _previousSpeed = Camera.Speed;
-        }
+        Renderer.Load(cancellationToken, export);
         return Renderer.Options.Models.Count > 0;
     }
 
@@ -55,9 +46,7 @@ public class Snooper : GameWindow
     {
         if (clear)
         {
-            _previousSpeed = 0f;
-            Renderer.Options.ResetModelsAndLights();
-            Renderer.Options.SelectModel(Guid.Empty);
+            Renderer.CameraOp.Speed = 0;
             Renderer.Save();
         }
 
@@ -73,6 +62,8 @@ public class Snooper : GameWindow
 
     public override void Run()
     {
+        Renderer.Options.SwapMaterial(false);
+        Renderer.Options.AnimateMesh(false);
         Application.Current.Dispatcher.Invoke(delegate
         {
             WindowShouldClose(false, false);
@@ -82,7 +73,7 @@ public class Snooper : GameWindow
 
     private unsafe void LoadWindowIcon()
     {
-        var info = Application.GetResourceStream(new Uri($"/FModel;component/Resources/engine.png", UriKind.Relative));
+        var info = Application.GetResourceStream(new Uri("/FModel;component/Resources/engine.png", UriKind.Relative));
         using var img = SixLabors.ImageSharp.Image.Load<Rgba32>(info.Stream);
         var memoryGroup = img.GetPixelMemoryGroup();
         Memory<byte> array = new byte[memoryGroup.TotalLength * sizeof(Rgba32)];
@@ -110,6 +101,7 @@ public class Snooper : GameWindow
 
         GL.ClearColor(OpenTK.Mathematics.Color4.Black);
         GL.Enable(EnableCap.Blend);
+        GL.Enable(EnableCap.CullFace);
         GL.Enable(EnableCap.DepthTest);
         GL.Enable(EnableCap.Multisample);
         GL.StencilOp(StencilOp.Keep, StencilOp.Replace, StencilOp.Replace);
@@ -126,14 +118,16 @@ public class Snooper : GameWindow
         if (!IsVisible)
             return;
 
+        var delta = (float) args.Time;
+
         ClearWhatHasBeenDrawn(); // clear window background
-        _gui.Controller.Update(this, (float)args.Time);
+        _gui.Controller.Update(this, delta);
         _gui.Render(this);
 
         Framebuffer.Bind(); // switch to viewport background
         ClearWhatHasBeenDrawn(); // clear viewport background
 
-        Renderer.Render(Camera);
+        Renderer.Render(delta);
 
         Framebuffer.BindMsaa();
         Framebuffer.Bind(0); // switch to window background
@@ -162,25 +156,21 @@ public class Snooper : GameWindow
         if (!IsVisible || ImGui.GetIO().WantTextInput)
             return;
 
-        var multiplier = KeyboardState.IsKeyDown(Keys.LeftShift) ? 2f : 1f;
-        var moveSpeed = Camera.Speed * multiplier * (float) e.Time;
-        if (KeyboardState.IsKeyDown(Keys.W))
-            Camera.Position += moveSpeed * Camera.Direction;
-        if (KeyboardState.IsKeyDown(Keys.S))
-            Camera.Position -= moveSpeed * Camera.Direction;
-        if (KeyboardState.IsKeyDown(Keys.A))
-            Camera.Position -= Vector3.Normalize(Vector3.Cross(Camera.Direction, Camera.Up)) * moveSpeed;
-        if (KeyboardState.IsKeyDown(Keys.D))
-            Camera.Position += Vector3.Normalize(Vector3.Cross(Camera.Direction, Camera.Up)) * moveSpeed;
-        if (KeyboardState.IsKeyDown(Keys.E))
-            Camera.Position += moveSpeed * Camera.Up;
-        if (KeyboardState.IsKeyDown(Keys.Q))
-            Camera.Position -= moveSpeed * Camera.Up;
-        if (KeyboardState.IsKeyDown(Keys.X))
-            Camera.ModifyZoom(-.5f);
-        if (KeyboardState.IsKeyDown(Keys.C))
-            Camera.ModifyZoom(+.5f);
+        var delta = (float) e.Time;
+        Renderer.CameraOp.Modify(KeyboardState, delta);
 
+        if (KeyboardState.IsKeyPressed(Keys.Z) &&
+            Renderer.Options.TryGetModel(out var selectedModel) &&
+            selectedModel.HasSkeleton)
+        {
+            Renderer.Options.RemoveAnimations();
+            Renderer.Options.AnimateMesh(true);
+            WindowShouldClose(true, false);
+        }
+        if (KeyboardState.IsKeyPressed(Keys.Space))
+            Renderer.Options.Tracker.IsPaused = !Renderer.Options.Tracker.IsPaused;
+        if (KeyboardState.IsKeyPressed(Keys.Delete))
+            Renderer.Options.RemoveModel(Renderer.Options.SelectedModel);
         if (KeyboardState.IsKeyPressed(Keys.H))
             WindowShouldClose(true, false);
         if (KeyboardState.IsKeyPressed(Keys.Escape))
@@ -193,9 +183,8 @@ public class Snooper : GameWindow
 
         GL.Viewport(0, 0, e.Width, e.Height);
 
-        Camera.AspectRatio = e.Width / (float) e.Height;
         Framebuffer.WindowResized(e.Width, e.Height);
-        Renderer.Picking.WindowResized(e.Width, e.Height);
+        Renderer.WindowResized(e.Width, e.Height);
 
         _gui.Controller.WindowResized(e.Width, e.Height);
     }
@@ -204,5 +193,63 @@ public class Snooper : GameWindow
     {
         base.OnClosing(e);
         WindowShouldClose(true, true);
+    }
+
+    [DllImport("user32.dll")]
+    private static extern bool EnumDisplaySettings(
+        string deviceName, int modeNum, ref DEVMODE devMode);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct DEVMODE
+    {
+        private const int CCHDEVICENAME = 0x20;
+        private const int CCHFORMNAME = 0x20;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x20)]
+        public string dmDeviceName;
+        public short dmSpecVersion;
+        public short dmDriverVersion;
+        public short dmSize;
+        public short dmDriverExtra;
+        public int dmFields;
+        public int dmPositionX;
+        public int dmPositionY;
+        public ScreenOrientation dmDisplayOrientation;
+        public int dmDisplayFixedOutput;
+        public short dmColor;
+        public short dmDuplex;
+        public short dmYResolution;
+        public short dmTTOption;
+        public short dmCollate;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x20)]
+        public string dmFormName;
+        public short dmLogPixels;
+        public int dmBitsPerPel;
+        public int dmPelsWidth;
+        public int dmPelsHeight;
+        public int dmDisplayFlags;
+        public int dmDisplayFrequency;
+        public int dmICMMethod;
+        public int dmICMIntent;
+        public int dmMediaType;
+        public int dmDitherType;
+        public int dmReserved1;
+        public int dmReserved2;
+        public int dmPanningWidth;
+        public int dmPanningHeight;
+
+    }
+
+    public static int GetMaxRefreshFrequency()
+    {
+        var rf = 60;
+        var vDevMode = new DEVMODE();
+        var i = 0;
+        while (EnumDisplaySettings(null, i, ref vDevMode))
+        {
+            i++;
+            rf = Math.Max(rf, vDevMode.dmDisplayFrequency);
+        }
+
+        return rf;
     }
 }

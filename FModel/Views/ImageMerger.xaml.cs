@@ -84,6 +84,8 @@ public partial class ImageMerger
             {
                 maxWidth = curW + image.Width + margin;
                 curH += lineMaxHeight + margin;
+                if (curH > maxHeight)
+                    maxHeight = curH;
 
                 curW = 0;
                 lineMaxHeight = 0;
@@ -279,14 +281,16 @@ public partial class ImageMerger
         if (File.Exists(path))
         {
             Log.Information("{FileName} successfully saved", fileName);
-            FLogger.AppendInformation();
-            FLogger.AppendText($"Successfully saved '{fileName}'", Constants.WHITE, true);
+            FLogger.Append(ELog.Information, () =>
+            {
+                FLogger.Text("Successfully saved ", Constants.WHITE);
+                FLogger.Link(fileName, path, true);
+            });
         }
         else
         {
             Log.Error("{FileName} could not be saved", fileName);
-            FLogger.AppendError();
-            FLogger.AppendText($"Could not save '{fileName}'", Constants.WHITE, true);
+            FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{fileName}'", Constants.WHITE, true));
         }
     }
 

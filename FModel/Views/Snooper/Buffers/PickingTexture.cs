@@ -68,7 +68,7 @@ public class PickingTexture : IDisposable
             _shader.SetUniform("uD", guid.D);
 
             if (!model.Show) continue;
-            model.SimpleRender(_shader);
+            model.PickingRender(_shader);
         }
 
         Bind(0);
@@ -97,6 +97,8 @@ public class PickingTexture : IDisposable
         Bind(0);
         return pixel;
     }
+
+    public IntPtr GetPointer() => (IntPtr) _pickingTexture;
 
     public void WindowResized(int width, int height)
     {

@@ -49,6 +49,8 @@ public partial class SettingsView
             {
                 case SettingsOut.ReloadLocres:
                     _applicationView.CUE4Parse.LocalizedResourcesCount = 0;
+                    _applicationView.CUE4Parse.LocalResourcesDone = false;
+                    _applicationView.CUE4Parse.HotfixedResourcesDone = false;
                     await _applicationView.CUE4Parse.LoadLocalizedResources();
                     break;
                 case SettingsOut.ReloadMappings:
@@ -59,6 +61,8 @@ public partial class SettingsView
                     break;
             }
         }
+
+        _applicationView.CUE4Parse.Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
     }
 
     private void OnBrowseOutput(object sender, RoutedEventArgs e)
@@ -181,6 +185,19 @@ public partial class SettingsView
             return;
 
         _applicationView.SettingsView.SelectedOptions = editor.Options;
+    }
+
+    private void OpenMapStructTypes(object sender, RoutedEventArgs e)
+    {
+        var editor = new DictionaryEditor(
+            _applicationView.SettingsView.SelectedMapStructTypes,
+            "MapStructTypes",
+            _applicationView.SettingsView.EnableElements);
+        var result = editor.ShowDialog();
+        if (!result.HasValue || !result.Value)
+            return;
+
+        _applicationView.SettingsView.SelectedMapStructTypes = editor.MapStructTypes;
     }
 
     private void OpenAesEndpoint(object sender, RoutedEventArgs e)
