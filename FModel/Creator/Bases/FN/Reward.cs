@@ -75,7 +75,6 @@ public class Reward
             }
 
             var shaper = new CustomSKShaper(_rewardPaint.Typeface);
-            shaper.Shape(_rewardQuantity, _rewardPaint);
             c.DrawShapedText(shaper, _rewardQuantity, rect.Left + rect.Height + 25, rect.MidY + 20, _rewardPaint);
         }
         else

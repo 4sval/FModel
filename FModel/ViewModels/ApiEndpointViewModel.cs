@@ -9,14 +9,11 @@ namespace FModel.ViewModels;
 
 public class ApiEndpointViewModel
 {
-    private readonly RestClient _client = new RestClient
+    private readonly RestClient _client = new (new RestClientOptions
     {
-        Options =
-        {
-            UserAgent = $"FModel/{Constants.APP_VERSION}",
-            MaxTimeout = 3 * 1000
-        }
-    }.UseSerializer<JsonNetSerializer>();
+        UserAgent = $"FModel/{Constants.APP_VERSION}",
+        MaxTimeout = 3 * 1000
+    }, configureSerialization: s => s.UseSerializer<JsonNetSerializer>());
 
     public FortniteApiEndpoint FortniteApi { get; }
     public ValorantApiEndpoint ValorantApi { get; }

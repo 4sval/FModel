@@ -76,7 +76,7 @@ public class BaseItemAccessToken : UCreator
 
         var shaper = new CustomSKShaper(DisplayNamePaint.Typeface);
         var shapedText = shaper.Shape(DisplayName, DisplayNamePaint);
-        c.DrawShapedText(shaper, DisplayName, left - shapedText.Points[^1].X / 2, _icon.Margin * 8 + size, DisplayNamePaint);
+        c.DrawShapedText(shaper, DisplayName, left - shapedText.Width / 2, _icon.Margin * 8 + size, DisplayNamePaint);
 
         float topBase = _icon.Margin + size * 2;
         if (!string.IsNullOrEmpty(_unlockedDescription))

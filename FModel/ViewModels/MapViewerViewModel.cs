@@ -430,30 +430,28 @@ public class MapViewerViewModel : ViewModel
                         !poiData.TryGetValue(out FName discoverBackend, "DiscoverObjectiveBackendName")) continue;
 
                     var shaper = new CustomSKShaper(_textPaint.Typeface);
-                    var shapedText = shaper.Shape(text.Text, _textPaint);
-
                     if (discoverBackend.Text.Contains("papaya", StringComparison.OrdinalIgnoreCase))
                     {
                         _fillPaint.StrokeWidth = 5;
                         var vector = GetMapPosition(worldLocation, _prRadius);
                         prLandmarks.DrawPoint(vector.X, vector.Y, _pathPaint);
-                        prLandmarks.DrawShapedText(shaper, text.Text, vector.X - shapedText.Points[^1].X / 2, vector.Y - 12.5F, _fillPaint);
-                        prLandmarks.DrawShapedText(shaper, text.Text, vector.X - shapedText.Points[^1].X / 2, vector.Y - 12.5F, _textPaint);
+                        prLandmarks.DrawShapedText(shaper, text.Text, vector.X, vector.Y - 12.5F, _fillPaint);
+                        prLandmarks.DrawShapedText(shaper, text.Text, vector.X, vector.Y - 12.5F, _textPaint);
                     }
                     else if (discoveryQuest.AssetPathName.Text.Contains("landmarks", StringComparison.OrdinalIgnoreCase))
                     {
                         _fillPaint.StrokeWidth = 5;
                         var vector = GetMapPosition(worldLocation, _brRadius);
                         brLandmarks.DrawPoint(vector.X, vector.Y, _pathPaint);
-                        brLandmarks.DrawShapedText(shaper, text.Text, vector.X - shapedText.Points[^1].X / 2, vector.Y - 12.5F, _fillPaint);
-                        brLandmarks.DrawShapedText(shaper, text.Text, vector.X - shapedText.Points[^1].X / 2, vector.Y - 12.5F, _textPaint);
+                        brLandmarks.DrawShapedText(shaper, text.Text, vector.X, vector.Y - 12.5F, _fillPaint);
+                        brLandmarks.DrawShapedText(shaper, text.Text, vector.X, vector.Y - 12.5F, _textPaint);
                     }
                     else
                     {
                         _fillPaint.StrokeWidth = 10;
                         var vector = GetMapPosition(worldLocation, _brRadius);
-                        pois.DrawShapedText(shaper, text.Text.ToUpperInvariant(), vector.X - shapedText.Points[^1].X / 2, vector.Y, _fillPaint);
-                        pois.DrawShapedText(shaper, text.Text.ToUpperInvariant(), vector.X - shapedText.Points[^1].X / 2, vector.Y, _textPaint);
+                        pois.DrawShapedText(shaper, text.Text.ToUpperInvariant(), vector.X, vector.Y, _fillPaint);
+                        pois.DrawShapedText(shaper, text.Text.ToUpperInvariant(), vector.X, vector.Y, _textPaint);
                     }
                 }
             }

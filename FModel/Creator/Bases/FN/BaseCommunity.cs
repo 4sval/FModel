@@ -155,10 +155,9 @@ public class BaseCommunity : BaseIcon
             }
 
             var shaper = new CustomSKShaper(DisplayNamePaint.Typeface);
-            var shapedText = shaper.Shape(DisplayName, DisplayNamePaint);
             var x = font.Alignment switch
             {
-                SKTextAlign.Center => (Width - shapedText.Points[^1].X) / 2f,
+                SKTextAlign.Center => Width / 2f,
                 _ => font.X
             };
 
@@ -192,10 +191,9 @@ public class BaseCommunity : BaseIcon
             }
 
             var shaper = new CustomSKShaper(DescriptionPaint.Typeface);
-            var shapedText = shaper.Shape(Description, DescriptionPaint);
             var x = font.Alignment switch
             {
-                SKTextAlign.Center => (Width - shapedText.Points[^1].X) / 2f,
+                SKTextAlign.Center => Width / 2f,
                 _ => font.X
             };
 
@@ -236,11 +234,9 @@ public class BaseCommunity : BaseIcon
             DisplayNamePaint.Typeface = Utils.Typefaces.OnTheFly(path);
 
         var shaper = new CustomSKShaper(DisplayNamePaint.Typeface);
-        var shapedText = shaper.Shape(text, DisplayNamePaint);
         var x = font.Alignment switch
         {
-            SKTextAlign.Center => (Width - shapedText.Points[^1].X) / 2f,
-            SKTextAlign.Right => font.X - DisplayNamePaint.MeasureText(text),
+            SKTextAlign.Center => Width / 2f,
             _ => font.X
         };
 

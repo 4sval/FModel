@@ -56,7 +56,6 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
         await Task.WhenAll(
             _applicationView.CUE4Parse.LoadLocalizedResources(), // load locres if not already loaded,
             _applicationView.CUE4Parse.LoadVirtualPaths(), // load virtual paths if not already loaded
-            Task.Run(() => Utils.Typefaces = new Typefaces(_applicationView.CUE4Parse)),
             _threadWorkerView.Begin(cancellationToken =>
             {
                 // filter what to show

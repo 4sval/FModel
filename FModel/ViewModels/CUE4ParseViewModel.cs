@@ -549,6 +549,7 @@ public class CUE4ParseViewModel : ViewModel
         {
             FLogger.Append(ELog.Information, () =>
                 FLogger.Text($"{LocalizedResourcesCount} localized resources loaded for '{UserSettings.Default.AssetLanguage.GetDescription()}'", Constants.WHITE, true));
+            Utils.Typefaces = new Typefaces(this);
         }
     }
     private Task LoadGameLocalizedResources()

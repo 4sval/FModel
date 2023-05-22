@@ -58,7 +58,7 @@ public class CustomSKShaper : SKShaper
             points[i] = new SKPoint(xOffset + pos[i].XOffset * textSizeX, yOffset - pos[i].YOffset * textSizeY);
         }
 
-        return new Result(codepoints, clusters, points);
+        return new Result(codepoints, clusters, points, points[^1].X);
     }
 
     public new Result Shape(string text, SKPaint paint) => Shape(text, 0, 0, paint);
