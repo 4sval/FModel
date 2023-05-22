@@ -111,7 +111,7 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             if (!expand && folder.IsExpanded)
             {
                 folder.IsExpanded = false;
-                Thread.Yield();
+                Thread.Sleep(10);
                 cancellationToken.ThrowIfCancellationRequested();
             }
 
@@ -129,7 +129,7 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
         for (var node = nodes.Last; node != null; node = node.Previous)
         {
             node.Value.IsExpanded = true;
-            Thread.Yield();
+            Thread.Sleep(10);
             cancellationToken.ThrowIfCancellationRequested();
         }
     }

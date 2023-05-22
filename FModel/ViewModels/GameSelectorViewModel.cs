@@ -139,12 +139,15 @@ public class GameSelectorViewModel : ViewModel
                 if (installationList.AppName.Equals(gameName, StringComparison.OrdinalIgnoreCase))
                 {
                     var pak = Directory.GetDirectories(installationList.InstallLocation, "Paks*", SearchOption.AllDirectories);
-                    if (pak.Length > 0) return new DetectedGame { GameName = installationList.AppName, GameDirectory = pak[0] };
+                    if (pak.Length > 0)
+                    {
+                        Log.Debug("Found {GameName} in LauncherInstalled.dat", gameName);
+                        return new DetectedGame { GameName = installationList.AppName, GameDirectory = pak[0] };
+                    }
                 }
             }
         }
 
-        Log.Warning("Could not find {GameName} in LauncherInstalled.dat", gameName);
         return null;
     }
 
@@ -157,11 +160,13 @@ public class GameSelectorViewModel : ViewModel
             foreach (var (key, _) in _riotClientInstalls.AssociatedClient)
             {
                 if (key.Contains(gameName, StringComparison.OrdinalIgnoreCase))
+                {
+                    Log.Debug("Found {GameName} in RiotClientInstalls.json", gameName);
                     return new DetectedGame { GameName = gameName, GameDirectory = $"{key.Replace('/', '\\')}{pakDirectory}" };
+                }
             }
         }
 
-        Log.Warning("Could not find {GameName} in RiotClientInstalls.json", gameName);
         return null;
     }
 
@@ -170,9 +175,11 @@ public class GameSelectorViewModel : ViewModel
     {
         _launcherSettings ??= GetDataLauncherInstalls<LauncherSettings>("\\.minecraft\\launcher_settings.json");
         if (_launcherSettings is { ProductLibraryDir: { } })
+        {
+            Log.Debug("Found {GameName} in launcher_settings.json", gameName);
             return new DetectedGame { GameName = gameName, GameDirectory = $"{_launcherSettings.ProductLibraryDir}{pakDirectory}" };
+        }
 
-        Log.Warning("Could not find {GameName} in launcher_settings.json", gameName);
         return null;
     }
 
@@ -180,9 +187,11 @@ public class GameSelectorViewModel : ViewModel
     {
         var steamInfo = SteamDetection.GetSteamGameById(id);
         if (steamInfo is not null)
+        {
+            Log.Debug("Found {GameName} in steam manifests", steamInfo.Name);
             return new DetectedGame { GameName = steamInfo.Name, GameDirectory = $"{steamInfo.GameRoot}{pakDirectory}" };
+        }
 
-        Log.Warning("Could not find {GameId} in steam manifests", id);
         return null;
     }
 
@@ -199,9 +208,11 @@ public class GameSelectorViewModel : ViewModel
         }
 
         if (!string.IsNullOrEmpty(installLocation))
+        {
+            Log.Debug("Found {GameName} in the registry", key);
             return new DetectedGame { GameName = key, GameDirectory = $"{installLocation}{pakDirectory}" };
+        }
 
-        Log.Warning("Could not find {GameName} in the registry", key);
         return null;
     }
 
@@ -221,9 +232,11 @@ public class GameSelectorViewModel : ViewModel
         }
 
         if (!string.IsNullOrEmpty(installLocation))
+        {
+            Log.Debug("Found {GameName} in the registry", key);
             return new DetectedGame { GameName = displayName, GameDirectory = $"{installLocation}{pakDirectory}" };
+        }
 
-        Log.Warning("Could not find {GameName} in the registry", key);
         return null;
     }
 
@@ -234,11 +247,10 @@ public class GameSelectorViewModel : ViewModel
             var launcher = $"{drive.Name}{jsonFile}";
             if (!File.Exists(launcher)) continue;
 
-            Log.Information("\"{Launcher}\" found in drive \"{DriveName}\"", launcher, drive.Name);
+            Log.Debug("\"{Launcher}\" found in drive \"{DriveName}\"", launcher, drive.Name);
             return JsonConvert.DeserializeObject<T>(File.ReadAllText(launcher));
         }
 
-        Log.Warning("\"{JsonFile}\" not found in any drives", jsonFile);
         return default;
     }
 
@@ -248,11 +260,10 @@ public class GameSelectorViewModel : ViewModel
         var launcher = $"{appData}{jsonFile}";
         if (File.Exists(launcher))
         {
-            Log.Information("\"{Launcher}\" found in \"{AppData}\"", launcher, appData);
+            Log.Debug("\"{Launcher}\" found in \"{AppData}\"", launcher, appData);
             return JsonConvert.DeserializeObject<T>(File.ReadAllText(launcher));
         }
 
-        Log.Warning("\"{Json}\" not found anywhere", jsonFile);
         return default;
     }
 
