@@ -609,7 +609,7 @@ public class CUE4ParseViewModel : ViewModel
     {
         foreach (var asset in assetItems)
         {
-            Thread.Sleep(10);
+            Thread.Yield();
             cancellationToken.ThrowIfCancellationRequested();
             Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs);
         }
@@ -619,7 +619,7 @@ public class CUE4ParseViewModel : ViewModel
     {
         foreach (var asset in folder.AssetsList.Assets)
         {
-            Thread.Sleep(10);
+            Thread.Yield();
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
@@ -892,7 +892,7 @@ public class CUE4ParseViewModel : ViewModel
                 TabControl.SelectedTab.SetDocumentText(verseDigest.ReadableCode, false, false);
                 return true;
             }
-            case UTexture2D { IsVirtual: false } texture when isNone:
+            case UTexture2D { IsVirtual: false } texture when isNone || saveTextures:
             {
                 TabControl.SelectedTab.AddImage(texture, saveTextures, updateUi);
                 return false;
