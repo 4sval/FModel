@@ -204,9 +204,6 @@ public static class Utils
         return string.Empty;
     }
 
-    public static string FixPath(string weirdPath) =>
-        _applicationView.CUE4Parse.Provider.FixPath(weirdPath, StringComparison.Ordinal);
-
     public static void DrawCenteredMultilineText(SKCanvas c, string text, int maxCount, int size, int margin, SKTextAlign side, SKRect area, SKPaint paint)
     {
         var lineHeight = paint.TextSize * 1.2f;
@@ -233,8 +230,8 @@ public static class Utils
             y += lineHeight;
             var x = side switch
             {
-                SKTextAlign.Center => area.MidX - shapedText.Points[^1].X / 2,
-                SKTextAlign.Right => size - margin - shapedText.Points[^1].X,
+                SKTextAlign.Center => area.MidX - shapedText.Width / 2,
+                SKTextAlign.Right => size - margin - shapedText.Width,
                 SKTextAlign.Left => margin,
                 _ => throw new NotImplementedException()
             };
@@ -266,8 +263,8 @@ public static class Utils
 
             var x = side switch
             {
-                SKTextAlign.Center => area.MidX - shapedText.Points[^1].X / 2,
-                SKTextAlign.Right => size - margin - shapedText.Points[^1].X,
+                SKTextAlign.Center => area.MidX - shapedText.Width / 2,
+                SKTextAlign.Right => size - margin - shapedText.Width,
                 SKTextAlign.Left => area.Left,
                 _ => throw new NotImplementedException()
             };

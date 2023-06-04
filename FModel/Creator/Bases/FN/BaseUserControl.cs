@@ -146,7 +146,6 @@ public class BaseUserControl : UCreator
         }
 
         var shaper = new CustomSKShaper(_displayNamePaint.Typeface);
-        shaper.Shape(DisplayName, _displayNamePaint);
         c.DrawShapedText(shaper, DisplayName, Margin, Margin + _displayNamePaint.TextSize, _displayNamePaint);
 #if DEBUG
         c.DrawRect(new SKRect(Margin, Margin, Width - Margin, Margin + _displayNamePaint.TextSize), new SKPaint { Color = SKColors.Blue, IsStroke = true });

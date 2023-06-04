@@ -217,8 +217,7 @@ public class BaseIconStats : BaseIcon
         }
 
         var shaper = new CustomSKShaper(_informationPaint.Typeface);
-        shaper.Shape(DisplayName, _informationPaint);
-        c.DrawShapedText(shaper, DisplayName, _headerHeight + _headerHeight / 3 + 10, _headerHeight / 2 + _informationPaint.TextSize / 3, _informationPaint);
+        c.DrawShapedText(shaper, DisplayName, _headerHeight + _headerHeight / 3 + 10, _headerHeight / 2f + _informationPaint.TextSize / 3, _informationPaint);
     }
 
     private void DrawStatistics(SKCanvas c)
@@ -270,7 +269,6 @@ public class IconStat
         }
 
         var shaper = new CustomSKShaper(_statPaint.Typeface);
-        shaper.Shape(_statName, _statPaint);
         c.DrawShapedText(shaper, _statName, 50, y + 10, _statPaint);
 
         _statPaint.TextAlign = SKTextAlign.Right;

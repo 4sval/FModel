@@ -233,7 +233,6 @@ public class BaseQuest : BaseIcon
             }
 
             var shaper = new CustomSKShaper(_informationPaint.Typeface);
-            shaper.Shape(DisplayName, _informationPaint);
             c.DrawShapedText(shaper, DisplayName, Height, y + 50, _informationPaint);
         }
 

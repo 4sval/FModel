@@ -50,6 +50,7 @@ public static class TextureHelper
             // G: Metallic
             // B: Whatever (AO / S / E / ...)
             case "CCFF7R":
+            case "PJ033":
             {
                 texture.SwizzleMask = new []
                 {

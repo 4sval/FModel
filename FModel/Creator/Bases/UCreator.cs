@@ -166,7 +166,7 @@ public abstract class UCreator
 
         var shaper = new CustomSKShaper(DisplayNamePaint.Typeface);
         var shapedText = shaper.Shape(DisplayName, DisplayNamePaint);
-        var x = (Width - shapedText.Points[^1].X) / 2;
+        var x = Width / 2f;
         var y = _STARTER_TEXT_POSITION + _NAME_TEXT_SIZE;
 
         switch (Style)
@@ -174,14 +174,15 @@ public abstract class UCreator
             case EIconStyle.Flat:
             {
                 DisplayNamePaint.TextAlign = SKTextAlign.Right;
-                x = Width - Margin * 2 - shapedText.Points[^1].X;
+                x = Width - Margin * 2;
                 break;
             }
         }
 
 #if DEBUG
-        c.DrawLine(x, 0, x, Width, new SKPaint { Color = SKColors.Blue, IsStroke = true });
-        c.DrawLine(x + shapedText.Points[^1].X, 0, x + shapedText.Points[^1].X, Width, new SKPaint { Color = SKColors.Blue, IsStroke = true });
+        var halfWidth = shapedText.Width / 2f;
+        c.DrawLine(x - halfWidth, 0, x - halfWidth, Width, new SKPaint { Color = SKColors.Blue, IsStroke = true });
+        c.DrawLine(x + halfWidth, 0, x + halfWidth, Width, new SKPaint { Color = SKColors.Blue, IsStroke = true });
         c.DrawRect(new SKRect(Margin, _STARTER_TEXT_POSITION, Width - Margin, y), new SKPaint { Color = SKColors.Blue, IsStroke = true });
 #endif
 
@@ -216,8 +217,6 @@ public abstract class UCreator
             case SKTextAlign.Left:
                 _shortDescriptionPaint.Typeface = Utils.Typefaces.Bottom ?? Utils.Typefaces.DisplayName;
                 var shaper = new CustomSKShaper(_shortDescriptionPaint.Typeface);
-                shaper.Shape(text, _shortDescriptionPaint);
-
                 c.DrawShapedText(shaper, text, Margin * 2.5f, Width - Margin * 2.5f, _shortDescriptionPaint);
                 break;
             case SKTextAlign.Right:

@@ -32,6 +32,7 @@ using CUE4Parse.UE4.Wwise;
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
 using CUE4Parse.FileProvider.Objects;
+using CUE4Parse.UE4.Objects.Core.Serialization;
 using EpicManifestParser.Objects;
 using FModel.Creator;
 using FModel.Extensions;
@@ -132,7 +133,7 @@ public class CUE4ParseViewModel : ViewModel
                 Provider = new StreamedFileProvider("FortniteLive", true,
                     new VersionContainer(
                         UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
-                        customVersions: UserSettings.Default.OverridedCustomVersions[Game],
+                        customVersions: new FCustomVersionContainer(UserSettings.Default.OverridedCustomVersions[Game]),
                         optionOverrides: UserSettings.Default.OverridedOptions[Game]));
                 break;
             }
@@ -142,7 +143,7 @@ public class CUE4ParseViewModel : ViewModel
                 Provider = new StreamedFileProvider("ValorantLive", true,
                     new VersionContainer(
                         UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
-                        customVersions: UserSettings.Default.OverridedCustomVersions[Game],
+                        customVersions: new FCustomVersionContainer(UserSettings.Default.OverridedCustomVersions[Game]),
                         optionOverrides: UserSettings.Default.OverridedOptions[Game]));
                 break;
             }
@@ -152,7 +153,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (gameDirectory.Contains("eFootball")) parent = gameDirectory.SubstringBeforeLast("\\pak").SubstringAfterLast("\\");
                 Game = parent.ToEnum(FGame.Unknown);
                 var versions = new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
-                    customVersions: UserSettings.Default.OverridedCustomVersions[Game],
+                    customVersions: new FCustomVersionContainer(UserSettings.Default.OverridedCustomVersions[Game]),
                     optionOverrides: UserSettings.Default.OverridedOptions[Game],
                     mapStructTypesOverrides: UserSettings.Default.OverridedMapStructTypes[Game]);
 
@@ -185,7 +186,7 @@ public class CUE4ParseViewModel : ViewModel
                     case FGame.Unknown when UserSettings.Default.ManualGames.TryGetValue(gameDirectory, out var settings):
                     {
                         versions = new VersionContainer(settings.OverridedGame, UserSettings.Default.OverridedPlatform,
-                            customVersions: settings.OverridedCustomVersions,
+                            customVersions: new FCustomVersionContainer(settings.OverridedCustomVersions),
                             optionOverrides: settings.OverridedOptions,
                             mapStructTypesOverrides: settings.OverridedMapStructTypes);
                         goto default;
@@ -549,6 +550,7 @@ public class CUE4ParseViewModel : ViewModel
         {
             FLogger.Append(ELog.Information, () =>
                 FLogger.Text($"{LocalizedResourcesCount} localized resources loaded for '{UserSettings.Default.AssetLanguage.GetDescription()}'", Constants.WHITE, true));
+            Utils.Typefaces = new Typefaces(this);
         }
     }
     private Task LoadGameLocalizedResources()
@@ -607,7 +609,7 @@ public class CUE4ParseViewModel : ViewModel
     {
         foreach (var asset in assetItems)
         {
-            Thread.Yield();
+            Thread.Sleep(10);
             cancellationToken.ThrowIfCancellationRequested();
             Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs);
         }
@@ -617,7 +619,7 @@ public class CUE4ParseViewModel : ViewModel
     {
         foreach (var asset in folder.AssetsList.Assets)
         {
-            Thread.Yield();
+            Thread.Sleep(10);
             cancellationToken.ThrowIfCancellationRequested();
             try
             {

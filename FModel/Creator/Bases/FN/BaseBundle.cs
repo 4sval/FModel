@@ -124,8 +124,7 @@ public class BaseBundle : UCreator
         }
 
         var shaper = new CustomSKShaper(_headerPaint.Typeface);
-        var shapedText = shaper.Shape(DisplayName, _headerPaint);
-        c.DrawShapedText(shaper, DisplayName, (Width - shapedText.Points[^1].X) / 2, _headerHeight / 2 + _headerPaint.TextSize / 2 - 10, _headerPaint);
+        c.DrawShapedText(shaper, DisplayName, Width / 2f, _headerHeight / 2f + _headerPaint.TextSize / 2 - 10, _headerPaint);
     }
 
     private void DrawQuests(SKCanvas c)

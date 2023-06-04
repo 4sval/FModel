@@ -99,20 +99,20 @@ public class GameSelectorViewModel : ViewModel
 
     private IEnumerable<DetectedGame> EnumerateDetectedGames()
     {
-        yield return GetUnrealEngineGame("Fortnite");
+        yield return GetUnrealEngineGame("Fortnite", "\\FortniteGame\\Content\\Paks");
         yield return new DetectedGame { GameName = "Fortnite [LIVE]", GameDirectory = Constants._FN_LIVE_TRIGGER };
-        yield return GetUnrealEngineGame("Pewee");
-        yield return GetUnrealEngineGame("Rosemallow");
-        yield return GetUnrealEngineGame("Catnip");
-        yield return GetUnrealEngineGame("AzaleaAlpha");
-        yield return GetUnrealEngineGame("WorldExplorersLive");
-        yield return GetUnrealEngineGame("Newt");
-        yield return GetUnrealEngineGame("shoebill");
-        yield return GetUnrealEngineGame("Snoek");
-        yield return GetUnrealEngineGame("a99769d95d8f400baad1f67ab5dfe508");
-        yield return GetUnrealEngineGame("Nebula");
-        yield return GetUnrealEngineGame("711c5e95dc094ca58e5f16bd48e751d6");
-        yield return GetUnrealEngineGame("9361c8c6d2f34b42b5f2f61093eedf48");
+        yield return GetUnrealEngineGame("Pewee", "\\RogueCompany\\Content\\Paks");
+        yield return GetUnrealEngineGame("Rosemallow", "\\Indiana\\Content\\Paks");
+        yield return GetUnrealEngineGame("Catnip", "\\OakGame\\Content\\Paks");
+        yield return GetUnrealEngineGame("AzaleaAlpha", "\\Prospect\\Content\\Paks");
+        yield return GetUnrealEngineGame("WorldExplorersLive", "\\WorldExplorers\\Content\\Paks");
+        yield return GetUnrealEngineGame("Newt", "\\g3\\Content\\Paks");
+        yield return GetUnrealEngineGame("shoebill", "\\SwGame\\Content\\Paks");
+        yield return GetUnrealEngineGame("Snoek", "\\StateOfDecay2\\Content\\Paks");
+        yield return GetUnrealEngineGame("a99769d95d8f400baad1f67ab5dfe508", "\\Core\\Platform\\Content\\Paks");
+        yield return GetUnrealEngineGame("Nebula", "\\BendGame\\Content");
+        yield return GetUnrealEngineGame("711c5e95dc094ca58e5f16bd48e751d6", "\\MultiVersus\\Content\\Paks");
+        yield return GetUnrealEngineGame("9361c8c6d2f34b42b5f2f61093eedf48", "\\TslGame\\Content\\Paks");
         yield return GetRiotGame("VALORANT", "ShooterGame\\Content\\Paks");
         yield return new DetectedGame { GameName = "Valorant [LIVE]", GameDirectory = Constants._VAL_LIVE_TRIGGER };
         yield return GetMojangGame("MinecraftDungeons", "\\dungeons\\dungeons\\Dungeons\\Content\\Paks");
@@ -129,22 +129,22 @@ public class GameSelectorViewModel : ViewModel
     }
 
     private LauncherInstalled _launcherInstalled;
-    private DetectedGame GetUnrealEngineGame(string gameName)
+    private DetectedGame GetUnrealEngineGame(string gameName, string pakDirectory)
     {
         _launcherInstalled ??= GetDriveLauncherInstalls<LauncherInstalled>("ProgramData\\Epic\\UnrealEngineLauncher\\LauncherInstalled.dat");
         if (_launcherInstalled?.InstallationList != null)
         {
             foreach (var installationList in _launcherInstalled.InstallationList)
             {
-                if (installationList.AppName.Equals(gameName, StringComparison.OrdinalIgnoreCase))
+                var gameDir = $"{installationList.InstallLocation}{pakDirectory}";
+                if (installationList.AppName.Equals(gameName, StringComparison.OrdinalIgnoreCase) && Directory.Exists(gameDir))
                 {
-                    var pak = Directory.GetDirectories(installationList.InstallLocation, "Paks*", SearchOption.AllDirectories);
-                    if (pak.Length > 0) return new DetectedGame { GameName = installationList.AppName, GameDirectory = pak[0] };
+                    Log.Debug("Found {GameName} in LauncherInstalled.dat", gameName);
+                    return new DetectedGame { GameName = installationList.AppName, GameDirectory = gameDir };
                 }
             }
         }
 
-        Log.Warning("Could not find {GameName} in LauncherInstalled.dat", gameName);
         return null;
     }
 
@@ -156,12 +156,15 @@ public class GameSelectorViewModel : ViewModel
         {
             foreach (var (key, _) in _riotClientInstalls.AssociatedClient)
             {
-                if (key.Contains(gameName, StringComparison.OrdinalIgnoreCase))
-                    return new DetectedGame { GameName = gameName, GameDirectory = $"{key.Replace('/', '\\')}{pakDirectory}" };
+                var gameDir = $"{key.Replace('/', '\\')}{pakDirectory}";
+                if (key.Contains(gameName, StringComparison.OrdinalIgnoreCase) && Directory.Exists(gameDir))
+                {
+                    Log.Debug("Found {GameName} in RiotClientInstalls.json", gameName);
+                    return new DetectedGame { GameName = gameName, GameDirectory = gameDir };
+                }
             }
         }
 
-        Log.Warning("Could not find {GameName} in RiotClientInstalls.json", gameName);
         return null;
     }
 
@@ -170,9 +173,15 @@ public class GameSelectorViewModel : ViewModel
     {
         _launcherSettings ??= GetDataLauncherInstalls<LauncherSettings>("\\.minecraft\\launcher_settings.json");
         if (_launcherSettings is { ProductLibraryDir: { } })
-            return new DetectedGame { GameName = gameName, GameDirectory = $"{_launcherSettings.ProductLibraryDir}{pakDirectory}" };
+        {
+            var gameDir = $"{_launcherSettings.ProductLibraryDir}{pakDirectory}";
+            if (Directory.Exists(gameDir))
+            {
+                Log.Debug("Found {GameName} in launcher_settings.json", gameName);
+                return new DetectedGame { GameName = gameName, GameDirectory = gameDir };
+            }
+        }
 
-        Log.Warning("Could not find {GameName} in launcher_settings.json", gameName);
         return null;
     }
 
@@ -180,9 +189,11 @@ public class GameSelectorViewModel : ViewModel
     {
         var steamInfo = SteamDetection.GetSteamGameById(id);
         if (steamInfo is not null)
+        {
+            Log.Debug("Found {GameName} in steam manifests", steamInfo.Name);
             return new DetectedGame { GameName = steamInfo.Name, GameDirectory = $"{steamInfo.GameRoot}{pakDirectory}" };
+        }
 
-        Log.Warning("Could not find {GameId} in steam manifests", id);
         return null;
     }
 
@@ -198,10 +209,13 @@ public class GameSelectorViewModel : ViewModel
             // ignored
         }
 
-        if (!string.IsNullOrEmpty(installLocation))
-            return new DetectedGame { GameName = key, GameDirectory = $"{installLocation}{pakDirectory}" };
+        var gameDir = $"{installLocation}{pakDirectory}";
+        if (Directory.Exists(gameDir))
+        {
+            Log.Debug("Found {GameName} in the registry", key);
+            return new DetectedGame { GameName = key, GameDirectory = gameDir };
+        }
 
-        Log.Warning("Could not find {GameName} in the registry", key);
         return null;
     }
 
@@ -220,10 +234,13 @@ public class GameSelectorViewModel : ViewModel
             // ignored
         }
 
-        if (!string.IsNullOrEmpty(installLocation))
-            return new DetectedGame { GameName = displayName, GameDirectory = $"{installLocation}{pakDirectory}" };
+        var gameDir = $"{installLocation}{pakDirectory}";
+        if (Directory.Exists(gameDir))
+        {
+            Log.Debug("Found {GameName} in the registry", key);
+            return new DetectedGame { GameName = displayName, GameDirectory = gameDir };
+        }
 
-        Log.Warning("Could not find {GameName} in the registry", key);
         return null;
     }
 
@@ -234,11 +251,10 @@ public class GameSelectorViewModel : ViewModel
             var launcher = $"{drive.Name}{jsonFile}";
             if (!File.Exists(launcher)) continue;
 
-            Log.Information("\"{Launcher}\" found in drive \"{DriveName}\"", launcher, drive.Name);
+            Log.Debug("\"{Launcher}\" found in drive \"{DriveName}\"", launcher, drive.Name);
             return JsonConvert.DeserializeObject<T>(File.ReadAllText(launcher));
         }
 
-        Log.Warning("\"{JsonFile}\" not found in any drives", jsonFile);
         return default;
     }
 
@@ -248,11 +264,10 @@ public class GameSelectorViewModel : ViewModel
         var launcher = $"{appData}{jsonFile}";
         if (File.Exists(launcher))
         {
-            Log.Information("\"{Launcher}\" found in \"{AppData}\"", launcher, appData);
+            Log.Debug("\"{Launcher}\" found in \"{AppData}\"", launcher, appData);
             return JsonConvert.DeserializeObject<T>(File.ReadAllText(launcher));
         }
 
-        Log.Warning("\"{Json}\" not found anywhere", jsonFile);
         return default;
     }
 
@@ -321,7 +336,10 @@ public class GameSelectorViewModel : ViewModel
         private static List<AppInfo> GetSteamApps(IEnumerable<string> steamLibs)
         {
             var apps = new List<AppInfo>();
-            foreach (var files in steamLibs.Select(lib => Path.Combine(lib, "SteamApps")).Select(appMetaDataPath => Directory.GetFiles(appMetaDataPath, "*.acf")))
+            foreach (var files in steamLibs
+                         .Select(lib => Path.Combine(lib, "SteamApps"))
+                         .Select(appMetaDataPath => Directory.Exists(appMetaDataPath) ? Directory.GetFiles(appMetaDataPath, "*.acf") : null)
+                         .Where(files => files != null))
             {
                 apps.AddRange(files.Select(GetAppInfo).Where(appInfo => appInfo != null));
             }
@@ -346,16 +364,16 @@ public class GameSelectorViewModel : ViewModel
                 !dic.TryGetValue("name", out var name) ||
                 !dic.TryGetValue("installDir", out var installDir)) return null;
 
-            var path = Path.GetDirectoryName(appMetaFile);
+            var path = Path.GetDirectoryName(appMetaFile) ?? "";
             var libGameRoot = Path.Combine(path, "common", installDir);
 
-            return !Directory.Exists(libGameRoot) ? null : new AppInfo { Id = appId, Name = name, GameRoot = libGameRoot };
+            return Directory.Exists(libGameRoot) ? new AppInfo { Id = appId, Name = name, GameRoot = libGameRoot } : null;
         }
 
         private static List<string> GetSteamLibs()
         {
             var steamPath = GetSteamPath();
-            if (steamPath == null) return new List<string>();
+            if (steamPath == null || !Directory.Exists(steamPath)) return new List<string>();
             var libraries = new List<string> { steamPath };
 
             var listFile = Path.Combine(steamPath, @"steamapps\libraryfolders.vdf");
@@ -366,7 +384,7 @@ public class GameSelectorViewModel : ViewModel
                 var match = Regex.Match(line, @"""(?<path>\w:\\\\.*)""");
                 if (!match.Success) continue;
                 var path = match.Groups["path"].Value.Replace(@"\\", @"\");
-                if (Directory.Exists(path))
+                if (Directory.Exists(path) && !libraries.Contains(path))
                 {
                     libraries.Add(path);
                 }
