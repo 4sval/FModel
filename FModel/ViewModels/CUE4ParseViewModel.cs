@@ -759,7 +759,7 @@ public class CUE4ParseViewModel : ViewModel
 
                 break;
             }
-            case "bin" when fileName.Contains("AssetRegistry"):
+            case "bin" when fileName.Contains("AssetRegistry", StringComparison.OrdinalIgnoreCase):
             {
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
@@ -892,7 +892,7 @@ public class CUE4ParseViewModel : ViewModel
                 TabControl.SelectedTab.SetDocumentText(verseDigest.ReadableCode, false, false);
                 return true;
             }
-            case UTexture2D { IsVirtual: false } texture when isNone || saveTextures:
+            case UTexture { IsVirtual: false } texture when isNone || saveTextures:
             {
                 TabControl.SelectedTab.AddImage(texture, saveTextures, updateUi);
                 return false;

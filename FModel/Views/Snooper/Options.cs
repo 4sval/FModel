@@ -182,7 +182,7 @@ public class Options
         var guid = o.LightingGuid;
         if (!Textures.TryGetValue(guid, out texture) && o.GetMipByMaxSize(UserSettings.Default.PreviewMaxTextureSize) is { } mip)
         {
-            TextureDecoder.DecodeTexture(mip, o.Format, o.isNormalMap, _platform, out var data, out _);
+            TextureDecoder.DecodeTexture(mip, o.Format, o.IsNormalMap, _platform, out var data, out _);
 
             texture = new Texture(data, mip.SizeX, mip.SizeY, o);
             if (fix) TextureHelper.FixChannels(_game, texture);

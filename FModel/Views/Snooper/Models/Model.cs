@@ -440,10 +440,10 @@ public class Model : IDisposable
 
     public void Dispose()
     {
-        _ebo.Dispose();
-        _vbo.Dispose();
-        _matrixVbo.Dispose();
-        _vao.Dispose();
+        _ebo?.Dispose();
+        _vbo?.Dispose();
+        _matrixVbo?.Dispose();
+        _vao?.Dispose();
         Skeleton?.Dispose();
         for (int socket = 0; socket < Sockets.Count; socket++)
         {
