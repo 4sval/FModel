@@ -393,11 +393,10 @@ public class CUE4ParseViewModel : ViewModel
 
         return Task.Run(() =>
         {
+            var l = ELog.Information;
             if (endpoint.Overwrite && File.Exists(endpoint.FilePath))
             {
                 Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(endpoint.FilePath);
-                FLogger.Append(ELog.Information, () =>
-                    FLogger.Text($"Mappings pulled from '{endpoint.FilePath.SubstringAfterLast("\\")}'", Constants.WHITE, true));
             }
             else if (endpoint.IsValid)
             {
@@ -416,8 +415,6 @@ public class CUE4ParseViewModel : ViewModel
                         }
 
                         Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(mappingPath);
-                        FLogger.Append(ELog.Information, () =>
-                            FLogger.Text($"Mappings pulled from '{mapping.FileName}'", Constants.WHITE, true));
                         break;
                     }
                 }
@@ -429,9 +426,14 @@ public class CUE4ParseViewModel : ViewModel
 
                     var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
                     Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
-                    FLogger.Append(ELog.Warning, () =>
-                        FLogger.Text($"Mappings pulled from '{latestUsmapInfo.Name}'", Constants.WHITE, true));
+                    l = ELog.Warning;
                 }
+            }
+
+            if (Provider.MappingsContainer is FileUsmapTypeMappingsProvider m)
+            {
+                Log.Information($"Mappings pulled from '{m.FileName}'");
+                FLogger.Append(l, () => FLogger.Text($"Mappings pulled from '{m.FileName}'", Constants.WHITE, true));
             }
         });
     }

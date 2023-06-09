@@ -132,6 +132,21 @@ public class Material : IDisposable
                         "Emissive 2 UV Positioning (RG)UpperLeft (BA)LowerRight",
                         "EmissiveUVPositioning (RG)UpperLeft (BA)LowerRight"))
                     EmissiveRegion = new Vector4(EmissiveUVs.R, EmissiveUVs.G, EmissiveUVs.B, EmissiveUVs.A);
+
+                if (Parameters.TryGetSwitch(out var swizzleRoughnessToGreen, "SwizzleRoughnessToGreen") && swizzleRoughnessToGreen)
+                {
+                    foreach (var specMask in SpecularMasks)
+                    {
+                        specMask.SwizzleMask = new []
+                        {
+                            (int) PixelFormat.Red,
+                            (int) PixelFormat.Blue,
+                            (int) PixelFormat.Green,
+                            (int) PixelFormat.Alpha
+                        };
+                        specMask.Swizzle();
+                    }
+                }
             }
         }
     }
