@@ -626,7 +626,7 @@ namespace FModel.Settings
             set => SetProperty(ref _textureExportFormat, value);
         }
 
-        private ESocketFormat _socketExportFormat = ESocketFormat.Bone;
+        private ESocketFormat _socketExportFormat = ESocketFormat.Socket;
         public ESocketFormat SocketExportFormat
         {
             get => _socketExportFormat;
