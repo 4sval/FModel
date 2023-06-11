@@ -446,13 +446,26 @@ public class CUE4ParseViewModel : ViewModel
 
         return Task.Run(() =>
         {
-            var inst = new List<InstructionToken>();
-            Provider.DefaultEngine.FindPropertyInstructions("ConsoleVariables", "a.StripAdditiveRefPose", inst);
-            if (inst.Count > 0 && inst[0].Value.Equals("1"))
+            foreach (var token in Provider.DefaultEngine.Sections.FirstOrDefault(s => s.Name == "ConsoleVariables")?.Tokens ?? new List<IniToken>())
             {
-                FLogger.Append(ELog.Warning, () =>
-                    FLogger.Text("Additive animations have their reference pose stripped, which will lead to inaccurate preview and export", Constants.WHITE, true));
+                if (token is not InstructionToken it) continue;
+                var boolValue = it.Value.Equals("1");
+
+                switch (it.Key)
+                {
+                    case "a.StripAdditiveRefPose" when boolValue:
+                        FLogger.Append(ELog.Warning, () =>
+                            FLogger.Text("Additive animations have their reference pose stripped, which will lead to inaccurate preview and export", Constants.WHITE, true));
+                        continue;
+                    case "r.StaticMesh.KeepMobileMinLODSettingOnDesktop":
+                        Provider.Versions["StaticMesh.KeepMobileMinLODSettingOnDesktop"] = boolValue;
+                        continue;
+                    case "r.SkeletalMesh.KeepMobileMinLODSettingOnDesktop":
+                        Provider.Versions["SkeletalMesh.KeepMobileMinLODSettingOnDesktop"] = boolValue;
+                        continue;
+                }
             }
+
             _cvaVerifDone = true;
         });
     }
