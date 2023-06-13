@@ -100,6 +100,7 @@ public class ApplicationViewModel : ViewModel
         if (!result.HasValue || !result.Value) return;
 
         UserSettings.Default.GameDirectory = gameLauncherViewModel.SelectedDetectedGame.GameDirectory;
+        // UserSettings.Default.GameDirectory = gameLauncherViewModel.SelectedDetectedGame.OverridedGame;
         if (!bAlreadyLaunched || gameDirectory == gameLauncherViewModel.SelectedDetectedGame.GameDirectory) return;
 
         RestartWithWarning();

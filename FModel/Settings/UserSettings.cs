@@ -156,7 +156,7 @@ namespace FModel.Settings
             set => SetProperty(ref _audioPlayerVolume, value);
         }
 
-        private ELoadingMode _loadingMode = ELoadingMode.Multiple;
+        private ELoadingMode _loadingMode = ELoadingMode.All;
         public ELoadingMode LoadingMode
         {
             get => _loadingMode;

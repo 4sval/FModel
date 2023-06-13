@@ -458,10 +458,8 @@ public class CUE4ParseViewModel : ViewModel
                             FLogger.Text("Additive animations have their reference pose stripped, which will lead to inaccurate preview and export", Constants.WHITE, true));
                         continue;
                     case "r.StaticMesh.KeepMobileMinLODSettingOnDesktop":
-                        Provider.Versions["StaticMesh.KeepMobileMinLODSettingOnDesktop"] = boolValue;
-                        continue;
                     case "r.SkeletalMesh.KeepMobileMinLODSettingOnDesktop":
-                        Provider.Versions["SkeletalMesh.KeepMobileMinLODSettingOnDesktop"] = boolValue;
+                        Provider.Versions[it.Key[2..]] = boolValue;
                         continue;
                 }
             }

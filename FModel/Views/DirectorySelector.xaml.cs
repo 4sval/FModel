@@ -44,7 +44,7 @@ public partial class DirectorySelector
 
     private void OnAddDirectory(object sender, RoutedEventArgs e)
     {
-        if (DataContext is not GameSelectorViewModel gameLauncherViewModel||
+        if (DataContext is not GameSelectorViewModel gameLauncherViewModel ||
             string.IsNullOrEmpty(HelloMyNameIsGame.Text) ||
             string.IsNullOrEmpty(HelloGameMyNameIsDirectory.Text))
             return;
