@@ -80,14 +80,8 @@
                 <Button Grid.Column="1" MinWidth="78" Margin="0 0 12 0" IsDefault="True" IsCancel="False"
                         HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK" Click="OnClick" />
                 <Button Grid.Column="2" MinWidth="78" Margin="0 0 12 0" IsDefault="False"  IsCancel="False"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Refresh" Click="OnRefreshAes">
-                    <Button.Visibility>
-                        <!-- if aes custom endpoint is enabled, make this visible  -->
-                        <MultiBinding Converter="{x:Static converters:EndpointToTypeConverter.Instance}">
-                            <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:Views.AesManager}}" Path="DataContext" />
-                            <Binding Source="{x:Static local:EEndpointType.Aes}" />
-                        </MultiBinding>
-                    </Button.Visibility>
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Refresh" Click="OnRefreshAes"
+                        Visibility="{Binding Converter={x:Static converters:EndpointToTypeConverter.Instance}, ConverterParameter={x:Static local:EEndpointType.Aes}}">
                 </Button>
             </Grid>
         </Border>

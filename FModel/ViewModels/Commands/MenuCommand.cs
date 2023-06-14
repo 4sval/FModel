@@ -23,7 +23,7 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
         switch (parameter)
         {
             case "Directory_Selector":
-                contextViewModel.AvoidEmptyGameDirectoryAndSetEGame(true);
+                contextViewModel.AvoidEmptyGameDirectory(true);
                 break;
             case "Directory_AES":
                 Helper.OpenWindow<AdonisWindow>("AES Manager", () => new AesManager().Show());

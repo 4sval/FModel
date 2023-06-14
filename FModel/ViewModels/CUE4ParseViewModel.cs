@@ -123,84 +123,58 @@ public class CUE4ParseViewModel : ViewModel
     public TabControlViewModel TabControl { get; }
     public ConfigIni BuildInfo { get; }
 
-    public CUE4ParseViewModel(string gameDirectory)
+    public CUE4ParseViewModel()
     {
+        var currentDir = UserSettings.Default.CurrentDir;
+        var gameDirectory = currentDir.GameDirectory;
+        var versionContainer = new VersionContainer(
+            game: currentDir.UeVersion, platform: currentDir.TexturePlatform,
+            customVersions: new FCustomVersionContainer(currentDir.Versioning.CustomVersions),
+            optionOverrides: currentDir.Versioning.Options,
+            mapStructTypesOverrides: currentDir.Versioning.MapStructTypes);
+
         switch (gameDirectory)
         {
             case Constants._FN_LIVE_TRIGGER:
             {
                 Game = FGame.FortniteGame;
-                Provider = new StreamedFileProvider("FortniteLive", true,
-                    new VersionContainer(
-                        UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
-                        customVersions: new FCustomVersionContainer(UserSettings.Default.OverridedCustomVersions[Game]),
-                        optionOverrides: UserSettings.Default.OverridedOptions[Game]));
+                Provider = new StreamedFileProvider("FortniteLive", true, versionContainer);
                 break;
             }
             case Constants._VAL_LIVE_TRIGGER:
             {
                 Game = FGame.ShooterGame;
-                Provider = new StreamedFileProvider("ValorantLive", true,
-                    new VersionContainer(
-                        UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
-                        customVersions: new FCustomVersionContainer(UserSettings.Default.OverridedCustomVersions[Game]),
-                        optionOverrides: UserSettings.Default.OverridedOptions[Game]));
+                Provider = new StreamedFileProvider("ValorantLive", true, versionContainer);
                 break;
             }
             default:
             {
-                var parent = gameDirectory.SubstringBeforeLast("\\Content").SubstringAfterLast("\\");
-                if (gameDirectory.Contains("eFootball")) parent = gameDirectory.SubstringBeforeLast("\\pak").SubstringAfterLast("\\");
+                var parent = gameDirectory.SubstringBeforeLast(gameDirectory.Contains("eFootball") ? "\\pak" : "\\Content").SubstringAfterLast("\\");
                 Game = parent.ToEnum(FGame.Unknown);
-                var versions = new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
-                    customVersions: new FCustomVersionContainer(UserSettings.Default.OverridedCustomVersions[Game]),
-                    optionOverrides: UserSettings.Default.OverridedOptions[Game],
-                    mapStructTypesOverrides: UserSettings.Default.OverridedMapStructTypes[Game]);
-
-                switch (Game)
+                Provider = Game switch
                 {
-                    case FGame.StateOfDecay2:
-                    {
-                        Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
-                            {
-                                new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
-                                new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
-                            },
-                            SearchOption.AllDirectories, true, versions);
-                        break;
-                    }
-                    case FGame.FortniteGame:
-                        Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
-                            {
-                                new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\FortniteGame\\Saved\\PersistentDownloadDir\\InstalledBundles"),
-                            },
-                            SearchOption.AllDirectories, true, versions);
-                        break;
-                    case FGame.eFootball:
-                        Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
-                            {
-                                new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\KONAMI\\eFootball\\ST\\Download")
-                            },
-                            SearchOption.AllDirectories, true, versions);
-                        break;
-                    case FGame.Unknown when UserSettings.Default.ManualGames.TryGetValue(gameDirectory, out var settings):
-                    {
-                        versions = new VersionContainer(settings.OverridedGame, UserSettings.Default.OverridedPlatform,
-                            customVersions: new FCustomVersionContainer(settings.OverridedCustomVersions),
-                            optionOverrides: settings.OverridedOptions,
-                            mapStructTypesOverrides: settings.OverridedMapStructTypes);
-                        goto default;
-                    }
-                    default:
-                    {
-                        Provider = new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, true, versions);
-                        break;
-                    }
-                }
+                    FGame.StateOfDecay2 => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
+                        new List<DirectoryInfo>
+                        {
+                            new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
+                            new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
+                        }, SearchOption.AllDirectories, true, versionContainer),
+                    FGame.eFootball => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
+                        new List<DirectoryInfo>
+                        {
+                            new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\KONAMI\\eFootball\\ST\\Download")
+                        }, SearchOption.AllDirectories, true, versionContainer),
+                    _ => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, true, versionContainer)
+                };
 
                 break;
             }
         }
+        if (Game == FGame.FortniteGame) currentDir.Endpoints = new[]
+        {
+            new FEndpoint("https://fortnitecentral.genxgames.gg/api/v1/aes", "$.['mainKey','dynamicKeys']"),
+            new FEndpoint("https://fortnitecentral.genxgames.gg/api/v1/mappings", "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']")
+        };
         Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
 
         GameDirectory = new GameDirectoryViewModel();
@@ -354,7 +328,7 @@ public class CUE4ParseViewModel : ViewModel
     {
         // game directory dependent, we don't have the provider game name yet since we don't have aes keys
         // except when this comes from the AES Manager
-        if (!UserSettings.IsEndpointValid(Game, EEndpointType.Aes, out var endpoint))
+        if (!UserSettings.IsEndpointValid(EEndpointType.Aes, out var endpoint))
             return;
 
         await _threadWorkerView.Begin(cancellationToken =>
@@ -385,7 +359,7 @@ public class CUE4ParseViewModel : ViewModel
 
     public Task InitMappings()
     {
-        if (!UserSettings.IsEndpointValid(Game, EEndpointType.Mapping, out var endpoint))
+        if (!UserSettings.IsEndpointValid(EEndpointType.Mapping, out var endpoint))
         {
             Provider.MappingsContainer = null;
             return Task.CompletedTask;
@@ -604,7 +578,7 @@ public class CUE4ParseViewModel : ViewModel
         if (_virtualPathCount > 0) return Task.CompletedTask;
         return Task.Run(() =>
         {
-            _virtualPathCount = Provider.LoadVirtualPaths(UserSettings.Default.OverridedGame[Game].GetVersion());
+            _virtualPathCount = Provider.LoadVirtualPaths(UserSettings.Default.CurrentDir.UeVersion.GetVersion());
             if (_virtualPathCount > 0)
             {
                 FLogger.Append(ELog.Information, () =>
@@ -1010,7 +984,7 @@ public class CUE4ParseViewModel : ViewModel
             MaterialFormat = UserSettings.Default.MaterialExportFormat,
             TextureFormat = UserSettings.Default.TextureExportFormat,
             SocketFormat = UserSettings.Default.SocketExportFormat,
-            Platform = UserSettings.Default.OverridedPlatform,
+            Platform = UserSettings.Default.CurrentDir.TexturePlatform,
             ExportMorphTargets = UserSettings.Default.SaveMorphTargets
         };
         var toSave = new Exporter(export, exportOptions);

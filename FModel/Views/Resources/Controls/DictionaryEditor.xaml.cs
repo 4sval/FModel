@@ -13,7 +13,6 @@ namespace FModel.Views.Resources.Controls;
 
 public partial class DictionaryEditor
 {
-    private readonly bool _enableElements;
     private readonly List<FCustomVersion> _defaultCustomVersions;
     private readonly Dictionary<string, bool> _defaultOptions;
     private readonly Dictionary<string, KeyValuePair<string, string>> _defaultMapStructTypes;
@@ -22,9 +21,8 @@ public partial class DictionaryEditor
     public Dictionary<string, bool> Options { get; private set; }
     public Dictionary<string, KeyValuePair<string, string>> MapStructTypes { get; private set; }
 
-    public DictionaryEditor(string title, bool enableElements)
+    public DictionaryEditor(string title)
     {
-        _enableElements = enableElements;
         _defaultCustomVersions = new List<FCustomVersion> { new() { Key = new FGuid(), Version = 0 } };
         _defaultOptions = new Dictionary<string, bool> { { "key1", true }, { "key2", false } };
         _defaultMapStructTypes = new Dictionary<string, KeyValuePair<string, string>> { { "MapName", new KeyValuePair<string, string>("KeyType", "ValueType") } };
@@ -32,11 +30,10 @@ public partial class DictionaryEditor
         InitializeComponent();
 
         Title = title;
-        MyAvalonEditor.IsReadOnly = !_enableElements;
         MyAvalonEditor.SyntaxHighlighting = AvalonExtensions.HighlighterSelector("");
     }
 
-    public DictionaryEditor(List<FCustomVersion> customVersions, string title, bool enableElements) : this(title, enableElements)
+    public DictionaryEditor(IList<FCustomVersion> customVersions, string title) : this(title)
     {
         MyAvalonEditor.Document = new TextDocument
         {
@@ -44,7 +41,7 @@ public partial class DictionaryEditor
         };
     }
 
-    public DictionaryEditor(Dictionary<string, bool> options, string title, bool enableElements) : this(title, enableElements)
+    public DictionaryEditor(IDictionary<string, bool> options, string title) : this(title)
     {
         MyAvalonEditor.Document = new TextDocument
         {
@@ -52,7 +49,7 @@ public partial class DictionaryEditor
         };
     }
 
-    public DictionaryEditor(Dictionary<string, KeyValuePair<string, string>> options, string title, bool enableElements) : this(title, enableElements)
+    public DictionaryEditor(IDictionary<string, KeyValuePair<string, string>> options, string title) : this(title)
     {
         MyAvalonEditor.Document = new TextDocument
         {
@@ -62,13 +59,6 @@ public partial class DictionaryEditor
 
     private void OnClick(object sender, RoutedEventArgs e)
     {
-        if (!_enableElements)
-        {
-            DialogResult = false;
-            Close();
-            return;
-        }
-
         try
         {
             switch (Title)
@@ -104,9 +94,6 @@ public partial class DictionaryEditor
 
     private void OnReset(object sender, RoutedEventArgs e)
     {
-        if (!_enableElements)
-            return;
-
         MyAvalonEditor.Document = Title switch
         {
             "Versioning Configuration (Custom Versions)" => new TextDocument

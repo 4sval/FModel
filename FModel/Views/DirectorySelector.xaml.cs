@@ -29,7 +29,7 @@ public partial class DirectorySelector
         var folderBrowser = new VistaFolderBrowserDialog {ShowNewFolderButton = false};
         if (folderBrowser.ShowDialog() == true)
         {
-            gameLauncherViewModel.AddUnknownGame(folderBrowser.SelectedPath);
+            gameLauncherViewModel.AddUndetectedDir(folderBrowser.SelectedPath);
         }
     }
 
@@ -49,7 +49,7 @@ public partial class DirectorySelector
             string.IsNullOrEmpty(HelloGameMyNameIsDirectory.Text))
             return;
 
-        gameLauncherViewModel.AddUnknownGame(HelloMyNameIsGame.Text, HelloGameMyNameIsDirectory.Text);
+        gameLauncherViewModel.AddUndetectedDir(HelloMyNameIsGame.Text, HelloGameMyNameIsDirectory.Text);
         HelloMyNameIsGame.Clear();
         HelloGameMyNameIsDirectory.Clear();
     }

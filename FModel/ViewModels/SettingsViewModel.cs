@@ -37,17 +37,6 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedUpdateMode, value);
     }
 
-    private string _selectedPreset;
-    public string SelectedPreset
-    {
-        get => _selectedPreset;
-        set
-        {
-            SetProperty(ref _selectedPreset, value);
-            RaisePropertyChanged("EnableElements");
-        }
-    }
-
     private ETexturePlatform _selectedUePlatform;
     public ETexturePlatform SelectedUePlatform
     {
@@ -62,22 +51,22 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedUeGame, value);
     }
 
-    private List<FCustomVersion> _selectedCustomVersions;
-    public List<FCustomVersion> SelectedCustomVersions
+    private IList<FCustomVersion> _selectedCustomVersions;
+    public IList<FCustomVersion> SelectedCustomVersions
     {
         get => _selectedCustomVersions;
         set => SetProperty(ref _selectedCustomVersions, value);
     }
 
-    private Dictionary<string, bool> _selectedOptions;
-    public Dictionary<string, bool> SelectedOptions
+    private IDictionary<string, bool> _selectedOptions;
+    public IDictionary<string, bool> SelectedOptions
     {
         get => _selectedOptions;
         set => SetProperty(ref _selectedOptions, value);
     }
 
-    private Dictionary<string, KeyValuePair<string, string>> _selectedMapStructTypes;
-    public Dictionary<string, KeyValuePair<string, string>> SelectedMapStructTypes
+    private IDictionary<string, KeyValuePair<string, string>> _selectedMapStructTypes;
+    public IDictionary<string, KeyValuePair<string, string>> SelectedMapStructTypes
     {
         get => _selectedMapStructTypes;
         set => SetProperty(ref _selectedMapStructTypes, value);
@@ -168,7 +157,6 @@ public class SettingsViewModel : ViewModel
     }
 
     public ReadOnlyObservableCollection<EUpdateMode> UpdateModes { get; private set; }
-    public ObservableCollection<string> Presets { get; private set; }
     public ReadOnlyObservableCollection<EGame> UeGames { get; private set; }
     public ReadOnlyObservableCollection<ELanguage> AssetLanguages { get; private set; }
     public ReadOnlyObservableCollection<EAesReload> AesReloads { get; private set; }
@@ -182,10 +170,7 @@ public class SettingsViewModel : ViewModel
     public ReadOnlyObservableCollection<ETextureFormat> TextureExportFormats { get; private set; }
     public ReadOnlyObservableCollection<ETexturePlatform> Platforms { get; private set; }
 
-    public bool EnableElements => SelectedPreset == Constants._NO_PRESET_TRIGGER;
-
     private readonly FGame _game;
-    private Game _gamePreset;
     private string _outputSnapshot;
     private string _rawDataSnapshot;
     private string _propertiesSnapshot;
@@ -194,12 +179,11 @@ public class SettingsViewModel : ViewModel
     private string _modelSnapshot;
     private string _gameSnapshot;
     private EUpdateMode _updateModeSnapshot;
-    private string _presetSnapshot;
     private ETexturePlatform _uePlatformSnapshot;
     private EGame _ueGameSnapshot;
-    private List<FCustomVersion> _customVersionsSnapshot;
-    private Dictionary<string, bool> _optionsSnapshot;
-    private Dictionary<string, KeyValuePair<string, string>> _mapStructTypesSnapshot;
+    private IList<FCustomVersion> _customVersionsSnapshot;
+    private IDictionary<string, bool> _optionsSnapshot;
+    private IDictionary<string, KeyValuePair<string, string>> _mapStructTypesSnapshot;
     private ELanguage _assetLanguageSnapshot;
     private ECompressedAudio _compressedAudioSnapshot;
     private EIconStyle _cosmeticStyleSnapshot;
@@ -226,8 +210,7 @@ public class SettingsViewModel : ViewModel
         _modelSnapshot = UserSettings.Default.ModelDirectory;
         _gameSnapshot = UserSettings.Default.GameDirectory;
         _updateModeSnapshot = UserSettings.Default.UpdateMode;
-        _presetSnapshot = UserSettings.Default.Presets[_game];
-        _uePlatformSnapshot = UserSettings.Default.OverridedPlatform;
+        _uePlatformSnapshot = UserSettings.Default.CurrentDir.TexturePlatform;
         if (_game == FGame.Unknown && UserSettings.Default.ManualGames.TryGetValue(_gameSnapshot, out var settings))
         {
             _ueGameSnapshot = settings.OverridedGame;
@@ -237,22 +220,19 @@ public class SettingsViewModel : ViewModel
         }
         else
         {
-            _ueGameSnapshot = UserSettings.Default.OverridedGame[_game];
-            _customVersionsSnapshot = UserSettings.Default.OverridedCustomVersions[_game];
-            _optionsSnapshot = UserSettings.Default.OverridedOptions[_game];
-            _mapStructTypesSnapshot = UserSettings.Default.OverridedMapStructTypes[_game];
+            _ueGameSnapshot = UserSettings.Default.CurrentDir.UeVersion;
+            _customVersionsSnapshot = UserSettings.Default.CurrentDir.Versioning.CustomVersions;
+            _optionsSnapshot = UserSettings.Default.CurrentDir.Versioning.Options;
+            _mapStructTypesSnapshot = UserSettings.Default.CurrentDir.Versioning.MapStructTypes;
         }
 
-        if (UserSettings.Default.CustomEndpoints.TryGetValue(_game, out var endpoints))
+        AesEndpoint = UserSettings.Default.CurrentDir.Endpoints[0];
+        MappingEndpoint = UserSettings.Default.CurrentDir.Endpoints[1];
+        MappingEndpoint.PropertyChanged += (_, args) =>
         {
-            AesEndpoint = endpoints[0];
-            MappingEndpoint = endpoints[1];
-            MappingEndpoint.PropertyChanged += (_, args) =>
-            {
-                if (!_mappingsUpdate)
-                    _mappingsUpdate = args.PropertyName is "Overwrite" or "FilePath";
-            };
-        }
+            if (!_mappingsUpdate)
+                _mappingsUpdate = args.PropertyName is "Overwrite" or "FilePath";
+        };
 
         _assetLanguageSnapshot = UserSettings.Default.AssetLanguage;
         _compressedAudioSnapshot = UserSettings.Default.CompressedAudioMode;
@@ -264,7 +244,6 @@ public class SettingsViewModel : ViewModel
         _textureExportFormatSnapshot = UserSettings.Default.TextureExportFormat;
 
         SelectedUpdateMode = _updateModeSnapshot;
-        SelectedPreset = _presetSnapshot;
         SelectedUePlatform = _uePlatformSnapshot;
         SelectedUeGame = _ueGameSnapshot;
         SelectedCustomVersions = _customVersionsSnapshot;
@@ -282,7 +261,6 @@ public class SettingsViewModel : ViewModel
         SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
 
         UpdateModes = new ReadOnlyObservableCollection<EUpdateMode>(new ObservableCollection<EUpdateMode>(EnumerateUpdateModes()));
-        Presets = new ObservableCollection<string>(EnumeratePresets());
         UeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(EnumerateUeGames()));
         AssetLanguages = new ReadOnlyObservableCollection<ELanguage>(new ObservableCollection<ELanguage>(EnumerateAssetLanguages()));
         AesReloads = new ReadOnlyObservableCollection<EAesReload>(new ObservableCollection<EAesReload>(EnumerateAesReloads()));
@@ -295,53 +273,6 @@ public class SettingsViewModel : ViewModel
         MaterialExportFormats = new ReadOnlyObservableCollection<EMaterialFormat>(new ObservableCollection<EMaterialFormat>(EnumerateMaterialExportFormat()));
         TextureExportFormats = new ReadOnlyObservableCollection<ETextureFormat>(new ObservableCollection<ETextureFormat>(EnumerateTextureExportFormat()));
         Platforms = new ReadOnlyObservableCollection<ETexturePlatform>(new ObservableCollection<ETexturePlatform>(EnumerateUePlatforms()));
-    }
-
-    public async Task InitPresets(string gameName)
-    {
-        await _threadWorkerView.Begin(cancellationToken =>
-        {
-            if (string.IsNullOrEmpty(gameName)) return;
-            _gamePreset = _apiEndpointView.FModelApi.GetGames(cancellationToken, gameName);
-        });
-
-        if (_gamePreset?.Versions == null) return;
-        foreach (var version in _gamePreset.Versions.Keys)
-        {
-            Presets.Add(version);
-        }
-    }
-
-    public void SwitchPreset(string key)
-    {
-        if (_gamePreset?.Versions == null || !_gamePreset.Versions.TryGetValue(key, out var version)) return;
-        SelectedUeGame = version.GameEnum.ToEnum(EGame.GAME_UE4_LATEST);
-
-        SelectedCustomVersions = new List<FCustomVersion>();
-        foreach (var (guid, v) in version.CustomVersions)
-        {
-            SelectedCustomVersions.Add(new FCustomVersion { Key = new FGuid(guid), Version = v });
-        }
-
-        SelectedOptions = new Dictionary<string, bool>();
-        foreach (var (k, v) in version.Options)
-        {
-            SelectedOptions[k] = v;
-        }
-
-        SelectedMapStructTypes = new Dictionary<string, KeyValuePair<string, string>>();
-        foreach (var (k, v) in version.MapStructTypes)
-        {
-            SelectedMapStructTypes[k] = v;
-        }
-    }
-
-    public void ResetPreset()
-    {
-        SelectedUeGame = _ueGameSnapshot;
-        SelectedCustomVersions = _customVersionsSnapshot;
-        SelectedOptions = _optionsSnapshot;
-        SelectedMapStructTypes = _mapStructTypesSnapshot;
     }
 
     public bool Save(out List<SettingsOut> whatShouldIDo)
@@ -369,21 +300,20 @@ public class SettingsViewModel : ViewModel
             restart = true;
 
         UserSettings.Default.UpdateMode = SelectedUpdateMode;
-        UserSettings.Default.Presets[_game] = SelectedPreset;
-        UserSettings.Default.OverridedPlatform = SelectedUePlatform;
+        UserSettings.Default.CurrentDir.TexturePlatform = SelectedUePlatform;
         if (_game == FGame.Unknown && UserSettings.Default.ManualGames.ContainsKey(UserSettings.Default.GameDirectory))
         {
             UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].OverridedGame = SelectedUeGame;
-            UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].OverridedCustomVersions = SelectedCustomVersions;
-            UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].OverridedOptions = SelectedOptions;
-            UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].OverridedMapStructTypes = SelectedMapStructTypes;
+            UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].OverridedCustomVersions = (List<FCustomVersion>) SelectedCustomVersions;
+            UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].OverridedOptions = (Dictionary<string, bool>) SelectedOptions;
+            UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].OverridedMapStructTypes = (Dictionary<string, KeyValuePair<string, string>>) SelectedMapStructTypes;
         }
         else
         {
-            UserSettings.Default.OverridedGame[_game] = SelectedUeGame;
-            UserSettings.Default.OverridedCustomVersions[_game] = SelectedCustomVersions;
-            UserSettings.Default.OverridedOptions[_game] = SelectedOptions;
-            UserSettings.Default.OverridedMapStructTypes[_game] = SelectedMapStructTypes;
+            UserSettings.Default.CurrentDir.UeVersion = SelectedUeGame;
+            UserSettings.Default.CurrentDir.Versioning.CustomVersions = SelectedCustomVersions;
+            UserSettings.Default.CurrentDir.Versioning.Options = SelectedOptions;
+            UserSettings.Default.CurrentDir.Versioning.MapStructTypes = SelectedMapStructTypes;
         }
 
         UserSettings.Default.AssetLanguage = SelectedAssetLanguage;
@@ -404,10 +334,6 @@ public class SettingsViewModel : ViewModel
     }
 
     private IEnumerable<EUpdateMode> EnumerateUpdateModes() => Enum.GetValues<EUpdateMode>();
-    private IEnumerable<string> EnumeratePresets()
-    {
-        yield return Constants._NO_PRESET_TRIGGER;
-    }
     private IEnumerable<EGame> EnumerateUeGames() => Enum.GetValues<EGame>();
     private IEnumerable<ELanguage> EnumerateAssetLanguages() => Enum.GetValues<ELanguage>();
     private IEnumerable<EAesReload> EnumerateAesReloads() => Enum.GetValues<EAesReload>();

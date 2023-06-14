@@ -60,7 +60,7 @@ public class Options
             ["tl_next"] = new ("tl_next"),
         };
 
-        _platform = UserSettings.Default.OverridedPlatform;
+        _platform = UserSettings.Default.CurrentDir.TexturePlatform;
         _game = Services.ApplicationService.ApplicationView.CUE4Parse.Provider.GameName.ToUpper();
 
         SelectModel(Guid.Empty);
@@ -231,7 +231,7 @@ public class Options
             MaterialFormat = UserSettings.Default.MaterialExportFormat,
             TextureFormat = UserSettings.Default.TextureExportFormat,
             SocketFormat = UserSettings.Default.SocketExportFormat,
-            Platform = UserSettings.Default.OverridedPlatform,
+            Platform = _platform,
             ExportMorphTargets = UserSettings.Default.SaveMorphTargets
         };
         var toSave = new Exporter(export, exportOptions);
