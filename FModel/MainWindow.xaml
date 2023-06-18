@@ -138,7 +138,7 @@
                         <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                             <Setter Property="Visibility" Value="Collapsed"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding CUE4Parse.Game}" Value="{x:Static local:FGame.FortniteGame}">
+                                <DataTrigger Binding="{Binding CUE4Parse.InternalGameName, Converter={x:Static converters:CaseInsensitiveStringEqualsConverter.Instance}, ConverterParameter='FortniteGame'}" Value="True">
                                     <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
                             </Style.Triggers>

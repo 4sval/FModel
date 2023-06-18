@@ -203,69 +203,6 @@ public class CreatorPackage : IDisposable
             case "QuestData":
                 creator = new Bases.MV.BaseQuest(_object, _style);
                 return true;
-            // Battle Breakers
-            case "WExpGenericAccountItemDefinition":
-            case "WExpGearAccountItemDefinition":
-            case "WExpHQWorkerLodgesDefinition":
-            case "WExpPersonalEventDefinition":
-            case "WExpUpgradePotionDefinition":
-            case "WExpAccountRewardDefinition":
-            case "WExpHQBlacksmithDefinition":
-            case "WExpHQSecretShopDefinition":
-            case "WExpHQMonsterPitDefinition":
-            case "WExpHQHeroTowerDefinition":
-            case "WExpVoucherItemDefinition":
-            case "WExpTreasureMapDefinition":
-            case "WExpHammerChestDefinition":
-            case "WExpHQWorkshopDefinition":
-            case "WExpUnlockableDefinition":
-            case "WExpHQSmelterDefinition":
-            case "WExpContainerDefinition":
-            case "WExpCharacterDefinition":
-            case "WExpHQMarketDefinition":
-            case "WExpGiftboxDefinition":
-            case "WExpStandInDefinition":
-            case "WExpRegionDefinition":
-            case "WExpHQMineDefinition":
-            case "WExpXpBookDefinition":
-            case "WExpTokenDefinition":
-            case "WExpItemDefinition":
-            case "WExpZoneDefinition":
-                creator = new BaseBreakersIcon(_object, EIconStyle.Default);
-                return true;
-            // Spellbreak
-            case "GTargetedTeleportActiveSkill":
-            case "GChronomasterV2ActiveSkill":
-            case "GShadowstepActiveSkill":
-            case "GGatewayActiveSkill":
-            case "GStealthActiveSkill":
-            case "GFeatherActiveSkill":
-            case "GCosmeticDropTrail":
-            case "GFlightActiveSkill":
-            case "GCosmeticRunTrail":
-            case "GCosmeticArtifact":
-            case "GCosmeticTriumph":
-            case "GWolfsbloodSkill":
-            case "GDashActiveSkill":
-            case "GCharacterPerk":
-            case "GCosmeticTitle":
-            case "GCosmeticBadge":
-            case "GRMTStoreOffer":
-            case "GCosmeticEmote":
-            case "GCosmeticCard":
-            case "GCosmeticSkin":
-            case "GStoreOffer":
-            case "GAccolade":
-            case "GRuneItem":
-            case "GQuest":
-                creator = new BaseSpellIcon(_object, EIconStyle.Default);
-                return true;
-            case "GLeagueTier":
-                creator = new BaseLeague(_object, EIconStyle.Default);
-                return true;
-            case "GLeagueDivision":
-                creator = new BaseDivision(_object, EIconStyle.Default);
-                return true;
             default:
                 creator = null;
                 return false;

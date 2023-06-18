@@ -49,23 +49,6 @@ public class Typefaces
     private const string _XIANGHEHEI_SC_PRO_BLACK = "XiangHeHei_SC/MXiangHeHeiSCPro-Black";
     private const string _XIANGHEHEI_SC_PRO_HEAVY = "XiangHeHei_SC/MXiangHeHeiSCPro-Heavy";
 
-    // Spellbreak
-    private const string _SPELLBREAK_BASE_PATH = "/Game/UI/Fonts/";
-    private const string _MONTSERRAT_SEMIBOLD = "Montserrat-Semibold";
-    private const string _MONTSERRAT_SEMIBOLD_ITALIC = "Montserrat-SemiBoldItalic";
-    private const string _NANUM_GOTHIC = "NanumGothic";
-    private const string _QUADRAT_BOLD = "Quadrat_Bold";
-    private const string _SEGOE_BOLD_ITALIC = "Segoe_Bold_Italic";
-
-    // WorldExplorers
-    private const string _BATTLE_BREAKERS_BASE_PATH = "/Game/UMG/Fonts/Faces/";
-    private const string _HEMIHEAD426 = "HemiHead426";
-    private const string _NOTO_SANS_JP_REGULAR = "NotoSansJP-Regular";
-    private const string _LATO_BLACK = "Lato-Black";
-    private const string _LATO_BLACK_ITALIC = "Lato-BlackItalic";
-    private const string _LATO_LIGHT = "Lato-Light";
-    private const string _LATO_MEDIUM = "Lato-Medium";
-
     private readonly CUE4ParseViewModel _viewModel;
 
     public readonly SKTypeface Default; // used as a fallback font for all untranslated strings (item source, ...)
@@ -85,9 +68,9 @@ public class Typefaces
 
         Default = SKTypeface.FromStream(Application.GetResourceStream(_BURBANK_BIG_CONDENSED_BOLD)?.Stream);
 
-        switch (viewModel.Game)
+        switch (viewModel.Provider.InternalGameName.ToUpperInvariant())
         {
-            case FGame.FortniteGame:
+            case "FORTNITEGAME":
             {
                 DisplayName = OnTheFly(_FORTNITE_BASE_PATH +
                                        language switch
@@ -172,36 +155,7 @@ public class Typefaces
                                                 } + _EXT);
                 break;
             }
-            case FGame.WorldExplorers:
-            {
-                DisplayName = OnTheFly(_BATTLE_BREAKERS_BASE_PATH +
-                                       language switch
-                                       {
-                                           ELanguage.Korean => _NOTO_SANS_KR_REGULAR,
-                                           ELanguage.Russian => _LATO_BLACK,
-                                           ELanguage.Japanese => _NOTO_SANS_JP_REGULAR,
-                                           ELanguage.Chinese => _NOTO_SANS_SC_REGULAR,
-                                           _ => _HEMIHEAD426
-                                       } + _EXT);
-
-                Description = OnTheFly(_BATTLE_BREAKERS_BASE_PATH +
-                                       language switch
-                                       {
-                                           ELanguage.Korean => _NOTO_SANS_KR_REGULAR,
-                                           ELanguage.Russian => _LATO_BLACK,
-                                           ELanguage.Japanese => _NOTO_SANS_JP_REGULAR,
-                                           ELanguage.Chinese => _NOTO_SANS_SC_REGULAR,
-                                           _ => _HEMIHEAD426
-                                       } + _EXT);
-                break;
-            }
-            case FGame.g3:
-            {
-                DisplayName = OnTheFly(_SPELLBREAK_BASE_PATH + _QUADRAT_BOLD + _EXT);
-                Description = OnTheFly(_SPELLBREAK_BASE_PATH + _MONTSERRAT_SEMIBOLD + _EXT);
-                break;
-            }
-            case FGame.MultiVersus:
+            case "MULTIVERSUS":
             {
                 DisplayName = OnTheFly(_PANDAGAME_BASE_PATH + language switch
                 {

@@ -61,7 +61,7 @@ public class Options
         };
 
         _platform = UserSettings.Default.CurrentDir.TexturePlatform;
-        _game = Services.ApplicationService.ApplicationView.CUE4Parse.Provider.GameName.ToUpper();
+        _game = Services.ApplicationService.ApplicationView.CUE4Parse.Provider.InternalGameName.ToUpper();
 
         SelectModel(Guid.Empty);
     }
