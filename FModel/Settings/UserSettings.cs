@@ -42,7 +42,7 @@ namespace FModel.Settings
             if (File.Exists(FilePath)) File.Delete(FilePath);
         }
 
-        public static bool IsEndpointValid(EEndpointType type, out FEndpoint endpoint)
+        public static bool IsEndpointValid(EEndpointType type, out EndpointSettings endpoint)
         {
             endpoint = Default.CurrentDir.Endpoints[(int) type];
             return endpoint.Overwrite || endpoint.IsValid;
@@ -252,38 +252,6 @@ namespace FModel.Settings
             get => _manualGames;
             set => SetProperty(ref _manualGames, value);
         }
-
-        private IDictionary<FGame, FEndpoint[]> _customEndpoints = new Dictionary<FGame, FEndpoint[]>
-        {
-            {FGame.Unknown, new FEndpoint[]{new (), new ()}},
-            {
-                FGame.FortniteGame, new []
-                {
-                    new FEndpoint("https://fortnitecentral.genxgames.gg/api/v1/aes", "$.['mainKey','dynamicKeys']"),
-                    new FEndpoint("https://fortnitecentral.genxgames.gg/api/v1/mappings", "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']") //  && @.meta.platform=='Windows'
-                }
-            },
-            {FGame.ShooterGame, new FEndpoint[]{new (), new ()}},
-            {FGame.DeadByDaylight, new FEndpoint[]{new (), new ()}},
-            {FGame.OakGame, new FEndpoint[]{new (), new ()}},
-            {FGame.Dungeons, new FEndpoint[]{new (), new ()}},
-            {FGame.WorldExplorers, new FEndpoint[]{new (), new ()}},
-            {FGame.g3, new FEndpoint[]{new (), new ()}},
-            {FGame.StateOfDecay2, new FEndpoint[]{new (), new ()}},
-            {FGame.Prospect, new FEndpoint[]{new (), new ()}},
-            {FGame.Indiana, new FEndpoint[]{new (), new ()}},
-            {FGame.RogueCompany, new FEndpoint[]{new (), new ()}},
-            {FGame.SwGame, new FEndpoint[]{new (), new ()}},
-            {FGame.Platform, new FEndpoint[]{new (), new ()}},
-            {FGame.BendGame, new FEndpoint[]{new (), new ()}},
-            {FGame.TslGame, new FEndpoint[]{new (), new ()}},
-            {FGame.PortalWars, new FEndpoint[]{new (), new ()}},
-            {FGame.Gameface, new FEndpoint[]{new (), new ()}},
-            {FGame.Athena, new FEndpoint[]{new (), new ()}},
-            {FGame.MultiVersus, new FEndpoint[]{new (), new ()}},
-            {FGame.Hotta, new FEndpoint[]{new (), new ()}},
-            {FGame.eFootball, new FEndpoint[]{new (), new ()}}
-        };
 
         private IDictionary<FGame, IList<CustomDirectory>> _customDirectories = new Dictionary<FGame, IList<CustomDirectory>>
         {

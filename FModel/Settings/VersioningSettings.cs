@@ -26,4 +26,6 @@ public class VersioningSettings : ViewModel
         get => _mapStructTypes;
         set => SetProperty(ref _mapStructTypes, value);
     }
+
+    public VersioningSettings() {}
 }

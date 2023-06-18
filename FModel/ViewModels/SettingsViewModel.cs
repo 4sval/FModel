@@ -72,15 +72,15 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedMapStructTypes, value);
     }
 
-    private FEndpoint _aesEndpoint;
-    public FEndpoint AesEndpoint
+    private EndpointSettings _aesEndpoint;
+    public EndpointSettings AesEndpoint
     {
         get => _aesEndpoint;
         set => SetProperty(ref _aesEndpoint, value);
     }
 
-    private FEndpoint _mappingEndpoint;
-    public FEndpoint MappingEndpoint
+    private EndpointSettings _mappingEndpoint;
+    public EndpointSettings MappingEndpoint
     {
         get => _mappingEndpoint;
         set => SetProperty(ref _mappingEndpoint, value);

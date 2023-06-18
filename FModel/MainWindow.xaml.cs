@@ -228,13 +228,13 @@ public partial class MainWindow
         }
     }
 
-    private void OnSaveDirectoryClick(object sender, RoutedEventArgs e)
+    private void OnFavoriteDirectoryClick(object sender, RoutedEventArgs e)
     {
         if (AssetsFolderName.SelectedItem is not TreeItem folder) return;
 
         _applicationView.CustomDirectories.Add(new CustomDirectory(folder.Header, folder.PathAtThisPoint));
         FLogger.Append(ELog.Information, () =>
-            FLogger.Text($"Successfully saved '{folder.PathAtThisPoint}' as a new custom directory", Constants.WHITE, true));
+            FLogger.Text($"Successfully saved '{folder.PathAtThisPoint}' as a new favorite directory", Constants.WHITE, true));
     }
 
     private void OnCopyDirectoryPathClick(object sender, RoutedEventArgs e)

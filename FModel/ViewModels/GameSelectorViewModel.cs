@@ -67,7 +67,7 @@ public class GameSelectorViewModel : ViewModel
     public void AddUndetectedDir(string gameDirectory) => AddUndetectedDir(gameDirectory.SubstringAfterLast('\\'), gameDirectory);
     public void AddUndetectedDir(string gameName, string gameDirectory)
     {
-        var setting = new DirectorySettings { GameName = gameName, GameDirectory = gameDirectory, IsManual = true };
+        var setting = DirectorySettings.Default(gameName, gameDirectory, true);
         UserSettings.Default.PerDirectory[gameDirectory] = setting;
         _detectedDirectories.Add(setting);
         SelectedDirectory = DetectedDirectories.Last();
@@ -84,7 +84,7 @@ public class GameSelectorViewModel : ViewModel
     private IEnumerable<DirectorySettings> EnumerateDetectedGames()
     {
         yield return GetUnrealEngineGame("Fortnite", "\\FortniteGame\\Content\\Paks", EGame.GAME_UE5_2);
-        yield return new DirectorySettings { GameName = "Fortnite [LIVE]", GameDirectory = Constants._FN_LIVE_TRIGGER, UeVersion = EGame.GAME_UE5_2 };
+        yield return DirectorySettings.Default("Fortnite [LIVE]", Constants._FN_LIVE_TRIGGER, ue: EGame.GAME_UE5_2);
         yield return GetUnrealEngineGame("Pewee", "\\RogueCompany\\Content\\Paks", EGame.GAME_RogueCompany);
         yield return GetUnrealEngineGame("Rosemallow", "\\Indiana\\Content\\Paks", EGame.GAME_UE4_21);
         yield return GetUnrealEngineGame("Catnip", "\\OakGame\\Content\\Paks", EGame.GAME_Borderlands3);
@@ -94,7 +94,7 @@ public class GameSelectorViewModel : ViewModel
         yield return GetUnrealEngineGame("711c5e95dc094ca58e5f16bd48e751d6", "\\MultiVersus\\Content\\Paks", EGame.GAME_UE4_26);
         yield return GetUnrealEngineGame("9361c8c6d2f34b42b5f2f61093eedf48", "\\TslGame\\Content\\Paks", EGame.GAME_PlayerUnknownsBattlegrounds);
         yield return GetRiotGame("VALORANT", "ShooterGame\\Content\\Paks", EGame.GAME_Valorant);
-        yield return new DirectorySettings { GameName = "Valorant [LIVE]", GameDirectory = Constants._VAL_LIVE_TRIGGER, UeVersion = EGame.GAME_Valorant };
+        yield return DirectorySettings.Default("Valorant [LIVE]", Constants._VAL_LIVE_TRIGGER, ue: EGame.GAME_Valorant);
         yield return GetSteamGame(381210, "\\DeadByDaylight\\Content\\Paks", EGame.GAME_UE4_27); // Dead By Daylight
         yield return GetSteamGame(578080, "\\TslGame\\Content\\Paks", EGame.GAME_PlayerUnknownsBattlegrounds); // PUBG
         yield return GetSteamGame(1172380, "\\SwGame\\Content\\Paks", EGame.GAME_StarWarsJediFallenOrder); // STAR WARS Jedi: Fallen Order™
@@ -119,7 +119,7 @@ public class GameSelectorViewModel : ViewModel
                 if (installationList.AppName.Equals(gameName, StringComparison.OrdinalIgnoreCase) && Directory.Exists(gameDir))
                 {
                     Log.Debug("Found {GameName} in LauncherInstalled.dat", gameName);
-                    return new DirectorySettings { GameName = installationList.AppName, GameDirectory = gameDir, UeVersion = ueVersion };
+                    return DirectorySettings.Default(installationList.AppName, gameDir, ue: ueVersion);
                 }
             }
         }
@@ -139,25 +139,8 @@ public class GameSelectorViewModel : ViewModel
                 if (key.Contains(gameName, StringComparison.OrdinalIgnoreCase) && Directory.Exists(gameDir))
                 {
                     Log.Debug("Found {GameName} in RiotClientInstalls.json", gameName);
-                    return new DirectorySettings { GameName = gameName, GameDirectory = gameDir, UeVersion = ueVersion };
+                    return DirectorySettings.Default(gameName, gameDir, ue: ueVersion);
                 }
-            }
-        }
-
-        return null;
-    }
-
-    private LauncherSettings _launcherSettings;
-    private DirectorySettings GetMojangGame(string gameName, string pakDirectory, EGame ueVersion)
-    {
-        _launcherSettings ??= GetDataLauncherInstalls<LauncherSettings>("\\.minecraft\\launcher_settings.json");
-        if (_launcherSettings is { ProductLibraryDir: { } })
-        {
-            var gameDir = $"{_launcherSettings.ProductLibraryDir}{pakDirectory}";
-            if (Directory.Exists(gameDir))
-            {
-                Log.Debug("Found {GameName} in launcher_settings.json", gameName);
-                return new DirectorySettings { GameName = gameName, GameDirectory = gameDir, UeVersion = ueVersion };
             }
         }
 
@@ -170,7 +153,7 @@ public class GameSelectorViewModel : ViewModel
         if (steamInfo is not null)
         {
             Log.Debug("Found {GameName} in steam manifests", steamInfo.Name);
-            return new DirectorySettings { GameName = steamInfo.Name, GameDirectory = $"{steamInfo.GameRoot}{pakDirectory}", UeVersion = ueVersion };
+            return DirectorySettings.Default(steamInfo.Name, $"{steamInfo.GameRoot}{pakDirectory}", ue: ueVersion);
         }
 
         return null;
@@ -192,7 +175,7 @@ public class GameSelectorViewModel : ViewModel
         if (Directory.Exists(gameDir))
         {
             Log.Debug("Found {GameName} in the registry", key);
-            return new DirectorySettings { GameName = key, GameDirectory = gameDir, UeVersion = ueVersion };
+            return DirectorySettings.Default(key, gameDir, ue: ueVersion);
         }
 
         return null;
@@ -217,7 +200,7 @@ public class GameSelectorViewModel : ViewModel
         if (Directory.Exists(gameDir))
         {
             Log.Debug("Found {GameName} in the registry", key);
-            return new DirectorySettings { GameName = displayName, GameDirectory = gameDir, UeVersion = ueVersion };
+            return DirectorySettings.Default(displayName, gameDir, ue: ueVersion);
         }
 
         return null;
@@ -231,19 +214,6 @@ public class GameSelectorViewModel : ViewModel
             if (!File.Exists(launcher)) continue;
 
             Log.Debug("\"{Launcher}\" found in drive \"{DriveName}\"", launcher, drive.Name);
-            return JsonConvert.DeserializeObject<T>(File.ReadAllText(launcher));
-        }
-
-        return default;
-    }
-
-    private T GetDataLauncherInstalls<T>(string jsonFile)
-    {
-        var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        var launcher = $"{appData}{jsonFile}";
-        if (File.Exists(launcher))
-        {
-            Log.Debug("\"{Launcher}\" found in \"{AppData}\"", launcher, appData);
             return JsonConvert.DeserializeObject<T>(File.ReadAllText(launcher));
         }
 

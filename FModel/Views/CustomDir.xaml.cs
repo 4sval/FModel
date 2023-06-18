@@ -1,5 +1,5 @@
 ﻿using System.Windows;
-using FModel.ViewModels;
+using FModel.Settings;
 
 namespace FModel.Views;
 
@@ -9,7 +9,7 @@ public partial class CustomDir
     {
         DataContext = customDir;
         InitializeComponent();
-            
+
         Activate();
         WpfSuckMyDick.Focus();
         WpfSuckMyDick.SelectAll();

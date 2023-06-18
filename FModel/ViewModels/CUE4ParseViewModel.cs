@@ -170,11 +170,6 @@ public class CUE4ParseViewModel : ViewModel
                 break;
             }
         }
-        if (Game == FGame.FortniteGame) currentDir.Endpoints = new[]
-        {
-            new FEndpoint("https://fortnitecentral.genxgames.gg/api/v1/aes", "$.['mainKey','dynamicKeys']"),
-            new FEndpoint("https://fortnitecentral.genxgames.gg/api/v1/mappings", "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']")
-        };
         Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
 
         GameDirectory = new GameDirectoryViewModel();

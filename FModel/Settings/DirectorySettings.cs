@@ -3,13 +3,30 @@ using System.Collections.Generic;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Versions;
 using FModel.Framework;
-using FModel.ViewModels;
 using FModel.ViewModels.ApiEndpoints.Models;
 
 namespace FModel.Settings;
 
 public class DirectorySettings : ViewModel
 {
+    public static DirectorySettings Default(
+        string gameName, string gameDir, bool manual = false, EGame ue = EGame.GAME_UE4_LATEST,
+        ETexturePlatform texture = ETexturePlatform.DesktopMobile, VersioningSettings ver = null)
+    {
+        UserSettings.Default.PerDirectory.TryGetValue(gameDir, out var old);
+        return new DirectorySettings
+        {
+            GameName = gameName,
+            GameDirectory = gameDir,
+            IsManual = manual,
+            UeVersion = ue,
+            TexturePlatform = texture,
+            Versioning = ver ?? new VersioningSettings(),
+            Endpoints = old?.Endpoints ?? EndpointSettings.Default(gameName),
+            Directories = old?.Directories ?? CustomDirectory.Default(gameName)
+        };
+    }
+
     private string _gameName;
     public string GameName
     {
@@ -31,18 +48,39 @@ public class DirectorySettings : ViewModel
         set => SetProperty(ref _isManual, value);
     }
 
-    private EGame _ueVersion = EGame.GAME_UE4_LATEST;
+    private EGame _ueVersion;
     public EGame UeVersion
     {
         get => _ueVersion;
         set => SetProperty(ref _ueVersion, value);
     }
 
-    private ETexturePlatform _texturePlatform = ETexturePlatform.DesktopMobile;
+    private ETexturePlatform _texturePlatform;
     public ETexturePlatform TexturePlatform
     {
         get => _texturePlatform;
         set => SetProperty(ref _texturePlatform, value);
+    }
+
+    private VersioningSettings _versioning;
+    public VersioningSettings Versioning
+    {
+        get => _versioning;
+        set => SetProperty(ref _versioning, value);
+    }
+
+    private EndpointSettings[] _endpoints;
+    public EndpointSettings[] Endpoints
+    {
+        get => _endpoints;
+        set => SetProperty(ref _endpoints, value);
+    }
+
+    private IList<CustomDirectory> _directories;
+    public IList<CustomDirectory> Directories
+    {
+        get => _directories;
+        set => SetProperty(ref _directories, value);
     }
 
     private AesResponse _aesKeys;
@@ -50,27 +88,6 @@ public class DirectorySettings : ViewModel
     {
         get => _aesKeys;
         set => SetProperty(ref _aesKeys, value);
-    }
-
-    private VersioningSettings _versioning = new ();
-    public VersioningSettings Versioning
-    {
-        get => _versioning;
-        set => SetProperty(ref _versioning, value);
-    }
-
-    private FEndpoint[] _endpoints = { new (), new () };
-    public FEndpoint[] Endpoints
-    {
-        get => _endpoints;
-        set => SetProperty(ref _endpoints, value);
-    }
-
-    private IList<CustomDirectory> _directories = new List<CustomDirectory>();
-    public IList<CustomDirectory> Directories
-    {
-        get => _directories;
-        set => SetProperty(ref _directories, value);
     }
 
     private bool Equals(DirectorySettings other)

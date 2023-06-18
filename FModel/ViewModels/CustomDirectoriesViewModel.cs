@@ -11,37 +11,6 @@ using FModel.ViewModels.Commands;
 
 namespace FModel.ViewModels;
 
-public class CustomDirectory : ViewModel
-{
-    private string _header;
-    public string Header
-    {
-        get => _header;
-        set => SetProperty(ref _header, value);
-    }
-
-    private string _directoryPath;
-    public string DirectoryPath
-    {
-        get => _directoryPath;
-        set => SetProperty(ref _directoryPath, value);
-    }
-
-    public CustomDirectory()
-    {
-        Header = string.Empty;
-        DirectoryPath = string.Empty;
-    }
-
-    public CustomDirectory(string header, string path)
-    {
-        Header = header;
-        DirectoryPath = path;
-    }
-
-    public override string ToString() => Header;
-}
-
 public class CustomDirectoriesViewModel : ViewModel
 {
     private GoToCommand _goToCommand;
