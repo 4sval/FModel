@@ -81,7 +81,7 @@ public class ApplicationViewModel : ViewModel
 
         CUE4Parse = new CUE4ParseViewModel();
         CustomDirectories = new CustomDirectoriesViewModel();
-        SettingsView = new SettingsViewModel(CUE4Parse.Game);
+        SettingsView = new SettingsViewModel();
         AesManager = new AesManagerViewModel(CUE4Parse);
         MapViewer = new MapViewerViewModel(CUE4Parse);
         AudioPlayer = new AudioPlayerViewModel();
@@ -103,6 +103,7 @@ public class ApplicationViewModel : ViewModel
         if (!bAlreadyLaunched || UserSettings.Default.CurrentDir.Equals(gameLauncherViewModel.SelectedDirectory))
             return gameLauncherViewModel.SelectedDirectory;
 
+        // UserSettings.Save(); // ??? change key then change game, key saved correctly what?
         UserSettings.Default.CurrentDir = gameLauncherViewModel.SelectedDirectory;
         RestartWithWarning();
         return null;

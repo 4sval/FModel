@@ -38,6 +38,7 @@ public class CustomDirectoriesViewModel : ViewModel
     public void Add(CustomDirectory dir)
     {
         _directories.Add(new MenuItem { Header = dir.Header, Tag = dir.DirectoryPath, ItemsSource = EnumerateCommands(dir) });
+        Save();
     }
 
     public void Edit(int index, CustomDirectory newDir)
@@ -46,11 +47,13 @@ public class CustomDirectoriesViewModel : ViewModel
 
         dir.Header = newDir.Header;
         dir.Tag = newDir.DirectoryPath;
+        Save();
     }
 
     public void Delete(int index)
     {
         _directories.RemoveAt(index);
+        Save();
     }
 
     public void Save()

@@ -40,7 +40,6 @@ public partial class MainWindow
 
     private void OnClosing(object sender, CancelEventArgs e)
     {
-        _applicationView.CustomDirectories.Save();
         _discordHandler.Dispose();
     }
 

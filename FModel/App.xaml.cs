@@ -149,7 +149,7 @@ public partial class App
         {
             if (!Directory.Exists(gameDir)) continue;
             UserSettings.Default.PerDirectory[gameDir] =
-                DirectorySettings.Default(setting.GameName, setting.GameDirectory, true, setting.OverridedGame);
+                DirectorySettings.Default(setting.GameName, setting.GameDirectory, true, setting.OverridedGame, setting.AesKeys?.MainKey);
         }
         UserSettings.Default.ManualGames.Clear();
     }

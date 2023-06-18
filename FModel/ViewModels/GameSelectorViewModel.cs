@@ -49,7 +49,7 @@ public class GameSelectorViewModel : ViewModel
         _detectedDirectories = new ObservableCollection<DirectorySettings>(EnumerateDetectedGames().Where(x => x != null));
         foreach (var dir in UserSettings.Default.PerDirectory.Values.Where(x => x.IsManual))
         {
-            _detectedDirectories.Add(dir);
+            _detectedDirectories.Add((DirectorySettings) dir.Clone());
         }
 
         DetectedDirectories = new ReadOnlyObservableCollection<DirectorySettings>(_detectedDirectories);

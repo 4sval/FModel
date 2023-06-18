@@ -164,7 +164,6 @@ public class SettingsViewModel : ViewModel
     public ReadOnlyObservableCollection<ETextureFormat> TextureExportFormats { get; private set; }
     public ReadOnlyObservableCollection<ETexturePlatform> Platforms { get; private set; }
 
-    private readonly FGame _game;
     private string _outputSnapshot;
     private string _rawDataSnapshot;
     private string _propertiesSnapshot;
@@ -189,9 +188,9 @@ public class SettingsViewModel : ViewModel
 
     private bool _mappingsUpdate = false;
 
-    public SettingsViewModel(FGame game)
+    public SettingsViewModel()
     {
-        _game = game;
+
     }
 
     public void Initialize()

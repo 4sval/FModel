@@ -7,10 +7,10 @@ using FModel.ViewModels.ApiEndpoints.Models;
 
 namespace FModel.Settings;
 
-public class DirectorySettings : ViewModel
+public class DirectorySettings : ViewModel, ICloneable
 {
     public static DirectorySettings Default(
-        string gameName, string gameDir, bool manual = false, EGame ue = EGame.GAME_UE4_LATEST)
+        string gameName, string gameDir, bool manual = false, EGame ue = EGame.GAME_UE4_LATEST, string aes = "")
     {
         UserSettings.Default.PerDirectory.TryGetValue(gameDir, out var old);
         return new DirectorySettings
@@ -23,7 +23,7 @@ public class DirectorySettings : ViewModel
             Versioning = old?.Versioning ?? new VersioningSettings(),
             Endpoints = old?.Endpoints ?? EndpointSettings.Default(gameName),
             Directories = old?.Directories ?? CustomDirectory.Default(gameName),
-            AesKeys = old?.AesKeys ?? new AesResponse { MainKey = string.Empty, DynamicKeys = null },
+            AesKeys = old?.AesKeys ?? new AesResponse { MainKey = aes, DynamicKeys = null },
             LastAesReload = old?.LastAesReload ?? DateTime.Today.AddDays(-1)
         };
     }
@@ -111,5 +111,10 @@ public class DirectorySettings : ViewModel
     public override int GetHashCode()
     {
         return HashCode.Combine(GameDirectory, (int) UeVersion);
+    }
+
+    public object Clone()
+    {
+        return this.MemberwiseClone();
     }
 }
