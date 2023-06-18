@@ -331,7 +331,7 @@ public class CUE4ParseViewModel : ViewModel
             var aes = _apiEndpointView.DynamicApi.GetAesKeys(cancellationToken, endpoint.Url, endpoint.Path);
             if (aes is not { IsValid: true }) return;
 
-            UserSettings.Default.AesKeys[Game] = aes;
+            UserSettings.Default.CurrentDir.AesKeys = aes;
         });
     }
 

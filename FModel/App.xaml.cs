@@ -41,6 +41,8 @@ public partial class App
         {
             UserSettings.Default = JsonConvert.DeserializeObject<UserSettings>(
                 File.ReadAllText(UserSettings.FilePath), JsonNetSerializer.SerializerSettings);
+
+            /*if (UserSettings.Default.ShowChangelog) */MigrateV1Games();
         }
         catch
         {
@@ -139,6 +141,17 @@ public partial class App
         }
 
         e.Handled = true;
+    }
+
+    private void MigrateV1Games()
+    {
+        foreach ((var gameDir, var setting) in UserSettings.Default.ManualGames)
+        {
+            if (!Directory.Exists(gameDir)) continue;
+            UserSettings.Default.PerDirectory[gameDir] =
+                DirectorySettings.Default(setting.GameName, setting.GameDirectory, true, setting.OverridedGame);
+        }
+        UserSettings.Default.ManualGames.Clear();
     }
 
     private string GetOperatingSystemProductName()

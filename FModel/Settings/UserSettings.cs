@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
-using CUE4Parse.UE4.Assets.Exports.Texture;
-using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
@@ -230,107 +228,17 @@ namespace FModel.Settings
             set => SetProperty(ref _perDirectory, value);
         }
 
+        [JsonIgnore]
         public DirectorySettings CurrentDir { get; set; }
 
         /// <summary>
         /// TO DELETEEEEEEEEEEEEE
         /// </summary>
-
-        private IDictionary<FGame, AesResponse> _aesKeys = new Dictionary<FGame, AesResponse>();
-        public IDictionary<FGame, AesResponse> AesKeys
-        {
-            get => _aesKeys;
-            set => SetProperty(ref _aesKeys, value);
-        }
-
-        // <gameDirectory as string, settings>
-        // can't refactor to use this data layout for everything
-        // because it will wipe old user settings that relies on FGame
         private IDictionary<string, GameSelectorViewModel.DetectedGame> _manualGames = new Dictionary<string, GameSelectorViewModel.DetectedGame>();
         public IDictionary<string, GameSelectorViewModel.DetectedGame> ManualGames
         {
             get => _manualGames;
             set => SetProperty(ref _manualGames, value);
-        }
-
-        private IDictionary<FGame, IList<CustomDirectory>> _customDirectories = new Dictionary<FGame, IList<CustomDirectory>>
-        {
-            {FGame.Unknown, new List<CustomDirectory>()},
-            {
-                FGame.FortniteGame, new List<CustomDirectory>
-                {
-                    new("Cosmetics", "FortniteGame/Content/Athena/Items/Cosmetics/"),
-                    new("Emotes [AUDIO]", "FortniteGame/Content/Athena/Sounds/Emotes/"),
-                    new("Music Packs [AUDIO]", "FortniteGame/Content/Athena/Sounds/MusicPacks/"),
-                    new("Weapons", "FortniteGame/Content/Athena/Items/Weapons/"),
-                    new("Strings", "FortniteGame/Content/Localization/")
-                }
-            },
-            {
-                FGame.ShooterGame, new List<CustomDirectory>
-                {
-                    new("Audio", "ShooterGame/Content/WwiseAudio/Media/"),
-                    new("Characters", "ShooterGame/Content/Characters/"),
-                    new("Gun Buddies", "ShooterGame/Content/Equippables/Buddies/"),
-                    new("Cards and Sprays", "ShooterGame/Content/Personalization/"),
-                    new("Shop Backgrounds", "ShooterGame/Content/UI/OutOfGame/MainMenu/Store/Shared/Textures/"),
-                    new("Weapon Renders", "ShooterGame/Content/UI/Screens/OutOfGame/MainMenu/Collection/Assets/Large/")
-                }
-            },
-            {
-                FGame.DeadByDaylight, new List<CustomDirectory>
-                {
-                    new("Audio", "DeadByDaylight/Content/WwiseAudio/Windows/"),
-                    new("Characters", "DeadByDaylight/Content/Characters/"),
-                    new("Icons", "DeadByDaylight/Content/UI/UMGAssets/Icons/"),
-                    new("Strings", "DeadByDaylight/Content/Localization/")
-                }
-            },
-            {FGame.OakGame, new List<CustomDirectory>()},
-            {
-                FGame.Dungeons, new List<CustomDirectory>
-                {
-                    new("Levels", "Dungeons/Content/data/Lovika/Levels"),
-                    new("Friendlies", "Dungeons/Content/Actor/Characters/Friendlies"),
-                    new("Skins", "Dungeons/Content/Actor/Characters/Player/Master/Skins"),
-                    new("Strings", "Dungeons/Content/Localization/")
-                }
-            },
-            {
-                FGame.WorldExplorers, new List<CustomDirectory>
-                {
-                    new("Loot", "WorldExplorers/Content/Loot/"),
-                    new("Strings", "WorldExplorers/Content/Localization/")
-                }
-            },
-            {
-                FGame.g3, new List<CustomDirectory>
-                {
-                    new("Cosmetics", "g3/Content/Blueprints/Cosmetics/"),
-                    new("Strings", "g3/Content/Localization/")
-                }
-            },
-            {FGame.StateOfDecay2, new List<CustomDirectory>()},
-            {FGame.Prospect, new List<CustomDirectory>()},
-            {FGame.Indiana, new List<CustomDirectory>()},
-            {FGame.RogueCompany, new List<CustomDirectory>()},
-            {FGame.SwGame, new List<CustomDirectory>()},
-            {FGame.Platform, new List<CustomDirectory>()},
-            {FGame.BendGame, new List<CustomDirectory>()},
-            {FGame.TslGame, new List<CustomDirectory>()},
-            {FGame.PortalWars, new List<CustomDirectory>()},
-            {FGame.Gameface, new List<CustomDirectory>()},
-            {FGame.Athena, new List<CustomDirectory>()},
-            {FGame.MultiVersus, new List<CustomDirectory>()},
-            {FGame.Hotta, new List<CustomDirectory>()},
-            {FGame.eFootball, new List<CustomDirectory>()}
-        };
-
-        private DateTime _lastAesReload = DateTime.Today.AddDays(-1);
-        public DateTime LastAesReload
-        {
-            get => _lastAesReload;
-            set => SetProperty(ref _lastAesReload, value);
         }
 
         private AuthResponse _lastAuthResponse = new() {AccessToken = "", ExpiresAt = DateTime.Now};

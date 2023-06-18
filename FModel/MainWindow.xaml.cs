@@ -56,8 +56,8 @@ public partial class MainWindow
             case EAesReload.Always:
                 await _applicationView.CUE4Parse.RefreshAes();
                 break;
-            case EAesReload.OncePerDay when UserSettings.Default.LastAesReload != DateTime.Today:
-                UserSettings.Default.LastAesReload = DateTime.Today;
+            case EAesReload.OncePerDay when UserSettings.Default.CurrentDir.LastAesReload != DateTime.Today:
+                UserSettings.Default.CurrentDir.LastAesReload = DateTime.Today;
                 await _applicationView.CUE4Parse.RefreshAes();
                 break;
         }

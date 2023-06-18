@@ -100,10 +100,10 @@ public class ApplicationViewModel : ViewModel
         if (!result.HasValue || !result.Value) return null;
 
         UserSettings.Default.GameDirectory = gameLauncherViewModel.SelectedDirectory.GameDirectory;
-        UserSettings.Default.PerDirectory[gameDirectory] = gameLauncherViewModel.SelectedDirectory;
         if (!bAlreadyLaunched || UserSettings.Default.CurrentDir.Equals(gameLauncherViewModel.SelectedDirectory))
             return gameLauncherViewModel.SelectedDirectory;
 
+        UserSettings.Default.CurrentDir = gameLauncherViewModel.SelectedDirectory;
         RestartWithWarning();
         return null;
     }

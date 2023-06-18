@@ -10,8 +10,7 @@ namespace FModel.Settings;
 public class DirectorySettings : ViewModel
 {
     public static DirectorySettings Default(
-        string gameName, string gameDir, bool manual = false, EGame ue = EGame.GAME_UE4_LATEST,
-        ETexturePlatform texture = ETexturePlatform.DesktopMobile, VersioningSettings ver = null)
+        string gameName, string gameDir, bool manual = false, EGame ue = EGame.GAME_UE4_LATEST)
     {
         UserSettings.Default.PerDirectory.TryGetValue(gameDir, out var old);
         return new DirectorySettings
@@ -19,11 +18,13 @@ public class DirectorySettings : ViewModel
             GameName = gameName,
             GameDirectory = gameDir,
             IsManual = manual,
-            UeVersion = ue,
-            TexturePlatform = texture,
-            Versioning = ver ?? new VersioningSettings(),
+            UeVersion = old?.UeVersion ?? ue,
+            TexturePlatform = old?.TexturePlatform ?? ETexturePlatform.DesktopMobile,
+            Versioning = old?.Versioning ?? new VersioningSettings(),
             Endpoints = old?.Endpoints ?? EndpointSettings.Default(gameName),
-            Directories = old?.Directories ?? CustomDirectory.Default(gameName)
+            Directories = old?.Directories ?? CustomDirectory.Default(gameName),
+            AesKeys = old?.AesKeys ?? new AesResponse { MainKey = string.Empty, DynamicKeys = null },
+            LastAesReload = old?.LastAesReload ?? DateTime.Today.AddDays(-1)
         };
     }
 
@@ -88,6 +89,13 @@ public class DirectorySettings : ViewModel
     {
         get => _aesKeys;
         set => SetProperty(ref _aesKeys, value);
+    }
+
+    private DateTime _lastAesReload;
+    public DateTime LastAesReload
+    {
+        get => _lastAesReload;
+        set => SetProperty(ref _lastAesReload, value);
     }
 
     private bool Equals(DirectorySettings other)

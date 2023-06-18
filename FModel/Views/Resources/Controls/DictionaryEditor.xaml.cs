@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using CUE4Parse.UE4.Objects.Core.Misc;
@@ -104,7 +103,7 @@ public partial class DictionaryEditor
             {
                 Text = JsonConvert.SerializeObject(_defaultOptions, Formatting.Indented)
             },
-            "MapStructTypes" => new TextDocument
+            "Versioning Configuration (MapStructTypes)" => new TextDocument
             {
                 Text = JsonConvert.SerializeObject(_defaultMapStructTypes, Formatting.Indented)
             },

@@ -1,26 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using CUE4Parse.UE4.Assets.Exports.Texture;
-using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
 using CUE4Parse.UE4.Assets.Exports.Material;
-using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
-using FModel.ViewModels.ApiEndpoints.Models;
 
 namespace FModel.ViewModels;
 
 public class SettingsViewModel : ViewModel
 {
-    private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
-    private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
     private readonly DiscordHandler _discordHandler = DiscordService.DiscordHandler;
 
     private bool _useCustomOutputFolders;
@@ -211,20 +205,10 @@ public class SettingsViewModel : ViewModel
         _gameSnapshot = UserSettings.Default.GameDirectory;
         _updateModeSnapshot = UserSettings.Default.UpdateMode;
         _uePlatformSnapshot = UserSettings.Default.CurrentDir.TexturePlatform;
-        if (_game == FGame.Unknown && UserSettings.Default.ManualGames.TryGetValue(_gameSnapshot, out var settings))
-        {
-            _ueGameSnapshot = settings.OverridedGame;
-            _customVersionsSnapshot = settings.OverridedCustomVersions;
-            _optionsSnapshot = settings.OverridedOptions;
-            _mapStructTypesSnapshot = settings.OverridedMapStructTypes;
-        }
-        else
-        {
-            _ueGameSnapshot = UserSettings.Default.CurrentDir.UeVersion;
-            _customVersionsSnapshot = UserSettings.Default.CurrentDir.Versioning.CustomVersions;
-            _optionsSnapshot = UserSettings.Default.CurrentDir.Versioning.Options;
-            _mapStructTypesSnapshot = UserSettings.Default.CurrentDir.Versioning.MapStructTypes;
-        }
+        _ueGameSnapshot = UserSettings.Default.CurrentDir.UeVersion;
+        _customVersionsSnapshot = UserSettings.Default.CurrentDir.Versioning.CustomVersions;
+        _optionsSnapshot = UserSettings.Default.CurrentDir.Versioning.Options;
+        _mapStructTypesSnapshot = UserSettings.Default.CurrentDir.Versioning.MapStructTypes;
 
         AesEndpoint = UserSettings.Default.CurrentDir.Endpoints[0];
         MappingEndpoint = UserSettings.Default.CurrentDir.Endpoints[1];
@@ -300,21 +284,11 @@ public class SettingsViewModel : ViewModel
             restart = true;
 
         UserSettings.Default.UpdateMode = SelectedUpdateMode;
+        UserSettings.Default.CurrentDir.UeVersion = SelectedUeGame;
         UserSettings.Default.CurrentDir.TexturePlatform = SelectedUePlatform;
-        if (_game == FGame.Unknown && UserSettings.Default.ManualGames.ContainsKey(UserSettings.Default.GameDirectory))
-        {
-            UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].OverridedGame = SelectedUeGame;
-            UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].OverridedCustomVersions = (List<FCustomVersion>) SelectedCustomVersions;
-            UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].OverridedOptions = (Dictionary<string, bool>) SelectedOptions;
-            UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].OverridedMapStructTypes = (Dictionary<string, KeyValuePair<string, string>>) SelectedMapStructTypes;
-        }
-        else
-        {
-            UserSettings.Default.CurrentDir.UeVersion = SelectedUeGame;
-            UserSettings.Default.CurrentDir.Versioning.CustomVersions = SelectedCustomVersions;
-            UserSettings.Default.CurrentDir.Versioning.Options = SelectedOptions;
-            UserSettings.Default.CurrentDir.Versioning.MapStructTypes = SelectedMapStructTypes;
-        }
+        UserSettings.Default.CurrentDir.Versioning.CustomVersions = SelectedCustomVersions;
+        UserSettings.Default.CurrentDir.Versioning.Options = SelectedOptions;
+        UserSettings.Default.CurrentDir.Versioning.MapStructTypes = SelectedMapStructTypes;
 
         UserSettings.Default.AssetLanguage = SelectedAssetLanguage;
         UserSettings.Default.CompressedAudioMode = SelectedCompressedAudio;
