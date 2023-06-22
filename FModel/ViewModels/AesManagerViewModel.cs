@@ -35,22 +35,7 @@ public class AesManagerViewModel : ViewModel
     {
         await _threadWorkerView.Begin(_ =>
         {
-            if (_cue4Parse.Game == FGame.Unknown &&
-                UserSettings.Default.ManualGames.TryGetValue(UserSettings.Default.GameDirectory, out var settings))
-            {
-                _keysFromSettings = settings.AesKeys;
-            }
-            else
-            {
-                UserSettings.Default.AesKeys.TryGetValue(_cue4Parse.Game, out _keysFromSettings);
-            }
-
-            _keysFromSettings ??= new AesResponse
-            {
-                MainKey = string.Empty,
-                DynamicKeys = null
-            };
-
+            _keysFromSettings = UserSettings.Default.CurrentDir.AesKeys;
             _mainKey.Key = Helper.FixKey(_keysFromSettings.MainKey);
             AesKeys = new FullyObservableCollection<FileItem>(EnumerateAesKeys());
             AesKeys.ItemPropertyChanged += AesKeysOnItemPropertyChanged;
@@ -105,9 +90,7 @@ public class AesManagerViewModel : ViewModel
 
     public void SetAesKeys()
     {
-        if (_cue4Parse.Game == FGame.Unknown && UserSettings.Default.ManualGames.ContainsKey(UserSettings.Default.GameDirectory))
-            UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].AesKeys = _keysFromSettings;
-        else UserSettings.Default.AesKeys[_cue4Parse.Game] = _keysFromSettings;
+        UserSettings.Default.CurrentDir.AesKeys = _keysFromSettings;
         // Log.Information("{@Json}", UserSettings.Default);
     }
 

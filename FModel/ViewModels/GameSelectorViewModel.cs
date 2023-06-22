@@ -22,114 +22,93 @@ public class GameSelectorViewModel : ViewModel
     {
         public string GameName { get; set; }
         public string GameDirectory { get; set; }
+        public EGame OverridedGame { get; set; }
         public bool IsManual { get; set; }
 
         // the followings are only used when game is manually added
         public AesResponse AesKeys { get; set; }
-        public EGame OverridedGame { get; set; }
         public List<FCustomVersion> OverridedCustomVersions { get; set; }
         public Dictionary<string, bool> OverridedOptions { get; set; }
         public Dictionary<string, KeyValuePair<string, string>> OverridedMapStructTypes { get; set; }
         public IList<CustomDirectory> CustomDirectories { get; set; }
     }
 
-    private DetectedGame _selectedDetectedGame;
-    public DetectedGame SelectedDetectedGame
+    private DirectorySettings _selectedDirectory;
+    public DirectorySettings SelectedDirectory
     {
-        get => _selectedDetectedGame;
-        set => SetProperty(ref _selectedDetectedGame, value);
+        get => _selectedDirectory;
+        set => SetProperty(ref _selectedDirectory, value);
     }
 
-    private readonly ObservableCollection<DetectedGame> _autoDetectedGames;
-    public ReadOnlyObservableCollection<DetectedGame> AutoDetectedGames { get; }
+    private readonly ObservableCollection<DirectorySettings> _detectedDirectories;
+    public ReadOnlyObservableCollection<DirectorySettings> DetectedDirectories { get; }
+    public ReadOnlyObservableCollection<EGame> UeVersions { get; }
 
     public GameSelectorViewModel(string gameDirectory)
     {
-        _autoDetectedGames = new ObservableCollection<DetectedGame>(EnumerateDetectedGames().Where(x => x != null));
-        foreach (var game in UserSettings.Default.ManualGames.Values)
+        _detectedDirectories = new ObservableCollection<DirectorySettings>(EnumerateDetectedGames().Where(x => x != null));
+        foreach (var dir in UserSettings.Default.PerDirectory.Values.Where(x => x.IsManual))
         {
-            _autoDetectedGames.Add(game);
+            _detectedDirectories.Add((DirectorySettings) dir.Clone());
         }
 
-        AutoDetectedGames = new ReadOnlyObservableCollection<DetectedGame>(_autoDetectedGames);
+        DetectedDirectories = new ReadOnlyObservableCollection<DirectorySettings>(_detectedDirectories);
 
-        if (AutoDetectedGames.FirstOrDefault(x => x.GameDirectory == gameDirectory) is { } detectedGame)
-            SelectedDetectedGame = detectedGame;
+        if (DetectedDirectories.FirstOrDefault(x => x.GameDirectory == gameDirectory) is { } detectedGame)
+            SelectedDirectory = detectedGame;
         else if (!string.IsNullOrEmpty(gameDirectory))
-            AddUnknownGame(gameDirectory);
+            AddUndetectedDir(gameDirectory);
         else
-            SelectedDetectedGame = AutoDetectedGames.FirstOrDefault();
+            SelectedDirectory = DetectedDirectories.FirstOrDefault();
+
+        UeVersions = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(EnumerateUeGames()));
     }
 
-    /// <summary>
-    /// dedicated to manual games
-    /// </summary>
-    public void AddUnknownGame(string gameName, string gameDirectory)
+    public void AddUndetectedDir(string gameDirectory) => AddUndetectedDir(gameDirectory.SubstringAfterLast('\\'), gameDirectory);
+    public void AddUndetectedDir(string gameName, string gameDirectory)
     {
-        var game = new DetectedGame
-        {
-            GameName = gameName,
-            GameDirectory = gameDirectory,
-            IsManual = true,
-            AesKeys = null,
-            OverridedGame = EGame.GAME_UE4_LATEST,
-            OverridedCustomVersions = null,
-            OverridedOptions = null,
-            OverridedMapStructTypes = null,
-            CustomDirectories = new List<CustomDirectory>()
-        };
-
-        UserSettings.Default.ManualGames[gameDirectory] = game;
-        _autoDetectedGames.Add(game);
-        SelectedDetectedGame = AutoDetectedGames.Last();
-    }
-
-    public void AddUnknownGame(string gameDirectory)
-    {
-        _autoDetectedGames.Add(new DetectedGame { GameName = gameDirectory.SubstringAfterLast('\\'), GameDirectory = gameDirectory });
-        SelectedDetectedGame = AutoDetectedGames.Last();
+        var setting = DirectorySettings.Default(gameName, gameDirectory, true);
+        UserSettings.Default.PerDirectory[gameDirectory] = setting;
+        _detectedDirectories.Add(setting);
+        SelectedDirectory = DetectedDirectories.Last();
     }
 
     public void DeleteSelectedGame()
     {
-        UserSettings.Default.ManualGames.Remove(SelectedDetectedGame.GameDirectory); // should not be a problem
-        _autoDetectedGames.Remove(SelectedDetectedGame);
-        SelectedDetectedGame = AutoDetectedGames.Last();
+        UserSettings.Default.PerDirectory.Remove(SelectedDirectory.GameDirectory); // should not be a problem
+        _detectedDirectories.Remove(SelectedDirectory);
+        SelectedDirectory = DetectedDirectories.Last();
     }
 
-    private IEnumerable<DetectedGame> EnumerateDetectedGames()
+    private IEnumerable<EGame> EnumerateUeGames() => Enum.GetValues<EGame>();
+    private IEnumerable<DirectorySettings> EnumerateDetectedGames()
     {
-        yield return GetUnrealEngineGame("Fortnite", "\\FortniteGame\\Content\\Paks");
-        yield return new DetectedGame { GameName = "Fortnite [LIVE]", GameDirectory = Constants._FN_LIVE_TRIGGER };
-        yield return GetUnrealEngineGame("Pewee", "\\RogueCompany\\Content\\Paks");
-        yield return GetUnrealEngineGame("Rosemallow", "\\Indiana\\Content\\Paks");
-        yield return GetUnrealEngineGame("Catnip", "\\OakGame\\Content\\Paks");
-        yield return GetUnrealEngineGame("AzaleaAlpha", "\\Prospect\\Content\\Paks");
-        yield return GetUnrealEngineGame("WorldExplorersLive", "\\WorldExplorers\\Content\\Paks");
-        yield return GetUnrealEngineGame("Newt", "\\g3\\Content\\Paks");
-        yield return GetUnrealEngineGame("shoebill", "\\SwGame\\Content\\Paks");
-        yield return GetUnrealEngineGame("Snoek", "\\StateOfDecay2\\Content\\Paks");
-        yield return GetUnrealEngineGame("a99769d95d8f400baad1f67ab5dfe508", "\\Core\\Platform\\Content\\Paks");
-        yield return GetUnrealEngineGame("Nebula", "\\BendGame\\Content");
-        yield return GetUnrealEngineGame("711c5e95dc094ca58e5f16bd48e751d6", "\\MultiVersus\\Content\\Paks");
-        yield return GetUnrealEngineGame("9361c8c6d2f34b42b5f2f61093eedf48", "\\TslGame\\Content\\Paks");
-        yield return GetRiotGame("VALORANT", "ShooterGame\\Content\\Paks");
-        yield return new DetectedGame { GameName = "Valorant [LIVE]", GameDirectory = Constants._VAL_LIVE_TRIGGER };
-        yield return GetMojangGame("MinecraftDungeons", "\\dungeons\\dungeons\\Dungeons\\Content\\Paks");
-        yield return GetSteamGame(381210, "\\DeadByDaylight\\Content\\Paks"); // Dead By Daylight
-        yield return GetSteamGame(578080, "\\TslGame\\Content\\Paks"); // PUBG
-        yield return GetSteamGame(1172380, "\\SwGame\\Content\\Paks"); // STAR WARS Jedi: Fallen Order™
-        yield return GetSteamGame(677620, "\\PortalWars\\Content\\Paks"); // Splitgate
-        yield return GetSteamGame(1172620, "\\Athena\\Content\\Paks"); // Sea of Thieves
-        yield return GetSteamGame(1665460, "\\pak"); // eFootball 2023
-        yield return GetRockstarGamesGame("GTA III - Definitive Edition", "\\Gameface\\Content\\Paks");
-        yield return GetRockstarGamesGame("GTA San Andreas - Definitive Edition", "\\Gameface\\Content\\Paks");
-        yield return GetRockstarGamesGame("GTA Vice City - Definitive Edition", "\\Gameface\\Content\\Paks");
-        yield return GetLevelInfiniteGame("tof_launcher", "\\Hotta\\Content\\Paks");
+        yield return GetUnrealEngineGame("Fortnite", "\\FortniteGame\\Content\\Paks", EGame.GAME_UE5_3);
+        yield return DirectorySettings.Default("Fortnite [LIVE]", Constants._FN_LIVE_TRIGGER, ue: EGame.GAME_UE5_3);
+        yield return GetUnrealEngineGame("Pewee", "\\RogueCompany\\Content\\Paks", EGame.GAME_RogueCompany);
+        yield return GetUnrealEngineGame("Rosemallow", "\\Indiana\\Content\\Paks", EGame.GAME_UE4_21);
+        yield return GetUnrealEngineGame("Catnip", "\\OakGame\\Content\\Paks", EGame.GAME_Borderlands3);
+        yield return GetUnrealEngineGame("AzaleaAlpha", "\\Prospect\\Content\\Paks", EGame.GAME_UE4_27);
+        yield return GetUnrealEngineGame("shoebill", "\\SwGame\\Content\\Paks", EGame.GAME_StarWarsJediFallenOrder);
+        yield return GetUnrealEngineGame("Snoek", "\\StateOfDecay2\\Content\\Paks", EGame.GAME_StateOfDecay2);
+        yield return GetUnrealEngineGame("711c5e95dc094ca58e5f16bd48e751d6", "\\MultiVersus\\Content\\Paks", EGame.GAME_UE4_26);
+        yield return GetUnrealEngineGame("9361c8c6d2f34b42b5f2f61093eedf48", "\\TslGame\\Content\\Paks", EGame.GAME_PlayerUnknownsBattlegrounds);
+        yield return GetRiotGame("VALORANT", "ShooterGame\\Content\\Paks", EGame.GAME_Valorant);
+        yield return DirectorySettings.Default("VALORANT [LIVE]", Constants._VAL_LIVE_TRIGGER, ue: EGame.GAME_Valorant);
+        yield return GetSteamGame(381210, "\\DeadByDaylight\\Content\\Paks", EGame.GAME_UE4_27); // Dead By Daylight
+        yield return GetSteamGame(578080, "\\TslGame\\Content\\Paks", EGame.GAME_PlayerUnknownsBattlegrounds); // PUBG
+        yield return GetSteamGame(1172380, "\\SwGame\\Content\\Paks", EGame.GAME_StarWarsJediFallenOrder); // STAR WARS Jedi: Fallen Order™
+        yield return GetSteamGame(677620, "\\PortalWars\\Content\\Paks", EGame.GAME_Splitgate); // Splitgate
+        yield return GetSteamGame(1172620, "\\Athena\\Content\\Paks", EGame.GAME_SeaOfThieves); // Sea of Thieves
+        yield return GetSteamGame(1665460, "\\pak", EGame.GAME_UE4_26); // eFootball 2023
+        yield return GetRockstarGamesGame("GTA III - Definitive Edition", "\\Gameface\\Content\\Paks", EGame.GAME_GTATheTrilogyDefinitiveEdition);
+        yield return GetRockstarGamesGame("GTA San Andreas - Definitive Edition", "\\Gameface\\Content\\Paks", EGame.GAME_GTATheTrilogyDefinitiveEdition);
+        yield return GetRockstarGamesGame("GTA Vice City - Definitive Edition", "\\Gameface\\Content\\Paks", EGame.GAME_GTATheTrilogyDefinitiveEdition);
+        yield return GetLevelInfiniteGame("tof_launcher", "\\Hotta\\Content\\Paks", EGame.GAME_TowerOfFantasy);
     }
 
     private LauncherInstalled _launcherInstalled;
-    private DetectedGame GetUnrealEngineGame(string gameName, string pakDirectory)
+    private DirectorySettings GetUnrealEngineGame(string gameName, string pakDirectory, EGame ueVersion)
     {
         _launcherInstalled ??= GetDriveLauncherInstalls<LauncherInstalled>("ProgramData\\Epic\\UnrealEngineLauncher\\LauncherInstalled.dat");
         if (_launcherInstalled?.InstallationList != null)
@@ -140,7 +119,7 @@ public class GameSelectorViewModel : ViewModel
                 if (installationList.AppName.Equals(gameName, StringComparison.OrdinalIgnoreCase) && Directory.Exists(gameDir))
                 {
                     Log.Debug("Found {GameName} in LauncherInstalled.dat", gameName);
-                    return new DetectedGame { GameName = installationList.AppName, GameDirectory = gameDir };
+                    return DirectorySettings.Default(installationList.AppName, gameDir, ue: ueVersion);
                 }
             }
         }
@@ -149,7 +128,7 @@ public class GameSelectorViewModel : ViewModel
     }
 
     private RiotClientInstalls _riotClientInstalls;
-    private DetectedGame GetRiotGame(string gameName, string pakDirectory)
+    private DirectorySettings GetRiotGame(string gameName, string pakDirectory, EGame ueVersion)
     {
         _riotClientInstalls ??= GetDriveLauncherInstalls<RiotClientInstalls>("ProgramData\\Riot Games\\RiotClientInstalls.json");
         if (_riotClientInstalls is { AssociatedClient: { } })
@@ -160,7 +139,7 @@ public class GameSelectorViewModel : ViewModel
                 if (key.Contains(gameName, StringComparison.OrdinalIgnoreCase) && Directory.Exists(gameDir))
                 {
                     Log.Debug("Found {GameName} in RiotClientInstalls.json", gameName);
-                    return new DetectedGame { GameName = gameName, GameDirectory = gameDir };
+                    return DirectorySettings.Default(gameName, gameDir, ue: ueVersion);
                 }
             }
         }
@@ -168,36 +147,19 @@ public class GameSelectorViewModel : ViewModel
         return null;
     }
 
-    private LauncherSettings _launcherSettings;
-    private DetectedGame GetMojangGame(string gameName, string pakDirectory)
-    {
-        _launcherSettings ??= GetDataLauncherInstalls<LauncherSettings>("\\.minecraft\\launcher_settings.json");
-        if (_launcherSettings is { ProductLibraryDir: { } })
-        {
-            var gameDir = $"{_launcherSettings.ProductLibraryDir}{pakDirectory}";
-            if (Directory.Exists(gameDir))
-            {
-                Log.Debug("Found {GameName} in launcher_settings.json", gameName);
-                return new DetectedGame { GameName = gameName, GameDirectory = gameDir };
-            }
-        }
-
-        return null;
-    }
-
-    private DetectedGame GetSteamGame(int id, string pakDirectory)
+    private DirectorySettings GetSteamGame(int id, string pakDirectory, EGame ueVersion)
     {
         var steamInfo = SteamDetection.GetSteamGameById(id);
         if (steamInfo is not null)
         {
             Log.Debug("Found {GameName} in steam manifests", steamInfo.Name);
-            return new DetectedGame { GameName = steamInfo.Name, GameDirectory = $"{steamInfo.GameRoot}{pakDirectory}" };
+            return DirectorySettings.Default(steamInfo.Name, $"{steamInfo.GameRoot}{pakDirectory}", ue: ueVersion);
         }
 
         return null;
     }
 
-    private DetectedGame GetRockstarGamesGame(string key, string pakDirectory)
+    private DirectorySettings GetRockstarGamesGame(string key, string pakDirectory, EGame ueVersion)
     {
         var installLocation = string.Empty;
         try
@@ -213,13 +175,13 @@ public class GameSelectorViewModel : ViewModel
         if (Directory.Exists(gameDir))
         {
             Log.Debug("Found {GameName} in the registry", key);
-            return new DetectedGame { GameName = key, GameDirectory = gameDir };
+            return DirectorySettings.Default(key, gameDir, ue: ueVersion);
         }
 
         return null;
     }
 
-    private DetectedGame GetLevelInfiniteGame(string key, string pakDirectory)
+    private DirectorySettings GetLevelInfiniteGame(string key, string pakDirectory, EGame ueVersion)
     {
         var installLocation = string.Empty;
         var displayName = string.Empty;
@@ -238,7 +200,7 @@ public class GameSelectorViewModel : ViewModel
         if (Directory.Exists(gameDir))
         {
             Log.Debug("Found {GameName} in the registry", key);
-            return new DetectedGame { GameName = displayName, GameDirectory = gameDir };
+            return DirectorySettings.Default(displayName, gameDir, ue: ueVersion);
         }
 
         return null;
@@ -252,19 +214,6 @@ public class GameSelectorViewModel : ViewModel
             if (!File.Exists(launcher)) continue;
 
             Log.Debug("\"{Launcher}\" found in drive \"{DriveName}\"", launcher, drive.Name);
-            return JsonConvert.DeserializeObject<T>(File.ReadAllText(launcher));
-        }
-
-        return default;
-    }
-
-    private T GetDataLauncherInstalls<T>(string jsonFile)
-    {
-        var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        var launcher = $"{appData}{jsonFile}";
-        if (File.Exists(launcher))
-        {
-            Log.Debug("\"{Launcher}\" found in \"{AppData}\"", launcher, appData);
             return JsonConvert.DeserializeObject<T>(File.ReadAllText(launcher));
         }
 

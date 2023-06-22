@@ -11,37 +11,6 @@ using FModel.ViewModels.Commands;
 
 namespace FModel.ViewModels;
 
-public class CustomDirectory : ViewModel
-{
-    private string _header;
-    public string Header
-    {
-        get => _header;
-        set => SetProperty(ref _header, value);
-    }
-
-    private string _directoryPath;
-    public string DirectoryPath
-    {
-        get => _directoryPath;
-        set => SetProperty(ref _directoryPath, value);
-    }
-
-    public CustomDirectory()
-    {
-        Header = string.Empty;
-        DirectoryPath = string.Empty;
-    }
-
-    public CustomDirectory(string header, string path)
-    {
-        Header = header;
-        DirectoryPath = path;
-    }
-
-    public override string ToString() => Header;
-}
-
 public class CustomDirectoriesViewModel : ViewModel
 {
     private GoToCommand _goToCommand;
@@ -54,13 +23,8 @@ public class CustomDirectoriesViewModel : ViewModel
     private readonly ObservableCollection<Control> _directories;
     public ReadOnlyObservableCollection<Control> Directories { get; }
 
-    private readonly FGame _game;
-    private readonly string _gameDirectoryAtLaunch;
-
-    public CustomDirectoriesViewModel(FGame game, string directory)
+    public CustomDirectoriesViewModel()
     {
-        _game = game;
-        _gameDirectoryAtLaunch = directory;
         _directories = new ObservableCollection<Control>(EnumerateDirectories());
         Directories = new ReadOnlyObservableCollection<Control>(_directories);
     }
@@ -74,6 +38,7 @@ public class CustomDirectoriesViewModel : ViewModel
     public void Add(CustomDirectory dir)
     {
         _directories.Add(new MenuItem { Header = dir.Header, Tag = dir.DirectoryPath, ItemsSource = EnumerateCommands(dir) });
+        Save();
     }
 
     public void Edit(int index, CustomDirectory newDir)
@@ -82,25 +47,25 @@ public class CustomDirectoriesViewModel : ViewModel
 
         dir.Header = newDir.Header;
         dir.Tag = newDir.DirectoryPath;
+        Save();
     }
 
     public void Delete(int index)
     {
         _directories.RemoveAt(index);
+        Save();
     }
 
     public void Save()
     {
-        var cd = new List<CustomDirectory>();
+        var directories = new List<CustomDirectory>();
         for (var i = 2; i < _directories.Count; i++)
         {
             if (_directories[i] is not MenuItem m) continue;
-            cd.Add(new CustomDirectory(m.Header.ToString(), m.Tag.ToString()));
+            directories.Add(new CustomDirectory(m.Header.ToString(), m.Tag.ToString()));
         }
 
-        if (_game == FGame.Unknown && UserSettings.Default.ManualGames.ContainsKey(_gameDirectoryAtLaunch))
-            UserSettings.Default.ManualGames[_gameDirectoryAtLaunch].CustomDirectories = cd;
-        else UserSettings.Default.CustomDirectories[_game] = cd;
+        UserSettings.Default.CurrentDir.Directories = directories;
     }
 
     private IEnumerable<Control> EnumerateDirectories()
@@ -115,12 +80,7 @@ public class CustomDirectoriesViewModel : ViewModel
         };
         yield return new Separator();
 
-        IList<CustomDirectory> cd;
-        if (_game == FGame.Unknown && UserSettings.Default.ManualGames.TryGetValue(_gameDirectoryAtLaunch, out var settings))
-            cd = settings.CustomDirectories;
-        else cd = UserSettings.Default.CustomDirectories[_game];
-
-        foreach (var setting in cd)
+        foreach (var setting in UserSettings.Default.CurrentDir.Directories)
         {
             if (setting.DirectoryPath.EndsWith('/'))
                 setting.DirectoryPath = setting.DirectoryPath[..^1];

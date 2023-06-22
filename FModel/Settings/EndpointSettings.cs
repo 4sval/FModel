@@ -1,12 +1,29 @@
 ﻿using System.Linq;
+using FModel.Framework;
 using FModel.ViewModels.ApiEndpoints;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace FModel.Framework;
+namespace FModel.Settings;
 
-public class FEndpoint : ViewModel
+public class EndpointSettings : ViewModel
 {
+    public static EndpointSettings[] Default(string gameName)
+    {
+        switch (gameName)
+        {
+            case "Fortnite":
+            case "Fortnite [LIVE]":
+                return new EndpointSettings[]
+                {
+                    new("https://fortnitecentral.genxgames.gg/api/v1/aes", "$.['mainKey','dynamicKeys']"),
+                    new("https://fortnitecentral.genxgames.gg/api/v1/mappings", "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']")
+                };
+            default:
+                return new EndpointSettings[] { new(), new() };
+        }
+    }
+
     private string _url;
     public string Url
     {
@@ -51,8 +68,8 @@ public class FEndpoint : ViewModel
         "Your endpoint configuration is valid! Please, avoid any unnecessary modifications!" :
         "Your endpoint configuration DOES NOT seem to be valid yet! Please, test it out!";
 
-    public FEndpoint() {}
-    public FEndpoint(string url, string path)
+    public EndpointSettings() {}
+    public EndpointSettings(string url, string path)
     {
         Url = url;
         Path = path;

@@ -29,7 +29,7 @@ public partial class DirectorySelector
         var folderBrowser = new VistaFolderBrowserDialog {ShowNewFolderButton = false};
         if (folderBrowser.ShowDialog() == true)
         {
-            gameLauncherViewModel.AddUnknownGame(folderBrowser.SelectedPath);
+            gameLauncherViewModel.AddUndetectedDir(folderBrowser.SelectedPath);
         }
     }
 
@@ -44,12 +44,12 @@ public partial class DirectorySelector
 
     private void OnAddDirectory(object sender, RoutedEventArgs e)
     {
-        if (DataContext is not GameSelectorViewModel gameLauncherViewModel||
+        if (DataContext is not GameSelectorViewModel gameLauncherViewModel ||
             string.IsNullOrEmpty(HelloMyNameIsGame.Text) ||
             string.IsNullOrEmpty(HelloGameMyNameIsDirectory.Text))
             return;
 
-        gameLauncherViewModel.AddUnknownGame(HelloMyNameIsGame.Text, HelloGameMyNameIsDirectory.Text);
+        gameLauncherViewModel.AddUndetectedDir(HelloMyNameIsGame.Text, HelloGameMyNameIsDirectory.Text);
         HelloMyNameIsGame.Clear();
         HelloGameMyNameIsDirectory.Clear();
     }

@@ -30,11 +30,6 @@ public partial class SettingsView
         }
     }
 
-    private async void OnLoaded(object sender, RoutedEventArgs e)
-    {
-        await _applicationView.SettingsView.InitPresets(_applicationView.CUE4Parse.Provider.GameName);
-    }
-
     private async void OnClick(object sender, RoutedEventArgs e)
     {
         var restart = _applicationView.SettingsView.Save(out var whatShouldIDo);
@@ -154,19 +149,9 @@ public partial class SettingsView
         }
     }
 
-    private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (sender is not ComboBox { SelectedItem: string s }) return;
-        if (s == Constants._NO_PRESET_TRIGGER) _applicationView.SettingsView.ResetPreset();
-        else _applicationView.SettingsView.SwitchPreset(s);
-    }
-
     private void OpenCustomVersions(object sender, RoutedEventArgs e)
     {
-        var editor = new DictionaryEditor(
-            _applicationView.SettingsView.SelectedCustomVersions,
-            "Versioning Configuration (Custom Versions)",
-            _applicationView.SettingsView.EnableElements);
+        var editor = new DictionaryEditor(_applicationView.SettingsView.SelectedCustomVersions, "Versioning Configuration (Custom Versions)");
         var result = editor.ShowDialog();
         if (!result.HasValue || !result.Value)
             return;
@@ -176,10 +161,7 @@ public partial class SettingsView
 
     private void OpenOptions(object sender, RoutedEventArgs e)
     {
-        var editor = new DictionaryEditor(
-            _applicationView.SettingsView.SelectedOptions,
-            "Versioning Configuration (Options)",
-            _applicationView.SettingsView.EnableElements);
+        var editor = new DictionaryEditor(_applicationView.SettingsView.SelectedOptions, "Versioning Configuration (Options)");
         var result = editor.ShowDialog();
         if (!result.HasValue || !result.Value)
             return;
@@ -189,10 +171,7 @@ public partial class SettingsView
 
     private void OpenMapStructTypes(object sender, RoutedEventArgs e)
     {
-        var editor = new DictionaryEditor(
-            _applicationView.SettingsView.SelectedMapStructTypes,
-            "MapStructTypes",
-            _applicationView.SettingsView.EnableElements);
+        var editor = new DictionaryEditor(_applicationView.SettingsView.SelectedMapStructTypes, "Versioning Configuration (MapStructTypes)");
         var result = editor.ShowDialog();
         if (!result.HasValue || !result.Value)
             return;
