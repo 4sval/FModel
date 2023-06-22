@@ -19,6 +19,17 @@ public class CustomDirectory : ViewModel
                     new("Weapons", "FortniteGame/Content/Athena/Items/Weapons/"),
                     new("Strings", "FortniteGame/Content/Localization/")
                 };
+            case "VALORANT":
+            case "VALORANT [LIVE]":
+                return new List<CustomDirectory>
+                {
+                    new("Audio", "ShooterGame/Content/WwiseAudio/Media/"),
+                    new("Characters", "ShooterGame/Content/Characters/"),
+                    new("Gun Buddies", "ShooterGame/Content/Equippables/Buddies/"),
+                    new("Cards and Sprays", "ShooterGame/Content/Personalization/"),
+                    new("Shop Backgrounds", "ShooterGame/Content/UI/OutOfGame/MainMenu/Store/Shared/Textures/"),
+                    new("Weapon Renders", "ShooterGame/Content/UI/Screens/OutOfGame/MainMenu/Collection/Assets/Large/")
+                };
             default:
                 return new List<CustomDirectory>();
         }
