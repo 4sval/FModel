@@ -80,7 +80,11 @@ public class GameSelectorViewModel : ViewModel
         SelectedDirectory = DetectedDirectories.Last();
     }
 
-    private IEnumerable<EGame> EnumerateUeGames() => Enum.GetValues<EGame>();
+    private IEnumerable<EGame> EnumerateUeGames()
+        => Enum.GetValues<EGame>()
+            .GroupBy(value => (int)value)
+            .Select(group => group.First())
+            .OrderBy(value => (int)value == ((int)value & ~0xF));
     private IEnumerable<DirectorySettings> EnumerateDetectedGames()
     {
         yield return GetUnrealEngineGame("Fortnite", "\\FortniteGame\\Content\\Paks", EGame.GAME_UE5_3);

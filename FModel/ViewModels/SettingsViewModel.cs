@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
@@ -307,7 +308,11 @@ public class SettingsViewModel : ViewModel
     }
 
     private IEnumerable<EUpdateMode> EnumerateUpdateModes() => Enum.GetValues<EUpdateMode>();
-    private IEnumerable<EGame> EnumerateUeGames() => Enum.GetValues<EGame>();
+    private IEnumerable<EGame> EnumerateUeGames()
+        => Enum.GetValues<EGame>()
+            .GroupBy(value => (int)value)
+            .Select(group => group.First())
+            .OrderBy(value => (int)value == ((int)value & ~0xF));
     private IEnumerable<ELanguage> EnumerateAssetLanguages() => Enum.GetValues<ELanguage>();
     private IEnumerable<EAesReload> EnumerateAesReloads() => Enum.GetValues<EAesReload>();
     private IEnumerable<EDiscordRpc> EnumerateDiscordRpcs() => Enum.GetValues<EDiscordRpc>();
