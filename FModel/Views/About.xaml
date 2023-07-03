@@ -42,7 +42,7 @@
             <TextBlock Text="&#09;&#09;&#09;&#09;" FontSize="25" FontWeight="700" Height="2" Foreground="Transparent" HorizontalAlignment="Center" />
         </StackPanel>
         <TextBlock FontSize="12" Foreground="#727272" TextWrapping="Wrap" Margin="0 0 0 30"
-                   Text="TheGameVlog &#x2665;, Quentin &#x2665;, Maiky &#x2665;, HYPEX &#x2665;, AnimatedAspect, Evan, VenomLeaks, Fortnite.GG, JayKey, Fevers, Netu, Laggy, s0ll, RazTracker, Mikey, kyle, Yanteh, Shiina, SexyNutella, Alexander, Jinx, koba, Tector, imatrix, LamZykoss, Frenzy Leaks, LlamaLeaks, xplore, XTigerHyperX, FunGames, WeLoveFortnite." />
+                   Text="TheGameVlog &#x2665;, Quentin &#x2665;, Maiky &#x2665;, HYPEX &#x2665;, AnimatedAspect, Evan, VenomLeaks, Fortnite.GG, JayKey, Fevers, Netu, Laggy, s0ll, RazTracker, Mikey, kyle, Yanteh, Shiina, SexyNutella, Alexander, Jinx, koba, Tector, imatrix, LamZykoss, Frenzy Leaks, LlamaLeaks, xplore, XTigerHyperX, FunGames, WeLoveFortnite, Zatheo, ᴅᴊʟᴏʀ3xᴢᴏ, Loolo, evpm, Lunakis, Neonight, Ento, HykShik." />
 
         <StackPanel HorizontalAlignment="Center">
             <TextBlock Text="Powered by" FontSize="15" FontWeight="700" Foreground="#9DA3DD" FontStretch="Expanded" />
