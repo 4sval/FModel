@@ -41,7 +41,7 @@ namespace FModel.Services
                 Details = $"{gameName} - Idling"
             };
 
-            _client.OnReady += (_, args) => Log.Information("{Username}#{Discriminator} ({UserId}) is now ready", args.User.Username, args.User.Discriminator, args.User.ID);
+            _client.OnReady += (_, args) => Log.Information("@{Username} ({UserId}) is now ready", args.User.Username, args.User.ID);
             _client.SetPresence(_currentPresence);
             _client.Initialize();
         }

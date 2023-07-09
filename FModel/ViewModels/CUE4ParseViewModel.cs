@@ -153,13 +153,13 @@ public class CUE4ParseViewModel : ViewModel
                 Provider = InternalGameName switch
                 {
                     "StateOfDecay2" => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
-                        new List<DirectoryInfo>
+                        new DirectoryInfo[]
                         {
                             new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
                             new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
                         }, SearchOption.AllDirectories, true, versionContainer),
                     "eFootball" => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
-                        new List<DirectoryInfo>
+                        new DirectoryInfo[]
                         {
                             new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\KONAMI\\eFootball\\ST\\Download")
                         }, SearchOption.AllDirectories, true, versionContainer),
@@ -223,7 +223,7 @@ public class CUE4ParseViewModel : ViewModel
                                 }
                                 if (!_fnLive.IsMatch(fileManifest.Name)) continue;
 
-                                p.Initialize(fileManifest.Name, new Stream[] { fileManifest.GetStream() }
+                                p.RegisterVfs(fileManifest.Name, new Stream[] { fileManifest.GetStream() }
                                     , it => new FStreamArchive(it, manifest.FileManifests.First(x => x.Name.Equals(it)).GetStream(), p.Versions));
                             }
 
@@ -241,7 +241,7 @@ public class CUE4ParseViewModel : ViewModel
 
                             for (var i = 0; i < manifestInfo.Paks.Length; i++)
                             {
-                                p.Initialize(manifestInfo.Paks[i].GetFullName(), new[] { manifestInfo.GetPakStream(i) });
+                                p.RegisterVfs(manifestInfo.Paks[i].GetFullName(), new[] { manifestInfo.GetPakStream(i) });
                             }
 
                             FLogger.Append(ELog.Information, () =>
@@ -251,18 +251,18 @@ public class CUE4ParseViewModel : ViewModel
                     }
 
                     break;
-                case DefaultFileProvider d:
-                    d.Initialize();
-
+                case DefaultFileProvider:
                     var buildInfoPath = Path.Combine(UserSettings.Default.GameDirectory, "..\\..\\..\\Cloud\\BuildInfo.ini");
                     if (File.Exists(buildInfoPath)) BuildInfo.Read(new StringReader(File.ReadAllText(buildInfoPath)));
                     break;
             }
 
+            Provider.Initialize();
+
             foreach (var vfs in Provider.UnloadedVfs) // push files from the provider to the ui
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                if (vfs.Length <= 365 || !_hiddenArchives.IsMatch(vfs.Name)) continue;
+                if (!_hiddenArchives.IsMatch(vfs.Name)) continue;
 
                 GameDirectory.Add(vfs);
             }
