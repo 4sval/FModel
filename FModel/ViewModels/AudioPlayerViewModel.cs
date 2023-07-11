@@ -551,6 +551,7 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
             case "adpcm":
             case "opus":
             case "wem":
+            case "at9":
             {
                 if (TryConvert(out var wavFilePath) && !string.IsNullOrEmpty(wavFilePath))
                 {
