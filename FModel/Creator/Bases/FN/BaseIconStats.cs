@@ -92,9 +92,16 @@ public class BaseIconStats : BaseIcon
                     _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "35D04D1B45737BEA25B69686D9E085B9", "Damage"), dmgPb * multiplier, 200));
                 }
 
-                if (weaponRowValue.TryGetValue(out float dmgCritical, "DamageZone_Critical"))
+                if (weaponRowValue.TryGetValue(out float mdpc, "MaxDamagePerCartridge") && weaponRowValue.TryGetValue(out int bpc2, "BulletsPerCartridge") && weaponRowValue.TryGetValue(out float DamageZone_Critical, "DamageZone_Critical"))
                 {
-                    _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "0DEF2455463B008C4499FEA03D149EDF", "Headshot Damage"), dmgPb * dmgCritical * multiplier, 200));
+                    if (mdpc == -1 || mdpc == 0)
+                    {
+                        _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "0DEF2455463B008C4499FEA03D149EDF", "Headshot Damage"), dmgPb * DamageZone_Critical * (bpc2 != 0f ? bpc2 : 1), 200));
+                    }
+                    else
+                    {
+                        _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "0DEF2455463B008C4499FEA03D149EDF", "Headshot Damage"), mdpc, 200));
+                    }
                 }
             }
 
