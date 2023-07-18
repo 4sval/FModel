@@ -23,6 +23,7 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Localization;
+using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Readers;
@@ -119,6 +120,7 @@ public class CUE4ParseViewModel : ViewModel
     public GameDirectoryViewModel GameDirectory { get; }
     public AssetsFolderViewModel AssetsFolder { get; }
     public SearchViewModel SearchVm { get; }
+    public SearchViewModelProp SearchVmProp { get; }
     public TabControlViewModel TabControl { get; }
     public ConfigIni BuildInfo { get; }
 
@@ -132,7 +134,7 @@ public class CUE4ParseViewModel : ViewModel
                 Provider = new StreamedFileProvider("FortniteLive", true,
                     new VersionContainer(
                         UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
-                        customVersions: UserSettings.Default.OverridedCustomVersions[Game],
+                        customVersions: new FCustomVersionContainer(UserSettings.Default.OverridedCustomVersions[Game]),
                         optionOverrides: UserSettings.Default.OverridedOptions[Game]));
                 break;
             }
@@ -142,7 +144,7 @@ public class CUE4ParseViewModel : ViewModel
                 Provider = new StreamedFileProvider("ValorantLive", true,
                     new VersionContainer(
                         UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
-                        customVersions: UserSettings.Default.OverridedCustomVersions[Game],
+                        customVersions: new FCustomVersionContainer(UserSettings.Default.OverridedCustomVersions[Game]),
                         optionOverrides: UserSettings.Default.OverridedOptions[Game]));
                 break;
             }
@@ -152,7 +154,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (gameDirectory.Contains("eFootball")) parent = gameDirectory.SubstringBeforeLast("\\pak").SubstringAfterLast("\\");
                 Game = parent.ToEnum(FGame.Unknown);
                 var versions = new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
-                    customVersions: UserSettings.Default.OverridedCustomVersions[Game],
+                    customVersions: new FCustomVersionContainer(UserSettings.Default.OverridedCustomVersions[Game]),
                     optionOverrides: UserSettings.Default.OverridedOptions[Game],
                     mapStructTypesOverrides: UserSettings.Default.OverridedMapStructTypes[Game]);
 
@@ -185,7 +187,7 @@ public class CUE4ParseViewModel : ViewModel
                     case FGame.Unknown when UserSettings.Default.ManualGames.TryGetValue(gameDirectory, out var settings):
                     {
                         versions = new VersionContainer(settings.OverridedGame, UserSettings.Default.OverridedPlatform,
-                            customVersions: settings.OverridedCustomVersions,
+                            customVersions: new FCustomVersionContainer(settings.OverridedCustomVersions),
                             optionOverrides: settings.OverridedOptions,
                             mapStructTypesOverrides: settings.OverridedMapStructTypes);
                         goto default;
@@ -205,6 +207,7 @@ public class CUE4ParseViewModel : ViewModel
         GameDirectory = new GameDirectoryViewModel();
         AssetsFolder = new AssetsFolderViewModel();
         SearchVm = new SearchViewModel();
+        SearchVmProp = new SearchViewModelProp();
         TabControl = new TabControlViewModel();
         BuildInfo = new ConfigIni(nameof(BuildInfo));
     }
@@ -335,7 +338,7 @@ public class CUE4ParseViewModel : ViewModel
             file.FileCount = vfs.FileCount;
         }
 
-        Game = Provider.GameName.ToEnum(Game);
+        Game = Provider.InternalGameName.ToEnum(Game);
     }
 
     public void ClearProvider()
@@ -344,6 +347,7 @@ public class CUE4ParseViewModel : ViewModel
 
         AssetsFolder.Folders.Clear();
         SearchVm.SearchResults.Clear();
+        SearchVmProp.SearchResults.Clear();
         Helper.CloseWindow<AdonisWindow>("Search View");
         Provider.UnloadNonStreamedVfs();
         GC.Collect();
@@ -369,7 +373,7 @@ public class CUE4ParseViewModel : ViewModel
     {
         await _threadWorkerView.Begin(cancellationToken =>
         {
-            var info = _apiEndpointView.FModelApi.GetNews(cancellationToken, Provider.GameName);
+            var info = _apiEndpointView.FModelApi.GetNews(cancellationToken, Provider.InternalGameName);
             if (info == null) return;
 
             FLogger.Append(ELog.None, () =>
@@ -471,7 +475,7 @@ public class CUE4ParseViewModel : ViewModel
 
     public Task VerifyContentBuildManifest()
     {
-        if (Provider is not DefaultFileProvider || !Provider.GameName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase))
+        if (Provider is not DefaultFileProvider || !Provider.InternalGameName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase))
             return Task.CompletedTask;
 
         var persistentDownloadDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "FortniteGame/Saved/PersistentDownloadDir");
@@ -563,7 +567,7 @@ public class CUE4ParseViewModel : ViewModel
     }
     private Task LoadHotfixedLocalizedResources()
     {
-        if (!Provider.GameName.Equals("fortnitegame", StringComparison.OrdinalIgnoreCase) || HotfixedResourcesDone) return Task.CompletedTask;
+        if (!Provider.InternalGameName.Equals("fortnitegame", StringComparison.OrdinalIgnoreCase) || HotfixedResourcesDone) return Task.CompletedTask;
         return Task.Run(() =>
         {
             var hotfixes = ApplicationService.ApiEndpointView.CentralApi.GetHotfixes(default, Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
@@ -649,6 +653,9 @@ public class CUE4ParseViewModel : ViewModel
 
     public void SaveFolder(CancellationToken cancellationToken, TreeItem folder)
         => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs, EBulkType.Properties | EBulkType.Auto));
+
+    public void SearchAsset(CancellationToken cancellationToken, TreeItem folder, SearchViewModelProp searchView)
+        => BulkFolder(cancellationToken, folder, asset => Search(cancellationToken, asset.FullPath, searchView));
 
     public void TextureFolder(CancellationToken cancellationToken, TreeItem folder)
         => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs, EBulkType.Textures | EBulkType.Auto));
@@ -856,6 +863,152 @@ public class CUE4ParseViewModel : ViewModel
                 break;
             }
         }
+    }
+
+    public void Search(CancellationToken cancellationToken, string fullPath, SearchViewModelProp searchView)
+    {
+        Log.Information("Searching prop in '{FullPath}'", fullPath);
+
+        var directory = fullPath.SubstringBeforeLast('/');
+        var fileName = fullPath.SubstringAfterLast('/');
+        var ext = fullPath.SubstringAfterLast('.').ToLower();
+        string text = string.Empty;
+
+        try
+        {
+            switch (ext)
+            {
+                case "uasset":
+                case "umap":
+                    {
+                        IEnumerable<UObject> exports = Provider.LoadAllObjects(fullPath);
+                        text = JsonConvert.SerializeObject(exports, Formatting.Indented);
+
+                        break;
+                    }
+                case "upluginmanifest":
+                case "uproject":
+                case "manifest":
+                case "uplugin":
+                case "archive":
+                case "vmodule":
+                case "verse":
+                case "html":
+                case "json":
+                case "ini":
+                case "txt":
+                case "log":
+                case "bat":
+                case "dat":
+                case "cfg":
+                case "ide":
+                case "ipl":
+                case "zon":
+                case "xml":
+                case "css":
+                case "csv":
+                case "pem":
+                case "tps":
+                case "js":
+                case "po":
+                case "h":
+                    {
+                        if (Provider.TrySaveAsset(fullPath, out var data))
+                        {
+                            using var stream = new MemoryStream(data) { Position = 0 };
+                            using var reader = new StreamReader(stream);
+
+                            text = reader.ReadToEnd();
+                        }
+
+                        break;
+                    }
+                case "locmeta":
+                    {
+                        if (Provider.TryCreateReader(fullPath, out var archive))
+                        {
+                            var metadata = new FTextLocalizationMetaDataResource(archive);
+                            text = JsonConvert.SerializeObject(metadata, Formatting.Indented);
+                        }
+
+                        break;
+                    }
+                case "locres":
+                    {
+                        if (Provider.TryCreateReader(fullPath, out var archive))
+                        {
+                            var locres = new FTextLocalizationResource(archive);
+                            text = JsonConvert.SerializeObject(locres, Formatting.Indented);
+                        }
+
+                        break;
+                    }
+                case "bin" when fileName.Contains("AssetRegistry"):
+                    {
+                        if (Provider.TryCreateReader(fullPath, out var archive))
+                        {
+                            var registry = new FAssetRegistryState(archive);
+                            text = JsonConvert.SerializeObject(registry, Formatting.Indented);
+                        }
+
+                        break;
+                    }
+                case "bnk":
+                case "pck":
+                    {
+                        if (Provider.TryCreateReader(fullPath, out var archive))
+                        {
+                            var wwise = new WwiseReader(archive);
+                            text = JsonConvert.SerializeObject(wwise, Formatting.Indented);
+                        }
+
+                        break;
+                    }
+                case "wem":
+                    break;
+                case "udic":
+                    {
+                        if (Provider.TryCreateReader(fullPath, out var archive))
+                        {
+                            var header = new FOodleDictionaryArchive(archive).Header;
+                            text = JsonConvert.SerializeObject(header, Formatting.Indented);
+                        }
+
+                        break;
+                    }
+                case "png":
+                case "jpg":
+                case "bmp":
+                case "svg":
+                case "ufont":
+                case "otf":
+                case "ttf":
+                    break;
+                case "ushaderbytecode":
+                case "ushadercode":
+                    {
+                        if (Provider.TryCreateReader(fullPath, out var archive))
+                        {
+                            var ar = new FShaderCodeArchive(archive);
+                            text = JsonConvert.SerializeObject(ar, Formatting.Indented);
+                        }
+
+                        break;
+                    }
+                default:
+                    {
+                        FLogger.Append(ELog.Warning, () =>
+                            FLogger.Text($"The package '{fileName}' is of an unknown type.", Constants.WHITE, true));
+                        break;
+                    }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+
+        searchView.CheckProp(text, fullPath);
     }
 
     public void ExtractAndScroll(CancellationToken cancellationToken, string fullPath, string objectName)

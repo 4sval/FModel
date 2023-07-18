@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
@@ -143,6 +143,7 @@ public class AssetsFolderViewModel
 
             Folders.AddRange(treeItems);
             ApplicationService.ApplicationView.CUE4Parse.SearchVm.SearchResults.AddRange(items);
+            ApplicationService.ApplicationView.CUE4Parse.SearchVmProp.SearchResults.AddRange(items);
 
             foreach (var folder in Folders)
                 InvokeOnCollectionChanged(folder);

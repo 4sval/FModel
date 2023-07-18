@@ -107,6 +107,8 @@ public partial class MainWindow
         }
         else if (_applicationView.Status.IsReady && e.Key == Key.F && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
             OnSearchViewClick(null, null);
+        else if (_applicationView.Status.IsReady && e.Key == Key.F && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt))
+            OnSearchPropViewClick(null, null);
         else if (e.Key == Key.Left && _applicationView.CUE4Parse.TabControl.SelectedTab.HasImage)
             _applicationView.CUE4Parse.TabControl.SelectedTab.GoPreviousImage();
         else if (e.Key == Key.Right && _applicationView.CUE4Parse.TabControl.SelectedTab.HasImage)
@@ -128,6 +130,11 @@ public partial class MainWindow
     private void OnSearchViewClick(object sender, RoutedEventArgs e)
     {
         Helper.OpenWindow<AdonisWindow>("Search View", () => new SearchView().Show());
+    }
+
+    private void OnSearchPropViewClick(object sender, RoutedEventArgs e)
+    {
+        Helper.OpenWindow<AdonisWindow>("Search View", () => new SearchViewProp().Show());
     }
 
     private void OnTabItemChange(object sender, SelectionChangedEventArgs e)

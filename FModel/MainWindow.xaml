@@ -85,7 +85,16 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="Packages">
-                <MenuItem Header="Search" IsEnabled="{Binding Status.IsReady}" InputGestureText="Ctrl+Shift+F" Click="OnSearchViewClick">
+                <MenuItem Header="Search assets" IsEnabled="{Binding Status.IsReady}" InputGestureText="Ctrl+Shift+F" Click="OnSearchViewClick">
+                    <MenuItem.Icon>
+                        <Viewbox Width="16" Height="16">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SearchIcon}" />
+                            </Canvas>
+                        </Viewbox>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Search properties" IsEnabled="{Binding Status.IsReady}" InputGestureText="Ctrl+Alt+F" Click="OnSearchPropViewClick">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">

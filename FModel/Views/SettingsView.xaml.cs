@@ -32,7 +32,7 @@ public partial class SettingsView
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        await _applicationView.SettingsView.InitPresets(_applicationView.CUE4Parse.Provider.GameName);
+        await _applicationView.SettingsView.InitPresets(_applicationView.CUE4Parse.Provider.InternalGameName);
     }
 
     private async void OnClick(object sender, RoutedEventArgs e)
