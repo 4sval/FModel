@@ -17,6 +17,12 @@ namespace FModel.Creator.Bases.FN;
 
 public class BaseIconStats : BaseIcon
 {
+    private static float statRound(float num) // rounds stat value to two decimal places
+    {
+        float rounded = (MathF.Round(num * 100.00f)) / 100.00f;
+        return rounded;
+    }
+
     private readonly IList<IconStat> _statistics;
     private const int _headerHeight = 128;
     private bool _screenLayer;
@@ -52,7 +58,8 @@ public class BaseIconStats : BaseIcon
                 foreach (var poi in challengeMapPoiData)
                 {
                     if (!poi.TryGetValue(out FStructFallback locationTag, "LocationTag") || !locationTag.TryGetValue(out FName tagName, "TagName") ||
-                        !tagName.Text.Equals(location.Text, StringComparison.OrdinalIgnoreCase) || !poi.TryGetValue(out FText text, "Text")) continue;
+                        !tagName.Text.Equals(location.Text, StringComparison.OrdinalIgnoreCase) || !poi.TryGetValue(out FText text, "Text"))
+                        continue;
 
                     locationName = text.Text;
                     break;
@@ -89,18 +96,19 @@ public class BaseIconStats : BaseIcon
                 var multiplier = bpc != 0f ? bpc : 1;
                 if (weaponRowValue.TryGetValue(out float dmgPb, "DmgPB") && dmgPb != 0f)
                 {
-                    _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "35D04D1B45737BEA25B69686D9E085B9", "Damage"), dmgPb * multiplier, 200));
+                    _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "35D04D1B45737BEA25B69686D9E085B9", "Damage"), statRound(dmgPb * multiplier), 200));
                 }
 
                 if (weaponRowValue.TryGetValue(out float mdpc, "MaxDamagePerCartridge") && weaponRowValue.TryGetValue(out int bpc2, "BulletsPerCartridge") && weaponRowValue.TryGetValue(out float DamageZone_Critical, "DamageZone_Critical"))
                 {
                     if (mdpc == -1 || mdpc == 0)
                     {
-                        _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "0DEF2455463B008C4499FEA03D149EDF", "Headshot Damage"), dmgPb * DamageZone_Critical * (bpc2 != 0f ? bpc2 : 1), 200));
+                        _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "0DEF2455463B008C4499FEA03D149EDF", "Headshot Damage"), statRound(dmgPb * DamageZone_Critical * (bpc2 != 0f ? bpc2 : 1)), 200));
+
                     }
                     else
                     {
-                        _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "0DEF2455463B008C4499FEA03D149EDF", "Headshot Damage"), mdpc, 200));
+                        _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "0DEF2455463B008C4499FEA03D149EDF", "Headshot Damage"), statRound(mdpc), 200));
                     }
                 }
             }
@@ -171,8 +179,10 @@ public class BaseIconStats : BaseIcon
 
     private readonly SKPaint _informationPaint = new()
     {
-        IsAntialias = true, FilterQuality = SKFilterQuality.High,
-        Color = SKColor.Parse("#262630"), TextSize = 16,
+        IsAntialias = true,
+        FilterQuality = SKFilterQuality.High,
+        Color = SKColor.Parse("#262630"),
+        TextSize = 16,
         Typeface = Utils.Typefaces.Description
     };
 
@@ -213,7 +223,8 @@ public class BaseIconStats : BaseIcon
 
     private new void DrawDisplayName(SKCanvas c)
     {
-        if (string.IsNullOrEmpty(DisplayName)) return;
+        if (string.IsNullOrEmpty(DisplayName))
+            return;
 
         _informationPaint.TextSize = 50;
         _informationPaint.Color = SKColors.White;
@@ -263,8 +274,10 @@ public class IconStat
 
     private readonly SKPaint _statPaint = new()
     {
-        IsAntialias = true, FilterQuality = SKFilterQuality.High,
-        TextSize = 25, Typeface = Utils.Typefaces.DisplayName,
+        IsAntialias = true,
+        FilterQuality = SKFilterQuality.High,
+        TextSize = 25,
+        Typeface = Utils.Typefaces.DisplayName,
         Color = SKColors.White
     };
 
@@ -287,7 +300,8 @@ public class IconStat
         _statPaint.Color = SKColors.White;
         c.DrawText(_value.ToString(), new SKPoint(width - 50, y + 10), _statPaint);
 
-        if (_maxValue < 1 || !float.TryParse(_value.ToString(), out var floatValue)) return;
+        if (_maxValue < 1 || !float.TryParse(_value.ToString(), out var floatValue))
+            return;
         if (floatValue < 0)
             floatValue = 0;
         var sliderWidth = (sliderRight - height * 2) * (floatValue / _maxValue);
