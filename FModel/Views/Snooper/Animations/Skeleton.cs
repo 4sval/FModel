@@ -18,8 +18,6 @@ public class Skeleton : IDisposable
     public string Name;
     public readonly Dictionary<string, Bone> BonesByLoweredName;
 
-    private int _previousAnimationSequence;
-    private int _previousSequenceFrame;
     private Transform[][][] _animatedBonesTransform;        // [sequence][bone][frame]
     private readonly Matrix4x4[] _invertedBonesMatrix;
     public int BoneCount => _invertedBonesMatrix.Length;
@@ -210,26 +208,23 @@ public class Skeleton : IDisposable
         _ssbo.UpdateRange(BoneCount, Matrix4x4.Identity);
     }
 
-    public void UpdateAnimationMatrices(int currentSequence, int frameInSequence)
+    public void UpdateAnimationMatrices(int currentSequence, int frameInSequence, int nextFrameInSequence, float lerp)
     {
         if (!IsAnimated) return;
 
-        _previousAnimationSequence = currentSequence;
-        if (_previousSequenceFrame == frameInSequence) return;
-        _previousSequenceFrame = frameInSequence;
-
         _ssbo.Bind();
-        for (int boneIndex = 0; boneIndex < BoneCount; boneIndex++) // interpolate here
-            _ssbo.Update(boneIndex, _invertedBonesMatrix[boneIndex] * _animatedBonesTransform[_previousAnimationSequence][boneIndex][_previousSequenceFrame].Matrix);
+        for (int boneIndex = 0; boneIndex < BoneCount; boneIndex++)
+        {
+            var matrix = Matrix4x4.Lerp(
+                _animatedBonesTransform[currentSequence][boneIndex][frameInSequence].Matrix,
+                _animatedBonesTransform[currentSequence][boneIndex][nextFrameInSequence].Matrix,
+                lerp);
+            _ssbo.Update(boneIndex, _invertedBonesMatrix[boneIndex] * matrix);
+        }
         _ssbo.Unbind();
     }
 
-    public Matrix4x4 GetBoneMatrix(Bone bone)
-    {
-        return IsAnimated
-            ? _animatedBonesTransform[_previousAnimationSequence][bone.Index][_previousSequenceFrame].Matrix
-            : bone.Rest.Matrix;
-    }
+    public Matrix4x4 GetBoneMatrix(Bone bone) => IsAnimated ? bone.Rest.Matrix * _ssbo.Get(bone.Index) : bone.Rest.Matrix;
 
     public void Render()
     {

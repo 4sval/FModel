@@ -370,9 +370,17 @@ public class Model : IDisposable
             _vao.Unbind();
         }
 
-        for (int section = 0; section < Sections.Length; section++)
+        if (options.Models.Count == 1 && Sections.All(x => !x.Show))
         {
-            if (!Show) Show = Sections[section].Show;
+            Show = true;
+            foreach (var section in Sections)
+            {
+                section.Show = true;
+            }
+        }
+        else foreach (var section in Sections)
+        {
+            if (!Show) Show = section.Show;
         }
 
         IsSetup = true;

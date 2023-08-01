@@ -24,6 +24,8 @@ public class Animation : IDisposable
 
     public int CurrentSequence;
     public int FrameInSequence;                     // Current Sequence's Frame to Display
+    public int NextFrameInSequence;
+    public float LerpAmount;
 
     public string Label =>
         $"Retarget: {TargetSkeleton}\nSequences: {CurrentSequence + 1}/{Sequences.Length}\nFrames: {FrameInSequence}/{Sequences[CurrentSequence].EndFrame}";
@@ -80,12 +82,17 @@ public class Animation : IDisposable
         for (int s = 0; s < CurrentSequence; s++)
             lastEndTime = Sequences[s].EndTime;
 
-        FrameInSequence = Math.Min(((elapsedTime - lastEndTime) / Sequences[CurrentSequence].TimePerFrame).FloorToInt(), Sequences[CurrentSequence].EndFrame);
+        var exactFrameAtThisTime = (elapsedTime - lastEndTime) / Sequences[CurrentSequence].TimePerFrame;
+        FrameInSequence = Math.Min(exactFrameAtThisTime.FloorToInt(), Sequences[CurrentSequence].EndFrame);
+        NextFrameInSequence = Math.Min(FrameInSequence + 1, Sequences[CurrentSequence].EndFrame);
+        LerpAmount = Math.Clamp(exactFrameAtThisTime - FrameInSequence, 0, 1);
     }
 
     private void Reset()
     {
         FrameInSequence = 0;
+        NextFrameInSequence = 0;
+        LerpAmount = 0.0f;
         CurrentSequence = 0;
     }
 

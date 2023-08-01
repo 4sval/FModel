@@ -234,7 +234,9 @@ public class Renderer : IDisposable
             animation.TimeCalculation(Options.Tracker.ElapsedTime);
             foreach (var guid in animation.AttachedModels.Where(guid => Options.Models[guid].HasSkeleton))
             {
-                Options.Models[guid].Skeleton.UpdateAnimationMatrices(animation.CurrentSequence, animation.FrameInSequence);
+                Options.Models[guid].Skeleton.UpdateAnimationMatrices(
+                    animation.CurrentSequence, animation.FrameInSequence,
+                    animation.NextFrameInSequence, animation.LerpAmount);
             }
         }
 
