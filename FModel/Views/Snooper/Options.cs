@@ -180,13 +180,13 @@ public class Options
     public bool TryGetTexture(UTexture2D o, bool fix, out Texture texture)
     {
         var guid = o.LightingGuid;
-        if (!Textures.TryGetValue(guid, out texture) && o.GetMipByMaxSize(UserSettings.Default.PreviewMaxTextureSize) is { } mip)
+        if (!Textures.TryGetValue(guid, out texture) &&
+            o.Decode(UserSettings.Default.PreviewMaxTextureSize, UserSettings.Default.CurrentDir.TexturePlatform) is { } bitmap)
         {
-            TextureDecoder.DecodeTexture(mip, o.Format, o.IsNormalMap, _platform, out var data, out _);
-
-            texture = new Texture(data, mip.SizeX, mip.SizeY, o);
+            texture = new Texture(bitmap, o);
             if (fix) TextureHelper.FixChannels(_game, texture);
             Textures[guid] = texture;
+            bitmap.Dispose();
         }
         return texture != null;
     }

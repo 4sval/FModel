@@ -873,7 +873,7 @@ public class CUE4ParseViewModel : ViewModel
                 TabControl.SelectedTab.SetDocumentText(verseDigest.ReadableCode, false, false);
                 return true;
             }
-            case UTexture { IsVirtual: false } texture when isNone || saveTextures:
+            case UTexture texture when isNone || saveTextures:
             {
                 TabControl.SelectedTab.AddImage(texture, saveTextures, updateUi);
                 return false;
