@@ -24,6 +24,7 @@ using FModel.Views.Snooper.Buffers;
 using FModel.Views.Snooper.Lights;
 using FModel.Views.Snooper.Models;
 using FModel.Views.Snooper.Shading;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace FModel.Views.Snooper;
 
@@ -215,7 +216,7 @@ public class Renderer : IDisposable
         Options.SetupModelsAndLights();
     }
 
-    public void Render(float deltaSeconds)
+    public void Render()
     {
         var viewMatrix = CameraOp.GetViewMatrix();
         var projMatrix = CameraOp.GetProjectionMatrix();
@@ -227,23 +228,9 @@ public class Renderer : IDisposable
         for (int i = 0; i < 5; i++)
             _shader.SetUniform($"bVertexColors[{i}]", i == (int) Color);
 
-        // update animations
-        if (Options.Animations.Count > 0) Options.Tracker.Update(deltaSeconds);
-        foreach (var animation in Options.Animations)
-        {
-            animation.TimeCalculation(Options.Tracker.ElapsedTime);
-            foreach (var guid in animation.AttachedModels.Where(guid => Options.Models[guid].HasSkeleton))
-            {
-                Options.Models[guid].Skeleton.UpdateAnimationMatrices(
-                    animation.CurrentSequence, animation.FrameInSequence,
-                    animation.NextFrameInSequence, animation.LerpAmount);
-            }
-        }
-
         // render model pass
         foreach (var model in Options.Models.Values)
         {
-            model.UpdateMatrices(Options);
             if (!model.Show) continue;
             model.Render(_shader);
         }
@@ -270,6 +257,45 @@ public class Renderer : IDisposable
 
         // picking pass (dedicated FBO, binding to 0 afterward)
         Picking.Render(viewMatrix, projMatrix, Options.Models);
+    }
+
+    public void Update(Snooper wnd, float deltaSeconds)
+    {
+        if (Options.Animations.Count > 0) Options.Tracker.Update(deltaSeconds);
+        foreach (var animation in Options.Animations)
+        {
+            animation.TimeCalculation(Options.Tracker.ElapsedTime);
+            foreach (var guid in animation.AttachedModels.Where(guid => Options.Models[guid].HasSkeleton))
+            {
+                Options.Models[guid].Skeleton.UpdateAnimationMatrices(
+                    animation.CurrentSequence, animation.FrameInSequence,
+                    animation.NextFrameInSequence, animation.LerpAmount);
+            }
+        }
+
+        foreach (var model in Options.Models.Values)
+        {
+            model.UpdateMatrices(Options);
+        }
+
+        CameraOp.Modify(wnd.KeyboardState, deltaSeconds);
+
+        if (wnd.KeyboardState.IsKeyPressed(Keys.Z) &&
+            Options.TryGetModel(out var selectedModel) &&
+            selectedModel.HasSkeleton)
+        {
+            Options.RemoveAnimations();
+            Options.AnimateMesh(true);
+            wnd.WindowShouldClose(true, false);
+        }
+        if (wnd.KeyboardState.IsKeyPressed(Keys.Space))
+            Options.Tracker.IsPaused = !Options.Tracker.IsPaused;
+        if (wnd.KeyboardState.IsKeyPressed(Keys.Delete))
+            Options.RemoveModel(Options.SelectedModel);
+        if (wnd.KeyboardState.IsKeyPressed(Keys.H))
+            wnd.WindowShouldClose(true, false);
+        if (wnd.KeyboardState.IsKeyPressed(Keys.Escape))
+            wnd.WindowShouldClose(true, true);
     }
 
     private void LoadStaticMesh(UStaticMesh original)

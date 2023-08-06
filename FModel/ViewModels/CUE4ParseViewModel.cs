@@ -96,7 +96,7 @@ public class CUE4ParseViewModel : ViewModel
                 var scale = ImGuiController.GetDpiScale();
                 var htz = Snooper.GetMaxRefreshFrequency();
                 return _snooper = new Snooper(
-                    new GameWindowSettings { RenderFrequency = htz, UpdateFrequency = htz },
+                    new GameWindowSettings { UpdateFrequency = htz },
                     new NativeWindowSettings
                     {
                         Size = new OpenTK.Mathematics.Vector2i(

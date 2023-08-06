@@ -83,9 +83,12 @@ public partial class MainWindow
         ).ConfigureAwait(false);
 
 #if DEBUG
-        // await _threadWorkerView.Begin(cancellationToken =>
-        //     _applicationView.CUE4Parse.Extract(cancellationToken,
-        //         "fortnitegame/Content/Characters/Player/Female/Medium/Bodies/F_MED_Ballerina/Meshes/F_MED_Ballerina.uasset"));
+        await _threadWorkerView.Begin(cancellationToken =>
+            _applicationView.CUE4Parse.Extract(cancellationToken,
+                "Hk_project/Content/Character/Cat/Mesh/SKM_Cat.uasset"));
+        await _threadWorkerView.Begin(cancellationToken =>
+            _applicationView.CUE4Parse.Extract(cancellationToken,
+                "Hk_project/Content/Animation/CAT/Idle/CAT_SitBalledStrechingToStand_Idle.uasset"));
 #endif
     }
 

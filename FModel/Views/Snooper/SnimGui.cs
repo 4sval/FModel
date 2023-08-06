@@ -89,7 +89,7 @@ public class SnimGui
     public void Render(Snooper s)
     {
         Controller.SemiBold();
-        DrawDockSpace(s.Size);
+        DrawDockSpace(s.ClientSize);
 
         SectionWindow("Material Inspector", s.Renderer, DrawMaterialInspector, false);
         AnimationWindow("Timeline", s.Renderer, (icons, tracker, animations) =>

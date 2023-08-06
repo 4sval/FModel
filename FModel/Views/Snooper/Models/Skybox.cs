@@ -87,8 +87,6 @@ public class Skybox : IDisposable
         GL.DepthFunc(DepthFunction.Lequal);
 
         _vao.Bind();
-
-        _cubeMap.Bind(TextureUnit.Texture0);
         _shader.Use();
 
         viewMatrix.M41 = 0;
@@ -97,6 +95,7 @@ public class Skybox : IDisposable
         _shader.SetUniform("uView", viewMatrix);
         _shader.SetUniform("uProjection", projMatrix);
 
+        _cubeMap.Bind(TextureUnit.Texture0);
         _shader.SetUniform("cubemap", 0);
 
         GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
