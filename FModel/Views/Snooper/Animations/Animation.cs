@@ -4,7 +4,6 @@ using System.Numerics;
 using CUE4Parse_Conversion.Animations.PSA;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Objects.Core.Misc;
-using CUE4Parse.Utils;
 using ImGuiNET;
 
 namespace FModel.Views.Snooper.Animations;
@@ -20,15 +19,8 @@ public class Animation : IDisposable
     public readonly float StartTime;                // Animation Start Time
     public readonly float EndTime;                  // Animation End Time
     public readonly float TotalElapsedTime;         // Animation Max Time
-    public readonly string TargetSkeleton;
+    public readonly Dictionary<int, float> Framing;
 
-    public int CurrentSequence;
-    public int FrameInSequence;                     // Current Sequence's Frame to Display
-    public int NextFrameInSequence;
-    public float LerpAmount;
-
-    public string Label =>
-        $"Retarget: {TargetSkeleton}\nSequences: {CurrentSequence + 1}/{Sequences.Length}\nFrames: {FrameInSequence}/{Sequences[CurrentSequence].EndFrame}";
     public bool IsActive;
     public bool IsSelected;
 
@@ -40,23 +32,22 @@ public class Animation : IDisposable
         Path = _export.GetPathName();
         Name = _export.Name;
         Sequences = Array.Empty<Sequence>();
+        Framing = new Dictionary<int, float>();
         AttachedModels = new List<FGuid>();
     }
 
     public Animation(UObject export, CAnimSet animSet) : this(export)
     {
         _animSet = animSet;
-        TargetSkeleton = _animSet.Skeleton.Name;
 
         Sequences = new Sequence[_animSet.Sequences.Count];
         for (int i = 0; i < Sequences.Length; i++)
         {
             Sequences[i] = new Sequence(_animSet.Sequences[i]);
-
             EndTime = Sequences[i].EndTime;
-            TotalElapsedTime += _animSet.Sequences[i].NumFrames * Sequences[i].TimePerFrame;
         }
 
+        TotalElapsedTime = animSet.TotalAnimTime;
         if (Sequences.Length > 0)
             StartTime = Sequences[0].StartTime;
     }
@@ -70,30 +61,16 @@ public class Animation : IDisposable
     {
         for (int i = 0; i < Sequences.Length; i++)
         {
-            if (elapsedTime < Sequences[i].EndTime && elapsedTime >= Sequences[i].StartTime)
+            var sequence = Sequences[i];
+            if (elapsedTime < sequence.EndTime && elapsedTime >= sequence.StartTime)
             {
-                CurrentSequence = i;
-                break;
+                Framing[i] = (elapsedTime - sequence.StartTime) / sequence.TimePerFrame;
             }
+            else Framing.Remove(i);
         }
-        if (elapsedTime >= TotalElapsedTime) Reset();
 
-        var lastEndTime = 0.0f;
-        for (int s = 0; s < CurrentSequence; s++)
-            lastEndTime = Sequences[s].EndTime;
-
-        var exactFrameAtThisTime = (elapsedTime - lastEndTime) / Sequences[CurrentSequence].TimePerFrame;
-        FrameInSequence = Math.Min(exactFrameAtThisTime.FloorToInt(), Sequences[CurrentSequence].EndFrame);
-        NextFrameInSequence = Math.Min(FrameInSequence + 1, Sequences[CurrentSequence].EndFrame);
-        LerpAmount = Math.Clamp(exactFrameAtThisTime - FrameInSequence, 0, 1);
-    }
-
-    private void Reset()
-    {
-        FrameInSequence = 0;
-        NextFrameInSequence = 0;
-        LerpAmount = 0.0f;
-        CurrentSequence = 0;
+        if (elapsedTime >= TotalElapsedTime)
+            Framing.Clear();
     }
 
     public void Dispose()

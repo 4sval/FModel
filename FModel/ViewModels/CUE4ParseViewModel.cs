@@ -351,7 +351,7 @@ public class CUE4ParseViewModel : ViewModel
         });
     }
 
-    public Task InitMappings()
+    public Task InitMappings(bool force = false)
     {
         if (!UserSettings.IsEndpointValid(EEndpointType.Mapping, out var endpoint))
         {
@@ -377,7 +377,7 @@ public class CUE4ParseViewModel : ViewModel
                         if (!mapping.IsValid) continue;
 
                         var mappingPath = Path.Combine(mappingsFolder, mapping.FileName);
-                        if (!File.Exists(mappingPath))
+                        if (force || !File.Exists(mappingPath))
                         {
                             _apiEndpointView.DownloadFile(mapping.Url, mappingPath);
                         }
@@ -883,8 +883,12 @@ public class CUE4ParseViewModel : ViewModel
             {
                 var shouldDecompress = UserSettings.Default.CompressedAudioMode == ECompressedAudio.PlayDecompressed;
                 export.Decode(shouldDecompress, out var audioFormat, out var data);
-                if (data == null || string.IsNullOrEmpty(audioFormat) || export.Owner == null)
+                var hasAf = !string.IsNullOrEmpty(audioFormat);
+                if (data == null || !hasAf || export.Owner == null)
+                {
+                    if (hasAf) FLogger.Append(ELog.Warning, () => FLogger.Text($"Unsupported audio format '{audioFormat}'", Constants.WHITE, true));
                     return false;
+                }
 
                 SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Directory, TabControl.SelectedTab.Header.SubstringBeforeLast('.')).Replace('\\', '/'), audioFormat, data);
                 return false;

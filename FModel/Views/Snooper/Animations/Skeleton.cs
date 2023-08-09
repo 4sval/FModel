@@ -4,6 +4,7 @@ using System.Numerics;
 using CUE4Parse_Conversion.Animations.PSA;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Objects.Core.Math;
+using CUE4Parse.Utils;
 using FModel.Views.Snooper.Buffers;
 using OpenTK.Graphics.OpenGL4;
 using Serilog;
@@ -74,7 +75,6 @@ public class Skeleton : IDisposable
                 var skeletonBoneIndex = bone.SkeletonIndex;
                 if (sequence.OriginalSequence.FindTrackForBoneIndex(skeletonBoneIndex) < 0)
                 {
-                    bone.IsAnimated |= false;
                     for (int frame = 0; frame < _animatedBonesTransform[s][bone.Index].Length; frame++)
                     {
                         _animatedBonesTransform[s][bone.Index][frame] = new Transform
@@ -86,7 +86,7 @@ public class Skeleton : IDisposable
                 }
                 else
                 {
-                    bone.IsAnimated |= true;
+                    bone.AnimatedBySequences.Add(s);
                     for (int frame = 0; frame < _animatedBonesTransform[s][bone.Index].Length; frame++)
                     {
                         var boneOrientation = bone.Rest.Rotation;
@@ -173,7 +173,6 @@ public class Skeleton : IDisposable
                 continue;
 
             bone.SkeletonIndex = boneIndex;
-            bone.IsAnimated = false;
         }
 
 #if DEBUG
@@ -192,7 +191,7 @@ public class Skeleton : IDisposable
         foreach (var bone in BonesByLoweredName.Values)
         {
             bone.SkeletonIndex = -1;
-            bone.IsAnimated = false;
+            bone.AnimatedBySequences.Clear();
         }
 
         if (!full) return;
@@ -208,20 +207,57 @@ public class Skeleton : IDisposable
         _ssbo.UpdateRange(BoneCount, Matrix4x4.Identity);
     }
 
-    public void UpdateAnimationMatrices(int currentSequence, int frameInSequence, int nextFrameInSequence, float lerp)
+    public void UpdateAnimationMatrices(Animation animation)
     {
         if (!IsAnimated) return;
 
         _ssbo.Bind();
-        for (int boneIndex = 0; boneIndex < BoneCount; boneIndex++)
+
+        foreach (var bone in BonesByLoweredName.Values)
         {
+            var (s, f) = GetBoneFrameData(bone, animation);
+            var frameInSequence = Math.Min(f.FloorToInt(), animation.Sequences[s].EndFrame);
+            var nextFrameInSequence = Math.Min(frameInSequence + 1, animation.Sequences[s].EndFrame);
+            var lerpAmount = Math.Clamp(f - frameInSequence, 0, 1);
+
+            var boneIndex = bone.Index;
             var matrix = Matrix4x4.Lerp(
-                _animatedBonesTransform[currentSequence][boneIndex][frameInSequence].Matrix,
-                _animatedBonesTransform[currentSequence][boneIndex][nextFrameInSequence].Matrix,
-                lerp);
+                _animatedBonesTransform[s][boneIndex][frameInSequence].Matrix,
+                _animatedBonesTransform[s][boneIndex][nextFrameInSequence].Matrix,
+                lerpAmount);
             _ssbo.Update(boneIndex, _invertedBonesMatrix[boneIndex] * matrix);
         }
+
         _ssbo.Unbind();
+    }
+
+    private (int, float) GetBoneFrameData(Bone bone, Animation animation)
+    {
+        int s = -1;
+        float f = 0.0f;
+
+        void Get(Bone b)
+        {
+            foreach (var i in b.AnimatedBySequences)
+            {
+                s = i;
+                if (animation.Framing.TryGetValue(s, out f))
+                    break;
+            }
+        }
+
+        Get(bone);
+        if (s == -1)
+        {
+            var parent = BonesByLoweredName[bone.LoweredParentName];
+            while (!parent.IsAnimated)
+            {
+                parent = BonesByLoweredName[parent.LoweredParentName];
+            }
+            Get(parent);
+        }
+
+        return (s, f);
     }
 
     public Matrix4x4 GetBoneMatrix(Bone bone) => IsAnimated ? bone.Rest.Matrix * _ssbo.Get(bone.Index) : bone.Rest.Matrix;

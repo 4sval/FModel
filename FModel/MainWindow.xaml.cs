@@ -85,10 +85,10 @@ public partial class MainWindow
 #if DEBUG
         await _threadWorkerView.Begin(cancellationToken =>
             _applicationView.CUE4Parse.Extract(cancellationToken,
-                "Hk_project/Content/Character/Cat/Mesh/SKM_Cat.uasset"));
+                "ShooterGame/Content/Characters/Guide/S0/3P/Models/TP_Guide_S0_Skelmesh.uasset"));
         await _threadWorkerView.Begin(cancellationToken =>
             _applicationView.CUE4Parse.Extract(cancellationToken,
-                "Hk_project/Content/Animation/CAT/Idle/CAT_SitBalledStrechingToStand_Idle.uasset"));
+                "ShooterGame/Content/Characters/Guide/S0/Ability_Q/3P/Anims/TP_Guide_S0_Q_WolfTotem_Cast_Outro_Montage.uasset"));
 #endif
     }
 
@@ -142,7 +142,7 @@ public partial class MainWindow
 
     private async void OnMappingsReload(object sender, ExecutedRoutedEventArgs e)
     {
-        await _applicationView.CUE4Parse.InitMappings();
+        await _applicationView.CUE4Parse.InitMappings(true);
     }
 
     private void OnOpenAvalonFinder()
