@@ -19,7 +19,7 @@ public class DirectorySettings : ViewModel, ICloneable
             GameDirectory = gameDir,
             IsManual = manual,
             UeVersion = old?.UeVersion ?? ue,
-            TexturePlatform = old?.TexturePlatform ?? ETexturePlatform.DesktopMobile,
+            TexturePlatform = old?.TexturePlatform ?? EPlatform.DesktopMobile,
             Versioning = old?.Versioning ?? new VersioningSettings(),
             Endpoints = old?.Endpoints ?? EndpointSettings.Default(gameName),
             Directories = old?.Directories ?? CustomDirectory.Default(gameName),
@@ -56,8 +56,8 @@ public class DirectorySettings : ViewModel, ICloneable
         set => SetProperty(ref _ueVersion, value);
     }
 
-    private ETexturePlatform _texturePlatform;
-    public ETexturePlatform TexturePlatform
+    private EPlatform _texturePlatform;
+    public EPlatform TexturePlatform
     {
         get => _texturePlatform;
         set => SetProperty(ref _texturePlatform, value);

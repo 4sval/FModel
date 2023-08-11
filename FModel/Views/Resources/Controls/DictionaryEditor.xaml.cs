@@ -12,17 +12,17 @@ namespace FModel.Views.Resources.Controls;
 
 public partial class DictionaryEditor
 {
-    private readonly List<FCustomVersion> _defaultCustomVersions;
+    private readonly FCustomVersionContainer _defaultCustomVersions;
     private readonly Dictionary<string, bool> _defaultOptions;
     private readonly Dictionary<string, KeyValuePair<string, string>> _defaultMapStructTypes;
 
-    public List<FCustomVersion> CustomVersions { get; private set; }
+    public FCustomVersionContainer CustomVersions { get; private set; }
     public Dictionary<string, bool> Options { get; private set; }
     public Dictionary<string, KeyValuePair<string, string>> MapStructTypes { get; private set; }
 
     public DictionaryEditor(string title)
     {
-        _defaultCustomVersions = new List<FCustomVersion> { new() { Key = new FGuid(), Version = 0 } };
+        _defaultCustomVersions = new FCustomVersionContainer(new[] { new FCustomVersion { Key = new FGuid(), Version = 0 } });
         _defaultOptions = new Dictionary<string, bool> { { "key1", true }, { "key2", false } };
         _defaultMapStructTypes = new Dictionary<string, KeyValuePair<string, string>> { { "MapName", new KeyValuePair<string, string>("KeyType", "ValueType") } };
 
@@ -32,28 +32,19 @@ public partial class DictionaryEditor
         MyAvalonEditor.SyntaxHighlighting = AvalonExtensions.HighlighterSelector("");
     }
 
-    public DictionaryEditor(IList<FCustomVersion> customVersions, string title) : this(title)
+    public DictionaryEditor(FCustomVersionContainer customVersions, string title) : this(title)
     {
-        MyAvalonEditor.Document = new TextDocument
-        {
-            Text = JsonConvert.SerializeObject(customVersions ?? _defaultCustomVersions, Formatting.Indented)
-        };
+        MyAvalonEditor.Document = new TextDocument { Text = JsonConvert.SerializeObject(customVersions ?? _defaultCustomVersions, Formatting.Indented) };
     }
 
     public DictionaryEditor(IDictionary<string, bool> options, string title) : this(title)
     {
-        MyAvalonEditor.Document = new TextDocument
-        {
-            Text = JsonConvert.SerializeObject(options ?? _defaultOptions, Formatting.Indented)
-        };
+        MyAvalonEditor.Document = new TextDocument { Text = JsonConvert.SerializeObject(options ?? _defaultOptions, Formatting.Indented) };
     }
 
     public DictionaryEditor(IDictionary<string, KeyValuePair<string, string>> options, string title) : this(title)
     {
-        MyAvalonEditor.Document = new TextDocument
-        {
-            Text = JsonConvert.SerializeObject(options ?? _defaultMapStructTypes, Formatting.Indented)
-        };
+        MyAvalonEditor.Document = new TextDocument { Text = JsonConvert.SerializeObject(options ?? _defaultMapStructTypes, Formatting.Indented) };
     }
 
     private void OnClick(object sender, RoutedEventArgs e)
@@ -63,7 +54,7 @@ public partial class DictionaryEditor
             switch (Title)
             {
                 case "Versioning Configuration (Custom Versions)":
-                    CustomVersions = JsonConvert.DeserializeObject<List<FCustomVersion>>(MyAvalonEditor.Document.Text);
+                    CustomVersions = JsonConvert.DeserializeObject<FCustomVersionContainer>(MyAvalonEditor.Document.Text);
                     // DialogResult = !CustomVersions.SequenceEqual(_defaultCustomVersions);
                     DialogResult = true;
                     Close();
@@ -87,7 +78,7 @@ public partial class DictionaryEditor
         catch
         {
             HeBrokeIt.Text = "GG YOU BROKE THE FORMAT, FIX THE JSON OR RESET THE CHANGES!";
-            HeBrokeIt.Foreground = new SolidColorBrush((Color) ColorConverter.ConvertFromString(Constants.RED));
+            HeBrokeIt.Foreground = new SolidColorBrush((Color) ColorConverter.ConvertFromString(Constants.RED)!);
         }
     }
 
@@ -95,18 +86,9 @@ public partial class DictionaryEditor
     {
         MyAvalonEditor.Document = Title switch
         {
-            "Versioning Configuration (Custom Versions)" => new TextDocument
-            {
-                Text = JsonConvert.SerializeObject(_defaultCustomVersions, Formatting.Indented)
-            },
-            "Versioning Configuration (Options)" => new TextDocument
-            {
-                Text = JsonConvert.SerializeObject(_defaultOptions, Formatting.Indented)
-            },
-            "Versioning Configuration (MapStructTypes)" => new TextDocument
-            {
-                Text = JsonConvert.SerializeObject(_defaultMapStructTypes, Formatting.Indented)
-            },
+            "Versioning Configuration (Custom Versions)" => new TextDocument { Text = JsonConvert.SerializeObject(_defaultCustomVersions, Formatting.Indented) },
+            "Versioning Configuration (Options)" => new TextDocument { Text = JsonConvert.SerializeObject(_defaultOptions, Formatting.Indented) },
+            "Versioning Configuration (MapStructTypes)" => new TextDocument { Text = JsonConvert.SerializeObject(_defaultMapStructTypes, Formatting.Indented) },
             _ => throw new NotImplementedException()
         };
     }

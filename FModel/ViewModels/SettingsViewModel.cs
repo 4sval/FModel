@@ -32,8 +32,8 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedUpdateMode, value);
     }
 
-    private ETexturePlatform _selectedUePlatform;
-    public ETexturePlatform SelectedUePlatform
+    private EPlatform _selectedUePlatform;
+    public EPlatform SelectedUePlatform
     {
         get => _selectedUePlatform;
         set => SetProperty(ref _selectedUePlatform, value);
@@ -46,8 +46,8 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedUeGame, value);
     }
 
-    private IList<FCustomVersion> _selectedCustomVersions;
-    public IList<FCustomVersion> SelectedCustomVersions
+    private FCustomVersionContainer _selectedCustomVersions;
+    public FCustomVersionContainer SelectedCustomVersions
     {
         get => _selectedCustomVersions;
         set => SetProperty(ref _selectedCustomVersions, value);
@@ -163,7 +163,7 @@ public class SettingsViewModel : ViewModel
     public ReadOnlyObservableCollection<ELodFormat> LodExportFormats { get; private set; }
     public ReadOnlyObservableCollection<EMaterialFormat> MaterialExportFormats { get; private set; }
     public ReadOnlyObservableCollection<ETextureFormat> TextureExportFormats { get; private set; }
-    public ReadOnlyObservableCollection<ETexturePlatform> Platforms { get; private set; }
+    public ReadOnlyObservableCollection<EPlatform> Platforms { get; private set; }
 
     private string _outputSnapshot;
     private string _rawDataSnapshot;
@@ -173,9 +173,9 @@ public class SettingsViewModel : ViewModel
     private string _modelSnapshot;
     private string _gameSnapshot;
     private EUpdateMode _updateModeSnapshot;
-    private ETexturePlatform _uePlatformSnapshot;
+    private EPlatform _uePlatformSnapshot;
     private EGame _ueGameSnapshot;
-    private IList<FCustomVersion> _customVersionsSnapshot;
+    private FCustomVersionContainer _customVersionsSnapshot;
     private IDictionary<string, bool> _optionsSnapshot;
     private IDictionary<string, KeyValuePair<string, string>> _mapStructTypesSnapshot;
     private ELanguage _assetLanguageSnapshot;
@@ -187,12 +187,7 @@ public class SettingsViewModel : ViewModel
     private EMaterialFormat _materialExportFormatSnapshot;
     private ETextureFormat _textureExportFormatSnapshot;
 
-    private bool _mappingsUpdate = false;
-
-    public SettingsViewModel()
-    {
-
-    }
+    private bool _mappingsUpdate;
 
     public void Initialize()
     {
@@ -256,7 +251,7 @@ public class SettingsViewModel : ViewModel
         LodExportFormats = new ReadOnlyObservableCollection<ELodFormat>(new ObservableCollection<ELodFormat>(EnumerateLodExportFormat()));
         MaterialExportFormats = new ReadOnlyObservableCollection<EMaterialFormat>(new ObservableCollection<EMaterialFormat>(EnumerateMaterialExportFormat()));
         TextureExportFormats = new ReadOnlyObservableCollection<ETextureFormat>(new ObservableCollection<ETextureFormat>(EnumerateTextureExportFormat()));
-        Platforms = new ReadOnlyObservableCollection<ETexturePlatform>(new ObservableCollection<ETexturePlatform>(EnumerateUePlatforms()));
+        Platforms = new ReadOnlyObservableCollection<EPlatform>(new ObservableCollection<EPlatform>(EnumerateUePlatforms()));
     }
 
     public bool Save(out List<SettingsOut> whatShouldIDo)
@@ -323,5 +318,5 @@ public class SettingsViewModel : ViewModel
     private IEnumerable<ELodFormat> EnumerateLodExportFormat() => Enum.GetValues<ELodFormat>();
     private IEnumerable<EMaterialFormat> EnumerateMaterialExportFormat() => Enum.GetValues<EMaterialFormat>();
     private IEnumerable<ETextureFormat> EnumerateTextureExportFormat() => Enum.GetValues<ETextureFormat>();
-    private IEnumerable<ETexturePlatform> EnumerateUePlatforms() => Enum.GetValues<ETexturePlatform>();
+    private IEnumerable<EPlatform> EnumerateUePlatforms() => Enum.GetValues<EPlatform>();
 }

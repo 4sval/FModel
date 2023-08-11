@@ -31,7 +31,7 @@ public class Options
 
     public readonly Dictionary<string, Texture> Icons;
 
-    private readonly ETexturePlatform _platform;
+    private readonly EPlatform _platform;
     private readonly string _game;
 
     public Options()

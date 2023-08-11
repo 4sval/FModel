@@ -6,8 +6,8 @@ namespace FModel.Settings;
 
 public class VersioningSettings : ViewModel
 {
-    private IList<FCustomVersion> _customVersions;
-    public IList<FCustomVersion> CustomVersions
+    private FCustomVersionContainer _customVersions;
+    public FCustomVersionContainer CustomVersions
     {
         get => _customVersions;
         set => SetProperty(ref _customVersions, value);
@@ -26,6 +26,4 @@ public class VersioningSettings : ViewModel
         get => _mapStructTypes;
         set => SetProperty(ref _mapStructTypes, value);
     }
-
-    public VersioningSettings() {}
 }

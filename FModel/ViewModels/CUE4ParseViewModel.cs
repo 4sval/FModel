@@ -11,7 +11,6 @@ using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.MappingsProvider;
-using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Material;
@@ -32,7 +31,7 @@ using CUE4Parse.UE4.Wwise;
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
 using CUE4Parse.FileProvider.Objects;
-using CUE4Parse.UE4.Objects.Core.Serialization;
+using CUE4Parse.UE4.Structs.AssetRegistry;
 using EpicManifestParser.Objects;
 using FModel.Creator;
 using FModel.Extensions;
@@ -129,7 +128,7 @@ public class CUE4ParseViewModel : ViewModel
         var gameDirectory = currentDir.GameDirectory;
         var versionContainer = new VersionContainer(
             game: currentDir.UeVersion, platform: currentDir.TexturePlatform,
-            customVersions: new FCustomVersionContainer(currentDir.Versioning.CustomVersions),
+            customVersions: currentDir.Versioning.CustomVersions,
             optionOverrides: currentDir.Versioning.Options,
             mapStructTypesOverrides: currentDir.Versioning.MapStructTypes);
 
