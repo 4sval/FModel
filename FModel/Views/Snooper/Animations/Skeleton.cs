@@ -22,6 +22,7 @@ public class Skeleton : IDisposable
 
     public readonly int BoneCount;
     public readonly Dictionary<string, Bone> BonesByLoweredName;
+    private Matrix4x4[] _boneMatriceAtFrame;
 
     public Skeleton()
     {
@@ -116,6 +117,12 @@ public class Skeleton : IDisposable
 
         _ssbo = new BufferObject<Matrix4x4>(BoneCount, BufferTarget.ShaderStorageBuffer);
         _ssbo.UpdateRange(BoneCount, Matrix4x4.Identity);
+
+        _boneMatriceAtFrame = new Matrix4x4[BoneCount];
+        for (int boneIndex = 0; boneIndex < _boneMatriceAtFrame.Length; boneIndex++)
+        {
+            _boneMatriceAtFrame[boneIndex] = Matrix4x4.Identity;
+        }
     }
 
     public void UpdateAnimationMatrices(Animation animation, bool rotationOnly)
@@ -126,7 +133,7 @@ public class Skeleton : IDisposable
 
         foreach (var bone in BonesByLoweredName.Values)
         {
-            var boneRelation = bone.IsRoot ? bone.Rest.Relation : bone.Rest.LocalMatrix * _ssbo.Get(bone.ParentIndex);
+            var boneMatrix = bone.IsRoot ? bone.Rest.Relation : bone.Rest.LocalMatrix * _boneMatriceAtFrame[bone.ParentIndex];
             if (bone.IsAnimated)
             {
                 var (s, f) = GetBoneFrameData(bone, animation);
@@ -136,18 +143,20 @@ public class Skeleton : IDisposable
                 var boneScale = bone.Rest.Scale;
 
                 sequence.Tracks[bone.SkeletonIndex].GetBoneTransform(f, sequence.NumFrames, ref boneOrientation, ref bonePosition, ref boneScale);
-                if (!bone.IsRoot) boneRelation = _ssbo.Get(bone.ParentIndex);
+                if (!bone.IsRoot) boneMatrix = _boneMatriceAtFrame[bone.ParentIndex];
                 bonePosition = rotationOnly ? bone.Rest.Position : bonePosition * Constants.SCALE_DOWN_RATIO;
 
-                _ssbo.Update(bone.Index, new Transform
+                boneMatrix = new Transform
                 {
-                    Relation = boneRelation,
+                    Relation = boneMatrix,
                     Rotation = boneOrientation,
                     Position = bonePosition,
                     Scale = boneScale
-                }.Matrix);
+                }.Matrix;
             }
-            else _ssbo.Update(bone.Index, boneRelation);
+
+            _ssbo.Update(bone.Index, boneMatrix);
+            _boneMatriceAtFrame[bone.Index] = boneMatrix;
         }
 
         _ssbo.Unbind();

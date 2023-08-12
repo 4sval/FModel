@@ -6,24 +6,26 @@ namespace FModel.Views.Snooper.Buffers;
 public class BufferObject<TDataType> : IDisposable where TDataType : unmanaged
 {
     private readonly int _handle;
+    private readonly int _sizeOf;
     private readonly BufferTarget _bufferTarget;
 
-    private BufferObject(BufferTarget bufferTarget)
+    private unsafe BufferObject(BufferTarget bufferTarget)
     {
         _bufferTarget = bufferTarget;
         _handle = GL.GenBuffer();
+        _sizeOf = sizeof(TDataType);
 
         Bind();
     }
 
-    public unsafe BufferObject(TDataType[] data, BufferTarget bufferTarget) : this(bufferTarget)
+    public BufferObject(TDataType[] data, BufferTarget bufferTarget) : this(bufferTarget)
     {
-        GL.BufferData(bufferTarget, data.Length * sizeof(TDataType), data, BufferUsageHint.StaticDraw);
+        GL.BufferData(bufferTarget, data.Length * _sizeOf, data, BufferUsageHint.StaticDraw);
     }
 
-    public unsafe BufferObject(int length, BufferTarget bufferTarget) : this(bufferTarget)
+    public BufferObject(int length, BufferTarget bufferTarget) : this(bufferTarget)
     {
-        GL.BufferData(bufferTarget, length * sizeof(TDataType), IntPtr.Zero, BufferUsageHint.DynamicDraw);
+        GL.BufferData(bufferTarget, length * _sizeOf, IntPtr.Zero, BufferUsageHint.DynamicDraw);
     }
 
     public void UpdateRange(int count, TDataType data)
@@ -33,22 +35,22 @@ public class BufferObject<TDataType> : IDisposable where TDataType : unmanaged
         Unbind();
     }
 
-    public unsafe void Update(int offset, TDataType data)
+    public void Update(int offset, TDataType data)
     {
-        GL.BufferSubData(_bufferTarget,  (IntPtr) (offset * sizeof(TDataType)), sizeof(TDataType), ref data);
+        GL.BufferSubData(_bufferTarget,  (IntPtr) (offset * _sizeOf), _sizeOf, ref data);
     }
 
-    public unsafe void Update(TDataType[] data)
+    public void Update(TDataType[] data)
     {
         Bind();
-        GL.BufferSubData(_bufferTarget, IntPtr.Zero, data.Length * sizeof(TDataType), data);
+        GL.BufferSubData(_bufferTarget, IntPtr.Zero, data.Length * _sizeOf, data);
         Unbind();
     }
 
-    public unsafe TDataType Get(int offset)
+    public TDataType Get(int offset)
     {
         TDataType data = default;
-        GL.GetBufferSubData(_bufferTarget, (IntPtr) (offset * sizeof(TDataType)), sizeof(TDataType), ref data);
+        GL.GetBufferSubData(_bufferTarget, (IntPtr) (offset * _sizeOf), _sizeOf, ref data);
         return data;
     }
 
