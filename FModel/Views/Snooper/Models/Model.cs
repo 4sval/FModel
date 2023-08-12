@@ -285,9 +285,7 @@ public class Model : IDisposable
 
     public void UpdateMorph(int index)
     {
-        _morphVbo.Bind();
         _morphVbo.Update(Morphs[index].Vertices);
-        _morphVbo.Unbind();
     }
 
     public void AttachModel(Model attachedTo, Socket socket, SocketAttachementInfo info)
@@ -398,7 +396,7 @@ public class Model : IDisposable
 
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
-        if (HasSkeleton) Skeleton.Render();
+        if (HasSkeleton) Skeleton.Render(shader);
         if (!outline)
         {
             shader.SetUniform("uUvCount", UvCount);
@@ -434,7 +432,7 @@ public class Model : IDisposable
 
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
-        if (HasSkeleton) Skeleton.Render();
+        if (HasSkeleton) Skeleton.Render(shader);
 
         foreach (var section in Sections)
         {

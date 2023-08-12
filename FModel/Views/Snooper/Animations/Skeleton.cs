@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using CUE4Parse_Conversion.Animations.PSA;
 using CUE4Parse.UE4.Assets.Exports.Animation;
-using CUE4Parse.UE4.Objects.Core.Math;
-using CUE4Parse.Utils;
 using FModel.Views.Snooper.Buffers;
+using FModel.Views.Snooper.Shading;
 using OpenTK.Graphics.OpenGL4;
 using Serilog;
 
@@ -14,27 +14,24 @@ namespace FModel.Views.Snooper.Animations;
 public class Skeleton : IDisposable
 {
     private int _handle;
+    private BufferObject<Matrix4x4> _rest;
     private BufferObject<Matrix4x4> _ssbo;
 
     public string Name;
-    public readonly Dictionary<string, Bone> BonesByLoweredName;
+    public bool IsAnimated { get; private set; }
 
-    private Transform[][][] _animatedBonesTransform;        // [sequence][bone][frame]
-    private readonly Matrix4x4[] _invertedBonesMatrix;
-    public int BoneCount => _invertedBonesMatrix.Length;
-    public bool IsAnimated => _animatedBonesTransform.Length > 0;
+    public readonly int BoneCount;
+    public readonly Dictionary<string, Bone> BonesByLoweredName;
 
     public Skeleton()
     {
         BonesByLoweredName = new Dictionary<string, Bone>();
-        _animatedBonesTransform = Array.Empty<Transform[][]>();
-        _invertedBonesMatrix = Array.Empty<Matrix4x4>();
     }
 
     public Skeleton(FReferenceSkeleton referenceSkeleton) : this()
     {
-        _invertedBonesMatrix = new Matrix4x4[referenceSkeleton.FinalRefBoneInfo.Length];
-        for (int boneIndex = 0; boneIndex < _invertedBonesMatrix.Length; boneIndex++)
+        BoneCount = referenceSkeleton.FinalRefBoneInfo.Length;
+        for (int boneIndex = 0; boneIndex < BoneCount; boneIndex++)
         {
             var info = referenceSkeleton.FinalRefBoneInfo[boneIndex];
             var boneTransform = new Transform
@@ -53,126 +50,33 @@ public class Skeleton : IDisposable
             }
 
             BonesByLoweredName[info.Name.Text.ToLower()] = bone;
-
-            Matrix4x4.Invert(boneTransform.Matrix, out var inverted);
-            _invertedBonesMatrix[bone.Index] = inverted;
         }
     }
 
-    public void Animate(CAnimSet anim, bool rotationOnly)
+    public void Animate(CAnimSet animation)
     {
-        MapSkeleton(anim);
-
-        _animatedBonesTransform = new Transform[anim.Sequences.Count][][];
-        for (int s = 0; s < _animatedBonesTransform.Length; s++)
-        {
-            var sequence = anim.Sequences[s];
-            _animatedBonesTransform[s] = new Transform[BoneCount][];
-            foreach (var bone in BonesByLoweredName.Values)
-            {
-                _animatedBonesTransform[s][bone.Index] = new Transform[sequence.NumFrames];
-
-                var skeletonBoneIndex = bone.SkeletonIndex;
-                if (sequence.OriginalSequence.FindTrackForBoneIndex(skeletonBoneIndex) < 0)
-                {
-                    for (int frame = 0; frame < _animatedBonesTransform[s][bone.Index].Length; frame++)
-                    {
-                        _animatedBonesTransform[s][bone.Index][frame] = new Transform
-                        {
-                            Relation = bone.IsRoot ? bone.Rest.Relation :
-                                bone.Rest.LocalMatrix * _animatedBonesTransform[s][bone.ParentIndex][frame].Matrix
-                        };
-                    }
-                }
-                else
-                {
-                    bone.AnimatedBySequences.Add(s);
-                    for (int frame = 0; frame < _animatedBonesTransform[s][bone.Index].Length; frame++)
-                    {
-                        var boneOrientation = bone.Rest.Rotation;
-                        var bonePosition = bone.Rest.Position;
-                        var boneScale = bone.Rest.Scale;
-
-                        sequence.Tracks[skeletonBoneIndex].GetBoneTransform(frame, sequence.NumFrames, ref boneOrientation, ref bonePosition, ref boneScale);
-
-                        switch (anim.Skeleton.BoneTree[skeletonBoneIndex])
-                        {
-                            case EBoneTranslationRetargetingMode.Skeleton when !rotationOnly:
-                            {
-                                var targetTransform = sequence.RetargetBasePose?[skeletonBoneIndex] ?? anim.Skeleton.ReferenceSkeleton.FinalRefBonePose[skeletonBoneIndex];
-                                bonePosition = targetTransform.Translation;
-                                break;
-                            }
-                            case EBoneTranslationRetargetingMode.AnimationScaled when !rotationOnly:
-                            {
-                                var sourceTranslationLength = (bone.Rest.Position / Constants.SCALE_DOWN_RATIO).Size();
-                                if (sourceTranslationLength > UnrealMath.KindaSmallNumber)
-                                {
-                                    var targetTranslationLength = sequence.RetargetBasePose?[skeletonBoneIndex].Translation.Size() ?? anim.Skeleton.ReferenceSkeleton.FinalRefBonePose[skeletonBoneIndex].Translation.Size();
-                                    bonePosition.Scale(targetTranslationLength / sourceTranslationLength);
-                                }
-                                break;
-                            }
-                            case EBoneTranslationRetargetingMode.AnimationRelative when !rotationOnly:
-                            {
-                                // can't tell if it's working or not
-                                var sourceSkelTrans = bone.Rest.Position / Constants.SCALE_DOWN_RATIO;
-                                var refPoseTransform  = sequence.RetargetBasePose?[skeletonBoneIndex] ?? anim.Skeleton.ReferenceSkeleton.FinalRefBonePose[skeletonBoneIndex];
-
-                                boneOrientation = boneOrientation * FQuat.Conjugate(bone.Rest.Rotation) * refPoseTransform.Rotation;
-                                bonePosition += refPoseTransform.Translation - sourceSkelTrans;
-                                boneScale *= refPoseTransform.Scale3D * bone.Rest.Scale;
-                                boneOrientation.Normalize();
-                                break;
-                            }
-                            case EBoneTranslationRetargetingMode.OrientAndScale when !rotationOnly:
-                            {
-                                var sourceSkelTrans = bone.Rest.Position / Constants.SCALE_DOWN_RATIO;
-                                var targetSkelTrans = sequence.RetargetBasePose?[skeletonBoneIndex].Translation ?? anim.Skeleton.ReferenceSkeleton.FinalRefBonePose[skeletonBoneIndex].Translation;
-
-                                if (!sourceSkelTrans.Equals(targetSkelTrans))
-                                {
-                                    var sourceSkelTransLength = sourceSkelTrans.Size();
-                                    var targetSkelTransLength = targetSkelTrans.Size();
-                                    if (!UnrealMath.IsNearlyZero(sourceSkelTransLength * targetSkelTransLength))
-                                    {
-                                        var sourceSkelTransDir = sourceSkelTrans / sourceSkelTransLength;
-                                        var targetSkelTransDir = targetSkelTrans / targetSkelTransLength;
-
-                                        var deltaRotation = FQuat.FindBetweenNormals(sourceSkelTransDir, targetSkelTransDir);
-                                        var scale = targetSkelTransLength / sourceSkelTransLength;
-                                        bonePosition = deltaRotation.RotateVector(bonePosition) * scale;
-                                    }
-                                }
-                                break;
-                            }
-                        }
-
-                        _animatedBonesTransform[s][bone.Index][frame] = new Transform
-                        {
-                            Relation = bone.IsRoot ? bone.Rest.Relation : _animatedBonesTransform[s][bone.ParentIndex][frame].Matrix,
-                            Rotation = boneOrientation,
-                            Position = rotationOnly ? bone.Rest.Position : bonePosition * Constants.SCALE_DOWN_RATIO,
-                            Scale = boneScale
-                        };
-                    }
-                }
-            }
-        }
-    }
-
-    private void MapSkeleton(CAnimSet anim)
-    {
+        IsAnimated = true;
         ResetAnimatedData();
 
         // map bones
-        for (int boneIndex = 0; boneIndex < anim.Skeleton.BoneCount; boneIndex++)
+        for (int boneIndex = 0; boneIndex < animation.Skeleton.BoneCount; boneIndex++)
         {
-            var info = anim.Skeleton.ReferenceSkeleton.FinalRefBoneInfo[boneIndex];
+            var info = animation.Skeleton.ReferenceSkeleton.FinalRefBoneInfo[boneIndex];
             if (!BonesByLoweredName.TryGetValue(info.Name.Text.ToLower(), out var bone))
                 continue;
 
             bone.SkeletonIndex = boneIndex;
+        }
+
+        // find playable sequences
+        for (int s = 0; s < animation.Sequences.Count; s++)
+        {
+            var sequence = animation.Sequences[s];
+            foreach (var bone in BonesByLoweredName.Values.Where(bone => sequence.OriginalSequence.FindTrackForBoneIndex(bone.SkeletonIndex) >= 0))
+            {
+                bone.AnimatedBySequences.Add(s);
+            }
+            sequence.Retarget(animation.Skeleton);
         }
 
 #if DEBUG
@@ -195,7 +99,7 @@ public class Skeleton : IDisposable
         }
 
         if (!full) return;
-        _animatedBonesTransform = Array.Empty<Transform[][]>();
+        IsAnimated = false;
         _ssbo.UpdateRange(BoneCount, Matrix4x4.Identity);
     }
 
@@ -203,11 +107,18 @@ public class Skeleton : IDisposable
     {
         _handle = GL.CreateProgram();
 
+        _rest = new BufferObject<Matrix4x4>(BoneCount, BufferTarget.ShaderStorageBuffer);
+        foreach (var bone in BonesByLoweredName.Values)
+        {
+            _rest.Update(bone.Index, bone.Rest.Matrix);
+        }
+        _rest.Unbind();
+
         _ssbo = new BufferObject<Matrix4x4>(BoneCount, BufferTarget.ShaderStorageBuffer);
         _ssbo.UpdateRange(BoneCount, Matrix4x4.Identity);
     }
 
-    public void UpdateAnimationMatrices(Animation animation)
+    public void UpdateAnimationMatrices(Animation animation, bool rotationOnly)
     {
         if (!IsAnimated) return;
 
@@ -215,17 +126,28 @@ public class Skeleton : IDisposable
 
         foreach (var bone in BonesByLoweredName.Values)
         {
-            var (s, f) = GetBoneFrameData(bone, animation);
-            var frameInSequence = Math.Min(f.FloorToInt(), animation.Sequences[s].EndFrame);
-            var nextFrameInSequence = Math.Min(frameInSequence + 1, animation.Sequences[s].EndFrame);
-            var lerpAmount = Math.Clamp(f - frameInSequence, 0, 1);
+            var boneRelation = bone.IsRoot ? bone.Rest.Relation : bone.Rest.LocalMatrix * _ssbo.Get(bone.ParentIndex);
+            if (bone.IsAnimated)
+            {
+                var (s, f) = GetBoneFrameData(bone, animation);
+                var sequence = animation.UnrealAnim.Sequences[s];
+                var boneOrientation = bone.Rest.Rotation;
+                var bonePosition = bone.Rest.Position;
+                var boneScale = bone.Rest.Scale;
 
-            var boneIndex = bone.Index;
-            var matrix = Matrix4x4.Lerp(
-                _animatedBonesTransform[s][boneIndex][frameInSequence].Matrix,
-                _animatedBonesTransform[s][boneIndex][nextFrameInSequence].Matrix,
-                lerpAmount);
-            _ssbo.Update(boneIndex, _invertedBonesMatrix[boneIndex] * matrix);
+                sequence.Tracks[bone.SkeletonIndex].GetBoneTransform(f, sequence.NumFrames, ref boneOrientation, ref bonePosition, ref boneScale);
+                if (!bone.IsRoot) boneRelation = _ssbo.Get(bone.ParentIndex);
+                bonePosition = rotationOnly ? bone.Rest.Position : bonePosition * Constants.SCALE_DOWN_RATIO;
+
+                _ssbo.Update(bone.Index, new Transform
+                {
+                    Relation = boneRelation,
+                    Rotation = boneOrientation,
+                    Position = bonePosition,
+                    Scale = boneScale
+                }.Matrix);
+            }
+            else _ssbo.Update(bone.Index, boneRelation);
         }
 
         _ssbo.Unbind();
@@ -260,17 +182,28 @@ public class Skeleton : IDisposable
         return (s, f);
     }
 
-    public Matrix4x4 GetBoneMatrix(Bone bone) => IsAnimated ? bone.Rest.Matrix * _ssbo.Get(bone.Index) : bone.Rest.Matrix;
-
-    public void Render()
+    public Matrix4x4 GetBoneMatrix(Bone bone)
     {
+        _ssbo.Bind();
+        var anim = _ssbo.Get(bone.Index);
+        _ssbo.Unbind();
+
+        return IsAnimated ? anim : bone.Rest.Matrix;
+    }
+
+    public void Render(Shader shader)
+    {
+        shader.SetUniform("uIsAnimated", IsAnimated);
+
         _ssbo.BindBufferBase(1);
+        _rest.BindBufferBase(2);
     }
 
     public void Dispose()
     {
         BonesByLoweredName.Clear();
 
+        _rest?.Dispose();
         _ssbo?.Dispose();
         GL.DeleteProgram(_handle);
     }

@@ -40,17 +40,15 @@ public class BufferObject<TDataType> : IDisposable where TDataType : unmanaged
 
     public unsafe void Update(TDataType[] data)
     {
+        Bind();
         GL.BufferSubData(_bufferTarget, IntPtr.Zero, data.Length * sizeof(TDataType), data);
+        Unbind();
     }
 
     public unsafe TDataType Get(int offset)
     {
         TDataType data = default;
-
-        Bind();
         GL.GetBufferSubData(_bufferTarget, (IntPtr) (offset * sizeof(TDataType)), sizeof(TDataType), ref data);
-        Unbind();
-
         return data;
     }
 

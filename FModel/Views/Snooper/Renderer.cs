@@ -115,7 +115,7 @@ public class Renderer : IDisposable
                 var animSet = skeleton.ConvertAnims(animSequence);
                 var animation = new Animation(animSequence, animSet, guid);
                 maxElapsedTime = animation.TotalElapsedTime;
-                model.Skeleton.Animate(animSet, AnimateWithRotationOnly);
+                model.Skeleton.Animate(animSet);
                 Options.AddAnimation(animation);
                 break;
             }
@@ -124,7 +124,7 @@ public class Renderer : IDisposable
                 var animSet = skeleton.ConvertAnims(animMontage);
                 var animation = new Animation(animMontage, animSet, guid);
                 maxElapsedTime = animation.TotalElapsedTime;
-                model.Skeleton.Animate(animSet, AnimateWithRotationOnly);
+                model.Skeleton.Animate(animSet);
                 Options.AddAnimation(animation);
 
                 foreach (var notifyEvent in animMontage.Notifies)
@@ -191,7 +191,7 @@ public class Renderer : IDisposable
                 var animSet = skeleton.ConvertAnims(animComposite);
                 var animation = new Animation(animComposite, animSet, guid);
                 maxElapsedTime = animation.TotalElapsedTime;
-                model.Skeleton.Animate(animSet, AnimateWithRotationOnly);
+                model.Skeleton.Animate(animSet);
                 Options.AddAnimation(animation);
                 break;
             }
@@ -267,7 +267,7 @@ public class Renderer : IDisposable
             animation.TimeCalculation(Options.Tracker.ElapsedTime);
             foreach (var guid in animation.AttachedModels.Where(guid => Options.Models[guid].HasSkeleton))
             {
-                Options.Models[guid].Skeleton.UpdateAnimationMatrices(animation);
+                Options.Models[guid].Skeleton.UpdateAnimationMatrices(animation, AnimateWithRotationOnly);
             }
         }
 

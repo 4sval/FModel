@@ -11,8 +11,8 @@ namespace FModel.Views.Snooper.Animations;
 public class Animation : IDisposable
 {
     private readonly UObject _export;
-    private readonly CAnimSet _animSet;
 
+    public readonly CAnimSet UnrealAnim;
     public readonly string Path;
     public readonly string Name;
     public readonly Sequence[] Sequences;
@@ -38,12 +38,12 @@ public class Animation : IDisposable
 
     public Animation(UObject export, CAnimSet animSet) : this(export)
     {
-        _animSet = animSet;
+        UnrealAnim = animSet;
 
-        Sequences = new Sequence[_animSet.Sequences.Count];
+        Sequences = new Sequence[UnrealAnim.Sequences.Count];
         for (int i = 0; i < Sequences.Length; i++)
         {
-            Sequences[i] = new Sequence(_animSet.Sequences[i]);
+            Sequences[i] = new Sequence(UnrealAnim.Sequences[i]);
             EndTime = Sequences[i].EndTime;
         }
 
@@ -62,7 +62,7 @@ public class Animation : IDisposable
         for (int i = 0; i < Sequences.Length; i++)
         {
             var sequence = Sequences[i];
-            if (elapsedTime < sequence.EndTime && elapsedTime >= sequence.StartTime)
+            if (elapsedTime <= sequence.EndTime && elapsedTime >= sequence.StartTime)
             {
                 Framing[i] = (elapsedTime - sequence.StartTime) / sequence.TimePerFrame;
             }
@@ -122,7 +122,7 @@ public class Animation : IDisposable
                     {
                         if (selected) AttachedModels.Remove(guid); else AttachedModels.Add(guid);
                         model.Skeleton.ResetAnimatedData(true);
-                        if (!selected) model.Skeleton.Animate(_animSet, s.Renderer.AnimateWithRotationOnly);
+                        if (!selected) model.Skeleton.Animate(UnrealAnim);
                     }
                 }
                 ImGui.EndMenu();
