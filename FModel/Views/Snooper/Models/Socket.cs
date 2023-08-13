@@ -21,6 +21,7 @@ public class Socket : IDisposable
     public readonly bool IsVirtual;
 
     public readonly List<SocketAttachementInfo> AttachedModels;
+    public bool IsDaron => AttachedModels.Count > 0;
 
     private Socket()
     {

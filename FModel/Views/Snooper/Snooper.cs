@@ -113,7 +113,6 @@ public class Snooper : GameWindow
     private void ClearWhatHasBeenDrawn()
     {
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
-        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
     }
 
     protected override void OnRenderFrame(FrameEventArgs args)

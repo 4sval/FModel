@@ -141,6 +141,7 @@ public class Model : IDisposable
         if (HasSkeleton && export.Skeleton.TryLoad(out USkeleton skeleton))
         {
             Skeleton.Name = skeleton.Name;
+            // Skeleton.Merge(skeleton.ReferenceSkeleton);
             sockets.AddRange(skeleton.Sockets);
         }
 
@@ -255,6 +256,8 @@ public class Model : IDisposable
         var worldMatrix = UpdateMatrices();
         foreach (var socket in Sockets)
         {
+            if (!socket.IsDaron) continue;
+
             var boneMatrix = Matrix4x4.Identity;
             if (HasSkeleton && Skeleton.BonesByLoweredName.TryGetValue(socket.BoneName.Text.ToLower(), out var bone))
                 boneMatrix = Skeleton.GetBoneMatrix(bone);
@@ -415,6 +418,7 @@ public class Model : IDisposable
 
             GL.DrawElementsInstanced(PrimitiveType.Triangles, section.FacesCount, DrawElementsType.UnsignedInt, section.FirstFaceIndexPtr, TransformsCount);
         }
+        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
         _vao.Unbind();
 
         if (IsSelected)

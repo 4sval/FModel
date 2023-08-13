@@ -67,6 +67,7 @@ public class SnimGui
 
     private Vector2 _outlinerSize;
     private bool _ti_open;
+    private bool _bh_open;
     private bool _viewportFocus;
 
     private readonly Vector4 _accentColor = new (0.125f, 0.42f, 0.831f, 1.0f);
@@ -106,6 +107,7 @@ public class SnimGui
         DrawModals(s);
 
         if (_ti_open) DrawTextureInspector(s);
+        if (_bh_open) DrawBoneHierarchy(s);
         Controller.Render();
     }
 
@@ -210,52 +212,43 @@ public class SnimGui
             ImGui.EndTable();
         }
 
-        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-        if (ImGui.CollapsingHeader("Editor"))
+        ImGui.SeparatorText("Editor");
+        if (ImGui.BeginTable("world_editor", 2))
         {
-            if (ImGui.BeginTable("world_editor", 2))
-            {
-                Layout("Skybox");ImGui.PushID(1);
-                ImGui.Checkbox("", ref s.Renderer.ShowSkybox);
-                ImGui.PopID();Layout("Grid");ImGui.PushID(2);
-                ImGui.Checkbox("", ref s.Renderer.ShowGrid);
-                ImGui.PopID();Layout("Lights");ImGui.PushID(3);
-                ImGui.Checkbox("", ref s.Renderer.ShowLights);
-                ImGui.PopID();Layout("Animate With Rotation Only");ImGui.PushID(4);
-                ImGui.Checkbox("", ref s.Renderer.AnimateWithRotationOnly);
-                ImGui.PopID();Layout("Vertex Colors");ImGui.PushID(5);
-                var c = (int) s.Renderer.Color;
-                ImGui.Combo("vertex_colors", ref c,
-                    "Default\0Sections\0Colors\0Normals\0Texture Coordinates\0");
-                s.Renderer.Color = (VertexColor) c;
-                ImGui.PopID();
+            Layout("Skybox");ImGui.PushID(1);
+            ImGui.Checkbox("", ref s.Renderer.ShowSkybox);
+            ImGui.PopID();Layout("Grid");ImGui.PushID(2);
+            ImGui.Checkbox("", ref s.Renderer.ShowGrid);
+            ImGui.PopID();Layout("Lights");ImGui.PushID(3);
+            ImGui.Checkbox("", ref s.Renderer.ShowLights);
+            ImGui.PopID();Layout("Animate With Rotation Only");ImGui.PushID(4);
+            ImGui.Checkbox("", ref s.Renderer.AnimateWithRotationOnly);
+            ImGui.PopID();Layout("Vertex Colors");ImGui.PushID(5);
+            var c = (int) s.Renderer.Color;
+            ImGui.Combo("vertex_colors", ref c,
+                "Default\0Sections\0Colors\0Normals\0Texture Coordinates\0");
+            s.Renderer.Color = (VertexColor) c;
+            ImGui.PopID();
 
+            ImGui.EndTable();
+        }
+
+        ImGui.SeparatorText("Camera");
+        s.Renderer.CameraOp.ImGuiCamera();
+
+        ImGui.SeparatorText("Lights");
+        for (int i = 0; i < s.Renderer.Options.Lights.Count; i++)
+        {
+            var light = s.Renderer.Options.Lights[i];
+            var id = s.Renderer.Options.TryGetModel(light.Model, out var lightModel) ? lightModel.Name : "None";
+
+            id += $"##{i}";
+            if (ImGui.TreeNode(id) && ImGui.BeginTable(id, 2))
+            {
+                s.Renderer.Options.SelectModel(light.Model);
+                light.ImGuiLight();
                 ImGui.EndTable();
-            }
-        }
-
-        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-        if (ImGui.CollapsingHeader("Camera"))
-        {
-            s.Renderer.CameraOp.ImGuiCamera();
-        }
-
-        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-        if (ImGui.CollapsingHeader("Lights"))
-        {
-            for (int i = 0; i < s.Renderer.Options.Lights.Count; i++)
-            {
-                var light = s.Renderer.Options.Lights[i];
-                var id = s.Renderer.Options.TryGetModel(light.Model, out var lightModel) ? lightModel.Name : "None";
-
-                id += $"##{i}";
-                if (ImGui.TreeNode(id) && ImGui.BeginTable(id, 2))
-                {
-                    s.Renderer.Options.SelectModel(light.Model);
-                    light.ImGuiLight();
-                    ImGui.EndTable();
-                    ImGui.TreePop();
-                }
+                ImGui.TreePop();
             }
         }
     }
@@ -461,6 +454,11 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                                 _swapper.Value = true;
                             }
                         }
+                        if (ImGui.MenuItem("Bone Hierarchy", model.HasSkeleton))
+                        {
+                            _bh_open = true;
+                            ImGui.SetWindowFocus("Bone Hierarchy");
+                        }
                         if (ImGui.MenuItem("Teleport To"))
                         {
                             var instancePos = model.Transforms[model.SelectedInstance].Matrix.Translation;
@@ -665,56 +663,50 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         ImGui.SameLine(); ImGui.AlignTextToFramePadding(); ImGui.Text(material.Name);
         ImGui.Spacing();
 
-        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-        if (ImGui.CollapsingHeader("Parameters"))
-        {
-            material.ImGuiParameters();
-        }
+        ImGui.SeparatorText("Parameters");
+        material.ImGuiParameters();
 
-        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-        if (ImGui.CollapsingHeader("Textures") && material.ImGuiTextures(icons, model))
+        ImGui.SeparatorText("Textures");
+        if (material.ImGuiTextures(icons, model))
         {
             _ti_open = true;
             ImGui.SetWindowFocus("Texture Inspector");
         }
 
-        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-        if (ImGui.CollapsingHeader("Properties"))
+        ImGui.SeparatorText("Properties");
+        NoFramePaddingOnY(() =>
         {
-            NoFramePaddingOnY(() =>
+            ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+            if (ImGui.TreeNode("Base"))
             {
-                ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-                if (ImGui.TreeNode("Base"))
-                {
-                    material.ImGuiBaseProperties("base");
-                    ImGui.TreePop();
-                }
+                material.ImGuiBaseProperties("base");
+                ImGui.TreePop();
+            }
 
-                ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-                if (ImGui.TreeNode("Scalars"))
-                {
-                    material.ImGuiDictionaries("scalars", material.Parameters.Scalars, true);
-                    ImGui.TreePop();
-                }
-                ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-                if (ImGui.TreeNode("Switches"))
-                {
-                    material.ImGuiDictionaries("switches", material.Parameters.Switches, true);
-                    ImGui.TreePop();
-                }
-                ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-                if (ImGui.TreeNode("Colors"))
-                {
-                    material.ImGuiColors(material.Parameters.Colors);
-                    ImGui.TreePop();
-                }
-                if (ImGui.TreeNode("All Textures"))
-                {
-                    material.ImGuiDictionaries("textures", material.Parameters.Textures);
-                    ImGui.TreePop();
-                }
-            });
-        }
+            ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+            if (ImGui.TreeNode("Scalars"))
+            {
+                material.ImGuiDictionaries("scalars", material.Parameters.Scalars, true);
+                ImGui.TreePop();
+            }
+            ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+            if (ImGui.TreeNode("Switches"))
+            {
+                material.ImGuiDictionaries("switches", material.Parameters.Switches, true);
+                ImGui.TreePop();
+            }
+            ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+            if (ImGui.TreeNode("Colors"))
+            {
+                material.ImGuiColors(material.Parameters.Colors);
+                ImGui.TreePop();
+            }
+            if (ImGui.TreeNode("All Textures"))
+            {
+                material.ImGuiDictionaries("textures", material.Parameters.Textures);
+                ImGui.TreePop();
+            }
+        });
     }
 
     private void DrawTextureInspector(Snooper s)
@@ -724,6 +716,15 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
             s.Renderer.Options.TryGetSection(model, out var section))
         {
             (model.Materials[section.MaterialIndex].GetSelectedTexture() ?? s.Renderer.Options.Icons["noimage"]).ImGuiTextureInspector();
+        }
+        ImGui.End(); // if window is collapsed
+    }
+
+    private void DrawBoneHierarchy(Snooper s)
+    {
+        if (ImGui.Begin("Bone Hierarchy", ref _bh_open, ImGuiWindowFlags.NoScrollbar) && s.Renderer.Options.TryGetModel(out var model))
+        {
+            model.Skeleton.ImGuiBoneHierarchy();
         }
         ImGui.End(); // if window is collapsed
     }

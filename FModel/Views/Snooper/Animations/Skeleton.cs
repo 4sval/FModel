@@ -6,6 +6,7 @@ using CUE4Parse_Conversion.Animations.PSA;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using FModel.Views.Snooper.Buffers;
 using FModel.Views.Snooper.Shading;
+using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 using Serilog;
 
@@ -16,13 +17,18 @@ public class Skeleton : IDisposable
     private int _handle;
     private BufferObject<Matrix4x4> _rest;
     private BufferObject<Matrix4x4> _ssbo;
+    private Matrix4x4[] _boneMatriceAtFrame;
 
     public string Name;
-    public bool IsAnimated { get; private set; }
+    public readonly string RootBoneName;
+    public readonly Dictionary<string, Bone> BonesByLoweredName;
 
     public readonly int BoneCount;
-    public readonly Dictionary<string, Bone> BonesByLoweredName;
-    private Matrix4x4[] _boneMatriceAtFrame;
+    public int AdditionalBoneCount;
+    public int TotalBoneCount => BoneCount + AdditionalBoneCount;
+
+    public bool IsAnimated { get; private set; }
+    public string SelectedBone;
 
     public Skeleton()
     {
@@ -35,23 +41,75 @@ public class Skeleton : IDisposable
         for (int boneIndex = 0; boneIndex < BoneCount; boneIndex++)
         {
             var info = referenceSkeleton.FinalRefBoneInfo[boneIndex];
-            var boneTransform = new Transform
+            var boneName = info.Name.Text.ToLower();
+            var bone = new Bone(boneIndex, info.ParentIndex, new Transform
             {
                 Rotation = referenceSkeleton.FinalRefBonePose[boneIndex].Rotation,
                 Position = referenceSkeleton.FinalRefBonePose[boneIndex].Translation * Constants.SCALE_DOWN_RATIO,
                 Scale = referenceSkeleton.FinalRefBonePose[boneIndex].Scale3D
-            };
+            });
 
-            var bone = new Bone(boneIndex, info.ParentIndex, boneTransform);
             if (!bone.IsRoot)
             {
-                bone.LoweredParentName =
-                    referenceSkeleton.FinalRefBoneInfo[bone.ParentIndex].Name.Text.ToLower();
-                bone.Rest.Relation = BonesByLoweredName[bone.LoweredParentName].Rest.Matrix;
+                bone.LoweredParentName = referenceSkeleton.FinalRefBoneInfo[bone.ParentIndex].Name.Text.ToLower();
+                var parentBone = BonesByLoweredName[bone.LoweredParentName];
+
+                bone.Rest.Relation = parentBone.Rest.Matrix;
+                parentBone.LoweredChildNames.Add(boneName);
             }
 
-            BonesByLoweredName[info.Name.Text.ToLower()] = bone;
+            if (boneIndex == 0) RootBoneName = boneName;
+            BonesByLoweredName[boneName] = bone;
         }
+        _boneMatriceAtFrame = new Matrix4x4[BoneCount];
+    }
+
+    public void Merge(FReferenceSkeleton referenceSkeleton)
+    {
+        for (int boneIndex = 0; boneIndex < referenceSkeleton.FinalRefBoneInfo.Length; boneIndex++)
+        {
+            var info = referenceSkeleton.FinalRefBoneInfo[boneIndex];
+            var boneName = info.Name.Text.ToLower();
+
+            if (!BonesByLoweredName.TryGetValue(boneName, out var bone))
+            {
+                bone = new Bone(BoneCount + AdditionalBoneCount, info.ParentIndex, new Transform
+                {
+                    Rotation = referenceSkeleton.FinalRefBonePose[boneIndex].Rotation,
+                    Position = referenceSkeleton.FinalRefBonePose[boneIndex].Translation * Constants.SCALE_DOWN_RATIO,
+                    Scale = referenceSkeleton.FinalRefBonePose[boneIndex].Scale3D
+                }, true);
+
+                if (!bone.IsRoot)
+                {
+                    bone.LoweredParentName = referenceSkeleton.FinalRefBoneInfo[bone.ParentIndex].Name.Text.ToLower();
+                    var parentBone = BonesByLoweredName[bone.LoweredParentName];
+
+                    bone.Rest.Relation = parentBone.Rest.Matrix;
+                    parentBone.LoweredChildNames.Add(boneName);
+                }
+
+                BonesByLoweredName[boneName] = bone;
+                AdditionalBoneCount++;
+            }
+        }
+        _boneMatriceAtFrame = new Matrix4x4[BoneCount + AdditionalBoneCount];
+    }
+
+    public void Setup()
+    {
+        _handle = GL.CreateProgram();
+
+        _rest = new BufferObject<Matrix4x4>(BoneCount, BufferTarget.ShaderStorageBuffer);
+        foreach (var bone in BonesByLoweredName.Values)
+        {
+            if (bone.IsVirtual) break;
+            _rest.Update(bone.Index, bone.Rest.Matrix);
+        }
+        _rest.Unbind();
+
+        _ssbo = new BufferObject<Matrix4x4>(TotalBoneCount, BufferTarget.ShaderStorageBuffer);
+        _ssbo.UpdateRange(Matrix4x4.Identity);
     }
 
     public void Animate(CAnimSet animation)
@@ -101,28 +159,7 @@ public class Skeleton : IDisposable
 
         if (!full) return;
         IsAnimated = false;
-        _ssbo.UpdateRange(BoneCount, Matrix4x4.Identity);
-    }
-
-    public void Setup()
-    {
-        _handle = GL.CreateProgram();
-
-        _rest = new BufferObject<Matrix4x4>(BoneCount, BufferTarget.ShaderStorageBuffer);
-        foreach (var bone in BonesByLoweredName.Values)
-        {
-            _rest.Update(bone.Index, bone.Rest.Matrix);
-        }
-        _rest.Unbind();
-
-        _ssbo = new BufferObject<Matrix4x4>(BoneCount, BufferTarget.ShaderStorageBuffer);
-        _ssbo.UpdateRange(BoneCount, Matrix4x4.Identity);
-
-        _boneMatriceAtFrame = new Matrix4x4[BoneCount];
-        for (int boneIndex = 0; boneIndex < _boneMatriceAtFrame.Length; boneIndex++)
-        {
-            _boneMatriceAtFrame[boneIndex] = Matrix4x4.Identity;
-        }
+        _ssbo.UpdateRange(Matrix4x4.Identity);
     }
 
     public void UpdateAnimationMatrices(Animation animation, bool rotationOnly)
@@ -191,14 +228,7 @@ public class Skeleton : IDisposable
         return (s, f);
     }
 
-    public Matrix4x4 GetBoneMatrix(Bone bone)
-    {
-        _ssbo.Bind();
-        var anim = _ssbo.Get(bone.Index);
-        _ssbo.Unbind();
-
-        return IsAnimated ? anim : bone.Rest.Matrix;
-    }
+    public Matrix4x4 GetBoneMatrix(Bone bone) => IsAnimated ? _boneMatriceAtFrame[bone.Index] : bone.Rest.Matrix;
 
     public void Render(Shader shader)
     {
@@ -206,6 +236,33 @@ public class Skeleton : IDisposable
 
         _ssbo.BindBufferBase(1);
         _rest.BindBufferBase(2);
+    }
+
+    public void ImGuiBoneHierarchy()
+    {
+        DrawBoneTree(RootBoneName, BonesByLoweredName[RootBoneName]);
+    }
+
+    private void DrawBoneTree(string boneName, Bone bone)
+    {
+        var flags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.OpenOnDoubleClick | ImGuiTreeNodeFlags.SpanAvailWidth;
+        if (boneName == SelectedBone) flags |= ImGuiTreeNodeFlags.Selected;
+        if (bone.IsVirtual) flags |= ImGuiTreeNodeFlags.Leaf;
+        else if (!bone.IsDaron) flags |= ImGuiTreeNodeFlags.Bullet;
+
+        ImGui.SetNextItemOpen(bone.LoweredChildNames.Count <= 1, ImGuiCond.Appearing);
+        var open = ImGui.TreeNodeEx(boneName, flags);
+        if (ImGui.IsItemClicked() && !ImGui.IsItemToggledOpen())
+            SelectedBone = boneName;
+
+        if (open)
+        {
+            foreach (var name in bone.LoweredChildNames)
+            {
+                DrawBoneTree(name, BonesByLoweredName[name]);
+            }
+            ImGui.TreePop();
+        }
     }
 
     public void Dispose()

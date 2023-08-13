@@ -179,7 +179,7 @@ public class Renderer : IDisposable
                         if (notifyClass.TryGetValue(out FVector scale, "Scale"))
                             t.Scale = scale;
 
-                        var s = new Socket($"TL_{addedModel.Name}", socketName, t, true);
+                        var s = new Socket($"ANIM_{addedModel.Name}", socketName, t, true);
                         model.Sockets.Add(s);
                         addedModel.AttachModel(model, s, new SocketAttachementInfo { Guid = guid, Instance = addedModel.SelectedInstance });
                     }

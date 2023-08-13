@@ -9,6 +9,8 @@ public class BufferObject<TDataType> : IDisposable where TDataType : unmanaged
     private readonly int _sizeOf;
     private readonly BufferTarget _bufferTarget;
 
+    public readonly int Size;
+
     private unsafe BufferObject(BufferTarget bufferTarget)
     {
         _bufferTarget = bufferTarget;
@@ -20,14 +22,17 @@ public class BufferObject<TDataType> : IDisposable where TDataType : unmanaged
 
     public BufferObject(TDataType[] data, BufferTarget bufferTarget) : this(bufferTarget)
     {
-        GL.BufferData(bufferTarget, data.Length * _sizeOf, data, BufferUsageHint.StaticDraw);
+        Size = data.Length;
+        GL.BufferData(bufferTarget, Size * _sizeOf, data, BufferUsageHint.StaticDraw);
     }
 
     public BufferObject(int length, BufferTarget bufferTarget) : this(bufferTarget)
     {
-        GL.BufferData(bufferTarget, length * _sizeOf, IntPtr.Zero, BufferUsageHint.DynamicDraw);
+        Size = length;
+        GL.BufferData(bufferTarget, Size * _sizeOf, IntPtr.Zero, BufferUsageHint.DynamicDraw);
     }
 
+    public void UpdateRange(TDataType data) => UpdateRange(Size, data);
     public void UpdateRange(int count, TDataType data)
     {
         Bind();
