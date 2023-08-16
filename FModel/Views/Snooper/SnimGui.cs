@@ -104,10 +104,11 @@ public class SnimGui
         Draw3DViewport(s);
         DrawNavbar();
 
-        DrawModals(s);
-
         if (_ti_open) DrawTextureInspector(s);
         if (_bh_open) DrawBoneHierarchy(s);
+
+        DrawModals(s);
+
         Controller.Render();
     }
 
@@ -722,11 +723,19 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
 
     private void DrawBoneHierarchy(Snooper s)
     {
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
         if (ImGui.Begin("Bone Hierarchy", ref _bh_open, ImGuiWindowFlags.NoScrollbar) && s.Renderer.Options.TryGetModel(out var model))
         {
-            model.Skeleton.ImGuiBoneHierarchy();
+            model.Skeleton.ImGuiBoneBreadcrumb();
+            if (ImGui.BeginTable("bone_hierarchy", 2, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.RowBg, ImGui.GetContentRegionAvail(), ImGui.GetWindowWidth()))
+            {
+                ImGui.TableSetupColumn("Bone", ImGuiTableColumnFlags.WidthStretch);
+                ImGui.TableSetupColumn("", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed, _tableWidth);
+                model.Skeleton.ImGuiBoneHierarchy();
+                ImGui.EndTable();
+            }
         }
-        ImGui.End(); // if window is collapsed
+        ImGui.PopStyleVar();
     }
 
     private void Draw3DViewport(Snooper s)

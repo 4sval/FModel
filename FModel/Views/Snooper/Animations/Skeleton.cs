@@ -18,14 +18,14 @@ public class Skeleton : IDisposable
     private BufferObject<Matrix4x4> _rest;
     private BufferObject<Matrix4x4> _ssbo;
     private Matrix4x4[] _boneMatriceAtFrame;
+    private readonly List<string> _breadcrumb;
 
     public string Name;
-    public readonly string RootBoneName;
     public readonly Dictionary<string, Bone> BonesByLoweredName;
 
     public readonly int BoneCount;
-    public int AdditionalBoneCount;
-    public int TotalBoneCount => BoneCount + AdditionalBoneCount;
+    private int _additionalBoneCount;
+    private int TotalBoneCount => BoneCount + _additionalBoneCount;
 
     public bool IsAnimated { get; private set; }
     public string SelectedBone;
@@ -33,6 +33,7 @@ public class Skeleton : IDisposable
     public Skeleton()
     {
         BonesByLoweredName = new Dictionary<string, Bone>();
+        _breadcrumb = new List<string>();
     }
 
     public Skeleton(FReferenceSkeleton referenceSkeleton) : this()
@@ -58,7 +59,7 @@ public class Skeleton : IDisposable
                 parentBone.LoweredChildNames.Add(boneName);
             }
 
-            if (boneIndex == 0) RootBoneName = boneName;
+            if (boneIndex == 0) SelectedBone = boneName;
             BonesByLoweredName[boneName] = bone;
         }
         _boneMatriceAtFrame = new Matrix4x4[BoneCount];
@@ -73,7 +74,7 @@ public class Skeleton : IDisposable
 
             if (!BonesByLoweredName.TryGetValue(boneName, out var bone))
             {
-                bone = new Bone(BoneCount + AdditionalBoneCount, info.ParentIndex, new Transform
+                bone = new Bone(BoneCount + _additionalBoneCount, info.ParentIndex, new Transform
                 {
                     Rotation = referenceSkeleton.FinalRefBonePose[boneIndex].Rotation,
                     Position = referenceSkeleton.FinalRefBonePose[boneIndex].Translation * Constants.SCALE_DOWN_RATIO,
@@ -90,10 +91,10 @@ public class Skeleton : IDisposable
                 }
 
                 BonesByLoweredName[boneName] = bone;
-                AdditionalBoneCount++;
+                _additionalBoneCount++;
             }
         }
-        _boneMatriceAtFrame = new Matrix4x4[BoneCount + AdditionalBoneCount];
+        _boneMatriceAtFrame = new Matrix4x4[TotalBoneCount];
     }
 
     public void Setup()
@@ -135,7 +136,7 @@ public class Skeleton : IDisposable
             {
                 bone.AnimatedBySequences.Add(s);
             }
-            sequence.Retarget(animation.Skeleton);
+            sequence.RetargetTracks(animation.Skeleton);
         }
 
 #if DEBUG
@@ -238,22 +239,56 @@ public class Skeleton : IDisposable
         _rest.BindBufferBase(2);
     }
 
+    public void ImGuiBoneBreadcrumb()
+    {
+        for (int i = _breadcrumb.Count - 1; i >= 0; i--)
+        {
+            var boneName = _breadcrumb[i];
+            ImGui.SameLine();
+            var clicked = ImGui.SmallButton(boneName);
+            ImGui.SameLine();
+            ImGui.Text(">");
+
+            if (clicked)
+            {
+                SelectedBone = boneName;
+                _breadcrumb.RemoveRange(0, i + 1);
+                break;
+            }
+        }
+    }
+
     public void ImGuiBoneHierarchy()
     {
-        DrawBoneTree(RootBoneName, BonesByLoweredName[RootBoneName]);
+        DrawBoneTree(SelectedBone, BonesByLoweredName[SelectedBone]);
     }
 
     private void DrawBoneTree(string boneName, Bone bone)
     {
-        var flags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.OpenOnDoubleClick | ImGuiTreeNodeFlags.SpanAvailWidth;
+        ImGui.PushID(bone.Index);
+        ImGui.TableNextRow();
+        ImGui.TableNextColumn();
+
+        var flags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.SpanFullWidth;
         if (boneName == SelectedBone) flags |= ImGuiTreeNodeFlags.Selected;
         if (bone.IsVirtual) flags |= ImGuiTreeNodeFlags.Leaf;
         else if (!bone.IsDaron) flags |= ImGuiTreeNodeFlags.Bullet;
 
-        ImGui.SetNextItemOpen(bone.LoweredChildNames.Count <= 1, ImGuiCond.Appearing);
+        ImGui.SetNextItemOpen(bone.LoweredChildNames.Count <= 1 || flags.HasFlag(ImGuiTreeNodeFlags.Selected), ImGuiCond.Appearing);
         var open = ImGui.TreeNodeEx(boneName, flags);
         if (ImGui.IsItemClicked() && !ImGui.IsItemToggledOpen())
+        {
             SelectedBone = boneName;
+            _breadcrumb.Clear();
+            do
+            {
+                _breadcrumb.Add(boneName);
+                boneName = BonesByLoweredName[boneName].LoweredParentName;
+            } while (boneName != null);
+        }
+
+        ImGui.TableNextColumn();
+        ImGui.TextColored(ImGui.ColorConvertU32ToFloat4(bone.Color), bone.SkeletonIndex.ToString());
 
         if (open)
         {
@@ -263,6 +298,7 @@ public class Skeleton : IDisposable
             }
             ImGui.TreePop();
         }
+        ImGui.PopID();
     }
 
     public void Dispose()

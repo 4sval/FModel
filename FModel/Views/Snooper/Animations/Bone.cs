@@ -31,6 +31,7 @@ public class Bone
     public bool IsMapped => SkeletonIndex > -1;
     public bool IsAnimated => AnimatedBySequences.Count > 0;
     public bool IsNative => Index == SkeletonIndex;
+    public uint Color => !IsMapped || !IsAnimated ? 0xFFA0A0A0 : 0xFF48B048;
 
     public override string ToString() => $"Mesh Ref '{Index}' is Skel Ref '{SkeletonIndex}'";
 }
