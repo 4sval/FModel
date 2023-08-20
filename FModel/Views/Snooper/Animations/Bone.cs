@@ -5,7 +5,7 @@ namespace FModel.Views.Snooper.Animations;
 public class Bone
 {
     public readonly int Index;
-    public readonly int ParentIndex;
+    public int ParentIndex;
     public readonly Transform Rest;
     public readonly bool IsVirtual;
 

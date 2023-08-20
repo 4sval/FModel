@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Numerics;
+using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Animations.PSA;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Objects.Core.Misc;
+using FModel.Settings;
+using FModel.Views.Snooper.Models;
 using ImGuiNET;
 
 namespace FModel.Views.Snooper.Animations;
@@ -118,11 +122,11 @@ public class Animation : IDisposable
                 foreach ((var guid, var model) in s.Renderer.Options.Models)
                 {
                     var selected = AttachedModels.Contains(guid);
-                    if (ImGui.MenuItem(model.Name, null, selected, (model.HasSkeleton && !model.Skeleton.IsAnimated) || selected))
+                    if (model is SkeletalModel skeletalModel && ImGui.MenuItem(model.Name, null, selected, !skeletalModel.Skeleton.IsAnimated || selected))
                     {
                         if (selected) AttachedModels.Remove(guid); else AttachedModels.Add(guid);
-                        model.Skeleton.ResetAnimatedData(true);
-                        if (!selected) model.Skeleton.Animate(UnrealAnim);
+                        skeletalModel.Skeleton.ResetAnimatedData(true);
+                        if (!selected) skeletalModel.Skeleton.Animate(UnrealAnim);
                     }
                 }
                 ImGui.EndMenu();
@@ -130,7 +134,7 @@ public class Animation : IDisposable
             if (ImGui.MenuItem("Save"))
             {
                 s.WindowShouldFreeze(true);
-                saver.Value = s.Renderer.Options.TrySave(_export, out saver.Label, out saver.Path);
+                saver.Value = new Exporter(_export).TryWriteToDir(new DirectoryInfo(UserSettings.Default.ModelDirectory), out saver.Label, out saver.Path);
                 s.WindowShouldFreeze(false);
             }
             ImGui.Separator();

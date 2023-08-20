@@ -1,14 +1,14 @@
 ﻿using CUE4Parse_Conversion.Meshes.PSK;
-using CUE4Parse.UE4.Assets.Exports.Material;
 using FModel.Views.Snooper.Shading;
+using OpenTK.Graphics.OpenGL4;
 
 namespace FModel.Views.Snooper.Models;
 
-public class Cube : Model
+public class BoneModel : UModel
 {
-    public Cube(CStaticMesh mesh, UMaterialInterface unrealMaterial) : base(unrealMaterial)
+    public BoneModel(CStaticMesh staticMesh)
     {
-        var lod = mesh.LODs[0];
+        var lod = staticMesh.LODs[LodLevel];
 
         Indices = new uint[lod.Indices.Value.Length];
         for (int i = 0; i < Indices.Length; i++)
@@ -22,27 +22,31 @@ public class Cube : Model
             var count = 0;
             var baseIndex = i * VertexSize;
             var vert = lod.Verts[i];
-            Vertices[baseIndex + count++] = i;
             Vertices[baseIndex + count++] = vert.Position.X * Constants.SCALE_DOWN_RATIO;
             Vertices[baseIndex + count++] = vert.Position.Z * Constants.SCALE_DOWN_RATIO;
             Vertices[baseIndex + count++] = vert.Position.Y * Constants.SCALE_DOWN_RATIO;
-            Vertices[baseIndex + count++] = vert.Normal.X;
-            Vertices[baseIndex + count++] = vert.Normal.Z;
-            Vertices[baseIndex + count++] = vert.Normal.Y;
-            Vertices[baseIndex + count++] = vert.Tangent.X;
-            Vertices[baseIndex + count++] = vert.Tangent.Z;
-            Vertices[baseIndex + count++] = vert.Tangent.Y;
-            Vertices[baseIndex + count++] = vert.UV.U;
-            Vertices[baseIndex + count++] = vert.UV.V;
-            Vertices[baseIndex + count++] = .5f;
         }
 
         Materials = new Material[1];
-        Materials[0] = new Material(unrealMaterial) { IsUsed = true };
+        Materials[0] = new Material { IsUsed = true };
 
         Sections = new Section[1];
         Sections[0] = new Section(0, Indices.Length, 0);
 
-        AddInstance(Transform.Identity);
+        Box = staticMesh.BoundingBox * Constants.SCALE_DOWN_RATIO;
+    }
+
+    public override void Render(Shader shader, bool outline = false)
+    {
+        GL.Disable(EnableCap.DepthTest);
+
+        Vao.Bind();
+        foreach (var section in Sections)
+        {
+            GL.DrawElementsInstanced(PrimitiveType.LineStrip, section.FacesCount, DrawElementsType.UnsignedInt, section.FirstFaceIndexPtr, TransformsCount);
+        }
+        Vao.Unbind();
+
+        GL.Enable(EnableCap.DepthTest);
     }
 }

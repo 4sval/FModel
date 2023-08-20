@@ -107,6 +107,8 @@
     <None Remove="Resources\picking.vert" />
     <None Remove="Resources\light.frag" />
     <None Remove="Resources\light.vert" />
+    <None Remove="Resources\bone.frag" />
+    <None Remove="Resources\bone.vert" />
   </ItemGroup>
 
   <ItemGroup>
@@ -130,6 +132,8 @@
     <EmbeddedResource Include="Resources\picking.vert" />
     <EmbeddedResource Include="Resources\light.frag" />
     <EmbeddedResource Include="Resources\light.vert" />
+    <EmbeddedResource Include="Resources\bone.frag" />
+    <EmbeddedResource Include="Resources\bone.vert" />
   </ItemGroup>
 
   <ItemGroup>

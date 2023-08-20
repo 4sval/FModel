@@ -316,7 +316,7 @@ public class Material : IDisposable
         }
     }
 
-    public bool ImGuiTextures(Dictionary<string, Texture> icons, Model model)
+    public bool ImGuiTextures(Dictionary<string, Texture> icons, UModel model)
     {
         if (ImGui.BeginTable("material_textures", 2))
         {

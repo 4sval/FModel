@@ -184,7 +184,7 @@ public class SnimGui
                 {
                     foreach (var model in s.Renderer.Options.Models.Values)
                     {
-                        b |= s.Renderer.Options.TrySave(model.Export, out _, out _);
+                        b |= model.Save(out _, out _);
                     }
                 }
             });
@@ -403,16 +403,16 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                 ImGui.TableHeadersRow();
 
                 var i = 0;
-                foreach ((FGuid guid, Model model) in s.Renderer.Options.Models)
+                foreach ((var guid, var model) in s.Renderer.Options.Models)
                 {
                     ImGui.PushID(i);
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
-                    if (!model.Show)
+                    if (!model.IsVisible)
                         ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(1, 0, 0, .5f)));
-                    else if (model.IsAttachment)
+                    else if (model.Attachments.IsAttachment)
                         ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(0, .75f, 0, .5f)));
-                    else if (model.IsAttached)
+                    else if (model.Attachments.IsAttached)
                         ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(1, 1, 0, .5f)));
 
                     ImGui.Text(model.TransformsCount.ToString("D"));
@@ -426,16 +426,16 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     Popup(() =>
                     {
                         s.Renderer.Options.SelectModel(guid);
-                        if (ImGui.MenuItem("Show", null, model.Show)) model.Show = !model.Show;
-                        if (ImGui.MenuItem("Wireframe", null, model.Wireframe)) model.Wireframe = !model.Wireframe;
+                        if (ImGui.MenuItem("Show", null, model.IsVisible)) model.IsVisible = !model.IsVisible;
+                        if (ImGui.MenuItem("Wireframe", null, model.ShowWireframe)) model.ShowWireframe = !model.ShowWireframe;
                         ImGui.Separator();
                         if (ImGui.MenuItem("Save"))
                         {
                             s.WindowShouldFreeze(true);
-                            _saver.Value = s.Renderer.Options.TrySave(model.Export, out _saver.Label, out _saver.Path);
+                            _saver.Value = model.Save(out _saver.Label, out _saver.Path);
                             s.WindowShouldFreeze(false);
                         }
-                        if (ImGui.MenuItem("Animate", model.HasSkeleton))
+                        if (ImGui.MenuItem("Animate", model is SkeletalModel))
                         {
                             if (_swapper.IsAware)
                             {
@@ -455,10 +455,10 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                                 _swapper.Value = true;
                             }
                         }
-                        if (ImGui.MenuItem("Bone Hierarchy", model.HasSkeleton))
+                        if (ImGui.MenuItem("Skeleton Tree", model is SkeletalModel))
                         {
                             _bh_open = true;
-                            ImGui.SetWindowFocus("Bone Hierarchy");
+                            ImGui.SetWindowFocus("Skeleton Tree");
                         }
                         if (ImGui.MenuItem("Teleport To"))
                         {
@@ -473,8 +473,8 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     });
 
                     ImGui.TableNextColumn();
-                    ImGui.Image(s.Renderer.Options.Icons[model.AttachIcon].GetPointer(), new Vector2(_tableWidth));
-                    TooltipCopy(model.AttachTooltip);
+                    ImGui.Image(s.Renderer.Options.Icons[model.Attachments.Icon].GetPointer(), new Vector2(_tableWidth));
+                    TooltipCopy(model.Attachments.Tooltip);
 
                     ImGui.PopID();
                     i++;
@@ -501,14 +501,14 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     {
                         var isAttached = socket.AttachedModels.Contains(info);
                         ImGui.PushID(i);
-                        ImGui.BeginDisabled(selectedModel.IsAttached && !isAttached);
+                        ImGui.BeginDisabled(selectedModel.Attachments.IsAttached && !isAttached);
                         switch (isAttached)
                         {
                             case false when ImGui.Button($"Attach to '{socket.Name}'"):
-                                selectedModel.AttachModel(model, socket, info);
+                                selectedModel.Attachments.Attach(model, selectedModel.GetTransform(), socket, info);
                                 break;
                             case true when ImGui.Button($"Detach from '{socket.Name}'"):
-                                selectedModel.DetachModel(model, socket, info);
+                                selectedModel.Attachments.Detach(model, selectedModel.GetTransform(), socket, info);
                                 break;
                         }
                         ImGui.EndDisabled();
@@ -532,14 +532,14 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                 {
                     Layout("Entity");ImGui.Text($"  :  ({model.Type}) {model.Name}");
                     Layout("Guid");ImGui.Text($"  :  {s.Renderer.Options.SelectedModel.ToString(EGuidFormats.UniqueObjectGuid)}");
-                    if (model.HasSkeleton)
+                    if (model is SkeletalModel skeletalModel)
                     {
-                        Layout("Skeleton");ImGui.Text($"  :  {model.Skeleton.Name}");
-                        Layout("Bones");ImGui.Text($"  :  x{model.Skeleton.BoneCount}");
+                        Layout("Skeleton");ImGui.Text($"  :  {skeletalModel.Skeleton.Name}");
+                        Layout("Bones");ImGui.Text($"  :  x{skeletalModel.Skeleton.BoneCount}");
                     }
                     else
                     {
-                        Layout("Two Sided");ImGui.Text($"  :  {model.TwoSided}");
+                        Layout("Two Sided");ImGui.Text($"  :  {model.IsTwoSided}");
                     }
                     Layout("Sockets");ImGui.Text($"  :  x{model.Sockets.Count}");
 
@@ -620,7 +620,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
 
                 if (ImGui.BeginTabItem("Morph Targets"))
                 {
-                    if (model.HasMorphTargets)
+                    if (model is SkeletalModel { HasMorphTargets: true } skeletalModel)
                     {
                         const float width = 10;
                         var region = ImGui.GetContentRegionAvail();
@@ -628,12 +628,12 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
 
                         if (ImGui.BeginListBox("", box))
                         {
-                            for (int i = 0; i < model.Morphs.Count; i++)
+                            for (int i = 0; i < skeletalModel.Morphs.Count; i++)
                             {
                                 ImGui.PushID(i);
-                                if (ImGui.Selectable(model.Morphs[i].Name, s.Renderer.Options.SelectedMorph == i))
+                                if (ImGui.Selectable(skeletalModel.Morphs[i].Name, s.Renderer.Options.SelectedMorph == i))
                                 {
-                                    s.Renderer.Options.SelectMorph(i, model);
+                                    s.Renderer.Options.SelectMorph(i, skeletalModel);
                                 }
                                 ImGui.PopID();
                             }
@@ -641,10 +641,10 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
 
                             ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(2f, 0f));
                             ImGui.SameLine(); ImGui.PushID(99);
-                            ImGui.VSliderFloat("", box with { X = width }, ref model.MorphTime, 0.0f, 1.0f, "", ImGuiSliderFlags.AlwaysClamp);
+                            ImGui.VSliderFloat("", box with { X = width }, ref skeletalModel.MorphTime, 0.0f, 1.0f, "", ImGuiSliderFlags.AlwaysClamp);
                             ImGui.PopID(); ImGui.PopStyleVar();
                             ImGui.Spacing();
-                            ImGui.Text($"Time: {model.MorphTime:P}%");
+                            ImGui.Text($"Time: {skeletalModel.MorphTime:P}%");
                         }
                     }
                     else CenteredTextColored(_errorColor, "Selected Mesh Has No Morph Targets");
@@ -655,7 +655,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         ImGui.PopStyleVar();
     }
 
-    private void DrawMaterialInspector(Dictionary<string, Texture> icons, Model model, Section section)
+    private void DrawMaterialInspector(Dictionary<string, Texture> icons, UModel model, Section section)
     {
         var material = model.Materials[section.MaterialIndex];
 
@@ -724,14 +724,24 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
     private void DrawBoneHierarchy(Snooper s)
     {
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
-        if (ImGui.Begin("Bone Hierarchy", ref _bh_open, ImGuiWindowFlags.NoScrollbar) && s.Renderer.Options.TryGetModel(out var model))
+        if (ImGui.Begin("Skeleton Tree", ref _bh_open, ImGuiWindowFlags.NoScrollbar) && s.Renderer.Options.TryGetModel(out var model) && model is SkeletalModel skeletalModel)
         {
-            model.Skeleton.ImGuiBoneBreadcrumb();
-            if (ImGui.BeginTable("bone_hierarchy", 2, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.RowBg, ImGui.GetContentRegionAvail(), ImGui.GetWindowWidth()))
+            // ImGui.SeparatorText("Options");
+            // if (ImGui.BeginTable("skeleton_options", 2))
+            // {
+            //     Layout("Draw All Bones");ImGui.PushID(1);
+            //     ImGui.Checkbox("", ref skeletalModel.Skeleton.DrawAllBones);
+            //     ImGui.PopID();
+            //
+            //     ImGui.EndTable();
+            // }
+            // ImGui.SeparatorText("Tree");
+            skeletalModel.Skeleton.ImGuiBoneBreadcrumb();
+            if (ImGui.BeginTable("skeleton_tree", 2, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.RowBg, ImGui.GetContentRegionAvail(), ImGui.GetWindowWidth()))
             {
                 ImGui.TableSetupColumn("Bone", ImGuiTableColumnFlags.WidthStretch);
                 ImGui.TableSetupColumn("", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed, _tableWidth);
-                model.Skeleton.ImGuiBoneHierarchy();
+                skeletalModel.Skeleton.ImGuiBoneHierarchy();
                 ImGui.EndTable();
             }
         }
@@ -828,7 +838,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         }
     }
 
-    private void MeshWindow(string name, Renderer renderer, Action<Dictionary<string, Texture>, Model> content, bool styled = true)
+    private void MeshWindow(string name, Renderer renderer, Action<Dictionary<string, Texture>, UModel> content, bool styled = true)
     {
         Window(name, () =>
         {
@@ -837,7 +847,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         }, styled);
     }
 
-    private void SectionWindow(string name, Renderer renderer, Action<Dictionary<string, Texture>, Model, Section> content, bool styled = true)
+    private void SectionWindow(string name, Renderer renderer, Action<Dictionary<string, Texture>, UModel, Section> content, bool styled = true)
     {
         MeshWindow(name, renderer, (icons, model) =>
         {

@@ -28,6 +28,7 @@ public class Skeleton : IDisposable
     private int TotalBoneCount => BoneCount + _additionalBoneCount;
 
     public bool IsAnimated { get; private set; }
+    public bool DrawAllBones;
     public string SelectedBone;
 
     public Skeleton()
@@ -62,6 +63,7 @@ public class Skeleton : IDisposable
             if (boneIndex == 0) SelectedBone = boneName;
             BonesByLoweredName[boneName] = bone;
         }
+        _breadcrumb.Add(SelectedBone);
         _boneMatriceAtFrame = new Matrix4x4[BoneCount];
     }
 
@@ -74,7 +76,7 @@ public class Skeleton : IDisposable
 
             if (!BonesByLoweredName.TryGetValue(boneName, out var bone))
             {
-                bone = new Bone(BoneCount + _additionalBoneCount, info.ParentIndex, new Transform
+                bone = new Bone(BoneCount + _additionalBoneCount, -1, new Transform
                 {
                     Rotation = referenceSkeleton.FinalRefBonePose[boneIndex].Rotation,
                     Position = referenceSkeleton.FinalRefBonePose[boneIndex].Translation * Constants.SCALE_DOWN_RATIO,
@@ -83,9 +85,10 @@ public class Skeleton : IDisposable
 
                 if (!bone.IsRoot)
                 {
-                    bone.LoweredParentName = referenceSkeleton.FinalRefBoneInfo[bone.ParentIndex].Name.Text.ToLower();
+                    bone.LoweredParentName = referenceSkeleton.FinalRefBoneInfo[info.ParentIndex].Name.Text.ToLower();
                     var parentBone = BonesByLoweredName[bone.LoweredParentName];
 
+                    bone.ParentIndex = parentBone.Index;
                     bone.Rest.Relation = parentBone.Rest.Matrix;
                     parentBone.LoweredChildNames.Add(boneName);
                 }
@@ -241,21 +244,37 @@ public class Skeleton : IDisposable
 
     public void ImGuiBoneBreadcrumb()
     {
-        for (int i = _breadcrumb.Count - 1; i >= 0; i--)
+        var p1 = ImGui.GetCursorScreenPos();
+        var canvasSize = ImGui.GetContentRegionAvail() with { Y = 20 };
+        var p2 = p1 + canvasSize;
+        ImGui.BeginChild("skeleton_breadcrumb", canvasSize);
+
+        var drawList = ImGui.GetWindowDrawList();
+        drawList.AddRectFilled(p1, p2, 0xFF242424);
+
+        var x = p1.X;
+        var y = p1.Y + (p2.Y - p1.Y) / 2;
+        for (int i = Math.Min(_breadcrumb.Count - 1, 5); i >= 1; i--)
         {
             var boneName = _breadcrumb[i];
-            ImGui.SameLine();
-            var clicked = ImGui.SmallButton(boneName);
-            ImGui.SameLine();
-            ImGui.Text(">");
+            var size = ImGui.CalcTextSize(boneName);
+            var position = new Vector2(x + 5, y - size.Y / 2f);
 
-            if (clicked)
+            ImGui.SetCursorScreenPos(position);
+            if (ImGui.InvisibleButton($"breakfast_{boneName}", size, ImGuiButtonFlags.MouseButtonLeft))
             {
                 SelectedBone = boneName;
-                _breadcrumb.RemoveRange(0, i + 1);
+                _breadcrumb.RemoveRange(0, i);
                 break;
             }
+
+            drawList.AddText(position, i == 1 || ImGui.IsItemHovered() ? 0xFFFFFFFF : 0xA0FFFFFF, boneName);
+            x += size.X + 7.5f;
+            drawList.AddText(position with { X = x }, 0xA0FFFFFF, ">");
+            x += 7.5f;
         }
+
+        ImGui.EndChild();
     }
 
     public void ImGuiBoneHierarchy()
@@ -276,7 +295,7 @@ public class Skeleton : IDisposable
 
         ImGui.SetNextItemOpen(bone.LoweredChildNames.Count <= 1 || flags.HasFlag(ImGuiTreeNodeFlags.Selected), ImGuiCond.Appearing);
         var open = ImGui.TreeNodeEx(boneName, flags);
-        if (ImGui.IsItemClicked() && !ImGui.IsItemToggledOpen())
+        if (ImGui.IsItemClicked() && !ImGui.IsItemToggledOpen() && bone.IsDaron)
         {
             SelectedBone = boneName;
             _breadcrumb.Clear();
