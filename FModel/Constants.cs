@@ -20,7 +20,7 @@ public static class Constants
     public const string YELLOW = "#E5C07B";
     public const string BLUE = "#528BCC";
 
-    public const string ISSUE_LINK = "https://github.com/iAmAsval/FModel/issues/new/choose";
+    public const string ISSUE_LINK = "https://github.com/4sval/FModel/discussions/categories/q-a";
     public const string DONATE_LINK = "https://fmodel.app/donate";
     public const string DISCORD_LINK = "https://fmodel.app/discord";
 

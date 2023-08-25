@@ -160,9 +160,9 @@ public class CreatorPackage : IDisposable
             case "FortChallengeBundleItemDefinition":
                 creator = new BaseBundle(_object, _style);
                 return true;
-            case "AthenaSeasonItemDefinition":
-                creator = new BaseSeason(_object, _style);
-                return true;
+            // case "AthenaSeasonItemDefinition":
+            //     creator = new BaseSeason(_object, _style);
+            //     return true;
             case "FortItemAccessTokenType":
                 creator = new BaseItemAccessToken(_object, _style);
                 return true;

@@ -175,7 +175,7 @@ public class MapViewerViewModel : ViewModel
     }
 
     private const int _widthHeight = 2048;
-    private const int _brRadius = 141000;
+    private const int _brRadius = 160000;
     private const int _prRadius = 51000;
     private int _mapIndex;
     public int MapIndex // 0 is BR, 1 is PR
