@@ -21,7 +21,6 @@ public class Typefaces
     private const string _BURBANK_BIG_REGULAR_BOLD = "BurbankBigRegular-Bold"; // official fortnite ig
     private const string _BURBANK_SMALL_MEDIUM = "BurbankSmall-Medium";
     private const string _DROID_SANS_FORTNITE_SUBSET = "DroidSans-Fortnite-Subset";
-    private const string _NIS_JYAU = "NIS_JYAU"; // japanese fortnite
     private const string _NOTO_COLOR_EMOJI = "NotoColorEmoji";
     private const string _NOTO_SANS_BOLD = "NotoSans-Bold";
     private const string _NOTO_SANS_FORTNITE_BOLD = "NotoSans-Fortnite-Bold";
@@ -32,7 +31,7 @@ public class Typefaces
     private const string _NOTO_SANS_ARABIC_BLACK = "NotoSansArabic-Black"; // arabic fortnite
     private const string _NOTO_SANS_ARABIC_BOLD = "NotoSansArabic-Bold";
     private const string _NOTO_SANS_ARABIC_REGULAR = "NotoSansArabic-Regular";
-    private const string _NOTO_SANS_JP_BOLD = "NotoSansJP-Bold";
+    private const string _NOTO_SANS_JP_BOLD = "NotoSansJP-Bold"; // japanese fortnite
     private const string _NOTO_SANS_KR_REGULAR = "NotoSansKR-Regular";
     private const string _NOTO_SANS_SC_BLACK = "NotoSansSC-Black"; // simplified chinese fortnite
     private const string _NOTO_SANS_SC_REGULAR = "NotoSansSC-Regular";
@@ -77,7 +76,7 @@ public class Typefaces
                                        {
                                            ELanguage.Korean => _ASIA_ERINM,
                                            ELanguage.Russian => _BURBANK_BIG_CONDENSED_BLACK,
-                                           ELanguage.Japanese => _NIS_JYAU,
+                                           ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
                                            ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
                                            ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
                                            ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
@@ -113,7 +112,7 @@ public class Typefaces
                                   {
                                       ELanguage.Korean => _ASIA_ERINM,
                                       ELanguage.Russian => _BURBANK_BIG_CONDENSED_BLACK,
-                                      ELanguage.Japanese => _NIS_JYAU,
+                                      ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
                                       ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
                                       ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
                                       ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
@@ -125,7 +124,7 @@ public class Typefaces
                                              {
                                                  ELanguage.Korean => _ASIA_ERINM,
                                                  ELanguage.Russian => _BURBANK_BIG_CONDENSED_BLACK,
-                                                 ELanguage.Japanese => _NIS_JYAU,
+                                                 ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
                                                  ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
                                                  ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
                                                  ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
@@ -136,7 +135,7 @@ public class Typefaces
                                                 language switch
                                                 {
                                                     ELanguage.Korean => _ASIA_ERINM,
-                                                    ELanguage.Japanese => _NIS_JYAU,
+                                                    ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
                                                     ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
                                                     ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
                                                     ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
@@ -147,7 +146,7 @@ public class Typefaces
                                                 language switch
                                                 {
                                                     ELanguage.Korean => _ASIA_ERINM,
-                                                    ELanguage.Japanese => _NIS_JYAU,
+                                                    ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
                                                     ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
                                                     ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
                                                     ELanguage.Chinese => _NOTO_SANS_SC_BLACK,

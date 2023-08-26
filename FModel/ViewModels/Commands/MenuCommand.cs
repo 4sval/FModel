@@ -42,9 +42,6 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             case "Views_AudioPlayer":
                 Helper.OpenWindow<AdonisWindow>("Audio Player", () => new AudioPlayer().Show());
                 break;
-            case "Views_MapViewer":
-                Helper.OpenWindow<AdonisWindow>("Map Viewer", () => new MapViewer().Show());
-                break;
             case "Views_ImageMerger":
                 Helper.OpenWindow<AdonisWindow>("Image Merger", () => new ImageMerger().Show());
                 break;

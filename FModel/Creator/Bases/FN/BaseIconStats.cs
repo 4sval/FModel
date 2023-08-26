@@ -52,7 +52,7 @@ public class BaseIconStats : BaseIcon
                 foreach (var poi in challengeMapPoiData)
                 {
                     if (!poi.TryGetValue(out FStructFallback locationTag, "LocationTag") || !locationTag.TryGetValue(out FName tagName, "TagName") ||
-                        !tagName.Text.Equals(location.Text, StringComparison.OrdinalIgnoreCase) || !poi.TryGetValue(out FText text, "Text")) continue;
+                        tagName != location.TagName || !poi.TryGetValue(out FText text, "Text")) continue;
 
                     locationName = text.Text;
                     break;
@@ -92,7 +92,11 @@ public class BaseIconStats : BaseIcon
                     _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "35D04D1B45737BEA25B69686D9E085B9", "Damage"), dmgPb * multiplier, 200));
                 }
 
-                if (weaponRowValue.TryGetValue(out float dmgCritical, "DamageZone_Critical"))
+                if (weaponRowValue.TryGetValue(out float mdpc, "MaxDamagePerCartridge") && mdpc >= 0f)
+                {
+                    _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "0DEF2455463B008C4499FEA03D149EDF", "Headshot Damage"), mdpc, 200));
+                }
+                else if (weaponRowValue.TryGetValue(out float dmgCritical, "DamageZone_Critical"))
                 {
                     _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "0DEF2455463B008C4499FEA03D149EDF", "Headshot Damage"), dmgPb * dmgCritical * multiplier, 200));
                 }
