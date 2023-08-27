@@ -28,8 +28,12 @@ public class Skeleton : IDisposable
     private int TotalBoneCount => BoneCount + _additionalBoneCount;
 
     public bool IsAnimated { get; private set; }
-    public bool DrawAllBones;
     public string SelectedBone;
+
+    private const int _vertexSize = 6;
+    private BufferObject<float> _vbo;
+    private int vaoHandle;
+    private float[] _vertices;
 
     public Skeleton()
     {
@@ -40,6 +44,7 @@ public class Skeleton : IDisposable
     public Skeleton(FReferenceSkeleton referenceSkeleton) : this()
     {
         BoneCount = referenceSkeleton.FinalRefBoneInfo.Length;
+        _vertices = new float[_vertexSize * BoneCount];
         for (int boneIndex = 0; boneIndex < BoneCount; boneIndex++)
         {
             var info = referenceSkeleton.FinalRefBoneInfo[boneIndex];
@@ -58,6 +63,14 @@ public class Skeleton : IDisposable
 
                 bone.Rest.Relation = parentBone.Rest.Matrix;
                 parentBone.LoweredChildNames.Add(boneName);
+
+                var baseIndex = boneIndex * _vertexSize;
+                _vertices[baseIndex + 0] = bone.Rest.Matrix.Translation.X;
+                _vertices[baseIndex + 1] = bone.Rest.Matrix.Translation.Y;
+                _vertices[baseIndex + 2] = bone.Rest.Matrix.Translation.Z;
+                _vertices[baseIndex + 3] = parentBone.Rest.Matrix.Translation.X;
+                _vertices[baseIndex + 4] = parentBone.Rest.Matrix.Translation.Y;
+                _vertices[baseIndex + 5] = parentBone.Rest.Matrix.Translation.Z;
             }
 
             if (boneIndex == 0) SelectedBone = boneName;
@@ -103,6 +116,17 @@ public class Skeleton : IDisposable
     public void Setup()
     {
         _handle = GL.CreateProgram();
+
+        _vbo = new BufferObject<float>(_vertices, BufferTarget.ArrayBuffer);
+
+        vaoHandle = GL.GenVertexArray();
+        GL.BindVertexArray(vaoHandle);
+        _vbo.Bind();
+
+        GL.EnableVertexAttribArray(0);
+        GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
+
+        GL.BindVertexArray(0);
 
         _rest = new BufferObject<Matrix4x4>(BoneCount, BufferTarget.ShaderStorageBuffer);
         foreach (var bone in BonesByLoweredName.Values)
@@ -171,7 +195,6 @@ public class Skeleton : IDisposable
         if (!IsAnimated) return;
 
         _ssbo.Bind();
-
         foreach (var bone in BonesByLoweredName.Values)
         {
             var boneMatrix = bone.IsRoot ? bone.Rest.Relation : bone.Rest.LocalMatrix * _boneMatriceAtFrame[bone.ParentIndex];
@@ -199,8 +222,23 @@ public class Skeleton : IDisposable
             _ssbo.Update(bone.Index, boneMatrix);
             _boneMatriceAtFrame[bone.Index] = boneMatrix;
         }
-
         _ssbo.Unbind();
+
+        _vbo.Bind();
+        foreach (var bone in BonesByLoweredName.Values)
+        {
+            var baseIndex = bone.Index * _vertexSize;
+            var boneMatrix = bone.IsRoot ? bone.Rest.Relation : bone.Rest.LocalMatrix * _boneMatriceAtFrame[bone.ParentIndex];
+            var parentBoneMatrix = bone.IsRoot ? bone.Rest.Relation : _boneMatriceAtFrame[bone.ParentIndex];
+
+            _vbo.Update(baseIndex + 0, boneMatrix.Translation.X);
+            _vbo.Update(baseIndex + 1, boneMatrix.Translation.Y);
+            _vbo.Update(baseIndex + 2, boneMatrix.Translation.Z);
+            _vbo.Update(baseIndex + 3, parentBoneMatrix.Translation.X);
+            _vbo.Update(baseIndex + 4, parentBoneMatrix.Translation.Y);
+            _vbo.Update(baseIndex + 5, parentBoneMatrix.Translation.Z);
+        }
+        _vbo.Unbind();
     }
 
     private (int, float) GetBoneFrameData(Bone bone, Animation animation)
@@ -240,6 +278,17 @@ public class Skeleton : IDisposable
 
         _ssbo.BindBufferBase(1);
         _rest.BindBufferBase(2);
+    }
+
+    public void RenderBones()
+    {
+        GL.Disable(EnableCap.DepthTest);
+
+        GL.BindVertexArray(vaoHandle);
+        GL.DrawArrays(PrimitiveType.Lines, 0, _vertices.Length);
+        GL.BindVertexArray(0);
+
+        GL.Enable(EnableCap.DepthTest);
     }
 
     public void ImGuiBoneBreadcrumb()

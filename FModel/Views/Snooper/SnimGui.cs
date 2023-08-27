@@ -428,6 +428,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                         s.Renderer.Options.SelectModel(guid);
                         if (ImGui.MenuItem("Show", null, model.IsVisible)) model.IsVisible = !model.IsVisible;
                         if (ImGui.MenuItem("Wireframe", null, model.ShowWireframe)) model.ShowWireframe = !model.ShowWireframe;
+                        if (model is SkeletalModel skeletalModel && ImGui.MenuItem("Draw Skeleton", null, skeletalModel.DrawSkeleton)) skeletalModel.DrawSkeleton = !skeletalModel.DrawSkeleton;
                         ImGui.Separator();
                         if (ImGui.MenuItem("Save"))
                         {

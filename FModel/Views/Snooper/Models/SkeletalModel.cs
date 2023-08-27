@@ -20,6 +20,7 @@ public class SkeletalModel : UModel
     public bool HasMorphTargets => Morphs.Count > 0;
 
     public float MorphTime;
+    public bool DrawSkeleton { get; set; }
 
     public SkeletalModel(USkeletalMesh export, CSkeletalMesh skeletalMesh, Transform transform = null)
         : base(export, skeletalMesh.LODs[LodLevel], export.Materials, skeletalMesh.LODs[LodLevel].Verts, skeletalMesh.LODs.Count, transform)
@@ -77,6 +78,12 @@ public class SkeletalModel : UModel
     {
         shader.SetUniform("uMorphTime", MorphTime);
         Skeleton.Render(shader);
+    }
+
+    public void RenderBones(Shader shader)
+    {
+        shader.SetUniform("uInstanceMatrix", GetTransform().Matrix);
+        Skeleton.RenderBones();
     }
 
     public void UpdateMorph(int index)

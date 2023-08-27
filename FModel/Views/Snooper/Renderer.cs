@@ -45,6 +45,7 @@ public class Renderer : IDisposable
     private Shader _shader;
     private Shader _outline;
     private Shader _light;
+    private Shader _bone;
     private bool _saveCameraMode;
 
     public bool ShowSkybox;
@@ -221,6 +222,7 @@ public class Renderer : IDisposable
         _shader = new Shader();
         _outline = new Shader("outline");
         _light = new Shader("light");
+        _bone = new Shader("bone");
 
         Picking.Setup();
         Options.SetupModelsAndLights();
@@ -256,6 +258,14 @@ public class Renderer : IDisposable
             _light.Render(viewMatrix, projMatrix);
             for (int i = 0; i < uNumLights; i++)
                 Options.Lights[i].Render(_light);
+        }
+
+        // bone pass
+        foreach (var model in Options.Models.Values)
+        {
+            if (!model.IsVisible || model is not SkeletalModel { DrawSkeleton: true } skeletalModel) continue;
+            _bone.Render(viewMatrix, projMatrix);
+            skeletalModel.RenderBones(_bone);
         }
 
         // outline pass
@@ -563,6 +573,7 @@ public class Renderer : IDisposable
         _shader?.Dispose();
         _outline?.Dispose();
         _light?.Dispose();
+        _bone?.Dispose();
         Picking?.Dispose();
         Options?.Dispose();
     }
