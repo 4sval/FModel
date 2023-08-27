@@ -36,7 +36,7 @@
         <GroupBox Grid.Row="1" adonisExtensions:LayerExtension.Layer="2" Margin="10 10 10 18"
                   Padding="{adonisUi:Space 0}" Background="Transparent">
             <StackPanel>
-                <Grid Margin="0 5">
+                <Grid x:Name="Hello" Margin="0 5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />

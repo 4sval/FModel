@@ -31,6 +31,7 @@ namespace FModel.Settings
 
         public static void Save()
         {
+            if (Default == null) return;
             Default.PerDirectory[Default.CurrentDir.GameDirectory] = Default.CurrentDir;
             File.WriteAllText(FilePath, JsonConvert.SerializeObject(Default, Formatting.Indented));
         }

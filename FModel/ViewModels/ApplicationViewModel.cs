@@ -56,7 +56,6 @@ public class ApplicationViewModel : ViewModel
     public SettingsViewModel SettingsView { get; }
     public AesManagerViewModel AesManager { get; }
     public AudioPlayerViewModel AudioPlayer { get; }
-    public MapViewerViewModel MapViewer { get; }
     private OodleCompressor _oodle;
 
     public ApplicationViewModel()
@@ -83,7 +82,6 @@ public class ApplicationViewModel : ViewModel
         CustomDirectories = new CustomDirectoriesViewModel();
         SettingsView = new SettingsViewModel();
         AesManager = new AesManagerViewModel(CUE4Parse);
-        MapViewer = new MapViewerViewModel(CUE4Parse);
         AudioPlayer = new AudioPlayerViewModel();
 
         Status.SetStatus(EStatusKind.Ready);

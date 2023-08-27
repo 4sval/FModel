@@ -98,7 +98,7 @@ public class Material : IDisposable
             }
 
             {   // ambient occlusion + color boost
-                if (Parameters.TryGetTexture2d(out var original, "M", "AEM", "AO") &&
+                if (Parameters.TryGetTexture2d(out var original, "M", "AEM", "AO", "Mask") &&
                     !original.Name.Equals("T_BlackMask") && options.TryGetTexture(original, false, out var transformed))
                 {
                     HasAo = true;
@@ -133,7 +133,8 @@ public class Material : IDisposable
                         "EmissiveUVPositioning (RG)UpperLeft (BA)LowerRight"))
                     EmissiveRegion = new Vector4(EmissiveUVs.R, EmissiveUVs.G, EmissiveUVs.B, EmissiveUVs.A);
 
-                if (Parameters.TryGetSwitch(out var swizzleRoughnessToGreen, "SwizzleRoughnessToGreen") && swizzleRoughnessToGreen)
+                if ((Parameters.TryGetSwitch(out var swizzleRoughnessToGreen, "SwizzleRoughnessToGreen") && swizzleRoughnessToGreen) ||
+                    Parameters.Textures.ContainsKey("SRM"))
                 {
                     foreach (var specMask in SpecularMasks)
                     {
