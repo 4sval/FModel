@@ -52,6 +52,7 @@ public class Renderer : IDisposable
     public bool ShowGrid;
     public bool ShowLights;
     public bool AnimateWithRotationOnly;
+    public bool IsSkeletonTreeOpen;
     public VertexColor Color;
 
     public Camera CameraOp { get; }
@@ -263,7 +264,7 @@ public class Renderer : IDisposable
         // debug + outline pass
         if (Options.TryGetModel(out var selected) && selected.IsVisible)
         {
-            if (selected is SkeletalModel { TreeIsOpen: true } skeletalModel)
+            if (IsSkeletonTreeOpen && selected is SkeletalModel skeletalModel)
             {
                 _bone.Render(viewMatrix, projMatrix);
                 skeletalModel.RenderBones(_bone);
@@ -295,7 +296,7 @@ public class Renderer : IDisposable
             {
                 model.Update(Options);
             }
-            if (Options.TryGetModel(out var selected) && selected is SkeletalModel { IsVisible: true, TreeIsOpen: true } skeletalModel)
+            if (IsSkeletonTreeOpen && Options.TryGetModel(out var selected) && selected is SkeletalModel { IsVisible: true } skeletalModel)
             {
                 skeletalModel.Skeleton.UpdateVertices();
             }

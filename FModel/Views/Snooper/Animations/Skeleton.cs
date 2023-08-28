@@ -356,7 +356,6 @@ public class Skeleton : IDisposable
         ImGui.TableNextColumn();
 
         var flags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.SpanFullWidth;
-        // if (boneName == SelectedBone) flags |= ImGuiTreeNodeFlags.Selected;
         if (bone.IsVirtual) flags |= ImGuiTreeNodeFlags.Leaf;
         else if (!bone.IsDaron) flags |= ImGuiTreeNodeFlags.Bullet;
 
