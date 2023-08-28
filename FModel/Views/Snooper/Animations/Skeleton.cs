@@ -229,7 +229,7 @@ public class Skeleton : IDisposable
             if (IsAnimated)
             {
                 boneMatrix = _boneMatriceAtFrame[bone.Index];
-                parentBoneMatrix = _boneMatriceAtFrame[bone.ParentIndex];
+                parentBoneMatrix = bone.IsRoot ? boneMatrix : _boneMatriceAtFrame[bone.ParentIndex];
             }
             else
             {
