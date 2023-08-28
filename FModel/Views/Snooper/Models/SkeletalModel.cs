@@ -20,7 +20,8 @@ public class SkeletalModel : UModel
     public bool HasMorphTargets => Morphs.Count > 0;
 
     public float MorphTime;
-    public bool DrawSkeleton { get; set; }
+
+    public bool TreeIsOpen;
 
     public SkeletalModel(USkeletalMesh export, CSkeletalMesh skeletalMesh, Transform transform = null)
         : base(export, skeletalMesh.LODs[LodLevel], export.Materials, skeletalMesh.LODs[LodLevel].Verts, skeletalMesh.LODs.Count, transform)

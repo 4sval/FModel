@@ -102,6 +102,7 @@ public class Snooper : GameWindow
         GL.Enable(EnableCap.CullFace);
         GL.Enable(EnableCap.DepthTest);
         GL.Enable(EnableCap.Multisample);
+        GL.Enable(EnableCap.VertexProgramPointSize);
         GL.StencilOp(StencilOp.Keep, StencilOp.Replace, StencilOp.Replace);
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 

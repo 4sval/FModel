@@ -260,17 +260,15 @@ public class Renderer : IDisposable
                 Options.Lights[i].Render(_light);
         }
 
-        // bone pass
-        foreach (var model in Options.Models.Values)
-        {
-            if (!model.IsVisible || model is not SkeletalModel { DrawSkeleton: true } skeletalModel) continue;
-            _bone.Render(viewMatrix, projMatrix);
-            skeletalModel.RenderBones(_bone);
-        }
-
-        // outline pass
+        // debug + outline pass
         if (Options.TryGetModel(out var selected) && selected.IsVisible)
         {
+            if (selected is SkeletalModel { TreeIsOpen: true } skeletalModel)
+            {
+                _bone.Render(viewMatrix, projMatrix);
+                skeletalModel.RenderBones(_bone);
+            }
+
             _outline.Render(viewMatrix, CameraOp.Position, projMatrix);
             selected.Render(_outline, true);
         }
@@ -292,9 +290,15 @@ public class Renderer : IDisposable
             }
         }
 
-        foreach (var model in Options.Models.Values)
         {
-            model.Update(Options);
+            foreach (var model in Options.Models.Values)
+            {
+                model.Update(Options);
+            }
+            if (Options.TryGetModel(out var selected) && selected is SkeletalModel { IsVisible: true, TreeIsOpen: true } skeletalModel)
+            {
+                skeletalModel.Skeleton.UpdateVertices();
+            }
         }
 
         CameraOp.Modify(wnd.KeyboardState, deltaSeconds);

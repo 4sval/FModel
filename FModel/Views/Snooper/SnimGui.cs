@@ -67,7 +67,6 @@ public class SnimGui
 
     private Vector2 _outlinerSize;
     private bool _ti_open;
-    private bool _bh_open;
     private bool _viewportFocus;
 
     private readonly Vector4 _accentColor = new (0.125f, 0.42f, 0.831f, 1.0f);
@@ -104,8 +103,8 @@ public class SnimGui
         Draw3DViewport(s);
         DrawNavbar();
 
-        if (_ti_open) DrawTextureInspector(s);
-        if (_bh_open) DrawBoneHierarchy(s);
+        DrawTextureInspector(s);
+        DrawSkeletonTree(s);
 
         DrawModals(s);
 
@@ -428,7 +427,6 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                         s.Renderer.Options.SelectModel(guid);
                         if (ImGui.MenuItem("Show", null, model.IsVisible)) model.IsVisible = !model.IsVisible;
                         if (ImGui.MenuItem("Wireframe", null, model.ShowWireframe)) model.ShowWireframe = !model.ShowWireframe;
-                        if (model is SkeletalModel skeletalModel && ImGui.MenuItem("Draw Skeleton", null, skeletalModel.DrawSkeleton)) skeletalModel.DrawSkeleton = !skeletalModel.DrawSkeleton;
                         ImGui.Separator();
                         if (ImGui.MenuItem("Save"))
                         {
@@ -436,35 +434,37 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                             _saver.Value = model.Save(out _saver.Label, out _saver.Path);
                             s.WindowShouldFreeze(false);
                         }
-                        if (ImGui.MenuItem("Animate", model is SkeletalModel))
+                        if (model is SkeletalModel skeletalModel)
                         {
-                            if (_swapper.IsAware)
+                            if (ImGui.MenuItem("Animate"))
                             {
-                                s.Renderer.Options.RemoveAnimations();
-                                s.Renderer.Options.AnimateMesh(true);
-                                s.WindowShouldClose(true, false);
-                            }
-                            else
-                            {
-                                _swapper.Title = "Skeletal Animation";
-                                _swapper.Description = "You're about to animate a model.\nThe window will close for you to extract an animation!\n\n";
-                                _swapper.Content = () =>
+                                if (_swapper.IsAware)
                                 {
                                     s.Renderer.Options.RemoveAnimations();
                                     s.Renderer.Options.AnimateMesh(true);
-                                };
-                                _swapper.Value = true;
+                                    s.WindowShouldClose(true, false);
+                                }
+                                else
+                                {
+                                    _swapper.Title = "Skeletal Animation";
+                                    _swapper.Description = "You're about to animate a model.\nThe window will close for you to extract an animation!\n\n";
+                                    _swapper.Content = () =>
+                                    {
+                                        s.Renderer.Options.RemoveAnimations();
+                                        s.Renderer.Options.AnimateMesh(true);
+                                    };
+                                    _swapper.Value = true;
+                                }
                             }
-                        }
-                        if (ImGui.MenuItem("Skeleton Tree", model is SkeletalModel))
-                        {
-                            _bh_open = true;
-                            ImGui.SetWindowFocus("Skeleton Tree");
+                            if (ImGui.MenuItem("Skeleton Tree"))
+                            {
+                                skeletalModel.TreeIsOpen = true;
+                                ImGui.SetWindowFocus("Skeleton Tree");
+                            }
                         }
                         if (ImGui.MenuItem("Teleport To"))
                         {
-                            var instancePos = model.Transforms[model.SelectedInstance].Matrix.Translation;
-                            s.Renderer.CameraOp.Teleport(instancePos, model.Box);
+                            s.Renderer.CameraOp.Teleport(model.GetTransform().Matrix.Translation, model.Box);
                         }
 
                         if (ImGui.MenuItem("Delete")) s.Renderer.Options.RemoveModel(guid);
@@ -713,6 +713,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
 
     private void DrawTextureInspector(Snooper s)
     {
+        if (!_ti_open) return;
         if (ImGui.Begin("Texture Inspector", ref _ti_open, ImGuiWindowFlags.NoScrollbar) &&
             s.Renderer.Options.TryGetModel(out var model) &&
             s.Renderer.Options.TryGetSection(model, out var section))
@@ -722,21 +723,14 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         ImGui.End(); // if window is collapsed
     }
 
-    private void DrawBoneHierarchy(Snooper s)
+    private void DrawSkeletonTree(Snooper s)
     {
+        if (!s.Renderer.Options.TryGetModel(out var model) || model is not SkeletalModel { TreeIsOpen: true } skeletalModel)
+            return;
+
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
-        if (ImGui.Begin("Skeleton Tree", ref _bh_open, ImGuiWindowFlags.NoScrollbar) && s.Renderer.Options.TryGetModel(out var model) && model is SkeletalModel skeletalModel)
+        if (ImGui.Begin("Skeleton Tree", ref skeletalModel.TreeIsOpen, ImGuiWindowFlags.NoScrollbar))
         {
-            // ImGui.SeparatorText("Options");
-            // if (ImGui.BeginTable("skeleton_options", 2))
-            // {
-            //     Layout("Draw All Bones");ImGui.PushID(1);
-            //     ImGui.Checkbox("", ref skeletalModel.Skeleton.DrawAllBones);
-            //     ImGui.PopID();
-            //
-            //     ImGui.EndTable();
-            // }
-            // ImGui.SeparatorText("Tree");
             skeletalModel.Skeleton.ImGuiBoneBreadcrumb();
             if (ImGui.BeginTable("skeleton_tree", 2, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.RowBg, ImGui.GetContentRegionAvail(), ImGui.GetWindowWidth()))
             {
@@ -746,6 +740,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                 ImGui.EndTable();
             }
         }
+        ImGui.End(); // if window is collapsed
         ImGui.PopStyleVar();
     }
 

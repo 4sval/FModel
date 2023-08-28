@@ -30,10 +30,9 @@ public class Skeleton : IDisposable
     public bool IsAnimated { get; private set; }
     public string SelectedBone;
 
-    private const int _vertexSize = 6;
+    private const int _vertexSize = 12;
     private BufferObject<float> _vbo;
-    private int vaoHandle;
-    private float[] _vertices;
+    private int _vaoHandle;
 
     public Skeleton()
     {
@@ -44,7 +43,6 @@ public class Skeleton : IDisposable
     public Skeleton(FReferenceSkeleton referenceSkeleton) : this()
     {
         BoneCount = referenceSkeleton.FinalRefBoneInfo.Length;
-        _vertices = new float[_vertexSize * BoneCount];
         for (int boneIndex = 0; boneIndex < BoneCount; boneIndex++)
         {
             var info = referenceSkeleton.FinalRefBoneInfo[boneIndex];
@@ -63,14 +61,6 @@ public class Skeleton : IDisposable
 
                 bone.Rest.Relation = parentBone.Rest.Matrix;
                 parentBone.LoweredChildNames.Add(boneName);
-
-                var baseIndex = boneIndex * _vertexSize;
-                _vertices[baseIndex + 0] = bone.Rest.Matrix.Translation.X;
-                _vertices[baseIndex + 1] = bone.Rest.Matrix.Translation.Y;
-                _vertices[baseIndex + 2] = bone.Rest.Matrix.Translation.Z;
-                _vertices[baseIndex + 3] = parentBone.Rest.Matrix.Translation.X;
-                _vertices[baseIndex + 4] = parentBone.Rest.Matrix.Translation.Y;
-                _vertices[baseIndex + 5] = parentBone.Rest.Matrix.Translation.Z;
             }
 
             if (boneIndex == 0) SelectedBone = boneName;
@@ -117,14 +107,18 @@ public class Skeleton : IDisposable
     {
         _handle = GL.CreateProgram();
 
-        _vbo = new BufferObject<float>(_vertices, BufferTarget.ArrayBuffer);
+        _vaoHandle = GL.GenVertexArray();
+        GL.BindVertexArray(_vaoHandle);
 
-        vaoHandle = GL.GenVertexArray();
-        GL.BindVertexArray(vaoHandle);
-        _vbo.Bind();
 
+        _vbo = new BufferObject<float>(_vertexSize * BoneCount, BufferTarget.ArrayBuffer);
+
+        var sf = sizeof(float);
+        var half = _vertexSize / 2;
         GL.EnableVertexAttribArray(0);
-        GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
+        GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, sf * half, sf * 0);
+        GL.EnableVertexAttribArray(1);
+        GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, sf * half, sf * 3);
 
         GL.BindVertexArray(0);
 
@@ -223,20 +217,40 @@ public class Skeleton : IDisposable
             _boneMatriceAtFrame[bone.Index] = boneMatrix;
         }
         _ssbo.Unbind();
+    }
 
+    public void UpdateVertices()
+    {
         _vbo.Bind();
-        foreach (var bone in BonesByLoweredName.Values)
+        foreach (var (boneName, bone) in BonesByLoweredName)
         {
-            var baseIndex = bone.Index * _vertexSize;
-            var boneMatrix = bone.IsRoot ? bone.Rest.Relation : bone.Rest.LocalMatrix * _boneMatriceAtFrame[bone.ParentIndex];
-            var parentBoneMatrix = bone.IsRoot ? bone.Rest.Relation : _boneMatriceAtFrame[bone.ParentIndex];
+            Matrix4x4 boneMatrix;
+            Matrix4x4 parentBoneMatrix;
+            if (IsAnimated)
+            {
+                boneMatrix = _boneMatriceAtFrame[bone.Index];
+                parentBoneMatrix = _boneMatriceAtFrame[bone.ParentIndex];
+            }
+            else
+            {
+                boneMatrix = bone.Rest.Matrix;
+                parentBoneMatrix = bone.IsRoot ? boneMatrix : BonesByLoweredName[bone.LoweredParentName].Rest.Matrix;
+            }
 
-            _vbo.Update(baseIndex + 0, boneMatrix.Translation.X);
-            _vbo.Update(baseIndex + 1, boneMatrix.Translation.Y);
-            _vbo.Update(baseIndex + 2, boneMatrix.Translation.Z);
-            _vbo.Update(baseIndex + 3, parentBoneMatrix.Translation.X);
-            _vbo.Update(baseIndex + 4, parentBoneMatrix.Translation.Y);
-            _vbo.Update(baseIndex + 5, parentBoneMatrix.Translation.Z);
+            var count = 0;
+            var baseIndex = bone.Index * _vertexSize;
+            _vbo.Update(baseIndex + count++, boneMatrix.Translation.X);
+            _vbo.Update(baseIndex + count++, boneMatrix.Translation.Y);
+            _vbo.Update(baseIndex + count++, boneMatrix.Translation.Z);
+            _vbo.Update(baseIndex + count++, 1.0f);
+            _vbo.Update(baseIndex + count++, boneName == SelectedBone ? 0.0f : 1.0f);
+            _vbo.Update(baseIndex + count++, boneName == SelectedBone ? 0.0f : 1.0f);
+            _vbo.Update(baseIndex + count++, parentBoneMatrix.Translation.X);
+            _vbo.Update(baseIndex + count++, parentBoneMatrix.Translation.Y);
+            _vbo.Update(baseIndex + count++, parentBoneMatrix.Translation.Z);
+            _vbo.Update(baseIndex + count++, 1.0f);
+            _vbo.Update(baseIndex + count++, bone.LoweredParentName == SelectedBone ? 0.0f : 1.0f);
+            _vbo.Update(baseIndex + count++, bone.LoweredParentName == SelectedBone ? 0.0f : 1.0f);
         }
         _vbo.Unbind();
     }
@@ -284,8 +298,9 @@ public class Skeleton : IDisposable
     {
         GL.Disable(EnableCap.DepthTest);
 
-        GL.BindVertexArray(vaoHandle);
-        GL.DrawArrays(PrimitiveType.Lines, 0, _vertices.Length);
+        GL.BindVertexArray(_vaoHandle);
+        GL.DrawArrays(PrimitiveType.Lines, 0, _vbo.Size);
+        GL.DrawArrays(PrimitiveType.Points, 0, _vbo.Size);
         GL.BindVertexArray(0);
 
         GL.Enable(EnableCap.DepthTest);
@@ -303,7 +318,7 @@ public class Skeleton : IDisposable
 
         var x = p1.X;
         var y = p1.Y + (p2.Y - p1.Y) / 2;
-        for (int i = Math.Min(_breadcrumb.Count - 1, 5); i >= 1; i--)
+        for (int i = Math.Min(_breadcrumb.Count - 1, 5); i >= 0; i--)
         {
             var boneName = _breadcrumb[i];
             var size = ImGui.CalcTextSize(boneName);
@@ -317,7 +332,7 @@ public class Skeleton : IDisposable
                 break;
             }
 
-            drawList.AddText(position, i == 1 || ImGui.IsItemHovered() ? 0xFFFFFFFF : 0xA0FFFFFF, boneName);
+            drawList.AddText(position, i == 0 || ImGui.IsItemHovered() ? 0xFFFFFFFF : 0xA0FFFFFF, boneName);
             x += size.X + 7.5f;
             drawList.AddText(position with { X = x }, 0xA0FFFFFF, ">");
             x += 7.5f;
@@ -328,7 +343,10 @@ public class Skeleton : IDisposable
 
     public void ImGuiBoneHierarchy()
     {
-        DrawBoneTree(SelectedBone, BonesByLoweredName[SelectedBone]);
+        foreach (var name in BonesByLoweredName[SelectedBone].LoweredChildNames)
+        {
+            DrawBoneTree(name, BonesByLoweredName[name]);
+        }
     }
 
     private void DrawBoneTree(string boneName, Bone bone)
@@ -338,11 +356,11 @@ public class Skeleton : IDisposable
         ImGui.TableNextColumn();
 
         var flags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.SpanFullWidth;
-        if (boneName == SelectedBone) flags |= ImGuiTreeNodeFlags.Selected;
+        // if (boneName == SelectedBone) flags |= ImGuiTreeNodeFlags.Selected;
         if (bone.IsVirtual) flags |= ImGuiTreeNodeFlags.Leaf;
         else if (!bone.IsDaron) flags |= ImGuiTreeNodeFlags.Bullet;
 
-        ImGui.SetNextItemOpen(bone.LoweredChildNames.Count <= 1 || flags.HasFlag(ImGuiTreeNodeFlags.Selected), ImGuiCond.Appearing);
+        ImGui.SetNextItemOpen(bone.LoweredChildNames.Count <= 1, ImGuiCond.Appearing);
         var open = ImGui.TreeNodeEx(boneName, flags);
         if (ImGui.IsItemClicked() && !ImGui.IsItemToggledOpen() && bone.IsDaron)
         {
