@@ -245,7 +245,7 @@ public class Renderer : IDisposable
         foreach (var model in Options.Models.Values)
         {
             if (!model.IsVisible) continue;
-            model.Render(_shader);
+            model.Render(_shader, Color == VertexColor.TextureCoordinates ? Options.Icons["checker"] : null);
         }
 
         {   // light pass
@@ -271,7 +271,7 @@ public class Renderer : IDisposable
             }
 
             _outline.Render(viewMatrix, CameraOp.Position, projMatrix);
-            selected.Render(_outline, true);
+            selected.Render(_outline, Color == VertexColor.TextureCoordinates ? Options.Icons["checker"] : null, true);
         }
 
         // picking pass (dedicated FBO, binding to 0 afterward)

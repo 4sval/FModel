@@ -77,6 +77,7 @@
     <None Remove="Resources\linux.png" />
     <None Remove="Resources\stateofdecay2.png" />
     <None Remove="Resources\T_Placeholder_Item_Image.png" />
+    <None Remove="Resources\checker.png" />
     <None Remove="Resources\T_ClipSize_Weapon_Stats.png" />
     <None Remove="Resources\T_DamagePerBullet_Weapon_Stats.png" />
     <None Remove="Resources\T_ReloadTime_Weapon_Stats.png" />
@@ -207,6 +208,7 @@
     <Resource Include="Resources\linux.png" />
     <Resource Include="Resources\stateofdecay2.png" />
     <Resource Include="Resources\T_Placeholder_Item_Image.png" />
+    <Resource Include="Resources\checker.png" />
     <Resource Include="Resources\T_ClipSize_Weapon_Stats.png" />
     <Resource Include="Resources\T_DamagePerBullet_Weapon_Stats.png" />
     <Resource Include="Resources\T_ReloadTime_Weapon_Stats.png" />

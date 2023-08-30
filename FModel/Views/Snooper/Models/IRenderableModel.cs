@@ -31,7 +31,7 @@ public interface IRenderableModel : IDisposable
 
     public void Setup(Options options);
     public void SetupInstances();
-    public void Render(Shader shader, bool outline = false);
+    public void Render(Shader shader, Texture checker = null, bool outline = false);
     public void PickingRender(Shader shader);
     public void Update(Options options);
     public void AddInstance(Transform transform);

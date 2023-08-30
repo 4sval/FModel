@@ -76,11 +76,11 @@ public class Material : IDisposable
 
         if (uvCount < 1 || Parameters.IsNull)
         {
-            Diffuse = new[] { new Texture(new FLinearColor(1f, 0f, 0f, 1f)) };
+            Diffuse = new[] { options.Icons["checker"] };
             Normals = new[] { new Texture(new FLinearColor(0.498f, 0.498f, 0.996f, 1f)) };
             SpecularMasks = new [] { new Texture(new FLinearColor(1f, 0.5f, 0.5f, 1f)) };
             Emissive = new Texture[1];
-            DiffuseColor = new[] { new Vector4(0.5f) };
+            DiffuseColor = new[] { Vector4.One };
             EmissiveColor = new[] { Vector4.One };
         }
         else

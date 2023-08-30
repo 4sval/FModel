@@ -110,7 +110,6 @@ public class Skeleton : IDisposable
         _vaoHandle = GL.GenVertexArray();
         GL.BindVertexArray(_vaoHandle);
 
-
         _vbo = new BufferObject<float>(_vertexSize * BoneCount, BufferTarget.ArrayBuffer);
 
         var sf = sizeof(float);
@@ -224,18 +223,10 @@ public class Skeleton : IDisposable
         _vbo.Bind();
         foreach (var (boneName, bone) in BonesByLoweredName)
         {
-            Matrix4x4 boneMatrix;
-            Matrix4x4 parentBoneMatrix;
-            if (IsAnimated)
-            {
-                boneMatrix = _boneMatriceAtFrame[bone.Index];
-                parentBoneMatrix = bone.IsRoot ? boneMatrix : _boneMatriceAtFrame[bone.ParentIndex];
-            }
-            else
-            {
-                boneMatrix = bone.Rest.Matrix;
-                parentBoneMatrix = bone.IsRoot ? boneMatrix : BonesByLoweredName[bone.LoweredParentName].Rest.Matrix;
-            }
+            var boneMatrix = IsAnimated ? _boneMatriceAtFrame[bone.Index] : bone.Rest.Matrix;
+            var parentBoneMatrix = bone.IsRoot ? boneMatrix :
+                IsAnimated ? _boneMatriceAtFrame[bone.ParentIndex] :
+                BonesByLoweredName[bone.LoweredParentName].Rest.Matrix;
 
             var count = 0;
             var baseIndex = bone.Index * _vertexSize;

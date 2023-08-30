@@ -227,7 +227,7 @@ public abstract class UModel : IRenderableModel
         IsSetup = true;
     }
 
-    public virtual void Render(Shader shader, bool outline = false)
+    public virtual void Render(Shader shader, Texture checker = null, bool outline = false)
     {
         if (outline) GL.Disable(EnableCap.DepthTest);
         if (IsTwoSided) GL.Disable(EnableCap.CullFace);
@@ -252,8 +252,16 @@ public abstract class UModel : IRenderableModel
             if (!section.Show) continue;
             if (!outline)
             {
-                shader.SetUniform("uSectionColor", section.Color);
-                Materials[section.MaterialIndex].Render(shader);
+                if (checker != null)
+                {
+                    shader.SetUniform("uParameters.Diffuse[0].Sampler", 0);
+                    checker.Bind(TextureUnit.Texture0);
+                }
+                else
+                {
+                    shader.SetUniform("uSectionColor", section.Color);
+                    Materials[section.MaterialIndex].Render(shader);
+                }
             }
 
             GL.DrawElementsInstanced(PrimitiveType.Triangles, section.FacesCount, DrawElementsType.UnsignedInt, section.FirstFaceIndexPtr, TransformsCount);

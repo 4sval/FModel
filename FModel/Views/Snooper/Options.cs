@@ -43,6 +43,7 @@ public class Options
         {
             ["material"] = new ("materialicon"),
             ["noimage"] = new ("T_Placeholder_Item_Image"),
+            ["checker"] = new ("checker"),
             ["pointlight"] = new ("pointlight"),
             ["spotlight"] = new ("spotlight"),
             ["link_on"] = new ("link_on"),
