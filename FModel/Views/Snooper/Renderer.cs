@@ -454,6 +454,7 @@ public class Renderer : IDisposable
             Scale = staticMeshComp.GetOrDefault("RelativeScale3D", FVector.OneVector)
         };
 
+        OverrideVertexColors(staticMeshComp, m);
         if (Options.TryGetModel(guid, out var model))
         {
             model.AddInstance(t);
@@ -524,6 +525,20 @@ public class Renderer : IDisposable
             spotLight.TryLoad(out var sl1) && sl1.Template.TryLoad(out var sl2))
         {
             Options.Lights.Add(new SpotLight(guid, Options.Icons["spotlight"], sl1, sl2, t));
+        }
+    }
+
+    private void OverrideVertexColors(UStaticMeshComponent staticMeshComp, UStaticMesh staticMesh)
+    {
+        if (staticMeshComp.LODData is not { Length: > 0 } || staticMesh.RenderData is not { LODs.Length: > 0 })
+            return;
+
+        for (var lod = 0; lod < staticMeshComp.LODData.Length; lod++)
+        {
+            var vertexColors = staticMeshComp.LODData[lod].OverrideVertexColors;
+            if (vertexColors == null) continue;
+
+            staticMesh.RenderData.LODs[lod].ColorVertexBuffer = vertexColors;
         }
     }
 

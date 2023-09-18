@@ -74,7 +74,7 @@ public partial class DictionaryEditor
                     DialogResult = true;
                     Close();
                     break;
-                case "MapStructTypes":
+                case "Versioning Configuration (MapStructTypes)":
                     MapStructTypes = JsonConvert.DeserializeObject<Dictionary<string, KeyValuePair<string, string>>>(MyAvalonEditor.Document.Text);
                     // DialogResult = !Options.SequenceEqual(_defaultOptions);
                     DialogResult = true;

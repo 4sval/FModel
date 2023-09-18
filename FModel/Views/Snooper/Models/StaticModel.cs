@@ -46,7 +46,7 @@ public class StaticModel : UModel
 
         AddInstance(Transform.Identity);
 
-        Box = staticMesh.BoundingBox * Constants.SCALE_DOWN_RATIO;
+        Box = staticMesh.BoundingBox * 1.5f * Constants.SCALE_DOWN_RATIO;
     }
 
     public StaticModel(UStaticMesh export, CStaticMesh staticMesh, Transform transform = null)
