@@ -368,6 +368,8 @@
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Header}" Value="SwGame">
                             <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/fallenorder.png" />
+                        <DataTrigger Binding="{Binding Header}" Value="Pavlov">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/pavlov.png" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Header}" Value="Prospect">
                             <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/thecycle.png" />

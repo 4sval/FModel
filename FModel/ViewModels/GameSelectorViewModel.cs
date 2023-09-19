@@ -102,9 +102,12 @@ public class GameSelectorViewModel : ViewModel
         yield return GetSteamGame(381210, "\\DeadByDaylight\\Content\\Paks", EGame.GAME_UE4_27); // Dead By Daylight
         yield return GetSteamGame(578080, "\\TslGame\\Content\\Paks", EGame.GAME_PlayerUnknownsBattlegrounds); // PUBG
         yield return GetSteamGame(1172380, "\\SwGame\\Content\\Paks", EGame.GAME_StarWarsJediFallenOrder); // STAR WARS Jedi: Fallen Order™
+        yield return GetSteamGame(1774580, "\\SwGame\\Content\\Paks", EGame.GAME_UE4_26); // STAR WARS Jedi: Survivor™ 
         yield return GetSteamGame(677620, "\\PortalWars\\Content\\Paks", EGame.GAME_Splitgate); // Splitgate
         yield return GetSteamGame(1172620, "\\Athena\\Content\\Paks", EGame.GAME_SeaOfThieves); // Sea of Thieves
         yield return GetSteamGame(1665460, "\\pak", EGame.GAME_UE4_26); // eFootball 2023
+        yield return GetSteamGame(1869590, "\\OmegaStrikers\\Content\\Paks", EGame.GAME_UE5_1); // Omega Strikers
+        yield return GetSteamGame(1869590, "\\Pavlov\\Content\\Paks", EGame.GAME_UE5_1); // Pavlov VR
         yield return GetRockstarGamesGame("GTA III - Definitive Edition", "\\Gameface\\Content\\Paks", EGame.GAME_GTATheTrilogyDefinitiveEdition);
         yield return GetRockstarGamesGame("GTA San Andreas - Definitive Edition", "\\Gameface\\Content\\Paks", EGame.GAME_GTATheTrilogyDefinitiveEdition);
         yield return GetRockstarGamesGame("GTA Vice City - Definitive Edition", "\\Gameface\\Content\\Paks", EGame.GAME_GTATheTrilogyDefinitiveEdition);
