@@ -318,6 +318,12 @@
                         <DataTrigger Binding="{Binding Header}" Value="Weapons">
                             <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/weapon.png" />
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="weapons">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/weapon.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Guns">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/weapon.png" />
+                        </DataTrigger>
                         <DataTrigger Binding="{Binding Header}" Value="Localization">
                             <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/localization.png" />
                         </DataTrigger>
@@ -368,6 +374,7 @@
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Header}" Value="SwGame">
                             <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/fallenorder.png" />
+                        </DataTrigger>
                         <DataTrigger Binding="{Binding Header}" Value="Pavlov">
                             <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/pavlov.png" />
                         </DataTrigger>
@@ -377,6 +384,15 @@
                         <DataTrigger Binding="{Binding Header}" Value="Materials">
                             <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/materialicon.png" />
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="materials">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/materialicon.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Mats">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/materialicon.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="mats">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/materialicon.png" />
+                        </DataTrigger>
                         <DataTrigger Binding="{Binding Header, Converter={x:Static converters:CaseInsensitiveStringEqualsConverter.Instance}, ConverterParameter='Blueprints'}" Value="True">
                             <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/blueprint.png" />
                         </DataTrigger>
@@ -384,6 +400,9 @@
                             <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/cinematics.png" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Header}" Value="Movies">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/cinematics.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="CutScenes">
                             <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/cinematics.png" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Header}" Value="Audio">
