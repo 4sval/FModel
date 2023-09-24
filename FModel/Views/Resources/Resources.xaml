@@ -333,13 +333,25 @@
                         <DataTrigger Binding="{Binding Header}" Value="UI">
                             <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/ui.png" />
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Interface">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/ui.png" />
+                        </DataTrigger>
                         <DataTrigger Binding="{Binding Header}" Value="Sounds">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/sound.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Audio">
                             <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/sound.png" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Header}" Value="2dAssets">
                             <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/texture.png" />
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="textures">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/texture.png" />
+                        </DataTrigger>
                         <DataTrigger Binding="{Binding Header}" Value="Textures">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/texture.png" />
+                        </DataTrigger>
+                         <DataTrigger Binding="{Binding Header}" Value="images">
                             <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/texture.png" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Header}" Value="Engine">
