@@ -85,7 +85,7 @@ public class GameSelectorViewModel : ViewModel
             .GroupBy(value => (int)value)
             .Select(group => group.First())
             .OrderBy(value => (int)value == ((int)value & ~0xF));
-    private IEnumerable<DirectorySettings> EnumerateDetectedGames()
+    private IEnumerable<DirectorySettings> EnumerateDetectedGames() //Note for 4sval - Automatic mappings pulled from github raw OutInTheShade's Mapping archive might prove useful, I might work that into a seperate PR
     {
         yield return GetUnrealEngineGame("Fortnite", "\\FortniteGame\\Content\\Paks", EGame.GAME_UE5_3);
         yield return DirectorySettings.Default("Fortnite [LIVE]", Constants._FN_LIVE_TRIGGER, ue: EGame.GAME_UE5_3);
