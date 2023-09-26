@@ -393,6 +393,12 @@
                         <DataTrigger Binding="{Binding Header}" Value="Astro">
                             <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/icon_astroneer.png" />
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="HLL">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/HLL.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Insurgency">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/Insurgency.png" />
+                        </DataTrigger>
                         <DataTrigger Binding="{Binding Header}" Value="Prospect">
                             <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/thecycle.png" />
                         </DataTrigger>
