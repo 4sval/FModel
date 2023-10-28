@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
+using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.UObject;
 using FModel.Views.Snooper.Animations;
 using FModel.Views.Snooper.Buffers;
@@ -50,6 +52,26 @@ public class SkeletalModel : UModel
                 continue;
 
             Morphs.Add(new Morph(Vertices, VertexSize, morphTarget));
+        }
+    }
+
+    public SkeletalModel(USkeleton export, FBox box) : base(export)
+    {
+        Indices = Array.Empty<uint>();
+        Materials = Array.Empty<Material>();
+        Vertices = Array.Empty<float>();
+        Sections = Array.Empty<Section>();
+        AddInstance(Transform.Identity);
+
+        Box = box * Constants.SCALE_DOWN_RATIO;
+        Morphs = new List<Morph>();
+        Skeleton = new Skeleton(export.ReferenceSkeleton);
+        Skeleton.Name = export.Name;
+
+        for (int i = 0; i < export.Sockets.Length; i++)
+        {
+            if (export.Sockets[i].Load<USkeletalMeshSocket>() is not { } socket) continue;
+            Sockets.Add(new Socket(socket));
         }
     }
 

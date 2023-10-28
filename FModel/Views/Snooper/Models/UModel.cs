@@ -365,7 +365,8 @@ public abstract class UModel : IRenderableModel
             TextureFormat = UserSettings.Default.TextureExportFormat,
             SocketFormat = UserSettings.Default.SocketExportFormat,
             Platform = UserSettings.Default.CurrentDir.TexturePlatform,
-            ExportMorphTargets = UserSettings.Default.SaveMorphTargets
+            ExportMorphTargets = UserSettings.Default.SaveMorphTargets,
+            ExportMaterials = UserSettings.Default.SaveMeshMaterials
         };
         var toSave = new Exporter(_export, exportOptions);
         return toSave.TryWriteToDir(new DirectoryInfo(UserSettings.Default.ModelDirectory), out label, out savedFilePath);

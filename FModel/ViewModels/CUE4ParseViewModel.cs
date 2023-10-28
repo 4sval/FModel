@@ -896,6 +896,7 @@ public class CUE4ParseViewModel : ViewModel
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:
             case UStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
             case USkeletalMesh when isNone && UserSettings.Default.PreviewSkeletalMeshes:
+            case USkeleton when isNone && UserSettings.Default.SaveSkeletonAsMesh:
             case UMaterialInstance when isNone && UserSettings.Default.PreviewMaterials && !ModelIsOverwritingMaterial &&
                                         !(Provider.InternalGameName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase) && export.Owner != null &&
                                           (export.Owner.Name.EndsWith($"/MI_OfferImages/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
@@ -984,7 +985,8 @@ public class CUE4ParseViewModel : ViewModel
             TextureFormat = UserSettings.Default.TextureExportFormat,
             SocketFormat = UserSettings.Default.SocketExportFormat,
             Platform = UserSettings.Default.CurrentDir.TexturePlatform,
-            ExportMorphTargets = UserSettings.Default.SaveMorphTargets
+            ExportMorphTargets = UserSettings.Default.SaveMorphTargets,
+            ExportMaterials = UserSettings.Default.SaveMeshMaterials
         };
         var toSave = new Exporter(export, exportOptions);
 

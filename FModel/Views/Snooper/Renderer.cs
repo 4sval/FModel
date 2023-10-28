@@ -87,6 +87,9 @@ public class Renderer : IDisposable
             case USkeletalMesh sk:
                 LoadSkeletalMesh(sk);
                 break;
+            case USkeleton skel:
+                LoadSkeleton(skel);
+                break;
             case UMaterialInstance mi:
                 LoadMaterialInstance(mi);
                 break;
@@ -347,6 +350,17 @@ public class Renderer : IDisposable
         var skeletalModel = new SkeletalModel(original, mesh);
         Options.Models[guid] = skeletalModel;
         Options.SelectModel(guid);
+    }
+
+    private void LoadSkeleton(USkeleton original)
+    {
+        var guid = original.Guid;
+        if (Options.Models.ContainsKey(guid) || !original.TryConvert(out _, out var box)) return;
+
+        var fakeSkeletalModel = new SkeletalModel(original, box);
+        Options.Models[guid] = fakeSkeletalModel;
+        Options.SelectModel(guid);
+        IsSkeletonTreeOpen = true;
     }
 
     private void LoadMaterialInstance(UMaterialInstance original)
