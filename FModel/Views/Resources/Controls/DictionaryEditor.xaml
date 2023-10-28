@@ -23,7 +23,7 @@
         </Grid.RowDefinitions>
 
         <avalonEdit:TextEditor x:Name="MyAvalonEditor" Grid.Row="0" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
-                               FontFamily="Consolas" FontSize="8pt" IsReadOnly="True" ShowLineNumbers="True" Foreground="#DAE5F2" />
+                               FontFamily="Consolas" FontSize="8pt" ShowLineNumbers="True" Foreground="#DAE5F2" />
 
         <Border Grid.Row="1"
                 Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"

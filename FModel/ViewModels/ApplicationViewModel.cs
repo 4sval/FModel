@@ -48,9 +48,7 @@ public class ApplicationViewModel : ViewModel
 
     public string InitialWindowTitle => $"FModel {UserSettings.Default.UpdateMode}";
     public string GameDisplayName => CUE4Parse.Provider.GameDisplayName ?? "Unknown";
-    public string TitleExtra =>
-        $"({(CUE4Parse.Game == FGame.Unknown && UserSettings.Default.ManualGames.TryGetValue(UserSettings.Default.GameDirectory, out var settings) ? settings.OverridedGame : UserSettings.Default.OverridedGame[CUE4Parse.Game])})" +
-        $"{(Build != EBuildKind.Release ? $" ({Build})" : "")}";
+    public string TitleExtra => $"({UserSettings.Default.CurrentDir.UeVersion}){(Build != EBuildKind.Release ? $" ({Build})" : "")}";
 
     public LoadingModesViewModel LoadingModes { get; }
     public CustomDirectoriesViewModel CustomDirectories { get; }
@@ -58,7 +56,6 @@ public class ApplicationViewModel : ViewModel
     public SettingsViewModel SettingsView { get; }
     public AesManagerViewModel AesManager { get; }
     public AudioPlayerViewModel AudioPlayer { get; }
-    public MapViewerViewModel MapViewer { get; }
     private OodleCompressor _oodle;
 
     public ApplicationViewModel()
@@ -73,50 +70,41 @@ public class ApplicationViewModel : ViewModel
 #endif
         LoadingModes = new LoadingModesViewModel();
 
-        AvoidEmptyGameDirectoryAndSetEGame(false);
-        if (UserSettings.Default.GameDirectory is null)
+        UserSettings.Default.CurrentDir = AvoidEmptyGameDirectory(false);
+        if (UserSettings.Default.CurrentDir is null)
         {
             //If no game is selected, many things will break before a shutdown request is processed in the normal way.
             //A hard exit is preferable to an unhandled expection in this case
             Environment.Exit(0);
         }
 
-        CUE4Parse = new CUE4ParseViewModel(UserSettings.Default.GameDirectory);
-        CustomDirectories = new CustomDirectoriesViewModel(CUE4Parse.Game, UserSettings.Default.GameDirectory);
-        SettingsView = new SettingsViewModel(CUE4Parse.Game);
+        CUE4Parse = new CUE4ParseViewModel();
+        CustomDirectories = new CustomDirectoriesViewModel();
+        SettingsView = new SettingsViewModel();
         AesManager = new AesManagerViewModel(CUE4Parse);
-        MapViewer = new MapViewerViewModel(CUE4Parse);
         AudioPlayer = new AudioPlayerViewModel();
+
         Status.SetStatus(EStatusKind.Ready);
     }
 
-    public void AvoidEmptyGameDirectoryAndSetEGame(bool bAlreadyLaunched)
+    public DirectorySettings AvoidEmptyGameDirectory(bool bAlreadyLaunched)
     {
         var gameDirectory = UserSettings.Default.GameDirectory;
-        if (!string.IsNullOrEmpty(gameDirectory) && !bAlreadyLaunched) return;
+        if (!bAlreadyLaunched && UserSettings.Default.PerDirectory.TryGetValue(gameDirectory, out var currentDir))
+            return currentDir;
 
         var gameLauncherViewModel = new GameSelectorViewModel(gameDirectory);
         var result = new DirectorySelector(gameLauncherViewModel).ShowDialog();
-        if (!result.HasValue || !result.Value) return;
+        if (!result.HasValue || !result.Value) return null;
 
-        UserSettings.Default.GameDirectory = gameLauncherViewModel.SelectedDetectedGame.GameDirectory;
-        if (!bAlreadyLaunched || gameDirectory == gameLauncherViewModel.SelectedDetectedGame.GameDirectory) return;
+        UserSettings.Default.GameDirectory = gameLauncherViewModel.SelectedDirectory.GameDirectory;
+        if (!bAlreadyLaunched || UserSettings.Default.CurrentDir.Equals(gameLauncherViewModel.SelectedDirectory))
+            return gameLauncherViewModel.SelectedDirectory;
 
+        // UserSettings.Save(); // ??? change key then change game, key saved correctly what?
+        UserSettings.Default.CurrentDir = gameLauncherViewModel.SelectedDirectory;
         RestartWithWarning();
-    }
-
-    public async Task UpdateProvider(bool isLaunch)
-    {
-        if (!isLaunch && !AesManager.HasChange) return;
-
-        CUE4Parse.ClearProvider();
-        await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
-        {
-            CUE4Parse.LoadVfs(cancellationToken, AesManager.AesKeys);
-            CUE4Parse.Provider.LoadIniConfigs();
-            AesManager.SetAesKeys();
-        });
-        RaisePropertyChanged(nameof(GameDisplayName));
+        return null;
     }
 
     public void RestartWithWarning()
@@ -159,6 +147,20 @@ public class ApplicationViewModel : ViewModel
         }
 
         Application.Current.Shutdown();
+    }
+
+    public async Task UpdateProvider(bool isLaunch)
+    {
+        if (!isLaunch && !AesManager.HasChange) return;
+
+        CUE4Parse.ClearProvider();
+        await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
+        {
+            CUE4Parse.LoadVfs(cancellationToken, AesManager.AesKeys);
+            CUE4Parse.Provider.LoadIniConfigs();
+            AesManager.SetAesKeys();
+        });
+        RaisePropertyChanged(nameof(GameDisplayName));
     }
 
     public async Task InitVgmStream()

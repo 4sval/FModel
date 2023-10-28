@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
-using CUE4Parse.UE4.Assets.Exports.Texture;
-using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
@@ -33,6 +31,8 @@ namespace FModel.Settings
 
         public static void Save()
         {
+            if (Default == null) return;
+            Default.PerDirectory[Default.CurrentDir.GameDirectory] = Default.CurrentDir;
             File.WriteAllText(FilePath, JsonConvert.SerializeObject(Default, Formatting.Indented));
         }
 
@@ -41,13 +41,9 @@ namespace FModel.Settings
             if (File.Exists(FilePath)) File.Delete(FilePath);
         }
 
-        public static bool IsEndpointValid(FGame game, EEndpointType type, out FEndpoint endpoint)
+        public static bool IsEndpointValid(EEndpointType type, out EndpointSettings endpoint)
         {
-            endpoint = null;
-            if (!Default.CustomEndpoints.TryGetValue(game, out var endpoints))
-                return false;
-
-            endpoint = endpoints[(int) type];
+            endpoint = Default.CurrentDir.Endpoints[(int) type];
             return endpoint.Overwrite || endpoint.IsValid;
         }
 
@@ -100,7 +96,7 @@ namespace FModel.Settings
             set => SetProperty(ref _modelDirectory, value);
         }
 
-        private string _gameDirectory;
+        private string _gameDirectory = string.Empty;
         public string GameDirectory
         {
             get => _gameDirectory;
@@ -135,13 +131,6 @@ namespace FModel.Settings
             set => SetProperty(ref _avalonImageSize, value);
         }
 
-        private IDictionary<FGame, AesResponse> _aesKeys = new Dictionary<FGame, AesResponse>();
-        public IDictionary<FGame, AesResponse> AesKeys
-        {
-            get => _aesKeys;
-            set => SetProperty(ref _aesKeys, value);
-        }
-
         private string _audioDeviceId;
         public string AudioDeviceId
         {
@@ -156,7 +145,7 @@ namespace FModel.Settings
             set => SetProperty(ref _audioPlayerVolume, value);
         }
 
-        private ELoadingMode _loadingMode = ELoadingMode.Multiple;
+        private ELoadingMode _loadingMode = ELoadingMode.All;
         public ELoadingMode LoadingMode
         {
             get => _loadingMode;
@@ -233,299 +222,24 @@ namespace FModel.Settings
             set => SetProperty(ref _readScriptData, value);
         }
 
-        // <gameDirectory as string, settings>
-        // can't refactor to use this data layout for everything
-        // because it will wipe old user settings that relies on FGame
+        private IDictionary<string, DirectorySettings> _perDirectory = new Dictionary<string, DirectorySettings>();
+        public IDictionary<string, DirectorySettings> PerDirectory
+        {
+            get => _perDirectory;
+            set => SetProperty(ref _perDirectory, value);
+        }
+
+        [JsonIgnore]
+        public DirectorySettings CurrentDir { get; set; }
+
+        /// <summary>
+        /// TO DELETEEEEEEEEEEEEE
+        /// </summary>
         private IDictionary<string, GameSelectorViewModel.DetectedGame> _manualGames = new Dictionary<string, GameSelectorViewModel.DetectedGame>();
         public IDictionary<string, GameSelectorViewModel.DetectedGame> ManualGames
         {
             get => _manualGames;
             set => SetProperty(ref _manualGames, value);
-        }
-
-        private ETexturePlatform _overridedPlatform = ETexturePlatform.DesktopMobile;
-        public ETexturePlatform OverridedPlatform
-        {
-            get => _overridedPlatform;
-            set => SetProperty(ref _overridedPlatform, value);
-        }
-
-        private IDictionary<FGame, string> _presets = new Dictionary<FGame, string>
-        {
-            {FGame.Unknown, Constants._NO_PRESET_TRIGGER},
-            {FGame.FortniteGame, Constants._NO_PRESET_TRIGGER},
-            {FGame.ShooterGame, Constants._NO_PRESET_TRIGGER},
-            {FGame.DeadByDaylight, Constants._NO_PRESET_TRIGGER},
-            {FGame.OakGame, Constants._NO_PRESET_TRIGGER},
-            {FGame.Dungeons, Constants._NO_PRESET_TRIGGER},
-            {FGame.WorldExplorers, Constants._NO_PRESET_TRIGGER},
-            {FGame.g3, Constants._NO_PRESET_TRIGGER},
-            {FGame.StateOfDecay2, Constants._NO_PRESET_TRIGGER},
-            {FGame.Prospect, Constants._NO_PRESET_TRIGGER},
-            {FGame.Indiana, Constants._NO_PRESET_TRIGGER},
-            {FGame.RogueCompany, Constants._NO_PRESET_TRIGGER},
-            {FGame.SwGame, Constants._NO_PRESET_TRIGGER},
-            {FGame.Platform, Constants._NO_PRESET_TRIGGER},
-            {FGame.BendGame, Constants._NO_PRESET_TRIGGER},
-            {FGame.TslGame, Constants._NO_PRESET_TRIGGER},
-            {FGame.PortalWars, Constants._NO_PRESET_TRIGGER},
-            {FGame.Gameface, Constants._NO_PRESET_TRIGGER},
-            {FGame.Athena, Constants._NO_PRESET_TRIGGER},
-            {FGame.MultiVersus, Constants._NO_PRESET_TRIGGER},
-            {FGame.Hotta, Constants._NO_PRESET_TRIGGER},
-            {FGame.eFootball, Constants._NO_PRESET_TRIGGER}
-        };
-        public IDictionary<FGame, string> Presets
-        {
-            get => _presets;
-            set => SetProperty(ref _presets, value);
-        }
-
-        private IDictionary<FGame, EGame> _overridedGame = new Dictionary<FGame, EGame>
-        {
-            {FGame.Unknown, EGame.GAME_UE4_LATEST},
-            {FGame.FortniteGame, EGame.GAME_UE5_2},
-            {FGame.ShooterGame, EGame.GAME_Valorant},
-            {FGame.DeadByDaylight, EGame.GAME_UE4_27},
-            {FGame.OakGame, EGame.GAME_Borderlands3},
-            {FGame.Dungeons, EGame.GAME_UE4_22},
-            {FGame.WorldExplorers, EGame.GAME_UE4_24},
-            {FGame.g3, EGame.GAME_UE4_22},
-            {FGame.StateOfDecay2, EGame.GAME_StateOfDecay2},
-            {FGame.Prospect, EGame.GAME_Splitgate},
-            {FGame.Indiana, EGame.GAME_UE4_21},
-            {FGame.RogueCompany, EGame.GAME_RogueCompany},
-            {FGame.SwGame, EGame.GAME_UE4_LATEST},
-            {FGame.Platform, EGame.GAME_UE4_26},
-            {FGame.BendGame, EGame.GAME_UE4_11},
-            {FGame.TslGame, EGame.GAME_PlayerUnknownsBattlegrounds},
-            {FGame.PortalWars, EGame.GAME_UE4_27},
-            {FGame.Gameface, EGame.GAME_GTATheTrilogyDefinitiveEdition},
-            {FGame.Athena, EGame.GAME_SeaOfThieves},
-            {FGame.MultiVersus, EGame.GAME_UE4_26},
-            {FGame.Hotta, EGame.GAME_TowerOfFantasy},
-            {FGame.eFootball, EGame.GAME_UE4_26}
-        };
-        public IDictionary<FGame, EGame> OverridedGame
-        {
-            get => _overridedGame;
-            set => SetProperty(ref _overridedGame, value);
-        }
-
-        private IDictionary<FGame, List<FCustomVersion>> _overridedCustomVersions = new Dictionary<FGame, List<FCustomVersion>>
-        {
-            {FGame.Unknown, null},
-            {FGame.FortniteGame, null},
-            {FGame.ShooterGame, null},
-            {FGame.DeadByDaylight, null},
-            {FGame.OakGame, null},
-            {FGame.Dungeons, null},
-            {FGame.WorldExplorers, null},
-            {FGame.g3, null},
-            {FGame.StateOfDecay2, null},
-            {FGame.Prospect, null},
-            {FGame.Indiana, null},
-            {FGame.RogueCompany, null},
-            {FGame.SwGame, null},
-            {FGame.Platform, null},
-            {FGame.BendGame, null},
-            {FGame.TslGame, null},
-            {FGame.PortalWars, null},
-            {FGame.Gameface, null},
-            {FGame.Athena, null},
-            {FGame.MultiVersus, null},
-            {FGame.Hotta, null},
-            {FGame.eFootball, null}
-        };
-        public IDictionary<FGame, List<FCustomVersion>> OverridedCustomVersions
-        {
-            get => _overridedCustomVersions;
-            set => SetProperty(ref _overridedCustomVersions, value);
-        }
-
-        private IDictionary<FGame, Dictionary<string, bool>> _overridedOptions = new Dictionary<FGame, Dictionary<string, bool>>
-        {
-            {FGame.Unknown, null},
-            {FGame.FortniteGame, null},
-            {FGame.ShooterGame, null},
-            {FGame.DeadByDaylight, null},
-            {FGame.OakGame, null},
-            {FGame.Dungeons, null},
-            {FGame.WorldExplorers, null},
-            {FGame.g3, null},
-            {FGame.StateOfDecay2, null},
-            {FGame.Prospect, null},
-            {FGame.Indiana, null},
-            {FGame.RogueCompany, null},
-            {FGame.SwGame, null},
-            {FGame.Platform, null},
-            {FGame.BendGame, null},
-            {FGame.TslGame, null},
-            {FGame.PortalWars, null},
-            {FGame.Gameface, null},
-            {FGame.Athena, null},
-            {FGame.MultiVersus, null},
-            {FGame.Hotta, null},
-            {FGame.eFootball, null}
-        };
-
-        private IDictionary<FGame, Dictionary<string, KeyValuePair<string, string>>> _overridedMapStructTypes = new Dictionary<FGame, Dictionary<string, KeyValuePair<string, string>>>
-        {
-            {FGame.Unknown, null},
-            {FGame.FortniteGame, null},
-            {FGame.ShooterGame, null},
-            {FGame.DeadByDaylight, null},
-            {FGame.OakGame, null},
-            {FGame.Dungeons, null},
-            {FGame.WorldExplorers, null},
-            {FGame.g3, null},
-            {FGame.StateOfDecay2, null},
-            {FGame.Prospect, null},
-            {FGame.Indiana, null},
-            {FGame.RogueCompany, null},
-            {FGame.SwGame, null},
-            {FGame.Platform, null},
-            {FGame.BendGame, null},
-            {FGame.TslGame, null},
-            {FGame.PortalWars, null},
-            {FGame.Gameface, null},
-            {FGame.Athena, null},
-            {FGame.MultiVersus, null},
-            {FGame.Hotta, null},
-            {FGame.eFootball, null}
-        };
-        public IDictionary<FGame, Dictionary<string, bool>> OverridedOptions
-        {
-            get => _overridedOptions;
-            set => SetProperty(ref _overridedOptions, value);
-        }
-
-        public IDictionary<FGame, Dictionary<string, KeyValuePair<string, string>>> OverridedMapStructTypes
-        {
-            get => _overridedMapStructTypes;
-            set => SetProperty(ref _overridedMapStructTypes, value);
-        }
-
-        private IDictionary<FGame, FEndpoint[]> _customEndpoints = new Dictionary<FGame, FEndpoint[]>
-        {
-            {FGame.Unknown, new FEndpoint[]{new (), new ()}},
-            {
-                FGame.FortniteGame, new []
-                {
-                    new FEndpoint("https://fortnitecentral.genxgames.gg/api/v1/aes", "$.['mainKey','dynamicKeys']"),
-                    new FEndpoint("https://fortnitecentral.genxgames.gg/api/v1/mappings", "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']") //  && @.meta.platform=='Windows'
-                }
-            },
-            {FGame.ShooterGame, new FEndpoint[]{new (), new ()}},
-            {FGame.DeadByDaylight, new FEndpoint[]{new (), new ()}},
-            {FGame.OakGame, new FEndpoint[]{new (), new ()}},
-            {FGame.Dungeons, new FEndpoint[]{new (), new ()}},
-            {FGame.WorldExplorers, new FEndpoint[]{new (), new ()}},
-            {FGame.g3, new FEndpoint[]{new (), new ()}},
-            {FGame.StateOfDecay2, new FEndpoint[]{new (), new ()}},
-            {FGame.Prospect, new FEndpoint[]{new (), new ()}},
-            {FGame.Indiana, new FEndpoint[]{new (), new ()}},
-            {FGame.RogueCompany, new FEndpoint[]{new (), new ()}},
-            {FGame.SwGame, new FEndpoint[]{new (), new ()}},
-            {FGame.Platform, new FEndpoint[]{new (), new ()}},
-            {FGame.BendGame, new FEndpoint[]{new (), new ()}},
-            {FGame.TslGame, new FEndpoint[]{new (), new ()}},
-            {FGame.PortalWars, new FEndpoint[]{new (), new ()}},
-            {FGame.Gameface, new FEndpoint[]{new (), new ()}},
-            {FGame.Athena, new FEndpoint[]{new (), new ()}},
-            {FGame.MultiVersus, new FEndpoint[]{new (), new ()}},
-            {FGame.Hotta, new FEndpoint[]{new (), new ()}},
-            {FGame.eFootball, new FEndpoint[]{new (), new ()}}
-        };
-        public IDictionary<FGame, FEndpoint[]> CustomEndpoints
-        {
-            get => _customEndpoints;
-            set => SetProperty(ref _customEndpoints, value);
-        }
-
-        private IDictionary<FGame, IList<CustomDirectory>> _customDirectories = new Dictionary<FGame, IList<CustomDirectory>>
-        {
-            {FGame.Unknown, new List<CustomDirectory>()},
-            {
-                FGame.FortniteGame, new List<CustomDirectory>
-                {
-                    new("Cosmetics", "FortniteGame/Content/Athena/Items/Cosmetics/"),
-                    new("Emotes [AUDIO]", "FortniteGame/Content/Athena/Sounds/Emotes/"),
-                    new("Music Packs [AUDIO]", "FortniteGame/Content/Athena/Sounds/MusicPacks/"),
-                    new("Weapons", "FortniteGame/Content/Athena/Items/Weapons/"),
-                    new("Strings", "FortniteGame/Content/Localization/")
-                }
-            },
-            {
-                FGame.ShooterGame, new List<CustomDirectory>
-                {
-                    new("Audio", "ShooterGame/Content/WwiseAudio/Media/"),
-                    new("Characters", "ShooterGame/Content/Characters/"),
-                    new("Gun Buddies", "ShooterGame/Content/Equippables/Buddies/"),
-                    new("Cards and Sprays", "ShooterGame/Content/Personalization/"),
-                    new("Shop Backgrounds", "ShooterGame/Content/UI/OutOfGame/MainMenu/Store/Shared/Textures/"),
-                    new("Weapon Renders", "ShooterGame/Content/UI/Screens/OutOfGame/MainMenu/Collection/Assets/Large/")
-                }
-            },
-            {
-                FGame.DeadByDaylight, new List<CustomDirectory>
-                {
-                    new("Audio", "DeadByDaylight/Content/WwiseAudio/Windows/"),
-                    new("Characters", "DeadByDaylight/Content/Characters/"),
-                    new("Icons", "DeadByDaylight/Content/UI/UMGAssets/Icons/"),
-                    new("Strings", "DeadByDaylight/Content/Localization/")
-                }
-            },
-            {FGame.OakGame, new List<CustomDirectory>()},
-            {
-                FGame.Dungeons, new List<CustomDirectory>
-                {
-                    new("Levels", "Dungeons/Content/data/Lovika/Levels"),
-                    new("Friendlies", "Dungeons/Content/Actor/Characters/Friendlies"),
-                    new("Skins", "Dungeons/Content/Actor/Characters/Player/Master/Skins"),
-                    new("Strings", "Dungeons/Content/Localization/")
-                }
-            },
-            {
-                FGame.WorldExplorers, new List<CustomDirectory>
-                {
-                    new("Loot", "WorldExplorers/Content/Loot/"),
-                    new("Strings", "WorldExplorers/Content/Localization/")
-                }
-            },
-            {
-                FGame.g3, new List<CustomDirectory>
-                {
-                    new("Cosmetics", "g3/Content/Blueprints/Cosmetics/"),
-                    new("Strings", "g3/Content/Localization/")
-                }
-            },
-            {FGame.StateOfDecay2, new List<CustomDirectory>()},
-            {FGame.Prospect, new List<CustomDirectory>()},
-            {FGame.Indiana, new List<CustomDirectory>()},
-            {FGame.RogueCompany, new List<CustomDirectory>()},
-            {FGame.SwGame, new List<CustomDirectory>()},
-            {FGame.Platform, new List<CustomDirectory>()},
-            {FGame.BendGame, new List<CustomDirectory>()},
-            {FGame.TslGame, new List<CustomDirectory>()},
-            {FGame.PortalWars, new List<CustomDirectory>()},
-            {FGame.Gameface, new List<CustomDirectory>()},
-            {FGame.Athena, new List<CustomDirectory>()},
-            {FGame.MultiVersus, new List<CustomDirectory>()},
-            {FGame.Hotta, new List<CustomDirectory>()},
-            {FGame.eFootball, new List<CustomDirectory>()}
-        };
-        public IDictionary<FGame, IList<CustomDirectory>> CustomDirectories
-        {
-            get => _customDirectories;
-            set => SetProperty(ref _customDirectories, value);
-        }
-
-        private DateTime _lastAesReload = DateTime.Today.AddDays(-1);
-        public DateTime LastAesReload
-        {
-            get => _lastAesReload;
-            set => SetProperty(ref _lastAesReload, value);
         }
 
         private AuthResponse _lastAuthResponse = new() {AccessToken = "", ExpiresAt = DateTime.Now};
@@ -708,6 +422,13 @@ namespace FModel.Settings
         {
             get => _saveMorphTargets;
             set => SetProperty(ref _saveMorphTargets, value);
+        }
+
+        private bool _saveEmbeddedMaterials = true;
+        public bool SaveEmbeddedMaterials
+        {
+            get => _saveEmbeddedMaterials;
+            set => SetProperty(ref _saveEmbeddedMaterials, value);
         }
 
         private bool _saveSkeletonAsMesh;

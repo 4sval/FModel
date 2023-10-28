@@ -1,14 +1,15 @@
 ﻿using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse.UE4.Assets.Exports.Material;
+using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using FModel.Views.Snooper.Shading;
 
 namespace FModel.Views.Snooper.Models;
 
-public class Cube : Model
+public class StaticModel : UModel
 {
-    public Cube(CStaticMesh mesh, UMaterialInterface unrealMaterial) : base(unrealMaterial)
+    public StaticModel(UMaterialInterface unrealMaterial, CStaticMesh staticMesh) : base(unrealMaterial)
     {
-        var lod = mesh.LODs[0];
+        var lod = staticMesh.LODs[LodLevel];
 
         Indices = new uint[lod.Indices.Value.Length];
         for (int i = 0; i < Indices.Length; i++)
@@ -44,5 +45,18 @@ public class Cube : Model
         Sections[0] = new Section(0, Indices.Length, 0);
 
         AddInstance(Transform.Identity);
+
+        Box = staticMesh.BoundingBox * 1.5f * Constants.SCALE_DOWN_RATIO;
+    }
+
+    public StaticModel(UStaticMesh export, CStaticMesh staticMesh, Transform transform = null)
+        : base(export, staticMesh.LODs[LodLevel], export.Materials, staticMesh.LODs[LodLevel].Verts, staticMesh.LODs.Count, transform)
+    {
+        Box = staticMesh.BoundingBox * Constants.SCALE_DOWN_RATIO;
+        for (int i = 0; i < export.Sockets.Length; i++)
+        {
+            if (export.Sockets[i].Load<UStaticMeshSocket>() is not { } socket) continue;
+            Sockets.Add(new Socket(socket));
+        }
     }
 }

@@ -8,6 +8,7 @@ using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using SkiaSharp;
 
 namespace FModel.Views.Snooper.Shading;
 
@@ -78,7 +79,7 @@ public class Texture : IDisposable
         GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, _target, _handle, 0);
     }
 
-    public Texture(byte[] data, int width, int height, UTexture2D texture2D) : this(TextureType.Normal)
+    public Texture(SKBitmap bitmap, UTexture2D texture2D) : this(TextureType.Normal)
     {
         Type = texture2D.ExportType;
         Guid = texture2D.LightingGuid;
@@ -87,11 +88,11 @@ public class Texture : IDisposable
         Format = texture2D.Format;
         ImportedWidth = texture2D.ImportedSize.X;
         ImportedHeight = texture2D.ImportedSize.Y;
-        Width = width;
-        Height = height;
+        Width = bitmap.Width;
+        Height = bitmap.Height;
         Bind(TextureUnit.Texture0);
 
-        GL.TexImage2D(_target, 0, texture2D.SRGB ? PixelInternalFormat.Srgb : PixelInternalFormat.Rgb, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
+        GL.TexImage2D(_target, 0, texture2D.SRGB ? PixelInternalFormat.Srgb : PixelInternalFormat.Rgb, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, bitmap.Bytes);
         GL.TexParameter(_target, TextureParameterName.TextureMinFilter, (int) TextureMinFilter.LinearMipmapLinear);
         GL.TexParameter(_target, TextureParameterName.TextureMagFilter, (int) TextureMagFilter.Linear);
         GL.TexParameter(_target, TextureParameterName.TextureBaseLevel, 0);

@@ -7,25 +7,29 @@ namespace FModel.Views.Snooper.Buffers;
 public class VertexArrayObject<TVertexType, TIndexType> : IDisposable where TVertexType : unmanaged where TIndexType : unmanaged
 {
     private readonly int _handle;
+    private readonly int _sizeOfVertex;
+    private readonly int _sizeOfIndex;
 
-    public VertexArrayObject(BufferObject<TVertexType> vbo, BufferObject<TIndexType> ebo)
+    public unsafe VertexArrayObject(BufferObject<TVertexType> vbo, BufferObject<TIndexType> ebo)
     {
         _handle = GL.GenVertexArray();
+        _sizeOfVertex = sizeof(TVertexType);
+        _sizeOfIndex = sizeof(TIndexType);
 
         Bind();
         vbo.Bind();
         ebo.Bind();
     }
 
-    public unsafe void VertexAttributePointer(uint index, int count, VertexAttribPointerType type, int vertexSize, int offset)
+    public void VertexAttributePointer(uint index, int count, VertexAttribPointerType type, int vertexSize, int offset)
     {
         switch (type)
         {
             case VertexAttribPointerType.Int:
-                GL.VertexAttribIPointer(index, count, VertexAttribIntegerType.Int, vertexSize * sizeof(TVertexType), (IntPtr) (offset * sizeof(TVertexType)));
+                GL.VertexAttribIPointer(index, count, VertexAttribIntegerType.Int, vertexSize * _sizeOfVertex, (IntPtr) (offset * _sizeOfVertex));
                 break;
             default:
-                GL.VertexAttribPointer(index, count, type, false, vertexSize * sizeof(TVertexType), offset * sizeof(TVertexType));
+                GL.VertexAttribPointer(index, count, type, false, vertexSize * _sizeOfVertex, offset * _sizeOfVertex);
                 break;
         }
         GL.EnableVertexAttribArray(index);

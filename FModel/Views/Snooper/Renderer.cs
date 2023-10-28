@@ -24,6 +24,8 @@ using FModel.Views.Snooper.Buffers;
 using FModel.Views.Snooper.Lights;
 using FModel.Views.Snooper.Models;
 using FModel.Views.Snooper.Shading;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+using UModel = FModel.Views.Snooper.Models.UModel;
 
 namespace FModel.Views.Snooper;
 
@@ -43,12 +45,14 @@ public class Renderer : IDisposable
     private Shader _shader;
     private Shader _outline;
     private Shader _light;
+    private Shader _bone;
     private bool _saveCameraMode;
 
     public bool ShowSkybox;
     public bool ShowGrid;
     public bool ShowLights;
     public bool AnimateWithRotationOnly;
+    public bool IsSkeletonTreeOpen;
     public VertexColor Color;
 
     public Camera CameraOp { get; }
@@ -83,6 +87,9 @@ public class Renderer : IDisposable
             case USkeletalMesh sk:
                 LoadSkeletalMesh(sk);
                 break;
+            case USkeleton skel:
+                LoadSkeleton(skel);
+                break;
             case UMaterialInstance mi:
                 LoadMaterialInstance(mi);
                 break;
@@ -90,6 +97,7 @@ public class Renderer : IDisposable
                 LoadWorld(cancellationToken, wd, Transform.Identity);
                 break;
         }
+        SetupCamera();
     }
 
     public void Swap(UMaterialInstance unrealMaterial)
@@ -103,7 +111,7 @@ public class Renderer : IDisposable
     public void Animate(UObject anim) => Animate(anim, Options.SelectedModel);
     private void Animate(UObject anim, FGuid guid)
     {
-        if (!Options.TryGetModel(guid, out var model) || !model.HasSkeleton)
+        if (!Options.TryGetModel(guid, out var m) || m is not SkeletalModel model)
             return;
 
         float maxElapsedTime;
@@ -114,7 +122,7 @@ public class Renderer : IDisposable
                 var animSet = skeleton.ConvertAnims(animSequence);
                 var animation = new Animation(animSequence, animSet, guid);
                 maxElapsedTime = animation.TotalElapsedTime;
-                model.Skeleton.Animate(animSet, AnimateWithRotationOnly);
+                model.Skeleton.Animate(animSet);
                 Options.AddAnimation(animation);
                 break;
             }
@@ -123,7 +131,7 @@ public class Renderer : IDisposable
                 var animSet = skeleton.ConvertAnims(animMontage);
                 var animation = new Animation(animMontage, animSet, guid);
                 maxElapsedTime = animation.TotalElapsedTime;
-                model.Skeleton.Animate(animSet, AnimateWithRotationOnly);
+                model.Skeleton.Animate(animSet);
                 Options.AddAnimation(animation);
 
                 foreach (var notifyEvent in animMontage.Notifies)
@@ -140,32 +148,39 @@ public class Renderer : IDisposable
                         t.Scale = offset.Scale3D;
                     }
 
+                    UModel addedModel = null;
                     switch (export)
                     {
                         case UStaticMesh st:
                         {
                             guid = st.LightingGuid;
-                            if (Options.TryGetModel(guid, out var instancedModel))
-                                instancedModel.AddInstance(t);
+                            if (Options.TryGetModel(guid, out addedModel))
+                            {
+                                addedModel.AddInstance(t);
+                            }
                             else if (st.TryConvert(out var mesh))
-                                Options.Models[guid] = new Model(st, mesh, t);
+                            {
+                                addedModel = new StaticModel(st, mesh, t);
+                                Options.Models[guid] = addedModel;
+                            }
                             break;
                         }
                         case USkeletalMesh sk:
                         {
                             guid = Guid.NewGuid();
                             if (!Options.Models.ContainsKey(guid) && sk.TryConvert(out var mesh))
-                                Options.Models[guid] = new Model(sk, mesh, t);
+                            {
+                                addedModel = new SkeletalModel(sk, mesh, t);
+                                Options.Models[guid] = addedModel;
+                            }
                             break;
                         }
-                        default:
-                            throw new ArgumentException();
                     }
 
-                    if (!Options.TryGetModel(guid, out var addedModel))
-                        continue;
+                    if (addedModel == null)
+                        throw new ArgumentException("Unknown model type");
 
-                    addedModel.IsAnimatedProp = true;
+                    addedModel.IsProp = true;
                     if (notifyClass.TryGetValue(out UObject skeletalMeshPropAnimation, "SkeletalMeshPropAnimation", "Animation"))
                         Animate(skeletalMeshPropAnimation, guid);
                     if (notifyClass.TryGetValue(out FName socketName, "SocketName"))
@@ -178,9 +193,10 @@ public class Renderer : IDisposable
                         if (notifyClass.TryGetValue(out FVector scale, "Scale"))
                             t.Scale = scale;
 
-                        var s = new Socket($"TL_{addedModel.Name}", socketName, t, true);
+                        var s = new Socket($"ANIM_{addedModel.Name}", socketName, t, true);
                         model.Sockets.Add(s);
-                        addedModel.AttachModel(model, s, new SocketAttachementInfo { Guid = guid, Instance = addedModel.SelectedInstance });
+                        addedModel.Attachments.Attach(model, addedModel.GetTransform(), s,
+                            new SocketAttachementInfo { Guid = guid, Instance = addedModel.SelectedInstance });
                     }
                 }
                 break;
@@ -190,7 +206,7 @@ public class Renderer : IDisposable
                 var animSet = skeleton.ConvertAnims(animComposite);
                 var animation = new Animation(animComposite, animSet, guid);
                 maxElapsedTime = animation.TotalElapsedTime;
-                model.Skeleton.Animate(animSet, AnimateWithRotationOnly);
+                model.Skeleton.Animate(animSet);
                 Options.AddAnimation(animation);
                 break;
             }
@@ -210,12 +226,13 @@ public class Renderer : IDisposable
         _shader = new Shader();
         _outline = new Shader("outline");
         _light = new Shader("light");
+        _bone = new Shader("bone");
 
         Picking.Setup();
         Options.SetupModelsAndLights();
     }
 
-    public void Render(float deltaSeconds)
+    public void Render()
     {
         var viewMatrix = CameraOp.GetViewMatrix();
         var projMatrix = CameraOp.GetProjectionMatrix();
@@ -227,23 +244,11 @@ public class Renderer : IDisposable
         for (int i = 0; i < 5; i++)
             _shader.SetUniform($"bVertexColors[{i}]", i == (int) Color);
 
-        // update animations
-        if (Options.Animations.Count > 0) Options.Tracker.Update(deltaSeconds);
-        foreach (var animation in Options.Animations)
-        {
-            animation.TimeCalculation(Options.Tracker.ElapsedTime);
-            foreach (var guid in animation.AttachedModels.Where(guid => Options.Models[guid].HasSkeleton))
-            {
-                Options.Models[guid].Skeleton.UpdateAnimationMatrices(animation.CurrentSequence, animation.FrameInSequence);
-            }
-        }
-
         // render model pass
         foreach (var model in Options.Models.Values)
         {
-            model.UpdateMatrices(Options);
-            if (!model.Show) continue;
-            model.Render(_shader);
+            if (!model.IsVisible) continue;
+            model.Render(_shader, Color == VertexColor.TextureCoordinates ? Options.Icons["checker"] : null);
         }
 
         {   // light pass
@@ -259,15 +264,65 @@ public class Renderer : IDisposable
                 Options.Lights[i].Render(_light);
         }
 
-        // outline pass
-        if (Options.TryGetModel(out var selected) && selected.Show)
+        // debug + outline pass
+        if (Options.TryGetModel(out var selected) && selected.IsVisible)
         {
+            if (IsSkeletonTreeOpen && selected is SkeletalModel skeletalModel)
+            {
+                _bone.Render(viewMatrix, projMatrix);
+                skeletalModel.RenderBones(_bone);
+            }
+
             _outline.Render(viewMatrix, CameraOp.Position, projMatrix);
-            selected.Render(_outline, true);
+            selected.Render(_outline, Color == VertexColor.TextureCoordinates ? Options.Icons["checker"] : null, true);
         }
 
         // picking pass (dedicated FBO, binding to 0 afterward)
         Picking.Render(viewMatrix, projMatrix, Options.Models);
+    }
+
+    public void Update(Snooper wnd, float deltaSeconds)
+    {
+        if (Options.Animations.Count > 0) Options.Tracker.Update(deltaSeconds);
+        foreach (var animation in Options.Animations)
+        {
+            animation.TimeCalculation(Options.Tracker.ElapsedTime);
+            foreach (var guid in animation.AttachedModels)
+            {
+                if (Options.Models[guid] is not SkeletalModel skeletalModel) continue;
+                skeletalModel.Skeleton.UpdateAnimationMatrices(animation, AnimateWithRotationOnly);
+            }
+        }
+
+        {
+            foreach (var model in Options.Models.Values)
+            {
+                model.Update(Options);
+            }
+            if (IsSkeletonTreeOpen && Options.TryGetModel(out var selected) && selected is SkeletalModel { IsVisible: true } skeletalModel)
+            {
+                skeletalModel.Skeleton.UpdateVertices();
+            }
+        }
+
+        CameraOp.Modify(wnd.KeyboardState, deltaSeconds);
+
+        if (wnd.KeyboardState.IsKeyPressed(Keys.Z) &&
+            Options.TryGetModel(out var selectedModel) &&
+            selectedModel is SkeletalModel)
+        {
+            Options.RemoveAnimations();
+            Options.AnimateMesh(true);
+            wnd.WindowShouldClose(true, false);
+        }
+        if (wnd.KeyboardState.IsKeyPressed(Keys.Space))
+            Options.Tracker.IsPaused = !Options.Tracker.IsPaused;
+        if (wnd.KeyboardState.IsKeyPressed(Keys.Delete))
+            Options.RemoveModel(Options.SelectedModel);
+        if (wnd.KeyboardState.IsKeyPressed(Keys.H))
+            wnd.WindowShouldClose(true, false);
+        if (wnd.KeyboardState.IsKeyPressed(Keys.Escape))
+            wnd.WindowShouldClose(true, true);
     }
 
     private void LoadStaticMesh(UStaticMesh original)
@@ -283,9 +338,8 @@ public class Renderer : IDisposable
         if (!original.TryConvert(out var mesh))
             return;
 
-        Options.Models[guid] = new Model(original, mesh);
+        Options.Models[guid] = new StaticModel(original, mesh);
         Options.SelectModel(guid);
-        SetupCamera(Options.Models[guid].Box);
     }
 
     private void LoadSkeletalMesh(USkeletalMesh original)
@@ -293,14 +347,25 @@ public class Renderer : IDisposable
         var guid = new FGuid((uint) original.GetFullName().GetHashCode());
         if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh)) return;
 
-        Options.Models[guid] = new Model(original, mesh);
+        var skeletalModel = new SkeletalModel(original, mesh);
+        Options.Models[guid] = skeletalModel;
         Options.SelectModel(guid);
-        SetupCamera(Options.Models[guid].Box);
+    }
+
+    private void LoadSkeleton(USkeleton original)
+    {
+        var guid = original.Guid;
+        if (Options.Models.ContainsKey(guid) || !original.TryConvert(out _, out var box)) return;
+
+        var fakeSkeletalModel = new SkeletalModel(original, box);
+        Options.Models[guid] = fakeSkeletalModel;
+        Options.SelectModel(guid);
+        IsSkeletonTreeOpen = true;
     }
 
     private void LoadMaterialInstance(UMaterialInstance original)
     {
-        if (!Utils.TryLoadObject("Engine/Content/EditorMeshes/EditorCube.EditorCube", out UStaticMesh editorCube))
+        if (!Utils.TryLoadObject("Engine/Content/BasicShapes/Cube.Cube", out UStaticMesh editorCube))
             return;
 
         var guid = editorCube.LightingGuid;
@@ -314,12 +379,15 @@ public class Renderer : IDisposable
         if (!editorCube.TryConvert(out var mesh))
             return;
 
-        Options.Models[guid] = new Cube(mesh, original);
+        Options.Models[guid] = new StaticModel(original, mesh);
         Options.SelectModel(guid);
-        SetupCamera(Options.Models[guid].Box);
     }
 
-    private void SetupCamera(FBox box) => CameraOp.Setup(box);
+    private void SetupCamera()
+    {
+        if (Options.TryGetModel(out var model))
+            CameraOp.Setup(model.Box);
+    }
 
     private void LoadWorld(CancellationToken cancellationToken, UWorld original, Transform transform)
     {
@@ -400,14 +468,15 @@ public class Renderer : IDisposable
             Scale = staticMeshComp.GetOrDefault("RelativeScale3D", FVector.OneVector)
         };
 
+        OverrideVertexColors(staticMeshComp, m);
         if (Options.TryGetModel(guid, out var model))
         {
             model.AddInstance(t);
         }
         else if (m.TryConvert(out var mesh))
         {
-            model = new Model(m, mesh, t);
-            model.TwoSided = actor.GetOrDefault("bMirrored", staticMeshComp.GetOrDefault("bDisallowMeshPaintPerInstance", model.TwoSided));
+            model = new StaticModel(m, mesh, t);
+            model.IsTwoSided = actor.GetOrDefault("bMirrored", staticMeshComp.GetOrDefault("bDisallowMeshPaintPerInstance", model.IsTwoSided));
 
             if (actor.TryGetValue(out FPackageIndex baseMaterial, "BaseMaterial") &&
                 actor.TryGetAllValues(out FPackageIndex[] textureData, "TextureData"))
@@ -473,6 +542,20 @@ public class Renderer : IDisposable
         }
     }
 
+    private void OverrideVertexColors(UStaticMeshComponent staticMeshComp, UStaticMesh staticMesh)
+    {
+        if (staticMeshComp.LODData is not { Length: > 0 } || staticMesh.RenderData is not { LODs.Length: > 0 })
+            return;
+
+        for (var lod = 0; lod < staticMeshComp.LODData.Length; lod++)
+        {
+            var vertexColors = staticMeshComp.LODData[lod].OverrideVertexColors;
+            if (vertexColors == null) continue;
+
+            staticMesh.RenderData.LODs[lod].ColorVertexBuffer = vertexColors;
+        }
+    }
+
     private void WorldTextureData(Material material, UObject textureData, string name, string key)
     {
         if (textureData.TryGetValue(out FPackageIndex package, name) && package.Load() is UTexture2D texture)
@@ -524,6 +607,7 @@ public class Renderer : IDisposable
         _shader?.Dispose();
         _outline?.Dispose();
         _light?.Dispose();
+        _bone?.Dispose();
         Picking?.Dispose();
         Options?.Dispose();
     }

@@ -52,56 +52,6 @@ public enum EDiscordRpc
     Never
 }
 
-public enum FGame
-{
-    [Description("Unknown")]
-    Unknown,
-    [Description("Fortnite")]
-    FortniteGame,
-    [Description("Valorant")]
-    ShooterGame,
-    [Description("Dead By Daylight")]
-    DeadByDaylight,
-    [Description("Borderlands 3")]
-    OakGame,
-    [Description("Minecraft Dungeons")]
-    Dungeons,
-    [Description("Battle Breakers")]
-    WorldExplorers,
-    [Description("Spellbreak")]
-    g3,
-    [Description("State Of Decay 2")]
-    StateOfDecay2,
-    [Description("The Cycle")]
-    Prospect,
-    [Description("The Outer Worlds")]
-    Indiana,
-    [Description("Rogue Company")]
-    RogueCompany,
-    [Description("Star Wars: Jedi Fallen Order")]
-    SwGame,
-    [Description("Core")]
-    Platform,
-    [Description("Days Gone")]
-    BendGame,
-    [Description("PLAYERUNKNOWN'S BATTLEGROUNDS")]
-    TslGame,
-    [Description("Splitgate")]
-    PortalWars,
-    [Description("GTA: The Trilogy - Definitive Edition")]
-    Gameface,
-    [Description("Sea of Thieves")]
-    Athena,
-    [Description("DEPRECATED")]
-    PandaGame,
-    [Description("MultiVersus")]
-    MultiVersus,
-    [Description("Tower of Fantasy")]
-    Hotta,
-    [Description("eFootball 2023")]
-    eFootball
-}
-
 public enum ELoadingMode
 {
     [Description("Single")]

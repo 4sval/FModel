@@ -76,11 +76,11 @@ public class Material : IDisposable
 
         if (uvCount < 1 || Parameters.IsNull)
         {
-            Diffuse = new[] { new Texture(new FLinearColor(1f, 0f, 0f, 1f)) };
+            Diffuse = new[] { options.Icons["checker"] };
             Normals = new[] { new Texture(new FLinearColor(0.498f, 0.498f, 0.996f, 1f)) };
             SpecularMasks = new [] { new Texture(new FLinearColor(1f, 0.5f, 0.5f, 1f)) };
             Emissive = new Texture[1];
-            DiffuseColor = new[] { new Vector4(0.5f) };
+            DiffuseColor = new[] { Vector4.One };
             EmissiveColor = new[] { Vector4.One };
         }
         else
@@ -98,7 +98,7 @@ public class Material : IDisposable
             }
 
             {   // ambient occlusion + color boost
-                if (Parameters.TryGetTexture2d(out var original, "M", "AEM", "AO") &&
+                if (Parameters.TryGetTexture2d(out var original, "M", "AEM", "AO", "Mask") &&
                     !original.Name.Equals("T_BlackMask") && options.TryGetTexture(original, false, out var transformed))
                 {
                     HasAo = true;
@@ -132,6 +132,22 @@ public class Material : IDisposable
                         "Emissive 2 UV Positioning (RG)UpperLeft (BA)LowerRight",
                         "EmissiveUVPositioning (RG)UpperLeft (BA)LowerRight"))
                     EmissiveRegion = new Vector4(EmissiveUVs.R, EmissiveUVs.G, EmissiveUVs.B, EmissiveUVs.A);
+
+                if ((Parameters.TryGetSwitch(out var swizzleRoughnessToGreen, "SwizzleRoughnessToGreen") && swizzleRoughnessToGreen) ||
+                    Parameters.Textures.ContainsKey("SRM"))
+                {
+                    foreach (var specMask in SpecularMasks)
+                    {
+                        specMask.SwizzleMask = new []
+                        {
+                            (int) PixelFormat.Red,
+                            (int) PixelFormat.Blue,
+                            (int) PixelFormat.Green,
+                            (int) PixelFormat.Alpha
+                        };
+                        specMask.Swizzle();
+                    }
+                }
             }
         }
     }
@@ -301,7 +317,7 @@ public class Material : IDisposable
         }
     }
 
-    public bool ImGuiTextures(Dictionary<string, Texture> icons, Model model)
+    public bool ImGuiTextures(Dictionary<string, Texture> icons, UModel model)
     {
         if (ImGui.BeginTable("material_textures", 2))
         {

@@ -5,9 +5,9 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>FModel.ico</ApplicationIcon>
-    <Version>4.4.3.1</Version>
-    <AssemblyVersion>4.4.3.1</AssemblyVersion>
-    <FileVersion>4.4.3.1</FileVersion>
+    <Version>4.4.3.4</Version>
+    <AssemblyVersion>4.4.3.4</AssemblyVersion>
+    <FileVersion>4.4.3.4</FileVersion>
     <IsPackable>false</IsPackable>
     <IsPublishable>true</IsPublishable>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
@@ -77,6 +77,7 @@
     <None Remove="Resources\linux.png" />
     <None Remove="Resources\stateofdecay2.png" />
     <None Remove="Resources\T_Placeholder_Item_Image.png" />
+    <None Remove="Resources\checker.png" />
     <None Remove="Resources\T_ClipSize_Weapon_Stats.png" />
     <None Remove="Resources\T_DamagePerBullet_Weapon_Stats.png" />
     <None Remove="Resources\T_ReloadTime_Weapon_Stats.png" />
@@ -107,6 +108,8 @@
     <None Remove="Resources\picking.vert" />
     <None Remove="Resources\light.frag" />
     <None Remove="Resources\light.vert" />
+    <None Remove="Resources\bone.frag" />
+    <None Remove="Resources\bone.vert" />
   </ItemGroup>
 
   <ItemGroup>
@@ -130,24 +133,26 @@
     <EmbeddedResource Include="Resources\picking.vert" />
     <EmbeddedResource Include="Resources\light.frag" />
     <EmbeddedResource Include="Resources\light.vert" />
+    <EmbeddedResource Include="Resources\bone.frag" />
+    <EmbeddedResource Include="Resources\bone.vert" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AdonisUI" Version="1.17.1" />
     <PackageReference Include="AdonisUI.ClassicTheme" Version="1.17.1" />
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.8.2" />
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.8.3" />
     <PackageReference Include="AvalonEdit" Version="6.3.0.90" />
     <PackageReference Include="CSCore" Version="1.2.1.2" />
-    <PackageReference Include="DiscordRichPresence" Version="1.1.3.18" />
-    <PackageReference Include="ImGui.NET" Version="1.89.5" />
+    <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
+    <PackageReference Include="ImGui.NET" Version="1.89.7.1" />
     <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.3.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NVorbis" Version="0.10.5" />
     <PackageReference Include="Oodle.NET" Version="1.0.1" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
-    <PackageReference Include="OpenTK" Version="4.7.7" />
+    <PackageReference Include="OpenTK" Version="4.8.0" />
     <PackageReference Include="RestSharp" Version="110.2.0" />
-    <PackageReference Include="Serilog" Version="2.12.0" />
+    <PackageReference Include="Serilog" Version="3.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
     <PackageReference Include="SkiaSharp.HarfBuzz" Version="2.88.3" />
@@ -203,6 +208,7 @@
     <Resource Include="Resources\linux.png" />
     <Resource Include="Resources\stateofdecay2.png" />
     <Resource Include="Resources\T_Placeholder_Item_Image.png" />
+    <Resource Include="Resources\checker.png" />
     <Resource Include="Resources\T_ClipSize_Weapon_Stats.png" />
     <Resource Include="Resources\T_DamagePerBullet_Weapon_Stats.png" />
     <Resource Include="Resources\T_ReloadTime_Weapon_Stats.png" />

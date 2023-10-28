@@ -228,7 +228,7 @@ void main()
     }
     else if (bVertexColors[4])
     {
-        FragColor = vec4(fTexCoords, 0.0, 1.0);
+        FragColor = SamplerToVector(uParameters.Diffuse[0].Sampler);
     }
     else
     {

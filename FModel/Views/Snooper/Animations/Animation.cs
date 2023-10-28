@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Numerics;
+using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Animations.PSA;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Objects.Core.Misc;
-using CUE4Parse.Utils;
+using FModel.Settings;
+using FModel.Views.Snooper.Models;
 using ImGuiNET;
 
 namespace FModel.Views.Snooper.Animations;
@@ -12,21 +15,16 @@ namespace FModel.Views.Snooper.Animations;
 public class Animation : IDisposable
 {
     private readonly UObject _export;
-    private readonly CAnimSet _animSet;
 
+    public readonly CAnimSet UnrealAnim;
     public readonly string Path;
     public readonly string Name;
     public readonly Sequence[] Sequences;
     public readonly float StartTime;                // Animation Start Time
     public readonly float EndTime;                  // Animation End Time
     public readonly float TotalElapsedTime;         // Animation Max Time
-    public readonly string TargetSkeleton;
+    public readonly Dictionary<int, float> Framing;
 
-    public int CurrentSequence;
-    public int FrameInSequence;                     // Current Sequence's Frame to Display
-
-    public string Label =>
-        $"Retarget: {TargetSkeleton}\nSequences: {CurrentSequence + 1}/{Sequences.Length}\nFrames: {FrameInSequence}/{Sequences[CurrentSequence].EndFrame}";
     public bool IsActive;
     public bool IsSelected;
 
@@ -38,23 +36,22 @@ public class Animation : IDisposable
         Path = _export.GetPathName();
         Name = _export.Name;
         Sequences = Array.Empty<Sequence>();
+        Framing = new Dictionary<int, float>();
         AttachedModels = new List<FGuid>();
     }
 
     public Animation(UObject export, CAnimSet animSet) : this(export)
     {
-        _animSet = animSet;
-        TargetSkeleton = _animSet.Skeleton.Name;
+        UnrealAnim = animSet;
 
-        Sequences = new Sequence[_animSet.Sequences.Count];
+        Sequences = new Sequence[UnrealAnim.Sequences.Count];
         for (int i = 0; i < Sequences.Length; i++)
         {
-            Sequences[i] = new Sequence(_animSet.Sequences[i]);
-
+            Sequences[i] = new Sequence(UnrealAnim.Sequences[i]);
             EndTime = Sequences[i].EndTime;
-            TotalElapsedTime += _animSet.Sequences[i].NumFrames * Sequences[i].TimePerFrame;
         }
 
+        TotalElapsedTime = animSet.TotalAnimTime;
         if (Sequences.Length > 0)
             StartTime = Sequences[0].StartTime;
     }
@@ -68,25 +65,16 @@ public class Animation : IDisposable
     {
         for (int i = 0; i < Sequences.Length; i++)
         {
-            if (elapsedTime < Sequences[i].EndTime && elapsedTime >= Sequences[i].StartTime)
+            var sequence = Sequences[i];
+            if (elapsedTime <= sequence.EndTime && elapsedTime >= sequence.StartTime)
             {
-                CurrentSequence = i;
-                break;
+                Framing[i] = (elapsedTime - sequence.StartTime) / sequence.TimePerFrame;
             }
+            else Framing.Remove(i);
         }
-        if (elapsedTime >= TotalElapsedTime) Reset();
 
-        var lastEndTime = 0.0f;
-        for (int s = 0; s < CurrentSequence; s++)
-            lastEndTime = Sequences[s].EndTime;
-
-        FrameInSequence = Math.Min(((elapsedTime - lastEndTime) / Sequences[CurrentSequence].TimePerFrame).FloorToInt(), Sequences[CurrentSequence].EndFrame);
-    }
-
-    private void Reset()
-    {
-        FrameInSequence = 0;
-        CurrentSequence = 0;
+        if (elapsedTime >= TotalElapsedTime)
+            Framing.Clear();
     }
 
     public void Dispose()
@@ -134,11 +122,11 @@ public class Animation : IDisposable
                 foreach ((var guid, var model) in s.Renderer.Options.Models)
                 {
                     var selected = AttachedModels.Contains(guid);
-                    if (ImGui.MenuItem(model.Name, null, selected, (model.HasSkeleton && !model.Skeleton.IsAnimated) || selected))
+                    if (model is SkeletalModel skeletalModel && ImGui.MenuItem(model.Name, null, selected, !skeletalModel.Skeleton.IsAnimated || selected))
                     {
                         if (selected) AttachedModels.Remove(guid); else AttachedModels.Add(guid);
-                        model.Skeleton.ResetAnimatedData(true);
-                        if (!selected) model.Skeleton.Animate(_animSet, s.Renderer.AnimateWithRotationOnly);
+                        skeletalModel.Skeleton.ResetAnimatedData(true);
+                        if (!selected) skeletalModel.Skeleton.Animate(UnrealAnim);
                     }
                 }
                 ImGui.EndMenu();
@@ -146,7 +134,7 @@ public class Animation : IDisposable
             if (ImGui.MenuItem("Save"))
             {
                 s.WindowShouldFreeze(true);
-                saver.Value = s.Renderer.Options.TrySave(_export, out saver.Label, out saver.Path);
+                saver.Value = new Exporter(_export).TryWriteToDir(new DirectoryInfo(UserSettings.Default.ModelDirectory), out saver.Label, out saver.Path);
                 s.WindowShouldFreeze(false);
             }
             ImGui.Separator();

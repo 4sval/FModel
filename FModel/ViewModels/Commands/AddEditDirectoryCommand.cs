@@ -1,5 +1,6 @@
 ﻿using AdonisUI.Controls;
 using FModel.Framework;
+using FModel.Settings;
 using FModel.Views;
 
 namespace FModel.ViewModels.Commands;

@@ -228,8 +228,8 @@ public class TabItem : ViewModel
         });
     }
 
-    public void AddImage(UTexture2D texture, bool save, bool updateUi)
-        => AddImage(texture.Name, texture.bRenderNearestNeighbor, texture.Decode(UserSettings.Default.OverridedPlatform), save, updateUi);
+    public void AddImage(UTexture texture, bool save, bool updateUi)
+        => AddImage(texture.Name, texture.RenderNearestNeighbor, texture.Decode(UserSettings.Default.CurrentDir.TexturePlatform), save, updateUi);
 
     public void AddImage(string name, bool rnn, SKBitmap[] img, bool save, bool updateUi)
     {

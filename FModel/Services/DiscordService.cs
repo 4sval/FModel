@@ -41,14 +41,14 @@ namespace FModel.Services
                 Details = $"{gameName} - Idling"
             };
 
-            _client.OnReady += (_, args) => Log.Information("{Username}#{Discriminator} ({UserId}) is now ready", args.User.Username, args.User.Discriminator, args.User.ID);
+            _client.OnReady += (_, args) => Log.Information("@{Username} ({UserId}) is now ready", args.User.Username, args.User.ID);
             _client.SetPresence(_currentPresence);
             _client.Initialize();
         }
 
         public void UpdatePresence(CUE4ParseViewModel viewModel) =>
             UpdatePresence(
-                $"{viewModel.Provider.GameDisplayName ?? viewModel.Provider.GameName} - {viewModel.Provider.MountedVfs.Count}/{viewModel.Provider.MountedVfs.Count + viewModel.Provider.UnloadedVfs.Count} Packages",
+                $"{viewModel.Provider.GameDisplayName ?? viewModel.Provider.InternalGameName} - {viewModel.Provider.MountedVfs.Count}/{viewModel.Provider.MountedVfs.Count + viewModel.Provider.UnloadedVfs.Count} Packages",
                 $"Mode: {UserSettings.Default.LoadingMode.GetDescription()} - {viewModel.SearchVm.ResultsCount:### ### ###} Loaded Assets".Trim());
 
         public void UpdatePresence(string details, string state)

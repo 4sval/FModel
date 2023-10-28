@@ -62,11 +62,11 @@ public class CUE4ParseViewModel : ViewModel
     private readonly Regex _fnLive = new(@"^FortniteGame(/|\\)Content(/|\\)Paks(/|\\)",
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
-    private FGame _game;
-    public FGame Game
+    private string _internalGameName;
+    public string InternalGameName
     {
-        get => _game;
-        set => SetProperty(ref _game, value);
+        get => _internalGameName;
+        set => SetProperty(ref _internalGameName, value);
     }
 
     private bool _modelIsOverwritingMaterial;
@@ -96,7 +96,7 @@ public class CUE4ParseViewModel : ViewModel
                 var scale = ImGuiController.GetDpiScale();
                 var htz = Snooper.GetMaxRefreshFrequency();
                 return _snooper = new Snooper(
-                    new GameWindowSettings { RenderFrequency = htz, UpdateFrequency = htz },
+                    new GameWindowSettings { UpdateFrequency = htz },
                     new NativeWindowSettings
                     {
                         Size = new OpenTK.Mathematics.Vector2i(
@@ -123,80 +123,48 @@ public class CUE4ParseViewModel : ViewModel
     public TabControlViewModel TabControl { get; }
     public ConfigIni BuildInfo { get; }
 
-    public CUE4ParseViewModel(string gameDirectory)
+    public CUE4ParseViewModel()
     {
+        var currentDir = UserSettings.Default.CurrentDir;
+        var gameDirectory = currentDir.GameDirectory;
+        var versionContainer = new VersionContainer(
+            game: currentDir.UeVersion, platform: currentDir.TexturePlatform,
+            customVersions: new FCustomVersionContainer(currentDir.Versioning.CustomVersions),
+            optionOverrides: currentDir.Versioning.Options,
+            mapStructTypesOverrides: currentDir.Versioning.MapStructTypes);
+
         switch (gameDirectory)
         {
             case Constants._FN_LIVE_TRIGGER:
             {
-                Game = FGame.FortniteGame;
-                Provider = new StreamedFileProvider("FortniteLive", true,
-                    new VersionContainer(
-                        UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
-                        customVersions: new FCustomVersionContainer(UserSettings.Default.OverridedCustomVersions[Game]),
-                        optionOverrides: UserSettings.Default.OverridedOptions[Game]));
+                InternalGameName = "FortniteGame";
+                Provider = new StreamedFileProvider("FortniteLive", true, versionContainer);
                 break;
             }
             case Constants._VAL_LIVE_TRIGGER:
             {
-                Game = FGame.ShooterGame;
-                Provider = new StreamedFileProvider("ValorantLive", true,
-                    new VersionContainer(
-                        UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
-                        customVersions: new FCustomVersionContainer(UserSettings.Default.OverridedCustomVersions[Game]),
-                        optionOverrides: UserSettings.Default.OverridedOptions[Game]));
+                InternalGameName = "ShooterGame";
+                Provider = new StreamedFileProvider("ValorantLive", true, versionContainer);
                 break;
             }
             default:
             {
-                var parent = gameDirectory.SubstringBeforeLast("\\Content").SubstringAfterLast("\\");
-                if (gameDirectory.Contains("eFootball")) parent = gameDirectory.SubstringBeforeLast("\\pak").SubstringAfterLast("\\");
-                Game = parent.ToEnum(FGame.Unknown);
-                var versions = new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
-                    customVersions: new FCustomVersionContainer(UserSettings.Default.OverridedCustomVersions[Game]),
-                    optionOverrides: UserSettings.Default.OverridedOptions[Game],
-                    mapStructTypesOverrides: UserSettings.Default.OverridedMapStructTypes[Game]);
-
-                switch (Game)
+                InternalGameName = gameDirectory.SubstringBeforeLast(gameDirectory.Contains("eFootball") ? "\\pak" : "\\Content").SubstringAfterLast("\\");
+                Provider = InternalGameName switch
                 {
-                    case FGame.StateOfDecay2:
-                    {
-                        Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
-                            {
-                                new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
-                                new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
-                            },
-                            SearchOption.AllDirectories, true, versions);
-                        break;
-                    }
-                    case FGame.FortniteGame:
-                        Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
-                            {
-                                new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\FortniteGame\\Saved\\PersistentDownloadDir\\InstalledBundles"),
-                            },
-                            SearchOption.AllDirectories, true, versions);
-                        break;
-                    case FGame.eFootball:
-                        Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
-                            {
-                                new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\KONAMI\\eFootball\\ST\\Download")
-                            },
-                            SearchOption.AllDirectories, true, versions);
-                        break;
-                    case FGame.Unknown when UserSettings.Default.ManualGames.TryGetValue(gameDirectory, out var settings):
-                    {
-                        versions = new VersionContainer(settings.OverridedGame, UserSettings.Default.OverridedPlatform,
-                            customVersions: new FCustomVersionContainer(settings.OverridedCustomVersions),
-                            optionOverrides: settings.OverridedOptions,
-                            mapStructTypesOverrides: settings.OverridedMapStructTypes);
-                        goto default;
-                    }
-                    default:
-                    {
-                        Provider = new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, true, versions);
-                        break;
-                    }
-                }
+                    "StateOfDecay2" => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
+                        new DirectoryInfo[]
+                        {
+                            new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
+                            new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
+                        }, SearchOption.AllDirectories, true, versionContainer),
+                    "eFootball" => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
+                        new DirectoryInfo[]
+                        {
+                            new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\KONAMI\\eFootball\\ST\\Download")
+                        }, SearchOption.AllDirectories, true, versionContainer),
+                    _ => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, true, versionContainer)
+                };
 
                 break;
             }
@@ -255,7 +223,7 @@ public class CUE4ParseViewModel : ViewModel
                                 }
                                 if (!_fnLive.IsMatch(fileManifest.Name)) continue;
 
-                                p.Initialize(fileManifest.Name, new Stream[] { fileManifest.GetStream() }
+                                p.RegisterVfs(fileManifest.Name, new Stream[] { fileManifest.GetStream() }
                                     , it => new FStreamArchive(it, manifest.FileManifests.First(x => x.Name.Equals(it)).GetStream(), p.Versions));
                             }
 
@@ -273,7 +241,7 @@ public class CUE4ParseViewModel : ViewModel
 
                             for (var i = 0; i < manifestInfo.Paks.Length; i++)
                             {
-                                p.Initialize(manifestInfo.Paks[i].GetFullName(), new[] { manifestInfo.GetPakStream(i) });
+                                p.RegisterVfs(manifestInfo.Paks[i].GetFullName(), new[] { manifestInfo.GetPakStream(i) });
                             }
 
                             FLogger.Append(ELog.Information, () =>
@@ -283,18 +251,18 @@ public class CUE4ParseViewModel : ViewModel
                     }
 
                     break;
-                case DefaultFileProvider d:
-                    d.Initialize();
-
+                case DefaultFileProvider:
                     var buildInfoPath = Path.Combine(UserSettings.Default.GameDirectory, "..\\..\\..\\Cloud\\BuildInfo.ini");
                     if (File.Exists(buildInfoPath)) BuildInfo.Read(new StringReader(File.ReadAllText(buildInfoPath)));
                     break;
             }
 
+            Provider.Initialize();
+
             foreach (var vfs in Provider.UnloadedVfs) // push files from the provider to the ui
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                if (vfs.Length <= 365 || !_hiddenArchives.IsMatch(vfs.Name)) continue;
+                if (!_hiddenArchives.IsMatch(vfs.Name)) continue;
 
                 GameDirectory.Add(vfs);
             }
@@ -336,7 +304,7 @@ public class CUE4ParseViewModel : ViewModel
             file.FileCount = vfs.FileCount;
         }
 
-        Game = Provider.GameName.ToEnum(Game);
+        InternalGameName = Provider.InternalGameName;
     }
 
     public void ClearProvider()
@@ -354,7 +322,7 @@ public class CUE4ParseViewModel : ViewModel
     {
         // game directory dependent, we don't have the provider game name yet since we don't have aes keys
         // except when this comes from the AES Manager
-        if (!UserSettings.IsEndpointValid(Game, EEndpointType.Aes, out var endpoint))
+        if (!UserSettings.IsEndpointValid(EEndpointType.Aes, out var endpoint))
             return;
 
         await _threadWorkerView.Begin(cancellationToken =>
@@ -362,7 +330,7 @@ public class CUE4ParseViewModel : ViewModel
             var aes = _apiEndpointView.DynamicApi.GetAesKeys(cancellationToken, endpoint.Url, endpoint.Path);
             if (aes is not { IsValid: true }) return;
 
-            UserSettings.Default.AesKeys[Game] = aes;
+            UserSettings.Default.CurrentDir.AesKeys = aes;
         });
     }
 
@@ -370,7 +338,7 @@ public class CUE4ParseViewModel : ViewModel
     {
         await _threadWorkerView.Begin(cancellationToken =>
         {
-            var info = _apiEndpointView.FModelApi.GetNews(cancellationToken, Provider.GameName);
+            var info = _apiEndpointView.FModelApi.GetNews(cancellationToken, Provider.InternalGameName);
             if (info == null) return;
 
             FLogger.Append(ELog.None, () =>
@@ -383,9 +351,9 @@ public class CUE4ParseViewModel : ViewModel
         });
     }
 
-    public Task InitMappings()
+    public Task InitMappings(bool force = false)
     {
-        if (!UserSettings.IsEndpointValid(Game, EEndpointType.Mapping, out var endpoint))
+        if (!UserSettings.IsEndpointValid(EEndpointType.Mapping, out var endpoint))
         {
             Provider.MappingsContainer = null;
             return Task.CompletedTask;
@@ -393,11 +361,10 @@ public class CUE4ParseViewModel : ViewModel
 
         return Task.Run(() =>
         {
+            var l = ELog.Information;
             if (endpoint.Overwrite && File.Exists(endpoint.FilePath))
             {
                 Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(endpoint.FilePath);
-                FLogger.Append(ELog.Information, () =>
-                    FLogger.Text($"Mappings pulled from '{endpoint.FilePath.SubstringAfterLast("\\")}'", Constants.WHITE, true));
             }
             else if (endpoint.IsValid)
             {
@@ -410,14 +377,12 @@ public class CUE4ParseViewModel : ViewModel
                         if (!mapping.IsValid) continue;
 
                         var mappingPath = Path.Combine(mappingsFolder, mapping.FileName);
-                        if (!File.Exists(mappingPath))
+                        if (force || !File.Exists(mappingPath))
                         {
                             _apiEndpointView.DownloadFile(mapping.Url, mappingPath);
                         }
 
                         Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(mappingPath);
-                        FLogger.Append(ELog.Information, () =>
-                            FLogger.Text($"Mappings pulled from '{mapping.FileName}'", Constants.WHITE, true));
                         break;
                     }
                 }
@@ -429,9 +394,14 @@ public class CUE4ParseViewModel : ViewModel
 
                     var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
                     Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
-                    FLogger.Append(ELog.Warning, () =>
-                        FLogger.Text($"Mappings pulled from '{latestUsmapInfo.Name}'", Constants.WHITE, true));
+                    l = ELog.Warning;
                 }
+            }
+
+            if (Provider.MappingsContainer is FileUsmapTypeMappingsProvider m)
+            {
+                Log.Information($"Mappings pulled from '{m.FileName}'");
+                FLogger.Append(l, () => FLogger.Text($"Mappings pulled from '{m.FileName}'", Constants.WHITE, true));
             }
         });
     }
@@ -444,13 +414,24 @@ public class CUE4ParseViewModel : ViewModel
 
         return Task.Run(() =>
         {
-            var inst = new List<InstructionToken>();
-            Provider.DefaultEngine.FindPropertyInstructions("ConsoleVariables", "a.StripAdditiveRefPose", inst);
-            if (inst.Count > 0 && inst[0].Value.Equals("1"))
+            foreach (var token in Provider.DefaultEngine.Sections.FirstOrDefault(s => s.Name == "ConsoleVariables")?.Tokens ?? new List<IniToken>())
             {
-                FLogger.Append(ELog.Warning, () =>
-                    FLogger.Text("Additive animations have their reference pose stripped, which will lead to inaccurate preview and export", Constants.WHITE, true));
+                if (token is not InstructionToken it) continue;
+                var boolValue = it.Value.Equals("1");
+
+                switch (it.Key)
+                {
+                    case "a.StripAdditiveRefPose" when boolValue:
+                        FLogger.Append(ELog.Warning, () =>
+                            FLogger.Text("Additive animations have their reference pose stripped, which will lead to inaccurate preview and export", Constants.WHITE, true));
+                        continue;
+                    case "r.StaticMesh.KeepMobileMinLODSettingOnDesktop":
+                    case "r.SkeletalMesh.KeepMobileMinLODSettingOnDesktop":
+                        Provider.Versions[it.Key[2..]] = boolValue;
+                        continue;
+                }
             }
+
             _cvaVerifDone = true;
         });
     }
@@ -472,7 +453,7 @@ public class CUE4ParseViewModel : ViewModel
 
     public Task VerifyContentBuildManifest()
     {
-        if (Provider is not DefaultFileProvider || !Provider.GameName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase))
+        if (Provider is not DefaultFileProvider || !Provider.InternalGameName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase))
             return Task.CompletedTask;
 
         var persistentDownloadDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "FortniteGame/Saved/PersistentDownloadDir");
@@ -564,7 +545,7 @@ public class CUE4ParseViewModel : ViewModel
     }
     private Task LoadHotfixedLocalizedResources()
     {
-        if (!Provider.GameName.Equals("fortnitegame", StringComparison.OrdinalIgnoreCase) || HotfixedResourcesDone) return Task.CompletedTask;
+        if (!Provider.InternalGameName.Equals("fortnitegame", StringComparison.OrdinalIgnoreCase) || HotfixedResourcesDone) return Task.CompletedTask;
         return Task.Run(() =>
         {
             var hotfixes = ApplicationService.ApiEndpointView.CentralApi.GetHotfixes(default, Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
@@ -591,7 +572,7 @@ public class CUE4ParseViewModel : ViewModel
         if (_virtualPathCount > 0) return Task.CompletedTask;
         return Task.Run(() =>
         {
-            _virtualPathCount = Provider.LoadVirtualPaths(UserSettings.Default.OverridedGame[Game].GetVersion());
+            _virtualPathCount = Provider.LoadVirtualPaths(UserSettings.Default.CurrentDir.UeVersion.GetVersion());
             if (_virtualPathCount > 0)
             {
                 FLogger.Append(ELog.Information, () =>
@@ -609,7 +590,7 @@ public class CUE4ParseViewModel : ViewModel
     {
         foreach (var asset in assetItems)
         {
-            Thread.Sleep(10);
+            Thread.Yield();
             cancellationToken.ThrowIfCancellationRequested();
             Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs);
         }
@@ -619,7 +600,7 @@ public class CUE4ParseViewModel : ViewModel
     {
         foreach (var asset in folder.AssetsList.Assets)
         {
-            Thread.Sleep(10);
+            Thread.Yield();
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
@@ -759,7 +740,7 @@ public class CUE4ParseViewModel : ViewModel
 
                 break;
             }
-            case "bin" when fileName.Contains("AssetRegistry"):
+            case "bin" when fileName.Contains("AssetRegistry", StringComparison.OrdinalIgnoreCase):
             {
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
@@ -892,7 +873,7 @@ public class CUE4ParseViewModel : ViewModel
                 TabControl.SelectedTab.SetDocumentText(verseDigest.ReadableCode, false, false);
                 return true;
             }
-            case UTexture2D { IsVirtual: false } texture when isNone:
+            case UTexture texture when isNone || saveTextures:
             {
                 TabControl.SelectedTab.AddImage(texture, saveTextures, updateUi);
                 return false;
@@ -902,8 +883,12 @@ public class CUE4ParseViewModel : ViewModel
             {
                 var shouldDecompress = UserSettings.Default.CompressedAudioMode == ECompressedAudio.PlayDecompressed;
                 export.Decode(shouldDecompress, out var audioFormat, out var data);
-                if (data == null || string.IsNullOrEmpty(audioFormat) || export.Owner == null)
+                var hasAf = !string.IsNullOrEmpty(audioFormat);
+                if (data == null || !hasAf || export.Owner == null)
+                {
+                    if (hasAf) FLogger.Append(ELog.Warning, () => FLogger.Text($"Unsupported audio format '{audioFormat}'", Constants.WHITE, true));
                     return false;
+                }
 
                 SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Directory, TabControl.SelectedTab.Header.SubstringBeforeLast('.')).Replace('\\', '/'), audioFormat, data);
                 return false;
@@ -911,8 +896,10 @@ public class CUE4ParseViewModel : ViewModel
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:
             case UStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
             case USkeletalMesh when isNone && UserSettings.Default.PreviewSkeletalMeshes:
+            case USkeleton when isNone && UserSettings.Default.SaveSkeletonAsMesh:
             case UMaterialInstance when isNone && UserSettings.Default.PreviewMaterials && !ModelIsOverwritingMaterial &&
-                                        !(Game == FGame.FortniteGame && export.Owner != null && (export.Owner.Name.EndsWith($"/MI_OfferImages/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
+                                        !(Provider.InternalGameName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase) && export.Owner != null &&
+                                          (export.Owner.Name.EndsWith($"/MI_OfferImages/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                             export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                             export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
             {
@@ -997,8 +984,9 @@ public class CUE4ParseViewModel : ViewModel
             MaterialFormat = UserSettings.Default.MaterialExportFormat,
             TextureFormat = UserSettings.Default.TextureExportFormat,
             SocketFormat = UserSettings.Default.SocketExportFormat,
-            Platform = UserSettings.Default.OverridedPlatform,
-            ExportMorphTargets = UserSettings.Default.SaveMorphTargets
+            Platform = UserSettings.Default.CurrentDir.TexturePlatform,
+            ExportMorphTargets = UserSettings.Default.SaveMorphTargets,
+            ExportMaterials = UserSettings.Default.SaveEmbeddedMaterials
         };
         var toSave = new Exporter(export, exportOptions);
 

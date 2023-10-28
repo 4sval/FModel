@@ -66,7 +66,7 @@ public class SnimGui
     private readonly float _tableWidth;
 
     private Vector2 _outlinerSize;
-    private bool _ti_open;
+    private bool _tiOpen;
     private bool _viewportFocus;
 
     private readonly Vector4 _accentColor = new (0.125f, 0.42f, 0.831f, 1.0f);
@@ -89,7 +89,7 @@ public class SnimGui
     public void Render(Snooper s)
     {
         Controller.SemiBold();
-        DrawDockSpace(s.Size);
+        DrawDockSpace(s.ClientSize);
 
         SectionWindow("Material Inspector", s.Renderer, DrawMaterialInspector, false);
         AnimationWindow("Timeline", s.Renderer, (icons, tracker, animations) =>
@@ -103,9 +103,11 @@ public class SnimGui
         Draw3DViewport(s);
         DrawNavbar();
 
+        DrawTextureInspector(s);
+        DrawSkeletonTree(s);
+
         DrawModals(s);
 
-        if (_ti_open) DrawTextureInspector(s);
         Controller.Render();
     }
 
@@ -181,7 +183,7 @@ public class SnimGui
                 {
                     foreach (var model in s.Renderer.Options.Models.Values)
                     {
-                        b |= s.Renderer.Options.TrySave(model.Export, out _, out _);
+                        b |= model.Save(out _, out _);
                     }
                 }
             });
@@ -210,52 +212,43 @@ public class SnimGui
             ImGui.EndTable();
         }
 
-        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-        if (ImGui.CollapsingHeader("Editor"))
+        ImGui.SeparatorText("Editor");
+        if (ImGui.BeginTable("world_editor", 2))
         {
-            if (ImGui.BeginTable("world_editor", 2))
-            {
-                Layout("Skybox");ImGui.PushID(1);
-                ImGui.Checkbox("", ref s.Renderer.ShowSkybox);
-                ImGui.PopID();Layout("Grid");ImGui.PushID(2);
-                ImGui.Checkbox("", ref s.Renderer.ShowGrid);
-                ImGui.PopID();Layout("Lights");ImGui.PushID(3);
-                ImGui.Checkbox("", ref s.Renderer.ShowLights);
-                ImGui.PopID();Layout("Animate With Rotation Only");ImGui.PushID(4);
-                ImGui.Checkbox("", ref s.Renderer.AnimateWithRotationOnly);
-                ImGui.PopID();Layout("Vertex Colors");ImGui.PushID(5);
-                var c = (int) s.Renderer.Color;
-                ImGui.Combo("vertex_colors", ref c,
-                    "Default\0Sections\0Colors\0Normals\0Texture Coordinates\0");
-                s.Renderer.Color = (VertexColor) c;
-                ImGui.PopID();
+            Layout("Skybox");ImGui.PushID(1);
+            ImGui.Checkbox("", ref s.Renderer.ShowSkybox);
+            ImGui.PopID();Layout("Grid");ImGui.PushID(2);
+            ImGui.Checkbox("", ref s.Renderer.ShowGrid);
+            ImGui.PopID();Layout("Lights");ImGui.PushID(3);
+            ImGui.Checkbox("", ref s.Renderer.ShowLights);
+            ImGui.PopID();Layout("Animate With Rotation Only");ImGui.PushID(4);
+            ImGui.Checkbox("", ref s.Renderer.AnimateWithRotationOnly);
+            ImGui.PopID();Layout("Vertex Colors");ImGui.PushID(5);
+            var c = (int) s.Renderer.Color;
+            ImGui.Combo("vertex_colors", ref c,
+                "Default\0Sections\0Colors\0Normals\0Texture Coordinates\0");
+            s.Renderer.Color = (VertexColor) c;
+            ImGui.PopID();
 
+            ImGui.EndTable();
+        }
+
+        ImGui.SeparatorText("Camera");
+        s.Renderer.CameraOp.ImGuiCamera();
+
+        ImGui.SeparatorText("Lights");
+        for (int i = 0; i < s.Renderer.Options.Lights.Count; i++)
+        {
+            var light = s.Renderer.Options.Lights[i];
+            var id = s.Renderer.Options.TryGetModel(light.Model, out var lightModel) ? lightModel.Name : "None";
+
+            id += $"##{i}";
+            if (ImGui.TreeNode(id) && ImGui.BeginTable(id, 2))
+            {
+                s.Renderer.Options.SelectModel(light.Model);
+                light.ImGuiLight();
                 ImGui.EndTable();
-            }
-        }
-
-        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-        if (ImGui.CollapsingHeader("Camera"))
-        {
-            s.Renderer.CameraOp.ImGuiCamera();
-        }
-
-        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-        if (ImGui.CollapsingHeader("Lights"))
-        {
-            for (int i = 0; i < s.Renderer.Options.Lights.Count; i++)
-            {
-                var light = s.Renderer.Options.Lights[i];
-                var id = s.Renderer.Options.TryGetModel(light.Model, out var lightModel) ? lightModel.Name : "None";
-
-                id += $"##{i}";
-                if (ImGui.TreeNode(id) && ImGui.BeginTable(id, 2))
-                {
-                    s.Renderer.Options.SelectModel(light.Model);
-                    light.ImGuiLight();
-                    ImGui.EndTable();
-                    ImGui.TreePop();
-                }
+                ImGui.TreePop();
             }
         }
     }
@@ -409,16 +402,16 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                 ImGui.TableHeadersRow();
 
                 var i = 0;
-                foreach ((FGuid guid, Model model) in s.Renderer.Options.Models)
+                foreach ((var guid, var model) in s.Renderer.Options.Models)
                 {
                     ImGui.PushID(i);
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
-                    if (!model.Show)
+                    if (!model.IsVisible)
                         ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(1, 0, 0, .5f)));
-                    else if (model.IsAttachment)
+                    else if (model.Attachments.IsAttachment)
                         ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(0, .75f, 0, .5f)));
-                    else if (model.IsAttached)
+                    else if (model.Attachments.IsAttached)
                         ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(1, 1, 0, .5f)));
 
                     ImGui.Text(model.TransformsCount.ToString("D"));
@@ -432,16 +425,16 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     Popup(() =>
                     {
                         s.Renderer.Options.SelectModel(guid);
-                        if (ImGui.MenuItem("Show", null, model.Show)) model.Show = !model.Show;
-                        if (ImGui.MenuItem("Wireframe", null, model.Wireframe)) model.Wireframe = !model.Wireframe;
+                        if (ImGui.MenuItem("Show", null, model.IsVisible)) model.IsVisible = !model.IsVisible;
+                        if (ImGui.MenuItem("Wireframe", null, model.ShowWireframe)) model.ShowWireframe = !model.ShowWireframe;
                         ImGui.Separator();
                         if (ImGui.MenuItem("Save"))
                         {
                             s.WindowShouldFreeze(true);
-                            _saver.Value = s.Renderer.Options.TrySave(model.Export, out _saver.Label, out _saver.Path);
+                            _saver.Value = model.Save(out _saver.Label, out _saver.Path);
                             s.WindowShouldFreeze(false);
                         }
-                        if (ImGui.MenuItem("Animate", model.HasSkeleton))
+                        if (ImGui.MenuItem("Animate", model is SkeletalModel))
                         {
                             if (_swapper.IsAware)
                             {
@@ -461,10 +454,14 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                                 _swapper.Value = true;
                             }
                         }
+                        if (ImGui.MenuItem("Skeleton Tree", model is SkeletalModel))
+                        {
+                            s.Renderer.IsSkeletonTreeOpen = true;
+                            ImGui.SetWindowFocus("Skeleton Tree");
+                        }
                         if (ImGui.MenuItem("Teleport To"))
                         {
-                            var instancePos = model.Transforms[model.SelectedInstance].Matrix.Translation;
-                            s.Renderer.CameraOp.Teleport(instancePos, model.Box);
+                            s.Renderer.CameraOp.Teleport(model.GetTransform().Matrix.Translation, model.Box);
                         }
 
                         if (ImGui.MenuItem("Delete")) s.Renderer.Options.RemoveModel(guid);
@@ -474,8 +471,8 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     });
 
                     ImGui.TableNextColumn();
-                    ImGui.Image(s.Renderer.Options.Icons[model.AttachIcon].GetPointer(), new Vector2(_tableWidth));
-                    TooltipCopy(model.AttachTooltip);
+                    ImGui.Image(s.Renderer.Options.Icons[model.Attachments.Icon].GetPointer(), new Vector2(_tableWidth));
+                    TooltipCopy(model.Attachments.Tooltip);
 
                     ImGui.PopID();
                     i++;
@@ -502,14 +499,14 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     {
                         var isAttached = socket.AttachedModels.Contains(info);
                         ImGui.PushID(i);
-                        ImGui.BeginDisabled(selectedModel.IsAttached && !isAttached);
+                        ImGui.BeginDisabled(selectedModel.Attachments.IsAttached && !isAttached);
                         switch (isAttached)
                         {
                             case false when ImGui.Button($"Attach to '{socket.Name}'"):
-                                selectedModel.AttachModel(model, socket, info);
+                                selectedModel.Attachments.Attach(model, selectedModel.GetTransform(), socket, info);
                                 break;
                             case true when ImGui.Button($"Detach from '{socket.Name}'"):
-                                selectedModel.DetachModel(model, socket, info);
+                                selectedModel.Attachments.Detach(model, selectedModel.GetTransform(), socket, info);
                                 break;
                         }
                         ImGui.EndDisabled();
@@ -533,14 +530,14 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                 {
                     Layout("Entity");ImGui.Text($"  :  ({model.Type}) {model.Name}");
                     Layout("Guid");ImGui.Text($"  :  {s.Renderer.Options.SelectedModel.ToString(EGuidFormats.UniqueObjectGuid)}");
-                    if (model.HasSkeleton)
+                    if (model is SkeletalModel skeletalModel)
                     {
-                        Layout("Skeleton");ImGui.Text($"  :  {model.Skeleton.Name}");
-                        Layout("Bones");ImGui.Text($"  :  x{model.Skeleton.BoneCount}");
+                        Layout("Skeleton");ImGui.Text($"  :  {skeletalModel.Skeleton.Name}");
+                        Layout("Bones");ImGui.Text($"  :  x{skeletalModel.Skeleton.BoneCount}");
                     }
                     else
                     {
-                        Layout("Two Sided");ImGui.Text($"  :  {model.TwoSided}");
+                        Layout("Two Sided");ImGui.Text($"  :  {model.IsTwoSided}");
                     }
                     Layout("Sockets");ImGui.Text($"  :  x{model.Sockets.Count}");
 
@@ -621,7 +618,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
 
                 if (ImGui.BeginTabItem("Morph Targets"))
                 {
-                    if (model.HasMorphTargets)
+                    if (model is SkeletalModel { HasMorphTargets: true } skeletalModel)
                     {
                         const float width = 10;
                         var region = ImGui.GetContentRegionAvail();
@@ -629,12 +626,12 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
 
                         if (ImGui.BeginListBox("", box))
                         {
-                            for (int i = 0; i < model.Morphs.Count; i++)
+                            for (int i = 0; i < skeletalModel.Morphs.Count; i++)
                             {
                                 ImGui.PushID(i);
-                                if (ImGui.Selectable(model.Morphs[i].Name, s.Renderer.Options.SelectedMorph == i))
+                                if (ImGui.Selectable(skeletalModel.Morphs[i].Name, s.Renderer.Options.SelectedMorph == i))
                                 {
-                                    s.Renderer.Options.SelectMorph(i, model);
+                                    s.Renderer.Options.SelectMorph(i, skeletalModel);
                                 }
                                 ImGui.PopID();
                             }
@@ -642,10 +639,10 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
 
                             ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(2f, 0f));
                             ImGui.SameLine(); ImGui.PushID(99);
-                            ImGui.VSliderFloat("", box with { X = width }, ref model.MorphTime, 0.0f, 1.0f, "", ImGuiSliderFlags.AlwaysClamp);
+                            ImGui.VSliderFloat("", box with { X = width }, ref skeletalModel.MorphTime, 0.0f, 1.0f, "", ImGuiSliderFlags.AlwaysClamp);
                             ImGui.PopID(); ImGui.PopStyleVar();
                             ImGui.Spacing();
-                            ImGui.Text($"Time: {model.MorphTime:P}%");
+                            ImGui.Text($"Time: {skeletalModel.MorphTime:P}%");
                         }
                     }
                     else CenteredTextColored(_errorColor, "Selected Mesh Has No Morph Targets");
@@ -656,7 +653,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         ImGui.PopStyleVar();
     }
 
-    private void DrawMaterialInspector(Dictionary<string, Texture> icons, Model model, Section section)
+    private void DrawMaterialInspector(Dictionary<string, Texture> icons, UModel model, Section section)
     {
         var material = model.Materials[section.MaterialIndex];
 
@@ -665,67 +662,83 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         ImGui.SameLine(); ImGui.AlignTextToFramePadding(); ImGui.Text(material.Name);
         ImGui.Spacing();
 
-        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-        if (ImGui.CollapsingHeader("Parameters"))
-        {
-            material.ImGuiParameters();
-        }
+        ImGui.SeparatorText("Parameters");
+        material.ImGuiParameters();
 
-        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-        if (ImGui.CollapsingHeader("Textures") && material.ImGuiTextures(icons, model))
+        ImGui.SeparatorText("Textures");
+        if (material.ImGuiTextures(icons, model))
         {
-            _ti_open = true;
+            _tiOpen = true;
             ImGui.SetWindowFocus("Texture Inspector");
         }
 
-        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-        if (ImGui.CollapsingHeader("Properties"))
+        ImGui.SeparatorText("Properties");
+        NoFramePaddingOnY(() =>
         {
-            NoFramePaddingOnY(() =>
+            ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+            if (ImGui.TreeNode("Base"))
             {
-                ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-                if (ImGui.TreeNode("Base"))
-                {
-                    material.ImGuiBaseProperties("base");
-                    ImGui.TreePop();
-                }
+                material.ImGuiBaseProperties("base");
+                ImGui.TreePop();
+            }
 
-                ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-                if (ImGui.TreeNode("Scalars"))
-                {
-                    material.ImGuiDictionaries("scalars", material.Parameters.Scalars, true);
-                    ImGui.TreePop();
-                }
-                ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-                if (ImGui.TreeNode("Switches"))
-                {
-                    material.ImGuiDictionaries("switches", material.Parameters.Switches, true);
-                    ImGui.TreePop();
-                }
-                ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-                if (ImGui.TreeNode("Colors"))
-                {
-                    material.ImGuiColors(material.Parameters.Colors);
-                    ImGui.TreePop();
-                }
-                if (ImGui.TreeNode("All Textures"))
-                {
-                    material.ImGuiDictionaries("textures", material.Parameters.Textures);
-                    ImGui.TreePop();
-                }
-            });
-        }
+            ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+            if (ImGui.TreeNode("Scalars"))
+            {
+                material.ImGuiDictionaries("scalars", material.Parameters.Scalars, true);
+                ImGui.TreePop();
+            }
+            ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+            if (ImGui.TreeNode("Switches"))
+            {
+                material.ImGuiDictionaries("switches", material.Parameters.Switches, true);
+                ImGui.TreePop();
+            }
+            ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+            if (ImGui.TreeNode("Colors"))
+            {
+                material.ImGuiColors(material.Parameters.Colors);
+                ImGui.TreePop();
+            }
+            if (ImGui.TreeNode("All Textures"))
+            {
+                material.ImGuiDictionaries("textures", material.Parameters.Textures);
+                ImGui.TreePop();
+            }
+        });
     }
 
     private void DrawTextureInspector(Snooper s)
     {
-        if (ImGui.Begin("Texture Inspector", ref _ti_open, ImGuiWindowFlags.NoScrollbar) &&
+        if (!_tiOpen) return;
+        if (ImGui.Begin("Texture Inspector", ref _tiOpen, ImGuiWindowFlags.NoScrollbar) &&
             s.Renderer.Options.TryGetModel(out var model) &&
             s.Renderer.Options.TryGetSection(model, out var section))
         {
             (model.Materials[section.MaterialIndex].GetSelectedTexture() ?? s.Renderer.Options.Icons["noimage"]).ImGuiTextureInspector();
         }
         ImGui.End(); // if window is collapsed
+    }
+
+    private void DrawSkeletonTree(Snooper s)
+    {
+        if (!s.Renderer.IsSkeletonTreeOpen) return;
+
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+        if (ImGui.Begin("Skeleton Tree", ref s.Renderer.IsSkeletonTreeOpen, ImGuiWindowFlags.NoScrollbar) &&
+            s.Renderer.Options.TryGetModel(out var model) && model is SkeletalModel skeletalModel)
+        {
+            skeletalModel.Skeleton.ImGuiBoneBreadcrumb();
+            if (ImGui.BeginTable("skeleton_tree", 2, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.RowBg, ImGui.GetContentRegionAvail(), ImGui.GetWindowWidth()))
+            {
+                ImGui.TableSetupColumn("Bone", ImGuiTableColumnFlags.WidthStretch);
+                ImGui.TableSetupColumn("", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed, _tableWidth);
+                skeletalModel.Skeleton.ImGuiBoneHierarchy();
+                ImGui.EndTable();
+            }
+        }
+        ImGui.End(); // if window is collapsed
+        ImGui.PopStyleVar();
     }
 
     private void Draw3DViewport(Snooper s)
@@ -818,7 +831,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         }
     }
 
-    private void MeshWindow(string name, Renderer renderer, Action<Dictionary<string, Texture>, Model> content, bool styled = true)
+    private void MeshWindow(string name, Renderer renderer, Action<Dictionary<string, Texture>, UModel> content, bool styled = true)
     {
         Window(name, () =>
         {
@@ -827,7 +840,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         }, styled);
     }
 
-    private void SectionWindow(string name, Renderer renderer, Action<Dictionary<string, Texture>, Model, Section> content, bool styled = true)
+    private void SectionWindow(string name, Renderer renderer, Action<Dictionary<string, Texture>, UModel, Section> content, bool styled = true)
     {
         MeshWindow(name, renderer, (icons, model) =>
         {

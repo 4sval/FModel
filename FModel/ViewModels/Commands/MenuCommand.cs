@@ -23,13 +23,13 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
         switch (parameter)
         {
             case "Directory_Selector":
-                contextViewModel.AvoidEmptyGameDirectoryAndSetEGame(true);
+                contextViewModel.AvoidEmptyGameDirectory(true);
                 break;
             case "Directory_AES":
                 Helper.OpenWindow<AdonisWindow>("AES Manager", () => new AesManager().Show());
                 break;
             case "Directory_Backup":
-                Helper.OpenWindow<AdonisWindow>("Backup Manager", () => new BackupManager(contextViewModel.CUE4Parse.Provider.GameName).Show());
+                Helper.OpenWindow<AdonisWindow>("Backup Manager", () => new BackupManager(contextViewModel.CUE4Parse.Provider.InternalGameName).Show());
                 break;
             case "Directory_ArchivesInfo":
                 contextViewModel.CUE4Parse.TabControl.AddTab("Archives Info");
@@ -42,17 +42,10 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             case "Views_AudioPlayer":
                 Helper.OpenWindow<AdonisWindow>("Audio Player", () => new AudioPlayer().Show());
                 break;
-            case "Views_MapViewer":
-                Helper.OpenWindow<AdonisWindow>("Map Viewer", () => new MapViewer().Show());
-                break;
             case "Views_ImageMerger":
                 Helper.OpenWindow<AdonisWindow>("Image Merger", () => new ImageMerger().Show());
                 break;
             case "Settings":
-                Helper.OpenWindow<AdonisWindow>("Settings", () => new SettingsView().Show());
-                break;
-            case "ModelSettings":
-                UserSettings.Default.LastOpenedSettingTab = contextViewModel.CUE4Parse.Game == FGame.FortniteGame ? 2 : 1;
                 Helper.OpenWindow<AdonisWindow>("Settings", () => new SettingsView().Show());
                 break;
             case "Help_About":
@@ -111,7 +104,7 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             if (!expand && folder.IsExpanded)
             {
                 folder.IsExpanded = false;
-                Thread.Sleep(10);
+                Thread.Yield();
                 cancellationToken.ThrowIfCancellationRequested();
             }
 
@@ -129,7 +122,7 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
         for (var node = nodes.Last; node != null; node = node.Previous)
         {
             node.Value.IsExpanded = true;
-            Thread.Sleep(10);
+            Thread.Yield();
             cancellationToken.ThrowIfCancellationRequested();
         }
     }

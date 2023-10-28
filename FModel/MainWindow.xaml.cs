@@ -40,7 +40,6 @@ public partial class MainWindow
 
     private void OnClosing(object sender, CancelEventArgs e)
     {
-        _applicationView.CustomDirectories.Save();
         _discordHandler.Dispose();
     }
 
@@ -56,8 +55,8 @@ public partial class MainWindow
             case EAesReload.Always:
                 await _applicationView.CUE4Parse.RefreshAes();
                 break;
-            case EAesReload.OncePerDay when UserSettings.Default.LastAesReload != DateTime.Today:
-                UserSettings.Default.LastAesReload = DateTime.Today;
+            case EAesReload.OncePerDay when UserSettings.Default.CurrentDir.LastAesReload != DateTime.Today:
+                UserSettings.Default.CurrentDir.LastAesReload = DateTime.Today;
                 await _applicationView.CUE4Parse.RefreshAes();
                 break;
         }
@@ -84,9 +83,12 @@ public partial class MainWindow
         ).ConfigureAwait(false);
 
 #if DEBUG
-        // await _threadWorkerView.Begin(cancellationToken =>
-        //     _applicationView.CUE4Parse.Extract(cancellationToken,
-        //         "fortnitegame/Content/Characters/Player/Female/Medium/Bodies/F_MED_Ballerina/Meshes/F_MED_Ballerina.uasset"));
+        await _threadWorkerView.Begin(cancellationToken =>
+            _applicationView.CUE4Parse.Extract(cancellationToken,
+                "fortnitegame/Content/Characters/Player/Female/Medium/Bodies/F_Med_Soldier_01/Meshes/F_Med_Soldier_01.uasset"));
+        await _threadWorkerView.Begin(cancellationToken =>
+            _applicationView.CUE4Parse.Extract(cancellationToken,
+                "fortnitegame/Content/Animation/Game/MainPlayer/Emotes/Cowbell/Cowbell_CMM_Loop_M.uasset"));
 #endif
     }
 
@@ -140,7 +142,7 @@ public partial class MainWindow
 
     private async void OnMappingsReload(object sender, ExecutedRoutedEventArgs e)
     {
-        await _applicationView.CUE4Parse.InitMappings();
+        await _applicationView.CUE4Parse.InitMappings(true);
     }
 
     private void OnOpenAvalonFinder()
@@ -228,13 +230,13 @@ public partial class MainWindow
         }
     }
 
-    private void OnSaveDirectoryClick(object sender, RoutedEventArgs e)
+    private void OnFavoriteDirectoryClick(object sender, RoutedEventArgs e)
     {
         if (AssetsFolderName.SelectedItem is not TreeItem folder) return;
 
         _applicationView.CustomDirectories.Add(new CustomDirectory(folder.Header, folder.PathAtThisPoint));
         FLogger.Append(ELog.Information, () =>
-            FLogger.Text($"Successfully saved '{folder.PathAtThisPoint}' as a new custom directory", Constants.WHITE, true));
+            FLogger.Text($"Successfully saved '{folder.PathAtThisPoint}' as a new favorite directory", Constants.WHITE, true));
     }
 
     private void OnCopyDirectoryPathClick(object sender, RoutedEventArgs e)

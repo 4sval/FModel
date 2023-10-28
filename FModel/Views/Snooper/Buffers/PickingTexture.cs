@@ -54,20 +54,20 @@ public class PickingTexture : IDisposable
         Bind(0);
     }
 
-    public void Render(Matrix4x4 viewMatrix, Matrix4x4 projMatrix, IDictionary<FGuid,Model> models)
+    public void Render(Matrix4x4 viewMatrix, Matrix4x4 projMatrix, IDictionary<FGuid, UModel> models)
     {
         Bind();
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
         _shader.Render(viewMatrix, projMatrix);
-        foreach ((FGuid guid, Model model) in models)
+        foreach ((var guid, var model) in models)
         {
             _shader.SetUniform("uA", guid.A);
             _shader.SetUniform("uB", guid.B);
             _shader.SetUniform("uC", guid.C);
             _shader.SetUniform("uD", guid.D);
 
-            if (!model.Show) continue;
+            if (!model.IsVisible) continue;
             model.PickingRender(_shader);
         }
 

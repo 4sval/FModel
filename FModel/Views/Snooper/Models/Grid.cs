@@ -45,16 +45,17 @@ public class Grid : IDisposable
     {
         GL.Disable(EnableCap.CullFace);
         GL.Disable(EnableCap.DepthTest);
+
         _vao.Bind();
 
         _shader.Use();
-
         _shader.SetUniform("view", viewMatrix);
         _shader.SetUniform("proj", projMatrix);
         _shader.SetUniform("uNear", near);
         _shader.SetUniform("uFar", far);
 
         GL.DrawArrays(PrimitiveType.Triangles, 0, Indices.Length);
+
         GL.Enable(EnableCap.DepthTest);
         GL.Enable(EnableCap.CullFace);
     }

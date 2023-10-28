@@ -3,21 +3,18 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using FModel.Settings;
-using FModel.ViewModels;
 
 namespace FModel.Views.Resources.Converters;
 
-public class EndpointToTypeConverter : IMultiValueConverter
+public class EndpointToTypeConverter : IValueConverter
 {
     public static readonly EndpointToTypeConverter Instance = new();
 
-    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (values[0] is not ApplicationViewModel viewModel ||
-            values[1] is not EEndpointType type)
-            return false;
+        if (parameter is not EEndpointType type) throw new NotImplementedException();
 
-        var isValid = UserSettings.IsEndpointValid(viewModel.CUE4Parse.Game, type, out _);
+        var isValid = UserSettings.IsEndpointValid(type, out _);
         return targetType switch
         {
             not null when targetType == typeof(Visibility) => isValid ? Visibility.Visible : Visibility.Collapsed,
@@ -25,7 +22,7 @@ public class EndpointToTypeConverter : IMultiValueConverter
         };
     }
 
-    public object[] ConvertBack(object value, Type[] targetType, object parameter, CultureInfo culture)
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
         throw new NotImplementedException();
     }

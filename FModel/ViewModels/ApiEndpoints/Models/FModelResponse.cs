@@ -25,6 +25,14 @@ public class Backup
     [J] public long FileSize { get; private set; }
 }
 
+public class Donator
+{
+    [J] public string Username { get; private set; }
+    [J] public int Count { get; private set; }
+
+    public override string ToString() => $"{Username}{(Count > 5 ? " ❤️" : "")}";
+}
+
 [DebuggerDisplay("{" + nameof(DisplayName) + "}")]
 public class Game
 {

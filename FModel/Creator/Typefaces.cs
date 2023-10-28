@@ -21,7 +21,6 @@ public class Typefaces
     private const string _BURBANK_BIG_REGULAR_BOLD = "BurbankBigRegular-Bold"; // official fortnite ig
     private const string _BURBANK_SMALL_MEDIUM = "BurbankSmall-Medium";
     private const string _DROID_SANS_FORTNITE_SUBSET = "DroidSans-Fortnite-Subset";
-    private const string _NIS_JYAU = "NIS_JYAU"; // japanese fortnite
     private const string _NOTO_COLOR_EMOJI = "NotoColorEmoji";
     private const string _NOTO_SANS_BOLD = "NotoSans-Bold";
     private const string _NOTO_SANS_FORTNITE_BOLD = "NotoSans-Fortnite-Bold";
@@ -32,7 +31,7 @@ public class Typefaces
     private const string _NOTO_SANS_ARABIC_BLACK = "NotoSansArabic-Black"; // arabic fortnite
     private const string _NOTO_SANS_ARABIC_BOLD = "NotoSansArabic-Bold";
     private const string _NOTO_SANS_ARABIC_REGULAR = "NotoSansArabic-Regular";
-    private const string _NOTO_SANS_JP_BOLD = "NotoSansJP-Bold";
+    private const string _NOTO_SANS_JP_BOLD = "NotoSansJP-Bold"; // japanese fortnite
     private const string _NOTO_SANS_KR_REGULAR = "NotoSansKR-Regular";
     private const string _NOTO_SANS_SC_BLACK = "NotoSansSC-Black"; // simplified chinese fortnite
     private const string _NOTO_SANS_SC_REGULAR = "NotoSansSC-Regular";
@@ -48,23 +47,6 @@ public class Typefaces
     private const string _NORMS_STD_CONDENSED_MEDIUM = "Norms/TT_Norms_Std_Condensed_Medium";
     private const string _XIANGHEHEI_SC_PRO_BLACK = "XiangHeHei_SC/MXiangHeHeiSCPro-Black";
     private const string _XIANGHEHEI_SC_PRO_HEAVY = "XiangHeHei_SC/MXiangHeHeiSCPro-Heavy";
-
-    // Spellbreak
-    private const string _SPELLBREAK_BASE_PATH = "/Game/UI/Fonts/";
-    private const string _MONTSERRAT_SEMIBOLD = "Montserrat-Semibold";
-    private const string _MONTSERRAT_SEMIBOLD_ITALIC = "Montserrat-SemiBoldItalic";
-    private const string _NANUM_GOTHIC = "NanumGothic";
-    private const string _QUADRAT_BOLD = "Quadrat_Bold";
-    private const string _SEGOE_BOLD_ITALIC = "Segoe_Bold_Italic";
-
-    // WorldExplorers
-    private const string _BATTLE_BREAKERS_BASE_PATH = "/Game/UMG/Fonts/Faces/";
-    private const string _HEMIHEAD426 = "HemiHead426";
-    private const string _NOTO_SANS_JP_REGULAR = "NotoSansJP-Regular";
-    private const string _LATO_BLACK = "Lato-Black";
-    private const string _LATO_BLACK_ITALIC = "Lato-BlackItalic";
-    private const string _LATO_LIGHT = "Lato-Light";
-    private const string _LATO_MEDIUM = "Lato-Medium";
 
     private readonly CUE4ParseViewModel _viewModel;
 
@@ -85,16 +67,16 @@ public class Typefaces
 
         Default = SKTypeface.FromStream(Application.GetResourceStream(_BURBANK_BIG_CONDENSED_BOLD)?.Stream);
 
-        switch (viewModel.Game)
+        switch (viewModel.Provider.InternalGameName.ToUpperInvariant())
         {
-            case FGame.FortniteGame:
+            case "FORTNITEGAME":
             {
                 DisplayName = OnTheFly(_FORTNITE_BASE_PATH +
                                        language switch
                                        {
                                            ELanguage.Korean => _ASIA_ERINM,
                                            ELanguage.Russian => _BURBANK_BIG_CONDENSED_BLACK,
-                                           ELanguage.Japanese => _NIS_JYAU,
+                                           ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
                                            ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
                                            ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
                                            ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
@@ -130,7 +112,7 @@ public class Typefaces
                                   {
                                       ELanguage.Korean => _ASIA_ERINM,
                                       ELanguage.Russian => _BURBANK_BIG_CONDENSED_BLACK,
-                                      ELanguage.Japanese => _NIS_JYAU,
+                                      ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
                                       ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
                                       ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
                                       ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
@@ -142,7 +124,7 @@ public class Typefaces
                                              {
                                                  ELanguage.Korean => _ASIA_ERINM,
                                                  ELanguage.Russian => _BURBANK_BIG_CONDENSED_BLACK,
-                                                 ELanguage.Japanese => _NIS_JYAU,
+                                                 ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
                                                  ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
                                                  ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
                                                  ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
@@ -153,7 +135,7 @@ public class Typefaces
                                                 language switch
                                                 {
                                                     ELanguage.Korean => _ASIA_ERINM,
-                                                    ELanguage.Japanese => _NIS_JYAU,
+                                                    ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
                                                     ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
                                                     ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
                                                     ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
@@ -164,7 +146,7 @@ public class Typefaces
                                                 language switch
                                                 {
                                                     ELanguage.Korean => _ASIA_ERINM,
-                                                    ELanguage.Japanese => _NIS_JYAU,
+                                                    ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
                                                     ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
                                                     ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
                                                     ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
@@ -172,36 +154,7 @@ public class Typefaces
                                                 } + _EXT);
                 break;
             }
-            case FGame.WorldExplorers:
-            {
-                DisplayName = OnTheFly(_BATTLE_BREAKERS_BASE_PATH +
-                                       language switch
-                                       {
-                                           ELanguage.Korean => _NOTO_SANS_KR_REGULAR,
-                                           ELanguage.Russian => _LATO_BLACK,
-                                           ELanguage.Japanese => _NOTO_SANS_JP_REGULAR,
-                                           ELanguage.Chinese => _NOTO_SANS_SC_REGULAR,
-                                           _ => _HEMIHEAD426
-                                       } + _EXT);
-
-                Description = OnTheFly(_BATTLE_BREAKERS_BASE_PATH +
-                                       language switch
-                                       {
-                                           ELanguage.Korean => _NOTO_SANS_KR_REGULAR,
-                                           ELanguage.Russian => _LATO_BLACK,
-                                           ELanguage.Japanese => _NOTO_SANS_JP_REGULAR,
-                                           ELanguage.Chinese => _NOTO_SANS_SC_REGULAR,
-                                           _ => _HEMIHEAD426
-                                       } + _EXT);
-                break;
-            }
-            case FGame.g3:
-            {
-                DisplayName = OnTheFly(_SPELLBREAK_BASE_PATH + _QUADRAT_BOLD + _EXT);
-                Description = OnTheFly(_SPELLBREAK_BASE_PATH + _MONTSERRAT_SEMIBOLD + _EXT);
-                break;
-            }
-            case FGame.MultiVersus:
+            case "MULTIVERSUS":
             {
                 DisplayName = OnTheFly(_PANDAGAME_BASE_PATH + language switch
                 {
