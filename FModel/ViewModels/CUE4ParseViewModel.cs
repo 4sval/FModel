@@ -986,7 +986,7 @@ public class CUE4ParseViewModel : ViewModel
             SocketFormat = UserSettings.Default.SocketExportFormat,
             Platform = UserSettings.Default.CurrentDir.TexturePlatform,
             ExportMorphTargets = UserSettings.Default.SaveMorphTargets,
-            ExportMaterials = UserSettings.Default.SaveMeshMaterials
+            ExportMaterials = UserSettings.Default.SaveEmbeddedMaterials
         };
         var toSave = new Exporter(export, exportOptions);
 

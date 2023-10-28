@@ -387,9 +387,9 @@
                               IsChecked="{Binding PreviewWorlds, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
-                    <TextBlock Grid.Row="10" Grid.Column="0" Text="Save Materials in Meshes" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="10" Grid.Column="0" Text="Save Materials Embedded within Meshes" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <CheckBox Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding SaveMeshMaterials, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                              IsChecked="{Binding SaveEmbeddedMaterials, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
                     <TextBlock Grid.Row="11" Grid.Column="0" Text="Save Morph Targets in Meshes" VerticalAlignment="Center" Margin="0 0 0 5" />

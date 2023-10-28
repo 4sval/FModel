@@ -424,11 +424,11 @@ namespace FModel.Settings
             set => SetProperty(ref _saveMorphTargets, value);
         }
 
-        private bool _saveMeshMaterials = true;
-        public bool SaveMeshMaterials
+        private bool _saveEmbeddedMaterials = true;
+        public bool SaveEmbeddedMaterials
         {
-            get => _saveMeshMaterials;
-            set => SetProperty(ref _saveMeshMaterials, value);
+            get => _saveEmbeddedMaterials;
+            set => SetProperty(ref _saveEmbeddedMaterials, value);
         }
 
         private bool _saveSkeletonAsMesh;
