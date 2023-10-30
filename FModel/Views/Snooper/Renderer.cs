@@ -517,13 +517,11 @@ public class Renderer : IDisposable
 
             if (staticMeshComp.TryGetValue(out FPackageIndex[] overrideMaterials, "OverrideMaterials"))
             {
-                var max = model.Sections.Length - 1;
-                for (var j = 0; j < overrideMaterials.Length; j++)
+                for (var j = 0; j < overrideMaterials.Length && j < model.Sections.Length; j++)
                 {
-                    if (j > max) break;
-                    if (!model.Materials[model.Sections[j].MaterialIndex].IsUsed ||
-                        overrideMaterials[j].Load() is not UMaterialInterface unrealMaterial) continue;
-                    model.Materials[model.Sections[j].MaterialIndex].SwapMaterial(unrealMaterial);
+                    var matIndex = model.Sections[j].MaterialIndex;
+                    if (!(model.Materials[matIndex].IsUsed && overrideMaterials[matIndex].Load() is UMaterialInterface unrealMaterial)) continue;
+                    model.Materials[matIndex].SwapMaterial(unrealMaterial);
                 }
             }
 
