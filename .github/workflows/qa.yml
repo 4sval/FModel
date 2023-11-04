@@ -27,6 +27,12 @@ jobs:
       - name: .NET Restore
         run: dotnet restore FModel
 
+      - name: Get Version
+        id: package_version
+        uses: KageKirin/get-csproj-version@v1.0.0
+        with:
+          file: FModel/FModel.csproj
+
       - name: .NET Publish
         run: dotnet publish FModel -c Release --no-self-contained -r win-x64 -f net6.0-windows -o "./FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false
 
@@ -37,6 +43,7 @@ jobs:
           dest: ${{ github.sha }}.zip # will end up in working directory not the Publish folder
 
       - name: Edit QA Artifact
+        id: edited_release
         uses: johnwbyrd/update-release@v1.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -44,3 +51,18 @@ jobs:
           tag: qa
           prerelease: true
           files: ${{ github.sha }}.zip
+
+      - name: FModel Auth
+        id: fmodel_auth
+        uses: fjogeleit/http-request-action@v1.14.1
+        with:
+          url: "https://api.fmodel.app/v1/oauth/token"
+          data: '{"username": "${{ secrets.API_USERNAME }}", "password": "${{ secrets.API_PASSWORD }}"}'
+
+      - name: FModel Deploy Build
+        uses: fjogeleit/http-request-action@v1.14.1
+        with:
+          url: "https://api.fmodel.app/v1/infos/${{ secrets.QA_ID }}"
+          method: "PATCH"
+          bearerToken: ${{ fromJson(steps.fmodel_auth.outputs.response).accessToken }}
+          data: '{"version": "${{ steps.test.package_version.version }}-dev+${{ github.sha }}", "downloadUrl": "${{ steps.edited_release.outputs.files }}"}'
