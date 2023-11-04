@@ -139,7 +139,7 @@ public class FModelApiEndpoint : AbstractApiProvider
                 Mandatory = new CustomMandatory
                 {
                     Value = UserSettings.Default.UpdateMode == EUpdateMode.Qa,
-                    CommitId = _infos.Version.SubstringAfter('+')
+                    CommitHash = _infos.Version.SubstringAfter('+')
                 }
             };
         }
@@ -151,8 +151,8 @@ public class FModelApiEndpoint : AbstractApiProvider
         {
             var qa = (CustomMandatory) args.Mandatory;
             var currentVersion = new System.Version(args.CurrentVersion);
-            if ((qa.Value && qa.CommitId == UserSettings.Default.CommitId) || // qa branch : same commit id
-                (!qa.Value && currentVersion == args.InstalledVersion && args.CurrentVersion == UserSettings.Default.CommitId)) // stable - beta branch : same version + commit id = version
+            if ((qa.Value && qa.CommitHash == UserSettings.Default.CommitHash) || // qa branch : same commit id
+                (!qa.Value && currentVersion == args.InstalledVersion && args.CurrentVersion == UserSettings.Default.CommitHash)) // stable - beta branch : same version + commit id = version
             {
                 if (UserSettings.Default.ShowChangelog)
                     ShowChangelog(args);
@@ -162,7 +162,7 @@ public class FModelApiEndpoint : AbstractApiProvider
             var downgrade = currentVersion < args.InstalledVersion;
             var messageBox = new MessageBoxModel
             {
-                Text = $"The latest version of FModel {UserSettings.Default.UpdateMode.GetDescription()} is {(qa.Value ? qa.ShortCommitId : args.CurrentVersion)}. You are using version {(qa.Value ? UserSettings.Default.ShortCommitId : args.InstalledVersion)}. Do you want to {(downgrade ? "downgrade" : "update")} the application now?",
+                Text = $"The latest version of FModel {UserSettings.Default.UpdateMode.GetDescription()} is {(qa.Value ? qa.ShortCommitHash : args.CurrentVersion)}. You are using version {(qa.Value ? UserSettings.Default.ShortCommitHash : args.InstalledVersion)}. Do you want to {(downgrade ? "downgrade" : "update")} the application now?",
                 Caption = $"{(downgrade ? "Downgrade" : "Update")} Available",
                 Icon = MessageBoxImage.Question,
                 Buttons = MessageBoxButtons.YesNo(),
@@ -177,7 +177,7 @@ public class FModelApiEndpoint : AbstractApiProvider
                 if (AutoUpdater.DownloadUpdate(args))
                 {
                     UserSettings.Default.ShowChangelog = true;
-                    UserSettings.Default.CommitId = qa.CommitId;
+                    UserSettings.Default.CommitHash = qa.CommitHash;
                     Application.Current.Shutdown();
                 }
             }
@@ -210,6 +210,6 @@ public class FModelApiEndpoint : AbstractApiProvider
 
 public class CustomMandatory : Mandatory
 {
-    public string CommitId { get; set; }
-    public string ShortCommitId => CommitId[..7];
+    public string CommitHash { get; set; }
+    public string ShortCommitHash => CommitHash[..7];
 }
