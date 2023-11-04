@@ -53,6 +53,9 @@ jobs:
           prerelease: true
           files: ${{ github.sha }}.zip
 
+      - name: Show Response
+        run: echo ${{ steps.edited_release.outputs.files.* }}
+
       - name: FModel Auth
         id: fmodel_auth
         uses: fjogeleit/http-request-action@v1.14.1
@@ -66,4 +69,4 @@ jobs:
           url: "https://api.fmodel.app/v1/infos/${{ secrets.QA_ID }}"
           method: "PATCH"
           bearerToken: ${{ fromJson(steps.fmodel_auth.outputs.response).accessToken }}
-          data: '{"version": "${{ steps.test.package_version.version }}-dev+${{ github.sha }}", "downloadUrl": "${{ join(steps.edited_release.outputs.files.*, ",") }}"}'
+          data: '{"version": "${{ steps.test.package_version.version }}-dev+${{ github.sha }}"}'
