@@ -159,6 +159,13 @@ namespace FModel.Settings
             set => SetProperty(ref _updateMode, value);
         }
 
+        private string _commitId = Constants.APP_VERSION;
+        public string CommitId
+        {
+            get => _commitId;
+            set => SetProperty(ref _commitId, value);
+        }
+
         private bool _keepDirectoryStructure = true;
         public bool KeepDirectoryStructure
         {
@@ -231,6 +238,8 @@ namespace FModel.Settings
 
         [JsonIgnore]
         public DirectorySettings CurrentDir { get; set; }
+        [JsonIgnore]
+        public string ShortCommitId => CommitId[..7];
 
         /// <summary>
         /// TO DELETEEEEEEEEEEEEE

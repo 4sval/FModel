@@ -71,7 +71,9 @@ public enum EUpdateMode
     [Description("Stable")]
     Stable,
     [Description("Beta")]
-    Beta
+    Beta,
+    [Description("QA Testing")]
+    Qa
 }
 
 public enum ECompressedAudio
