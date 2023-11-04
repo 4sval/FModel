@@ -54,7 +54,9 @@ jobs:
           files: ${{ github.sha }}.zip
 
       - name: Show Response
-        run: echo ${{ steps.edited_release.outputs.files.* }}
+        run: |
+         echo ${{ steps.package_version.outputs.version }}
+         echo ${{ join(steps.edited_release.outputs.files.*, ",") }}
 
       - name: FModel Auth
         id: fmodel_auth
@@ -69,4 +71,4 @@ jobs:
           url: "https://api.fmodel.app/v1/infos/${{ secrets.QA_ID }}"
           method: "PATCH"
           bearerToken: ${{ fromJson(steps.fmodel_auth.outputs.response).accessToken }}
-          data: '{"version": "${{ steps.test.package_version.version }}-dev+${{ github.sha }}"}'
+          data: '{"version": "${{ steps.package_version.outputs.version }}-dev+${{ github.sha }}"}'
