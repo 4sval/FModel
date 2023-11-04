@@ -36,13 +36,11 @@ jobs:
           files: ./FModel/bin/Publish/FModel.exe
           dest: ${{ github.sha }}.zip # will end up in working directory not the Publish folder
 
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
       - name: Edit QA Artifact
-        uses: irongut/EditRelease@v1.2.0
+        uses: johnwbyrd/update-release@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          id: 127997284
+          release: FModel QA Testing
+          tag: qa
+          prerelease: true
           files: ${{ github.sha }}.zip
