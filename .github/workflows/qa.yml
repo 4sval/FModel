@@ -54,9 +54,7 @@ jobs:
           files: ${{ github.sha }}.zip
 
       - name: Show Response
-        run: |
-         echo ${{ steps.package_version.outputs.version }}
-         echo ${{ join(steps.edited_release.outputs.files.*, ';') }}
+        run: echo ${{ join(steps.edited_release.outputs.files.*, ';') }}
 
       - name: FModel Auth
         id: fmodel_auth
