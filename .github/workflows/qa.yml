@@ -1,0 +1,44 @@
+name: FModel QA Builder
+
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ dev ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: GIT Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+
+      - name: Fetch Submodules Recursively
+        run: git submodule update --init --recursive
+
+      - name: .NET 6 Setup
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: .NET Restore
+        run: dotnet restore FModel
+
+      - name: .NET Publish
+        run: dotnet publish FModel -c Release --no-self-contained -r win-x64 -f net6.0-windows -o "./FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false
+
+      - name: ZIP File
+        uses: papeloto/action-zip@v1
+        with:
+          files: ./FModel/bin/Publish/FModel.exe
+          dest: ${{ github.sha }}.zip # will end up in working directory not the Publish folder
+
+      - name: Edit QA Artifact
+        uses: irongut/EditRelease@v1.2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          id: qa
+          files: ${{ github.sha }}.zip
