@@ -69,8 +69,7 @@ public partial class MainWindow
 #endif
         await Task.WhenAll(
             _applicationView.CUE4Parse.VerifyConsoleVariables(),
-            _applicationView.CUE4Parse.VerifyVirtualCache(),
-            _applicationView.CUE4Parse.VerifyContentBuildManifest(),
+            _applicationView.CUE4Parse.VerifyOnDemandArchives(),
             _applicationView.CUE4Parse.InitMappings(),
             _applicationView.InitImGuiSettings(newOrUpdated),
             _applicationView.InitVgmStream(),

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,7 +32,6 @@ using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
-using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using EpicManifestParser.Objects;
 using FModel.Creator;
@@ -121,7 +121,7 @@ public class CUE4ParseViewModel : ViewModel
     public AssetsFolderViewModel AssetsFolder { get; }
     public SearchViewModel SearchVm { get; }
     public TabControlViewModel TabControl { get; }
-    public ConfigIni BuildInfo { get; }
+    public ConfigIni IoStoreOnDemand { get; }
 
     public CUE4ParseViewModel()
     {
@@ -175,7 +175,7 @@ public class CUE4ParseViewModel : ViewModel
         AssetsFolder = new AssetsFolderViewModel();
         SearchVm = new SearchViewModel();
         TabControl = new TabControlViewModel();
-        BuildInfo = new ConfigIni(nameof(BuildInfo));
+        IoStoreOnDemand = new ConfigIni(nameof(IoStoreOnDemand));
     }
 
     public async Task Initialize()
@@ -216,9 +216,9 @@ public class CUE4ParseViewModel : ViewModel
 
                             foreach (var fileManifest in manifest.FileManifests)
                             {
-                                if (fileManifest.Name.Equals("Cloud/BuildInfo.ini", StringComparison.OrdinalIgnoreCase))
+                                if (fileManifest.Name.Equals("Cloud/IoStoreOnDemand.ini", StringComparison.OrdinalIgnoreCase))
                                 {
-                                    BuildInfo.Read(new StreamReader(fileManifest.GetStream()));
+                                    IoStoreOnDemand.Read(new StreamReader(fileManifest.GetStream()));
                                     continue;
                                 }
                                 if (!_fnLive.IsMatch(fileManifest.Name)) continue;
@@ -252,8 +252,8 @@ public class CUE4ParseViewModel : ViewModel
 
                     break;
                 case DefaultFileProvider:
-                    var buildInfoPath = Path.Combine(UserSettings.Default.GameDirectory, "..\\..\\..\\Cloud\\BuildInfo.ini");
-                    if (File.Exists(buildInfoPath)) BuildInfo.Read(new StringReader(File.ReadAllText(buildInfoPath)));
+                    var ioStoreOnDemandPath = Path.Combine(UserSettings.Default.GameDirectory, "..\\..\\..\\Cloud\\IoStoreOnDemand.ini");
+                    if (File.Exists(ioStoreOnDemandPath)) IoStoreOnDemand.Read(new StringReader(File.ReadAllText(ioStoreOnDemandPath)));
                     break;
             }
 
@@ -294,7 +294,7 @@ public class CUE4ParseViewModel : ViewModel
             if (Provider.MountedVfs.FirstOrDefault(x => x.Name == file.Name) is not { } vfs)
             {
                 if (Provider.UnloadedVfs.FirstOrDefault(x => x.Name == file.Name) is IoStoreReader store)
-                    file.FileCount = (int) store.Info.TocEntryCount - 1;
+                    file.FileCount = (int) store.TocResource.Header.TocEntryCount - 1;
 
                 continue;
             }
@@ -436,87 +436,35 @@ public class CUE4ParseViewModel : ViewModel
         });
     }
 
-    private int _vfcCount { get; set; }
-    public Task VerifyVirtualCache()
+    public Task VerifyOnDemandArchives()
     {
-        if (Provider is StreamedFileProvider { LiveGame: "FortniteLive" } || _vfcCount > 0)
-            return Task.CompletedTask;
-
-        return Task.Run(() =>
-        {
-            _vfcCount = Provider.LoadVirtualCache();
-            if (_vfcCount > 0)
-                FLogger.Append(ELog.Information,
-                    () => FLogger.Text($"{_vfcCount} cached packages loaded", Constants.WHITE, true));
-        });
-    }
-
-    public Task VerifyContentBuildManifest()
-    {
+        // only local fortnite
         if (Provider is not DefaultFileProvider || !Provider.InternalGameName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase))
             return Task.CompletedTask;
 
+        // scuffed but working
         var persistentDownloadDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "FortniteGame/Saved/PersistentDownloadDir");
-        var vfcMetadata = Path.Combine(persistentDownloadDir, "VFC", "vfc.meta");
-        if (!File.Exists(vfcMetadata))
+        var iasFileInfo = new FileInfo(Path.Combine(persistentDownloadDir, "ias", "ias.cache.0"));
+        if (!iasFileInfo.Exists || iasFileInfo.Length == 0)
             return Task.CompletedTask;
 
-        // load if local fortnite with ondemand disabled
-        // VFC folder is created at launch if ondemand
-        // VFC folder is deleted at launch if not ondemand anymore
-        return Task.Run(() =>
+        return Task.Run(async () =>
         {
             var inst = new List<InstructionToken>();
-            BuildInfo.FindPropertyInstructions("Content", "Label", inst);
+            IoStoreOnDemand.FindPropertyInstructions("Endpoint", "TocPath", inst);
             if (inst.Count <= 0) return;
 
-            var manifestInfo = _apiEndpointView.EpicApi.GetContentBuildManifest(default, inst[0].Value);
-            var manifestDir = new DirectoryInfo(Path.Combine(persistentDownloadDir, "ManifestCache"));
-            var manifestPath = Path.Combine(manifestDir.FullName, manifestInfo?.FileName ?? "");
+            var ioStoreOnDemandPath = Path.Combine(UserSettings.Default.GameDirectory, "..\\..\\..\\Cloud", inst[0].Value.SubstringAfterLast("/").SubstringBefore("\""));
+            if (!File.Exists(ioStoreOnDemandPath)) return;
 
-            byte[] manifestData;
-            if (File.Exists(manifestPath))
+            await _apiEndpointView.EpicApi.VerifyAuth(default);
+            await Provider.RegisterVfs(new IoChunkToc(ioStoreOnDemandPath), new IoStoreOnDemandOptions
             {
-                manifestData = File.ReadAllBytes(manifestPath);
-            }
-            else if (manifestInfo != null)
-            {
-                manifestData = manifestInfo.DownloadManifestData();
-                File.WriteAllBytes(manifestPath, manifestData);
-            }
-            else if (manifestDir.Exists && manifestDir.GetFiles("*.manifest") is { Length: > 0} cachedManifests)
-            {
-                manifestData = File.ReadAllBytes(cachedManifests[0].FullName);
-            }
-            else return;
-
-            var manifest = new Manifest(manifestData, new ManifestOptions
-            {
-                ChunkBaseUri = new Uri("http://epicgames-download1.akamaized.net/Builds/Fortnite/Content/CloudDir/ChunksV4/", UriKind.Absolute),
-                ChunkCacheDirectory = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"))
+                ChunkBaseUri = new Uri("https://download.epicgames.com/ias/fortnite/", UriKind.Absolute),
+                ChunkCacheDirectory = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data")),
+                Authorization = new AuthenticationHeaderValue("Bearer", UserSettings.Default.LastAuthResponse.AccessToken)
             });
-
-            var onDemandFiles = new Dictionary<string, GameFile>();
-            foreach (var fileManifest in manifest.FileManifests)
-            {
-                if (Provider.Files.TryGetValue(fileManifest.Name, out _)) continue;
-
-                var onDemandFile = new StreamedGameFile(fileManifest.Name, fileManifest.GetStream(), Provider.Versions);
-                if (Provider.IsCaseInsensitive) onDemandFiles[onDemandFile.Path.ToLowerInvariant()] = onDemandFile;
-                else onDemandFiles[onDemandFile.Path] = onDemandFile;
-            }
-
-            (Provider.Files as FileProviderDictionary)?.AddFiles(onDemandFiles);
-            if (onDemandFiles.Count > 0)
-                FLogger.Append(ELog.Information,
-                    () => FLogger.Text($"{onDemandFiles.Count} streamed packages loaded", Constants.WHITE, true));
-#if DEBUG
-
-            var missing = manifest.FileManifests.Count - onDemandFiles.Count;
-            if (missing > 0)
-                FLogger.Append(ELog.Debug,
-                    () => FLogger.Text($"{missing} packages were already loaded by regular archives", Constants.WHITE, true));
-#endif
+            await Provider.MountAsync();
         });
     }
 
