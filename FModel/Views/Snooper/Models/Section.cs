@@ -16,11 +16,11 @@ public class Section
 
     public Section(int index, int facesCount, int firstFaceIndex)
     {
-        MaterialIndex = index;
+        MaterialIndex = Math.Max(0, index);
         FacesCount = facesCount;
         FirstFaceIndex = firstFaceIndex;
         FirstFaceIndexPtr = new IntPtr(FirstFaceIndex * sizeof(uint));
-        Color = Constants.COLOR_PALETTE[index % Constants.PALETTE_LENGTH];
+        Color = Constants.COLOR_PALETTE[MaterialIndex % Constants.PALETTE_LENGTH];
         Show = true;
     }
 

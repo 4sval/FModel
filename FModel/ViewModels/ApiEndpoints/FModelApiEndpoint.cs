@@ -176,7 +176,7 @@ public class FModelApiEndpoint : AbstractApiProvider
             {
                 if (AutoUpdater.DownloadUpdate(args))
                 {
-                    UserSettings.Default.ShowChangelog = true;
+                    UserSettings.Default.ShowChangelog = !qa.Value;
                     UserSettings.Default.CommitHash = qa.CommitHash;
                     Application.Current.Shutdown();
                 }

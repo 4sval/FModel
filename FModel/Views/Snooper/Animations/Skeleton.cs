@@ -201,7 +201,7 @@ public class Skeleton : IDisposable
 
                 sequence.Tracks[bone.SkeletonIndex].GetBoneTransform(f, sequence.NumFrames, ref boneOrientation, ref bonePosition, ref boneScale);
                 if (!bone.IsRoot) boneMatrix = _boneMatriceAtFrame[bone.ParentIndex];
-                bonePosition = rotationOnly ? bone.Rest.Position : bonePosition * Constants.SCALE_DOWN_RATIO;
+                bonePosition = rotationOnly || bonePosition.IsZero() ? bone.Rest.Position : bonePosition * Constants.SCALE_DOWN_RATIO;
 
                 boneMatrix = new Transform
                 {

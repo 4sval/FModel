@@ -329,12 +329,12 @@ public class Material : IDisposable
 
             switch (SelectedTexture)
             {
-                case 0:
+                case 0 when DiffuseColor.Length > 0:
                     SnimGui.Layout("Color");ImGui.PushID(3);
                     ImGui.ColorEdit4("", ref DiffuseColor[SelectedChannel], ImGuiColorEditFlags.NoAlpha);
                     ImGui.PopID();
                     break;
-                case 4:
+                case 4 when EmissiveColor.Length > 0:
                     SnimGui.Layout("Color");ImGui.PushID(3);
                     ImGui.ColorEdit4("", ref EmissiveColor[SelectedChannel], ImGuiColorEditFlags.NoAlpha);
                     ImGui.PopID();SnimGui.Layout("Region");ImGui.PushID(4);
@@ -357,11 +357,11 @@ public class Material : IDisposable
     {
         return SelectedTexture switch
         {
-            0 => Diffuse[SelectedChannel],
-            1 => Normals[SelectedChannel],
-            2 => SpecularMasks[SelectedChannel],
+            0 when Diffuse.Length > 0 => Diffuse[SelectedChannel],
+            1 when Normals.Length > 0 => Normals[SelectedChannel],
+            2 when SpecularMasks.Length > 0 => SpecularMasks[SelectedChannel],
             3 => Ao.Texture,
-            4 => Emissive[SelectedChannel],
+            4 when Emissive.Length > 0 => Emissive[SelectedChannel],
             _ => null
         };
     }
