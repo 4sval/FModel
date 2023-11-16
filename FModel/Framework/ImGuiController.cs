@@ -440,7 +440,7 @@ outputColor = color * texture(in_fontTexture, texCoord);
         GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBuffer);
         for (int i = 0; i < draw_data.CmdListsCount; i++)
         {
-            ImDrawListPtr cmd_list = draw_data.CmdListsRange[i];
+            ImDrawListPtr cmd_list = draw_data.CmdLists[i];
 
             int vertexSize = cmd_list.VtxBuffer.Size * Unsafe.SizeOf<ImDrawVert>();
             if (vertexSize > _vertexBufferSize)
@@ -490,7 +490,7 @@ outputColor = color * texture(in_fontTexture, texCoord);
         // Render command lists
         for (int n = 0; n < draw_data.CmdListsCount; n++)
         {
-            ImDrawListPtr cmd_list = draw_data.CmdListsRange[n];
+            ImDrawListPtr cmd_list = draw_data.CmdLists[n];
 
             GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, cmd_list.VtxBuffer.Size * Unsafe.SizeOf<ImDrawVert>(), cmd_list.VtxBuffer.Data);
             CheckGLError($"Data Vert {n}");

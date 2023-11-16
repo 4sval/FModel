@@ -454,34 +454,57 @@ public class Renderer : IDisposable
 
     private void WorldMesh(UObject actor, Transform transform)
     {
-        if (!actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent", "StaticMesh", "Mesh", "LightMesh") ||
-            !staticMeshComponent.TryLoad(out UStaticMeshComponent staticMeshComp) ||
-            !staticMeshComp.GetStaticMesh().TryLoad(out UStaticMesh m) || m.Materials.Length < 1)
-            return;
-
-        var guid = m.LightingGuid;
-        var t = new Transform
+        if (actor.TryGetValue(out FPackageIndex[] instanceComponents, "InstanceComponents"))
         {
-            Relation = transform.Matrix,
-            Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO,
-            Rotation = staticMeshComp.GetOrDefault("RelativeRotation", FRotator.ZeroRotator).Quaternion(),
-            Scale = staticMeshComp.GetOrDefault("RelativeScale3D", FVector.OneVector)
-        };
+            foreach (var component in instanceComponents)
+            {
+                if (!component.TryLoad(out UInstancedStaticMeshComponent staticMeshComp) ||
+                    !staticMeshComp.GetStaticMesh().TryLoad(out UStaticMesh m) || m.Materials.Length < 1)
+                    continue;
+
+                if (staticMeshComp.PerInstanceSMData is { Length: > 0 })
+                {
+
+                    var relation = CalculateTransform(staticMeshComp, transform);
+                    foreach (var perInstanceData in staticMeshComp.PerInstanceSMData)
+                    {
+                        ProcessMesh(actor, staticMeshComp, m, new Transform
+                        {
+                            Relation = relation.Matrix,
+                            Position = perInstanceData.TransformData.Translation * Constants.SCALE_DOWN_RATIO,
+                            Rotation = perInstanceData.TransformData.Rotation,
+                            Scale = perInstanceData.TransformData.Scale3D
+                        });
+                    }
+                }
+                else ProcessMesh(actor, staticMeshComp, m, CalculateTransform(staticMeshComp, transform));
+            }
+        }
+        else if (actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent", "StaticMesh", "Mesh", "LightMesh") &&
+                 staticMeshComponent.TryLoad(out UStaticMeshComponent staticMeshComp) &&
+                 staticMeshComp.GetStaticMesh().TryLoad(out UStaticMesh m) && m.Materials.Length > 0)
+        {
+            ProcessMesh(actor, staticMeshComp, m, CalculateTransform(staticMeshComp, transform));
+        }
+    }
+
+    private void ProcessMesh(UObject actor, UStaticMeshComponent staticMeshComp, UStaticMesh m, Transform transform)
+    {
+        var guid = m.LightingGuid;
 
         OverrideVertexColors(staticMeshComp, m);
         if (Options.TryGetModel(guid, out var model))
         {
-            model.AddInstance(t);
+            model.AddInstance(transform);
         }
         else if (m.TryConvert(out var mesh))
         {
-            model = new StaticModel(m, mesh, t);
+            model = new StaticModel(m, mesh, transform);
             model.IsTwoSided = actor.GetOrDefault("bMirrored", staticMeshComp.GetOrDefault("bDisallowMeshPaintPerInstance", model.IsTwoSided));
 
-            if (actor.TryGetValue(out FPackageIndex baseMaterial, "BaseMaterial") &&
-                actor.TryGetAllValues(out FPackageIndex[] textureData, "TextureData"))
+            if (actor.TryGetAllValues(out FPackageIndex[] textureData, "TextureData"))
             {
-                var material = model.Materials.FirstOrDefault(x => x.Name == baseMaterial.Name);
+                var material = model.Materials.FirstOrDefault();
                 if (material is { IsUsed: true })
                 {
                     for (int j = 0; j < textureData.Length; j++)
@@ -520,7 +543,9 @@ public class Renderer : IDisposable
                 for (var j = 0; j < overrideMaterials.Length && j < model.Sections.Length; j++)
                 {
                     var matIndex = model.Sections[j].MaterialIndex;
-                    if (!(model.Materials[matIndex].IsUsed && overrideMaterials[matIndex].Load() is UMaterialInterface unrealMaterial)) continue;
+                    if (matIndex < 0 || matIndex >= model.Materials.Length || matIndex >= overrideMaterials.Length ||
+                        overrideMaterials[matIndex].Load() is not UMaterialInterface unrealMaterial) continue;
+
                     model.Materials[matIndex].SwapMaterial(unrealMaterial);
                 }
             }
@@ -531,13 +556,24 @@ public class Renderer : IDisposable
         if (actor.TryGetValue(out FPackageIndex treasureLight, "PointLight", "TreasureLight") &&
             treasureLight.TryLoad(out var pl1) && pl1.Template.TryLoad(out var pl2))
         {
-            Options.Lights.Add(new PointLight(guid, Options.Icons["pointlight"], pl1, pl2, t));
+            Options.Lights.Add(new PointLight(guid, Options.Icons["pointlight"], pl1, pl2, transform));
         }
         if (actor.TryGetValue(out FPackageIndex spotLight, "SpotLight") &&
             spotLight.TryLoad(out var sl1) && sl1.Template.TryLoad(out var sl2))
         {
-            Options.Lights.Add(new SpotLight(guid, Options.Icons["spotlight"], sl1, sl2, t));
+            Options.Lights.Add(new SpotLight(guid, Options.Icons["spotlight"], sl1, sl2, transform));
         }
+    }
+
+    private Transform CalculateTransform(UStaticMeshComponent staticMeshComp, Transform relation)
+    {
+        return new Transform
+        {
+            Relation = relation.Matrix,
+            Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO,
+            Rotation = staticMeshComp.GetOrDefault("RelativeRotation", FRotator.ZeroRotator).Quaternion(),
+            Scale = staticMeshComp.GetOrDefault("RelativeScale3D", FVector.OneVector)
+        };
     }
 
     private void OverrideVertexColors(UStaticMeshComponent staticMeshComp, UStaticMesh staticMesh)
