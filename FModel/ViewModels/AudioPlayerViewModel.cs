@@ -552,10 +552,22 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
             case "opus":
             case "wem":
             case "at9":
+            case "raw":
             {
-                if (TryConvert(out var wavFilePath) && !string.IsNullOrEmpty(wavFilePath))
+                if (TryConvert(out var wavFilePath))
                 {
                     var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(wavFilePath));
+                    Replace(newAudio);
+                    return true;
+                }
+
+                return false;
+            }
+            case "binka":
+            {
+                if (TryDecode(out var rawFilePath))
+                {
+                    var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(rawFilePath));
                     Replace(newAudio);
                     return true;
                 }
@@ -567,7 +579,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         return true;
     }
 
-    private bool TryConvert(out string wavFilePath)
+    private bool TryConvert(out string wavFilePath) => TryConvert(SelectedAudioFile.FilePath, SelectedAudioFile.Data, out wavFilePath);
+    private bool TryConvert(string inputFilePath, byte[] inputFileData, out string wavFilePath)
     {
         wavFilePath = string.Empty;
         var vgmFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "test.exe");
@@ -577,22 +590,46 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
             if (!File.Exists(vgmFilePath)) return false;
         }
 
-        Directory.CreateDirectory(SelectedAudioFile.FilePath.SubstringBeforeLast("/"));
-        File.WriteAllBytes(SelectedAudioFile.FilePath, SelectedAudioFile.Data);
+        Directory.CreateDirectory(inputFilePath.SubstringBeforeLast("/"));
+        File.WriteAllBytes(inputFilePath, inputFileData);
 
-        wavFilePath = Path.ChangeExtension(SelectedAudioFile.FilePath, ".wav");
+        wavFilePath = Path.ChangeExtension(inputFilePath, ".wav");
         var vgmProcess = Process.Start(new ProcessStartInfo
         {
             FileName = vgmFilePath,
-            Arguments = $"-o \"{wavFilePath}\" \"{SelectedAudioFile.FilePath}\"",
+            Arguments = $"-o \"{wavFilePath}\" \"{inputFilePath}\"",
             UseShellExecute = false,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
             CreateNoWindow = true
         });
-        vgmProcess?.WaitForExit();
+        vgmProcess?.WaitForExit(5000);
+
+        File.Delete(inputFilePath);
+        return vgmProcess?.ExitCode == 0 && File.Exists(wavFilePath);
+    }
+
+    private bool TryDecode(out string rawFilePath)
+    {
+        rawFilePath = string.Empty;
+        var binkadecPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "binkadec.exe");
+        if (!File.Exists(binkadecPath))
+        {
+            return false;
+        }
+
+        Directory.CreateDirectory(SelectedAudioFile.FilePath.SubstringBeforeLast("/"));
+        File.WriteAllBytes(SelectedAudioFile.FilePath, SelectedAudioFile.Data);
+
+        rawFilePath = Path.ChangeExtension(SelectedAudioFile.FilePath, ".wav");
+        var binkadecProcess = Process.Start(new ProcessStartInfo
+        {
+            FileName = binkadecPath,
+            Arguments = $"-i \"{SelectedAudioFile.FilePath}\" -o \"{rawFilePath}\"",
+            UseShellExecute = false,
+            CreateNoWindow = true
+        });
+        binkadecProcess?.WaitForExit(5000);
 
         File.Delete(SelectedAudioFile.FilePath);
-        return vgmProcess?.ExitCode == 0 && File.Exists(wavFilePath);
+        return binkadecProcess?.ExitCode == 0 && File.Exists(rawFilePath);
     }
 }
