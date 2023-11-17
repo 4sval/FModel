@@ -17,10 +17,10 @@ jobs:
       - name: Fetch Submodules Recursively
         run: git submodule update --init --recursive
 
-      - name: .NET 6 Setup
+      - name: .NET 8 Setup
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: '8.0.x'
 
       - name: .NET Restore
         run: dotnet restore FModel
@@ -33,7 +33,7 @@ jobs:
           regex: '^(?<major>[0-9])\.(?<minor>[0-9])\.(?<buildmetadata>[0-9])\.(?<patch>[0-9])$'
 
       - name: .NET Publish
-        run: dotnet publish FModel -c Release --no-self-contained -r win-x64 -f net6.0-windows -o "./FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false
+        run: dotnet publish FModel -c Release --no-self-contained -r win-x64 -f net8.0-windows -o "./FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false
 
       - name: ZIP File
         uses: papeloto/action-zip@v1
