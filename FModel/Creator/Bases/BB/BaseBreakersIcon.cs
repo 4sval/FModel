@@ -2,17 +2,20 @@ using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Objects.Core.i18N;
 using CUE4Parse.UE4.Objects.UObject;
 using FModel.Creator.Bases.FN;
+using FModel.ViewModels.ApiEndpoints.Models;
 using SkiaSharp;
 
 namespace FModel.Creator.Bases.BB;
 
-public class BaseBreakersIcon : BaseIcon
+public class BaseBreakersIcon : UCreator
 {
+    protected string ItemType { get; set; }
+    protected string RarityName { get; set; }
+
     public BaseBreakersIcon(UObject uObject, EIconStyle style) : base(uObject, style)
     {
-        SeriesBackground = Utils.GetBitmap("WorldExplorers/Content/UMG/Materials/t_TextGradient.t_TextGradient");
-        Background = new[] { SKColor.Parse("D0D0D0"), SKColor.Parse("636363") };
-        Border = new[] { SKColor.Parse("D0D0D0"), SKColor.Parse("FFFFFF") };
+        Background = new[] { SKColor.Parse("86886f"), SKColor.Parse("86886f") };
+        Border = new[] { SKColor.Parse("abae8e"), SKColor.Parse("abae8e") };
     }
 
     public override void ParseForInfo()
@@ -22,8 +25,15 @@ public class BaseBreakersIcon : BaseIcon
 
         if (Object.TryGetValue(out FText displayName, "DisplayName", "RegionDisplayName", "ZoneName"))
             DisplayName = displayName.Text;
+
         if (Object.TryGetValue(out FText description, "Description", "RegionShortName", "ZoneDescription"))
             Description = description.Text;
+
+        if (Object.TryGetValue(out FName rarity, "Rarity"))
+            RarityName = rarity.ToString().Split("::")[1];
+
+        if (Object.TryGetValue(out FName itemType, "ItemType"))
+            ItemType = itemType.ToString().Split("::")[1];
     }
 
     public override SKBitmap[] Draw()
@@ -36,6 +46,8 @@ public class BaseBreakersIcon : BaseIcon
         DrawTextBackground(c);
         DrawDisplayName(c);
         DrawDescription(c);
+        DrawToBottom(c, SKTextAlign.Left, RarityName);
+        DrawToBottom(c, SKTextAlign.Right, ItemType);
 
         return new[] { ret };
     }

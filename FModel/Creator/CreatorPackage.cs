@@ -6,6 +6,8 @@ using FModel.Creator.Bases.BB;
 using FModel.Creator.Bases.FN;
 using FModel.Creator.Bases.MV;
 using FModel.Creator.Bases.SB;
+using FModel.Creator.Bases.SG;
+using FModel.Views.Resources.Controls;
 
 namespace FModel.Creator;
 
@@ -203,6 +205,116 @@ public class CreatorPackage : IDisposable
             case "QuestData":
                 creator = new Bases.MV.BaseQuest(_object, _style);
                 return true;
+
+            // WorldExplorers
+            case "WExpGenericAccountItemDefinition":
+                creator = new BaseBreakersIcon(_object, _style);
+                return true;
+            case "WExpTreasureMapDefinition":
+                creator = new BaseBreakersIcon(_object, _style);
+                return true;
+            case "WExpPersonalEventDefinition":
+                creator = new BaseBreakersIcon(_object, _style);
+                return true;
+            case "WExpTokenDefinition":
+                creator = new BaseBreakersIcon(_object, _style);
+                return true;
+            case "WExpStandInDefinition":
+                creator = new BaseBreakersIcon(_object, _style);
+                return true;
+            case "WExpXpBookDefinition":
+                creator = new BaseBreakersIcon(_object, _style);
+                return true;
+            case "WExpUnlockableDefinition":
+                creator = new BaseBreakersIcon(_object, _style);
+                return true;
+            case "WExpUpgradePotionDefinition":
+                creator = new BaseBreakersIcon(_object, _style);
+                return true;
+            case "WExpVoucherItemDefinition":
+                creator = new BaseBreakersIcon(_object, _style);
+                return true;
+            case "WExpAccountRewardDefinition":
+                creator = new BaseBreakersIcon(_object, _style);
+                return true;
+            case "WExpHammerChestDefinition":
+                creator = new BaseHammerIcon(_object, _style);
+                return true;
+
+            // PortalWars
+            case "AssaultRifleSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "BannerDataAsset":
+                creator = new BaseBannerIcon(_object, _style);
+                return true;
+            case "BatSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "BattleRifleSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "CharacterSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "CustomizationDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "DMRSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "EmoteDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "JetpackSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "OddballSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "PistolSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "PlasmaRifleSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "PortalLauncherSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "PortalSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "RailGunSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "RocketLauncherSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "ShotgunSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "SMGSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "SniperRifleSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "SprayDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "MapDataAsset":
+                creator = new BaseSGMapIcon(_object, _style);
+                return true;
+            case "NameTagDataAsset":
+                creator = new BaseNameTag(_object, _style);
+                return true;
+            case "BadgeDataAsset":
+                creator = new BaseBadgeStat(_object, _style);
+                return true;
+            case "GameModeDataAsset":
+                creator = new BaseGameModeIcon(_object, _style);
+                return true;
+
             default:
                 creator = null;
                 return false;

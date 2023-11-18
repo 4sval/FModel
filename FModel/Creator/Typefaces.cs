@@ -4,6 +4,7 @@ using System.Windows;
 using CUE4Parse.UE4.Versions;
 using FModel.Settings;
 using FModel.ViewModels;
+using FModel.Views.Resources.Controls;
 using SkiaSharp;
 
 namespace FModel.Creator;
@@ -48,6 +49,24 @@ public class Typefaces
     private const string _XIANGHEHEI_SC_PRO_BLACK = "XiangHeHei_SC/MXiangHeHeiSCPro-Black";
     private const string _XIANGHEHEI_SC_PRO_HEAVY = "XiangHeHei_SC/MXiangHeHeiSCPro-Heavy";
 
+    // WorldExplorers
+    private const string _WORLDEXPLORERS_BASE_PATH = "/Game/UMG/Fonts/Faces/";
+    private const string _HEMIHEAD_426 = "Lato-Black";
+    private const string _LATO_BLACK = "Lato-Black.";
+    private const string _LATO_BLACK_ITALIC = "Lato-BlackItalic";
+    private const string _LATO_LIGHT = "Lato-Light";
+    private const string _LATO_MEDIUM = "Lato-Medium";
+    private const string _ROBOTO_BOLD = "Roboto-Bold";
+    private const string _ROBOTO_BOLD_ALLCAPS = "Roboto-BoldAllCaps";
+    private const string _ROBOTO_REGULAR = "Roboto-Regular";
+
+    // PortalWars
+    private const string _PORTALWARS_BASE_PATH = "/Game/UI/Fonts/";
+    private const string _CHAKRAPETCH_BOLD = "ChakraPetch/ChakraPetch-Bold";
+    private const string _MONTSERRAT_BLACK = "Montserrat/Montserrat-Black";
+    private const string _REVOLUTIONGOTHIC_BOLD = "RevolutionGothic/RevolutionGothic_Bold";
+
+
     private readonly CUE4ParseViewModel _viewModel;
 
     public readonly SKTypeface Default; // used as a fallback font for all untranslated strings (item source, ...)
@@ -66,6 +85,8 @@ public class Typefaces
         var language = UserSettings.Default.AssetLanguage;
 
         Default = SKTypeface.FromStream(Application.GetResourceStream(_BURBANK_BIG_CONDENSED_BOLD)?.Stream);
+
+        //FLogger.Append(ELog.Debug, () => FLogger.Text($"InternalGameName: {viewModel.Provider.InternalGameName}", Constants.WHITE, true));
 
         switch (viewModel.Provider.InternalGameName.ToUpperInvariant())
         {
@@ -179,6 +200,26 @@ public class Typefaces
                     ELanguage.Chinese => _XIANGHEHEI_SC_PRO_HEAVY,
                     _ => _NORMS_STD_CONDENSED_MEDIUM
                 } + _EXT);
+                break;
+            }
+            case "WORLDEXPLORERS":
+            {
+                DisplayName = OnTheFly(_WORLDEXPLORERS_BASE_PATH + _HEMIHEAD_426 + _EXT);
+
+                Description = OnTheFly(_WORLDEXPLORERS_BASE_PATH + _ROBOTO_BOLD + _EXT);
+
+                Bottom = OnTheFly(_WORLDEXPLORERS_BASE_PATH + _ROBOTO_BOLD + _EXT);
+
+                break;
+            }
+            case "PORTALWARS":
+            {
+                DisplayName = OnTheFly(_PORTALWARS_BASE_PATH + _MONTSERRAT_BLACK + _EXT);
+
+                Description = OnTheFly(_PORTALWARS_BASE_PATH + _CHAKRAPETCH_BOLD + _EXT);
+
+                Bottom = OnTheFly(_PORTALWARS_BASE_PATH + _MONTSERRAT_BLACK + _EXT);
+
                 break;
             }
             default:

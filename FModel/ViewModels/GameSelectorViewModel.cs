@@ -88,6 +88,7 @@ public class GameSelectorViewModel : ViewModel
     private IEnumerable<DirectorySettings> EnumerateDetectedGames()
     {
         yield return GetUnrealEngineGame("Fortnite", "\\FortniteGame\\Content\\Paks", EGame.GAME_UE5_3);
+        yield return GetUnrealEngineGame("WorldExplorersLive", "\\WorldExplorers\\Content", EGame.GAME_UE4_25, "Battle Breakers");
         yield return DirectorySettings.Default("Fortnite [LIVE]", Constants._FN_LIVE_TRIGGER, ue: EGame.GAME_UE5_3);
         yield return GetUnrealEngineGame("Pewee", "\\RogueCompany\\Content\\Paks", EGame.GAME_RogueCompany);
         yield return GetUnrealEngineGame("Rosemallow", "\\Indiana\\Content\\Paks", EGame.GAME_UE4_21);
@@ -103,6 +104,8 @@ public class GameSelectorViewModel : ViewModel
         yield return GetSteamGame(578080, "\\TslGame\\Content\\Paks", EGame.GAME_PlayerUnknownsBattlegrounds); // PUBG
         yield return GetSteamGame(1172380, "\\SwGame\\Content\\Paks", EGame.GAME_StarWarsJediFallenOrder); // STAR WARS Jedi: Fallen Order™
         yield return GetSteamGame(677620, "\\PortalWars\\Content\\Paks", EGame.GAME_Splitgate); // Splitgate
+        yield return GetSteamGame(732690, "\\freddys\\Content\\Paks", EGame.GAME_UE4_23); // FNAF Help Wanted
+        yield return GetSteamGame(747660, "\\quarters\\Content\\Paks", EGame.GAME_UE4_25_Plus); // FNAF Security Breach
         yield return GetSteamGame(1172620, "\\Athena\\Content\\Paks", EGame.GAME_SeaOfThieves); // Sea of Thieves
         yield return GetSteamGame(1665460, "\\pak", EGame.GAME_UE4_26); // eFootball 2023
         yield return GetRockstarGamesGame("GTA III - Definitive Edition", "\\Gameface\\Content\\Paks", EGame.GAME_GTATheTrilogyDefinitiveEdition);
@@ -112,7 +115,7 @@ public class GameSelectorViewModel : ViewModel
     }
 
     private LauncherInstalled _launcherInstalled;
-    private DirectorySettings GetUnrealEngineGame(string gameName, string pakDirectory, EGame ueVersion)
+    private DirectorySettings GetUnrealEngineGame(string gameName, string pakDirectory, EGame ueVersion, string OverrideName = null)
     {
         _launcherInstalled ??= GetDriveLauncherInstalls<LauncherInstalled>("ProgramData\\Epic\\UnrealEngineLauncher\\LauncherInstalled.dat");
         if (_launcherInstalled?.InstallationList != null)
@@ -123,7 +126,7 @@ public class GameSelectorViewModel : ViewModel
                 if (installationList.AppName.Equals(gameName, StringComparison.OrdinalIgnoreCase) && Directory.Exists(gameDir))
                 {
                     Log.Debug("Found {GameName} in LauncherInstalled.dat", gameName);
-                    return DirectorySettings.Default(installationList.AppName, gameDir, ue: ueVersion);
+                    return DirectorySettings.Default((OverrideName == null ? installationList.AppName : OverrideName), gameDir, ue: ueVersion);
                 }
             }
         }

@@ -1,4 +1,4 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:FModel"
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
@@ -354,6 +354,9 @@
                         <DataTrigger Binding="{Binding Header}" Value="WorldExplorers">
                             <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/battlebreakers.png" />
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="PortalWars">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/splitgate.png" />
+                        </DataTrigger>
                         <DataTrigger Binding="{Binding Header}" Value="OakGame">
                             <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/borderlands.png" />
                         </DataTrigger>
@@ -586,6 +589,9 @@
                         </DataTrigger>
                         <DataTrigger Binding="{Binding FullPath, Converter={x:Static converters:FileExtensionEqualsConverter.Instance}, ConverterParameter='.psd'}" Value="True">
                             <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset_psd.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding FullPath, Converter={x:Static converters:FileExtensionEqualsConverter.Instance}, ConverterParameter='.uproject'}" Value="True">
+                            <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/uproject.png" />
                         </DataTrigger>
                     </DataTemplate.Triggers>
                 </DataTemplate>
