@@ -16,8 +16,6 @@ namespace FModel.Creator.Bases.VAL;
 
 public class BaseEquippableCharm : UCreator
 {
-    private int ImageMargin {  get; set; }
-
     public BaseEquippableCharm(UObject uObject, EIconStyle style) : base(uObject, style)
     {
         Background = new[] { SKColor.Parse("#262630"), SKColor.Parse("#1f1f26") };

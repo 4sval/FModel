@@ -27,6 +27,7 @@ public class BaseEquippableSkin : UCreator
         Height = 360;
 
         StarterTextPos = 270;
+        ImageMargin = 64;
     }
 
     public override void ParseForInfo()
@@ -43,6 +44,21 @@ public class BaseEquippableSkin : UCreator
                 Preview = Utils.GetBitmap(iconTextureAssetData as UTexture2D);
         }
 
+        if (Object.TryGetValue(out FSoftObjectPath ThemePath, "Theme"))
+        {
+            var ThemeClass = ThemePath.Load();
+            var Theme = (ThemeClass as UBlueprintGeneratedClass).ClassDefaultObject.Load();
+
+            if (Theme.TryGetValue(out FSoftObjectPath ThemeUIDataPath, "UIData"))
+            {
+                var UIDataClass = ThemeUIDataPath.Load();
+                var UIData = (UIDataClass as UBlueprintGeneratedClass).ClassDefaultObject.Load();
+
+                if (UIData.TryGetValue(out FText displayName, "DisplayName"))
+                    Description = displayName.Text;
+            }
+        }
+
         if (Object.TryGetValue(out FSoftObjectPath WallpaperPath, "Wallpaper"))
             Wallpaper = Utils.GetBitmap(WallpaperPath);
     }
@@ -50,8 +66,7 @@ public class BaseEquippableSkin : UCreator
     protected void DrawItemPreview(SKCanvas c)
     {
         if (Preview != null)
-            c.DrawBitmap(Preview, Width * 0.10f, Height * 0.30f, ImagePaint);
-        //Preview.Resize(Preview.Width, Preview.Height);
+            c.DrawBitmap(Preview, (Width - Preview.Width) / 2, (Height - Preview.Height) / 2, ImagePaint);
     }
 
     protected void DrawWallpaper(SKCanvas c)
@@ -70,6 +85,7 @@ public class BaseEquippableSkin : UCreator
         DrawItemPreview(c);
         DrawTextBackground(c);
         DrawDisplayName(c);
+        DrawDescription(c);
 
         return new[] { ret };
     }

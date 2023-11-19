@@ -57,7 +57,7 @@ public class BaseEquippableStats : UStatCreator
 
         ImagePaint.BlendMode = _screenLayer ? SKBlendMode.Screen : Preview == null ? SKBlendMode.ColorBurn : SKBlendMode.SrcOver;
 
-        c.DrawBitmap(UsedBMP.ResizeWithRatio(0.45f), 10, _headerHeight / 2.1f, ImagePaint);
+        c.DrawBitmap(UsedBMP.ResizeWithRatio(0.45f), 10, _headerHeight * .25f, ImagePaint);
     }
 
     public override void ParseForInfo()

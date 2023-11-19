@@ -20,6 +20,8 @@ public abstract class UCreator
     public string DisplayName { get; protected set; }
     public string Description { get; protected set; }
     public int Margin { get; protected set; }
+    public int ImageMargin { get; protected set; }
+
     public int Width { get; protected set; }
     public int Height { get; protected set; }
 
