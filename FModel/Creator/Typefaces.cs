@@ -90,8 +90,10 @@ public class Typefaces
 
         Default = SKTypeface.FromStream(Application.GetResourceStream(_BURBANK_BIG_CONDENSED_BOLD)?.Stream);
 
+#if DEBUG
         FLogger.Append(ELog.Debug, () => FLogger.Text($"InternalGameName: {viewModel.Provider.InternalGameName}", Constants.WHITE, true));
         FLogger.Append(ELog.Debug, () => FLogger.Text($"DisplayName: {_viewModel.Provider.GameDisplayName}", Constants.WHITE, true));
+#endif
 
         var GameSwitchName = viewModel.Provider.InternalGameName.ToUpperInvariant();
         if (GameSwitchName == "SHOOTERGAME")
