@@ -14,9 +14,9 @@ using SkiaSharp;
 namespace FModel.Creator.Bases.VAL;
 
 
-public class BaseEquippableCharm : UCreator
+public class BaseValIcon : UCreator
 {
-    public BaseEquippableCharm(UObject uObject, EIconStyle style) : base(uObject, style)
+    public BaseValIcon(UObject uObject, EIconStyle style) : base(uObject, style)
     {
         Background = new[] { SKColor.Parse("#262630"), SKColor.Parse("#1f1f26") };
         Border = new[] { SKColor.Parse("#262630"), SKColor.Parse("#1f1f26") };
@@ -38,6 +38,11 @@ public class BaseEquippableCharm : UCreator
 
             if (UIData.TryGetValue(out UObject iconTextureAssetData, "DisplayIcon"))
                 Preview = Utils.GetBitmap(iconTextureAssetData as UTexture2D);
+        }
+
+        if (Object.TryGetValue(out string defDisplayName, "DisplayName"))
+        {
+            DisplayName = defDisplayName;
         }
     }
 

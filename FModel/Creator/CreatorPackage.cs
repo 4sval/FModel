@@ -56,10 +56,31 @@ public class CreatorPackage : IDisposable
                     creator = new BaseEquippableSkin(_ObjectDefault, _style);
                     return true;
                 case "EquippableCharmDataAsset":
-                    creator = new BaseEquippableCharm(_ObjectDefault, _style);
+                    creator = new BaseValIcon(_ObjectDefault, _style);
                     return true;
                 case "EquippableCharmLevelDataAsset":
-                    creator = new BaseEquippableCharm(_ObjectDefault, _style);
+                    creator = new BaseValIcon(_ObjectDefault, _style);
+                    return true;
+                case "CurrencyDataAsset":
+                    creator = new BaseValIcon(_ObjectDefault, _style);
+                    return true;
+                case "ContractDataAssetV2":
+                    creator = new BaseValIcon(_ObjectDefault, _style);
+                    return true;
+                case "ContentTierDataAsset":
+                    creator = new BaseValIcon(_ObjectDefault, _style);
+                    return true;
+                case "CeremonyDataAsset":
+                    creator = new BaseValIcon(_ObjectDefault, _style);
+                    return true;
+                case "GameModeDataAsset":
+                    creator = new BaseValIcon(_ObjectDefault, _style);
+                    return true;
+                case "EventDataAsset":
+                    creator = new BaseEventIcon(_ObjectDefault, _style);
+                    return true;
+                case "BaseCharacterPrimaryDataAsset_C":
+                    creator = new BasePlayableCharacter(_ObjectDefault, _style);
                     return true;
 
                 default:

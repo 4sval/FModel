@@ -21,6 +21,9 @@ namespace FModel.Creator.Bases.VAL;
 
 public class BaseEquippableStats : UStatCreator
 {
+    private readonly int _health = 100;
+    private readonly string[] _rangemap = new string[] { "Close", "Mid", "Far" };
+
     public BaseEquippableStats(UObject uObject, EIconStyle style) : base(uObject, style)
     {
         Width = 1024;
@@ -73,6 +76,10 @@ public class BaseEquippableStats : UStatCreator
             if (UIData.TryGetValue(out UObject iconTextureAssetData, "DisplayIcon"))
                 Preview = Utils.GetBitmap(iconTextureAssetData as UTexture2D);
 
+            var Category = "";
+            if (UIData.TryGetValue(out FName category, "Category"))
+                Category = category.ToString().Split("::")[1];
+
             if (UIData.TryGetValue(out FStructFallback WeaponStats, "WeaponStats"))
             {
                 if (WeaponStats.TryGetValue(out FStructFallback[] DamageRanges, "DamageRanges"))
@@ -87,7 +94,7 @@ public class BaseEquippableStats : UStatCreator
                         DamageRange.TryGetValue(out float RangeStartMeters, "RangeStartMeters");
                         DamageRange.TryGetValue(out float RangeEndMeters, "RangeEndMeters");
 
-                        _statistics.Add(new IconStat($"Damage {RangeStartMeters}m-{RangeEndMeters}m", $"{BodyDamage}-{HeadDamage}"));
+                        _statistics.Add(new IconStat($"Damage {_rangemap[Index]}", $"{BodyDamage}B-{HeadDamage}H", _health));
                         Index++;
                     }
                 }
@@ -103,6 +110,15 @@ public class BaseEquippableStats : UStatCreator
 
                 if (WeaponStats.TryGetValue(out float RunSpeedMultiplier, "RunSpeedMultiplier"))
                     _statistics.Add(new IconStat("Speed Mult", RunSpeedMultiplier));
+            }
+            else if ((_statistics.Count == 0) && DisplayName.ToUpper() == "MELEE")
+            {
+                _statistics.Add(new IconStat("Damage", 75, _health));
+                _statistics.Add(new IconStat("Damage Behind", 100, _health));
+            }
+            else if ((_statistics.Count == 0) && Category == "Hidden")
+            {
+                _statistics.Add(new IconStat("Hidden", 1, 1));
             }
         }
 
