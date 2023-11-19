@@ -66,6 +66,10 @@ public class Typefaces
     private const string _MONTSERRAT_BLACK = "Montserrat/Montserrat-Black";
     private const string _REVOLUTIONGOTHIC_BOLD = "RevolutionGothic/RevolutionGothic_Bold";
 
+    // Valorant
+    private const string _VALORANT_BASE_PATH = "/Game/UI/Fonts/FinalFonts/LOCFonts/";
+    private const string _DINNEXTARABIC_BOLD = "DIN_Next_Arabic/DINNextLTArabic-Bold";
+    private const string _DINNEXTARABIC_REGULAR = "DIN_Next_Arabic/DINNextLTArabic-Regular";
 
     private readonly CUE4ParseViewModel _viewModel;
 
@@ -86,9 +90,14 @@ public class Typefaces
 
         Default = SKTypeface.FromStream(Application.GetResourceStream(_BURBANK_BIG_CONDENSED_BOLD)?.Stream);
 
-        //FLogger.Append(ELog.Debug, () => FLogger.Text($"InternalGameName: {viewModel.Provider.InternalGameName}", Constants.WHITE, true));
+        FLogger.Append(ELog.Debug, () => FLogger.Text($"InternalGameName: {viewModel.Provider.InternalGameName}", Constants.WHITE, true));
+        FLogger.Append(ELog.Debug, () => FLogger.Text($"DisplayName: {_viewModel.Provider.GameDisplayName}", Constants.WHITE, true));
 
-        switch (viewModel.Provider.InternalGameName.ToUpperInvariant())
+        var GameSwitchName = viewModel.Provider.InternalGameName.ToUpperInvariant();
+        if (GameSwitchName == "SHOOTERGAME")
+            GameSwitchName = _viewModel.Provider.GameDisplayName;
+
+        switch (GameSwitchName)
         {
             case "FORTNITEGAME":
             {
@@ -219,6 +228,16 @@ public class Typefaces
                 Description = OnTheFly(_PORTALWARS_BASE_PATH + _CHAKRAPETCH_BOLD + _EXT);
 
                 Bottom = OnTheFly(_PORTALWARS_BASE_PATH + _MONTSERRAT_BLACK + _EXT);
+
+                break;
+            }
+            case "VALORANT":
+            {
+                DisplayName = OnTheFly(_VALORANT_BASE_PATH + _DINNEXTARABIC_BOLD + _EXT);
+
+                Description = OnTheFly(_VALORANT_BASE_PATH + _DINNEXTARABIC_REGULAR + _EXT);
+
+                Bottom = OnTheFly(_VALORANT_BASE_PATH + _DINNEXTARABIC_REGULAR + _EXT);
 
                 break;
             }

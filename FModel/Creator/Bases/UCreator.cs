@@ -132,7 +132,7 @@ public abstract class UCreator
         }
     }
 
-    protected void DrawPreview(SKCanvas c)
+    protected virtual void DrawPreview(SKCanvas c)
         => c.DrawBitmap(Preview ?? DefaultPreview, new SKRect(Margin, Margin, Width - Margin, Height - Margin), ImagePaint);
 
     protected void DrawTextBackground(SKCanvas c)

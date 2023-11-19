@@ -162,4 +162,10 @@ public static class StringExtensions
 
         return 1;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string Between(this string This, string FirstChar, string LastChar)
+    {
+        return Regex.Match(This, $"{FirstChar}(.*){LastChar}").Groups[1].Value;
+    }
 }

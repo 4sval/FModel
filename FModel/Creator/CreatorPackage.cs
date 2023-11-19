@@ -1,12 +1,16 @@
 using System;
 using System.Runtime.CompilerServices;
 using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Objects.Engine;
+using CUE4Parse.UE4.Objects.UObject;
 using FModel.Creator.Bases;
 using FModel.Creator.Bases.BB;
 using FModel.Creator.Bases.FN;
 using FModel.Creator.Bases.MV;
 using FModel.Creator.Bases.SB;
 using FModel.Creator.Bases.SG;
+using FModel.Creator.Bases.VAL;
+using FModel.Extensions;
 using FModel.Views.Resources.Controls;
 
 namespace FModel.Creator;
@@ -32,6 +36,39 @@ public class CreatorPackage : IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TryConstructCreator(out UCreator creator)
     {
+        // BlueprintAsset Renderers
+        if (_object is UBlueprintGeneratedClass)
+        {
+            var BlueprintGeneratedClass = _object as UBlueprintGeneratedClass;
+            var BlueprintType = BlueprintGeneratedClass.SuperStruct.ToString().Between("'", "'").Split(".")[1];
+
+            var _ObjectDefault = BlueprintGeneratedClass.ClassDefaultObject.Load();
+            switch (BlueprintType)
+            {
+                // Valorant
+                case "EquippableDataAsset":
+                    creator = new BaseEquippableStats(_ObjectDefault, _style);
+                    return true;
+                case "EquippableSkinDataAsset":
+                    creator = new BaseEquippableSkin(_ObjectDefault, _style);
+                    return true;
+                case "EquippableSkinLevelDataAsset":
+                    creator = new BaseEquippableSkin(_ObjectDefault, _style);
+                    return true;
+                case "EquippableCharmDataAsset":
+                    creator = new BaseEquippableCharm(_ObjectDefault, _style);
+                    return true;
+                case "EquippableCharmLevelDataAsset":
+                    creator = new BaseEquippableCharm(_ObjectDefault, _style);
+                    return true;
+
+                default:
+                    creator = null;
+                    return false;
+            }
+        }
+
+        // DataAsset Renderers
         switch (_object.ExportType)
         {
             // Fortnite
@@ -314,6 +351,7 @@ public class CreatorPackage : IDisposable
             case "GameModeDataAsset":
                 creator = new BaseGameModeIcon(_object, _style);
                 return true;
+
 
             default:
                 creator = null;

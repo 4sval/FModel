@@ -64,8 +64,10 @@ public class UStatCreator : BaseIcon
         Typeface = Utils.Typefaces.Description
     };
 
-    protected void DrawHeader(SKCanvas c)
+    protected virtual void DrawHeader(SKCanvas c)
     {
+        var UsedBMP = (Preview ?? DefaultPreview);
+
         c.DrawRect(new SKRect(0, 0, Width, Height), _informationPaint);
 
         _informationPaint.Shader = SKShader.CreateRadialGradient(new SKPoint(Width / 2, _headerHeight / 2), Width / 5 * 4,
@@ -96,10 +98,11 @@ public class UStatCreator : BaseIcon
         _informationPaint.Shader = null;
 
         ImagePaint.BlendMode = _screenLayer ? SKBlendMode.Screen : Preview == null ? SKBlendMode.ColorBurn : SKBlendMode.SrcOver;
-        c.DrawBitmap((Preview ?? DefaultPreview).Resize(_headerHeight), 0, 0, ImagePaint);
+
+        c.DrawBitmap(UsedBMP.Resize(_headerHeight, _headerHeight), 0, 0, ImagePaint);
     }
 
-    private new void DrawDisplayName(SKCanvas c)
+    protected new virtual void DrawDisplayName(SKCanvas c)
     {
         if (string.IsNullOrEmpty(DisplayName))
             return;
@@ -176,7 +179,7 @@ public class IconStat
         IsAntialias = true,
         FilterQuality = SKFilterQuality.High,
         TextSize = 25,
-        Typeface = Utils.Typefaces.DisplayName,
+        Typeface = Utils.Typefaces.Description,
         Color = SKColors.White
     };
 
