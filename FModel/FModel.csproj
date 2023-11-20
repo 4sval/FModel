@@ -51,9 +51,11 @@
     <None Remove="Resources\sound.png" />
     <None Remove="Resources\creative.png" />
     <None Remove="Resources\spellbreak.png" />
+    <None Remove="Resources\splitgate.png" />
     <None Remove="Resources\texture.png" />
     <None Remove="Resources\thecycle.png" />
     <None Remove="Resources\ui.png" />
+    <None Remove="Resources\uproject.png" />
     <None Remove="Resources\valorant.png" />
     <None Remove="Resources\weapon.png" />
     <None Remove="Resources\windows.png" />
@@ -188,8 +190,10 @@
     <Resource Include="Resources\spellbreak.png" />
     <Resource Include="Resources\sound.png" />
     <Resource Include="Resources\creative.png" />
+    <Resource Include="Resources\splitgate.png" />
     <Resource Include="Resources\texture.png" />
     <Resource Include="Resources\thecycle.png" />
+    <Resource Include="Resources\uproject.png" />
     <Resource Include="Resources\valorant.png" />
     <Resource Include="Resources\ui.png" />
     <Resource Include="Resources\weapon.png" />

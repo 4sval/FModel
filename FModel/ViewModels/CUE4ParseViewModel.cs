@@ -62,7 +62,7 @@ public class CUE4ParseViewModel : ViewModel
     private readonly Regex _fnLive = new(@"^FortniteGame(/|\\)Content(/|\\)Paks(/|\\)",
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
-    private string _internalGameName;
+    public string _internalGameName;
     public string InternalGameName
     {
         get => _internalGameName;

@@ -595,6 +595,14 @@
                                                         </MultiBinding>
                                                     </MenuItem.CommandParameter>
                                                 </MenuItem>
+                                                <MenuItem Header="Reference" Command="{Binding DataContext.CopyCommand}">
+                                                    <MenuItem.CommandParameter>
+                                                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                            <Binding Source="Reference" />
+                                                            <Binding Path="SelectedItems" />
+                                                        </MultiBinding>
+                                                    </MenuItem.CommandParameter>
+                                                </MenuItem>
                                                 <MenuItem Header="Package Path w/o Extension" Command="{Binding DataContext.CopyCommand}">
                                                     <MenuItem.CommandParameter>
                                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">

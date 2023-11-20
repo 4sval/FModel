@@ -4,6 +4,7 @@ using System.Windows;
 using CUE4Parse.UE4.Versions;
 using FModel.Settings;
 using FModel.ViewModels;
+using FModel.Views.Resources.Controls;
 using SkiaSharp;
 
 namespace FModel.Creator;
@@ -48,6 +49,30 @@ public class Typefaces
     private const string _XIANGHEHEI_SC_PRO_BLACK = "XiangHeHei_SC/MXiangHeHeiSCPro-Black";
     private const string _XIANGHEHEI_SC_PRO_HEAVY = "XiangHeHei_SC/MXiangHeHeiSCPro-Heavy";
 
+    // WorldExplorers
+    private const string _WORLDEXPLORERS_BASE_PATH = "/Game/UMG/Fonts/Faces/";
+    private const string _HEMIHEAD_426 = "Lato-Black";
+    private const string _LATO_BLACK = "Lato-Black.";
+    private const string _LATO_BLACK_ITALIC = "Lato-BlackItalic";
+    private const string _LATO_LIGHT = "Lato-Light";
+    private const string _LATO_MEDIUM = "Lato-Medium";
+    private const string _ROBOTO_BOLD = "Roboto-Bold";
+    private const string _ROBOTO_BOLD_ALLCAPS = "Roboto-BoldAllCaps";
+    private const string _ROBOTO_REGULAR = "Roboto-Regular";
+
+    // PortalWars
+    private const string _PORTALWARS_BASE_PATH = "/Game/UI/Fonts/";
+    private const string _CHAKRAPETCH_BOLD = "ChakraPetch/ChakraPetch-Bold";
+    private const string _MONTSERRAT_BLACK = "Montserrat/Montserrat-Black";
+    private const string _REVOLUTIONGOTHIC_BOLD = "RevolutionGothic/RevolutionGothic_Bold";
+
+    // Valorant
+    private const string _VALORANT_BASE_PATH = "/Game/UI/Fonts/FinalFonts/LOCFonts/";
+    private const string _DINNEXTARABIC_BOLD = "DIN_Next_Arabic/DINNextLTArabic-Bold";
+    private const string _DINNEXTARABIC_REGULAR = "DIN_Next_Arabic/DINNextLTArabic-Regular";
+    private const string _NEUEFRUTIGER_THAI_RG = "Thai/NeueFrutigerThaiModern-Rg";
+    private const string _NEUEFRUTIGER_THAI_LT = "Thai/NeueFrutigerThaiModern-Lt";
+
     private readonly CUE4ParseViewModel _viewModel;
 
     public readonly SKTypeface Default; // used as a fallback font for all untranslated strings (item source, ...)
@@ -67,7 +92,16 @@ public class Typefaces
 
         Default = SKTypeface.FromStream(Application.GetResourceStream(_BURBANK_BIG_CONDENSED_BOLD)?.Stream);
 
-        switch (viewModel.Provider.InternalGameName.ToUpperInvariant())
+#if DEBUG
+        FLogger.Append(ELog.Debug, () => FLogger.Text($"InternalGameName: {viewModel.Provider.InternalGameName}", Constants.WHITE, true));
+        FLogger.Append(ELog.Debug, () => FLogger.Text($"DisplayName: {_viewModel.Provider.GameDisplayName}", Constants.WHITE, true));
+#endif
+
+        var GameSwitchName = viewModel.Provider.InternalGameName.ToUpperInvariant();
+        if (GameSwitchName == "SHOOTERGAME")
+            GameSwitchName = _viewModel.Provider.GameDisplayName;
+
+        switch (GameSwitchName)
         {
             case "FORTNITEGAME":
             {
@@ -179,6 +213,36 @@ public class Typefaces
                     ELanguage.Chinese => _XIANGHEHEI_SC_PRO_HEAVY,
                     _ => _NORMS_STD_CONDENSED_MEDIUM
                 } + _EXT);
+                break;
+            }
+            case "WORLDEXPLORERS":
+            {
+                DisplayName = OnTheFly(_WORLDEXPLORERS_BASE_PATH + _HEMIHEAD_426 + _EXT);
+
+                Description = OnTheFly(_WORLDEXPLORERS_BASE_PATH + _ROBOTO_BOLD + _EXT);
+
+                Bottom = OnTheFly(_WORLDEXPLORERS_BASE_PATH + _ROBOTO_BOLD + _EXT);
+
+                break;
+            }
+            case "PORTALWARS":
+            {
+                DisplayName = OnTheFly(_PORTALWARS_BASE_PATH + _MONTSERRAT_BLACK + _EXT);
+
+                Description = OnTheFly(_PORTALWARS_BASE_PATH + _CHAKRAPETCH_BOLD + _EXT);
+
+                Bottom = OnTheFly(_PORTALWARS_BASE_PATH + _MONTSERRAT_BLACK + _EXT);
+
+                break;
+            }
+            case "VALORANT":
+            {
+                DisplayName = OnTheFly(_VALORANT_BASE_PATH + _DINNEXTARABIC_BOLD + _EXT);
+
+                Description = OnTheFly(_VALORANT_BASE_PATH + _DINNEXTARABIC_REGULAR + _EXT);
+
+                Bottom = OnTheFly(_VALORANT_BASE_PATH + _NEUEFRUTIGER_THAI_RG + _EXT);
+
                 break;
             }
             default:

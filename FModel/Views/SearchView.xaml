@@ -1,4 +1,4 @@
-﻿<adonisControls:AdonisWindow x:Class="FModel.Views.SearchView"
+<adonisControls:AdonisWindow x:Class="FModel.Views.SearchView"
                              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
@@ -259,6 +259,14 @@
                                     <MenuItem.CommandParameter>
                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                             <Binding Source="Directory_Path" />
+                                            <Binding Path="SelectedItems" />
+                                        </MultiBinding>
+                                    </MenuItem.CommandParameter>
+                                </MenuItem>
+                                <MenuItem Header="Reference" Command="{Binding DataContext.CopyCommand}">
+                                    <MenuItem.CommandParameter>
+                                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                            <Binding Source="Reference" />
                                             <Binding Path="SelectedItems" />
                                         </MultiBinding>
                                     </MenuItem.CommandParameter>

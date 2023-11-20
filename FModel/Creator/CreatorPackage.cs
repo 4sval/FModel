@@ -1,11 +1,17 @@
 using System;
 using System.Runtime.CompilerServices;
 using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Objects.Engine;
+using CUE4Parse.UE4.Objects.UObject;
 using FModel.Creator.Bases;
 using FModel.Creator.Bases.BB;
 using FModel.Creator.Bases.FN;
 using FModel.Creator.Bases.MV;
 using FModel.Creator.Bases.SB;
+using FModel.Creator.Bases.SG;
+using FModel.Creator.Bases.VAL;
+using FModel.Extensions;
+using FModel.Views.Resources.Controls;
 
 namespace FModel.Creator;
 
@@ -30,6 +36,76 @@ public class CreatorPackage : IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TryConstructCreator(out UCreator creator)
     {
+        // BlueprintAsset Renderers
+        if (_object is UBlueprintGeneratedClass)
+        {
+            var BlueprintGeneratedClass = _object as UBlueprintGeneratedClass;
+            var BlueprintType = BlueprintGeneratedClass.SuperStruct.ToString().Between("'", "'").Split(".")[1];
+
+            var _ObjectDefault = BlueprintGeneratedClass.ClassDefaultObject.Load();
+            switch (BlueprintType)
+            {
+                // Valorant
+                case "EquippableDataAsset":
+                    creator = new BaseEquippableStats(_ObjectDefault, _style);
+                    return true;
+                case "EquippableSkinDataAsset":
+                    creator = new BaseEquippableSkin(_ObjectDefault, _style);
+                    return true;
+                case "EquippableSkinLevelDataAsset":
+                    creator = new BaseEquippableSkin(_ObjectDefault, _style);
+                    return true;
+                case "EquippableCharmDataAsset":
+                    creator = new BaseValIcon(_ObjectDefault, _style);
+                    return true;
+                case "EquippableCharmLevelDataAsset":
+                    creator = new BaseValIcon(_ObjectDefault, _style);
+                    return true;
+                case "CurrencyDataAsset":
+                    creator = new BaseValIcon(_ObjectDefault, _style);
+                    return true;
+                case "ContractDataAssetV2":
+                    creator = new BaseValIcon(_ObjectDefault, _style);
+                    return true;
+                case "ContentTierDataAsset":
+                    creator = new BaseValIcon(_ObjectDefault, _style);
+                    return true;
+                case "CeremonyDataAsset":
+                    creator = new BaseValIcon(_ObjectDefault, _style);
+                    return true;
+                case "GameModeDataAsset":
+                    creator = new BaseValIcon(_ObjectDefault, _style);
+                    return true;
+                case "EventDataAsset":
+                    creator = new BaseEventIcon(_ObjectDefault, _style);
+                    return true;
+                case "RecruitmentData":
+                    creator = new BaseEventIcon(_ObjectDefault, _style);
+                    return true;
+                case "MassRewardsCeremonyDataAsset":
+                    creator = new BaseEventIcon(_ObjectDefault, _style);
+                    return true;
+                case "AresPurchasableEquippable":
+                    creator = new BasePurchasableItem(_ObjectDefault, _style);
+                    return true;
+                case "SprayDataAsset":
+                    creator = new BaseValIcon(_ObjectDefault, _style, 0);
+                    return true;
+                case "SprayLevelDataAsset":
+                    creator = new BaseValIcon(_ObjectDefault, _style, 0);
+                    return true;
+                // StorefrontItemDataAsset
+                case "BaseCharacterPrimaryDataAsset_C":
+                    creator = new BasePlayableCharacter(_ObjectDefault, _style);
+                    return true;
+
+                default:
+                    creator = null;
+                    return false;
+            }
+        }
+
+        // DataAsset Renderers
         switch (_object.ExportType)
         {
             // Fortnite
@@ -203,6 +279,120 @@ public class CreatorPackage : IDisposable
             case "QuestData":
                 creator = new Bases.MV.BaseQuest(_object, _style);
                 return true;
+
+            // WorldExplorers
+            case "WExpGenericAccountItemDefinition":
+                creator = new BaseBreakersIcon(_object, _style);
+                return true;
+            case "WExpTreasureMapDefinition":
+                creator = new BaseBreakersIcon(_object, _style);
+                return true;
+            case "WExpPersonalEventDefinition":
+                creator = new BaseBreakersIcon(_object, _style);
+                return true;
+            case "WExpTokenDefinition":
+                creator = new BaseBreakersIcon(_object, _style);
+                return true;
+            case "WExpStandInDefinition":
+                creator = new BaseBreakersIcon(_object, _style);
+                return true;
+            case "WExpXpBookDefinition":
+                creator = new BaseBreakersIcon(_object, _style);
+                return true;
+            case "WExpUnlockableDefinition":
+                creator = new BaseBreakersIcon(_object, _style);
+                return true;
+            case "WExpUpgradePotionDefinition":
+                creator = new BaseBreakersIcon(_object, _style);
+                return true;
+            case "WExpVoucherItemDefinition":
+                creator = new BaseBreakersIcon(_object, _style);
+                return true;
+            case "WExpAccountRewardDefinition":
+                creator = new BaseBreakersIcon(_object, _style);
+                return true;
+            case "WExpHammerChestDefinition":
+                creator = new BaseHammerIcon(_object, _style);
+                return true;
+            case "WExpHelpData":
+                creator = new BaseHelpIcon(_object, _style);
+                return true;
+
+            // PortalWars
+            case "AssaultRifleSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "BannerDataAsset":
+                creator = new BaseBannerIcon(_object, _style);
+                return true;
+            case "BatSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "BattleRifleSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "CharacterSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "CustomizationDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "DMRSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "EmoteDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "JetpackSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "OddballSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "PistolSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "PlasmaRifleSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "PortalLauncherSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "PortalSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "RailGunSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "RocketLauncherSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "ShotgunSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "SMGSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "SniperRifleSkinDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "SprayDataAsset":
+                creator = new BaseSplitgateIcon(_object, _style);
+                return true;
+            case "MapDataAsset":
+                creator = new BaseSGMapIcon(_object, _style);
+                return true;
+            case "NameTagDataAsset":
+                creator = new BaseNameTag(_object, _style);
+                return true;
+            case "BadgeDataAsset":
+                creator = new BaseBadgeStat(_object, _style);
+                return true;
+            case "GameModeDataAsset":
+                creator = new BaseGameModeIcon(_object, _style);
+                return true;
+
+
             default:
                 creator = null;
                 return false;

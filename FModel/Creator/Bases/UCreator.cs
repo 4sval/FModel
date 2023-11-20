@@ -3,6 +3,7 @@ using System.Windows;
 using CUE4Parse.UE4.Assets.Exports;
 using FModel.Creator.Bases.FN;
 using FModel.Framework;
+using FModel.Views.Resources.Controls;
 using SkiaSharp;
 using SkiaSharp.HarfBuzz;
 
@@ -19,6 +20,8 @@ public abstract class UCreator
     public string DisplayName { get; protected set; }
     public string Description { get; protected set; }
     public int Margin { get; protected set; }
+    public int ImageMargin { get; protected set; }
+
     public int Width { get; protected set; }
     public int Height { get; protected set; }
 
@@ -39,7 +42,8 @@ public abstract class UCreator
         Style = style;
     }
 
-    private const int _STARTER_TEXT_POSITION = 380, _NAME_TEXT_SIZE = 45, _BOTTOM_TEXT_SIZE = 15;
+    protected int StarterTextPos = 380;
+    protected const int _NAME_TEXT_SIZE = 45, _BOTTOM_TEXT_SIZE = 15;
     protected readonly SKPaint DisplayNamePaint = new()
     {
         IsAntialias = true, FilterQuality = SKFilterQuality.High,
@@ -56,11 +60,11 @@ public abstract class UCreator
     {
         IsAntialias = true, FilterQuality = SKFilterQuality.High
     };
-    private readonly SKPaint _textBackgroundPaint = new()
+    protected readonly SKPaint _textBackgroundPaint = new()
     {
         IsAntialias = true, FilterQuality = SKFilterQuality.High, Color = new SKColor(0, 0, 50, 75)
     };
-    private readonly SKPaint _shortDescriptionPaint = new()
+    protected readonly SKPaint _shortDescriptionPaint = new()
     {
         IsAntialias = true, FilterQuality = SKFilterQuality.High,
         Color = SKColors.White
@@ -130,7 +134,7 @@ public abstract class UCreator
         }
     }
 
-    protected void DrawPreview(SKCanvas c)
+    protected virtual void DrawPreview(SKCanvas c)
         => c.DrawBitmap(Preview ?? DefaultPreview, new SKRect(Margin, Margin, Width - Margin, Height - Margin), ImagePaint);
 
     protected void DrawTextBackground(SKCanvas c)
@@ -150,12 +154,12 @@ public abstract class UCreator
                 break;
             }
             default:
-                c.DrawRect(new SKRect(Margin, _STARTER_TEXT_POSITION, Width - Margin, Height - Margin), _textBackgroundPaint);
+                c.DrawRect(new SKRect(Margin, StarterTextPos, Width - Margin, Height - Margin), _textBackgroundPaint);
                 break;
         }
     }
 
-    protected void DrawDisplayName(SKCanvas c)
+    protected virtual void DrawDisplayName(SKCanvas c)
     {
         if (string.IsNullOrWhiteSpace(DisplayName)) return;
 
@@ -167,7 +171,7 @@ public abstract class UCreator
         var shaper = new CustomSKShaper(DisplayNamePaint.Typeface);
         var shapedText = shaper.Shape(DisplayName, DisplayNamePaint);
         var x = Width / 2f;
-        var y = _STARTER_TEXT_POSITION + _NAME_TEXT_SIZE;
+        var y = StarterTextPos + _NAME_TEXT_SIZE;
 
         switch (Style)
         {
@@ -183,7 +187,7 @@ public abstract class UCreator
         var halfWidth = shapedText.Width / 2f;
         c.DrawLine(x - halfWidth, 0, x - halfWidth, Width, new SKPaint { Color = SKColors.Blue, IsStroke = true });
         c.DrawLine(x + halfWidth, 0, x + halfWidth, Width, new SKPaint { Color = SKColors.Blue, IsStroke = true });
-        c.DrawRect(new SKRect(Margin, _STARTER_TEXT_POSITION, Width - Margin, y), new SKPaint { Color = SKColors.Blue, IsStroke = true });
+        c.DrawRect(new SKRect(Margin, StarterTextPos, Width - Margin, y), new SKPaint { Color = SKColors.Blue, IsStroke = true });
 #endif
 
         c.DrawShapedText(shaper, DisplayName, x, y, DisplayNamePaint);
@@ -203,15 +207,15 @@ public abstract class UCreator
         }
 
         Utils.DrawCenteredMultilineText(c, Description, maxLine, Width, Margin, side,
-            new SKRect(Margin, string.IsNullOrEmpty(DisplayName) ? _STARTER_TEXT_POSITION : _STARTER_TEXT_POSITION + _NAME_TEXT_SIZE, Width - Margin, Height - _BOTTOM_TEXT_SIZE), DescriptionPaint);
+            new SKRect(Margin, string.IsNullOrEmpty(DisplayName) ? StarterTextPos : StarterTextPos + _NAME_TEXT_SIZE, Width - Margin, Height - _BOTTOM_TEXT_SIZE), DescriptionPaint);
     }
 
-    protected void DrawToBottom(SKCanvas c, SKTextAlign side, string text)
+    protected void DrawToBottom(SKCanvas c, SKTextAlign side, string text, int fontSize = 13)
     {
         if (string.IsNullOrEmpty(text)) return;
 
         _shortDescriptionPaint.TextAlign = side;
-        _shortDescriptionPaint.TextSize = Utils.Typefaces.Bottom == null ? 15 : 13;
+        _shortDescriptionPaint.TextSize = Utils.Typefaces.Bottom == null ? 15 : fontSize;
         switch (side)
         {
             case SKTextAlign.Left:

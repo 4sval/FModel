@@ -15,12 +15,8 @@ using SkiaSharp.HarfBuzz;
 
 namespace FModel.Creator.Bases.FN;
 
-public class BaseIconStats : BaseIcon
+public class BaseIconStats : UStatCreator
 {
-    private readonly IList<IconStat> _statistics;
-    private const int _headerHeight = 128;
-    private bool _screenLayer;
-
     public BaseIconStats(UObject uObject, EIconStyle style) : base(uObject, style)
     {
         Width = 1024;
@@ -33,7 +29,6 @@ public class BaseIconStats : BaseIcon
 
     public override void ParseForInfo()
     {
-        base.ParseForInfo();
         DisplayName = DisplayName.ToUpperInvariant();
 
         if (Object.TryGetValue(out FName accoladeType, "AccoladeType") &&
@@ -133,161 +128,6 @@ public class BaseIconStats : BaseIcon
             }
         }
 
-        if (!string.IsNullOrEmpty(Description))
-            Height += 40 + (int) _informationPaint.TextSize * Utils.SplitLines(Description, _informationPaint, Width - 20).Count;
-        Height += 50 * _statistics.Count;
-    }
-
-    public override SKBitmap[] Draw()
-    {
-        var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
-        using var c = new SKCanvas(ret);
-
-        DrawHeader(c);
-        DrawDisplayName(c);
-        DrawStatistics(c);
-
-        return new[] { ret };
-    }
-
-    private bool TryGetCurveTableStat(FStructFallback property, out float statValue)
-    {
-        if (property.TryGetValue(out FStructFallback curve, "Curve") &&
-            curve.TryGetValue(out FName rowName, "RowName") &&
-            curve.TryGetValue(out UCurveTable curveTable, "CurveTable") &&
-            curveTable.TryFindCurve(rowName, out var rowValue) &&
-            rowValue is FSimpleCurve s && s.Keys.Length > 0)
-        {
-            statValue = s.Keys[0].Value;
-            return true;
-        }
-
-        statValue = 0F;
-        return false;
-    }
-
-    private readonly SKPaint _informationPaint = new()
-    {
-        IsAntialias = true, FilterQuality = SKFilterQuality.High,
-        Color = SKColor.Parse("#262630"), TextSize = 16,
-        Typeface = Utils.Typefaces.Description
-    };
-
-    private void DrawHeader(SKCanvas c)
-    {
-        c.DrawRect(new SKRect(0, 0, Width, Height), _informationPaint);
-
-        _informationPaint.Shader = SKShader.CreateRadialGradient(new SKPoint(Width / 2, _headerHeight / 2), Width / 5 * 4,
-            new[] { Background[0].WithAlpha(180), Background[1].WithAlpha(220) }, SKShaderTileMode.Clamp);
-        c.DrawRect(new SKRect(_headerHeight, 0, Width, _headerHeight), _informationPaint);
-
-        _informationPaint.Shader = SKShader.CreateRadialGradient(new SKPoint(Width / 2, _headerHeight / 2), Width / 5 * 4,
-            new[] { SKColor.Parse("#262630"), SKColor.Parse("#1f1f26") }, SKShaderTileMode.Clamp);
-        c.DrawRect(new SKRect(0, _headerHeight, Width, Height), _informationPaint);
-
-        _informationPaint.Shader = SKShader.CreateLinearGradient(new SKPoint(Width / 2, _headerHeight), new SKPoint(Width / 2, 75),
-            new[] { SKColors.Black.WithAlpha(25), Background[1].WithAlpha(0) }, SKShaderTileMode.Clamp);
-        c.DrawRect(new SKRect(0, 75, Width, _headerHeight), _informationPaint);
-
-        _informationPaint.Shader = SKShader.CreateRadialGradient(new SKPoint(Width / 2, _headerHeight / 2), Width / 5 * 4, Background, SKShaderTileMode.Clamp);
-        using var rect = new SKPath { FillType = SKPathFillType.EvenOdd };
-        rect.MoveTo(0, 0);
-        rect.LineTo(_headerHeight + _headerHeight / 3, 0);
-        rect.LineTo(_headerHeight, _headerHeight);
-        rect.LineTo(0, _headerHeight);
-        rect.Close();
-        c.DrawPath(rect, _informationPaint);
-
-        _informationPaint.Shader = SKShader.CreateLinearGradient(new SKPoint(_headerHeight / 2, _headerHeight / 2), new SKPoint(_headerHeight / 2 + 100, _headerHeight / 2),
-            new[] { SKColors.Black.WithAlpha(25), Background[1].WithAlpha(0) }, SKShaderTileMode.Clamp);
-        c.DrawPath(rect, _informationPaint);
-
-        _informationPaint.Shader = null;
-
-        ImagePaint.BlendMode = _screenLayer ? SKBlendMode.Screen : Preview == null ? SKBlendMode.ColorBurn : SKBlendMode.SrcOver;
-        c.DrawBitmap((Preview ?? DefaultPreview).Resize(_headerHeight), 0, 0, ImagePaint);
-    }
-
-    private new void DrawDisplayName(SKCanvas c)
-    {
-        if (string.IsNullOrEmpty(DisplayName)) return;
-
-        _informationPaint.TextSize = 50;
-        _informationPaint.Color = SKColors.White;
-        _informationPaint.Typeface = Utils.Typefaces.Bundle;
-        while (_informationPaint.MeasureText(DisplayName) > Width - _headerHeight * 2)
-        {
-            _informationPaint.TextSize -= 1;
-        }
-
-        var shaper = new CustomSKShaper(_informationPaint.Typeface);
-        c.DrawShapedText(shaper, DisplayName, _headerHeight + _headerHeight / 3 + 10, _headerHeight / 2f + _informationPaint.TextSize / 3, _informationPaint);
-    }
-
-    private void DrawStatistics(SKCanvas c)
-    {
-        var outY = _headerHeight + 25f;
-        if (!string.IsNullOrEmpty(Description))
-        {
-            _informationPaint.TextSize = 16;
-            _informationPaint.Color = SKColors.White.WithAlpha(175);
-            _informationPaint.Typeface = Utils.Typefaces.Description;
-            Utils.DrawMultilineText(c, Description, Width - 40, 0, SKTextAlign.Center,
-                new SKRect(20, outY, Width - 20, Height), _informationPaint, out outY);
-            outY += 25;
-        }
-
-        foreach (var stat in _statistics)
-        {
-            stat.Draw(c, Border[0].WithAlpha(100), Width, _headerHeight, ref outY);
-            outY += 50;
-        }
-    }
-}
-
-public class IconStat
-{
-    private readonly string _statName;
-    private readonly object _value;
-    private readonly float _maxValue;
-
-    public IconStat(string statName, object value, float maxValue = 0)
-    {
-        _statName = statName.ToUpperInvariant();
-        _value = value;
-        _maxValue = maxValue;
-    }
-
-    private readonly SKPaint _statPaint = new()
-    {
-        IsAntialias = true, FilterQuality = SKFilterQuality.High,
-        TextSize = 25, Typeface = Utils.Typefaces.DisplayName,
-        Color = SKColors.White
-    };
-
-    public void Draw(SKCanvas c, SKColor sliderColor, int width, int height, ref float y)
-    {
-        while (_statPaint.MeasureText(_statName) > height * 2 - 40)
-        {
-            _statPaint.TextSize -= 1;
-        }
-
-        var shaper = new CustomSKShaper(_statPaint.Typeface);
-        c.DrawShapedText(shaper, _statName, 50, y + 10, _statPaint);
-
-        _statPaint.TextAlign = SKTextAlign.Right;
-        _statPaint.Typeface = Utils.Typefaces.BundleNumber;
-        _statPaint.Color = sliderColor;
-        var sliderRight = width - 100 - _statPaint.MeasureText(_value.ToString());
-        c.DrawRect(new SKRect(height * 2, y, Math.Min(width - height, sliderRight), y + 5), _statPaint);
-
-        _statPaint.Color = SKColors.White;
-        c.DrawText(_value.ToString(), new SKPoint(width - 50, y + 10), _statPaint);
-
-        if (_maxValue < 1 || !float.TryParse(_value.ToString(), out var floatValue)) return;
-        if (floatValue < 0)
-            floatValue = 0;
-        var sliderWidth = (sliderRight - height * 2) * (floatValue / _maxValue);
-        c.DrawRect(new SKRect(height * 2, y, Math.Min(height * 2 + sliderWidth, sliderRight), y + 5), _statPaint);
+        base.ParseForInfo();
     }
 }
