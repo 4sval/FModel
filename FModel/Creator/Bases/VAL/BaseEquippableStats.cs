@@ -21,7 +21,8 @@ namespace FModel.Creator.Bases.VAL;
 
 public class BaseEquippableStats : UStatCreator
 {
-    private readonly int _health = 100;
+    private readonly float _health = 100.0f;
+    private readonly float _genericrange = 10.0f;
     private readonly string[] _rangemap = new string[] { "Close", "Mid", "Far" };
 
     public BaseEquippableStats(UObject uObject, EIconStyle style) : base(uObject, style)
@@ -60,7 +61,29 @@ public class BaseEquippableStats : UStatCreator
 
         ImagePaint.BlendMode = _screenLayer ? SKBlendMode.Screen : Preview == null ? SKBlendMode.ColorBurn : SKBlendMode.SrcOver;
 
-        c.DrawBitmap(UsedBMP.ResizeWithRatio(0.45f), 10, _headerHeight * .25f, ImagePaint);
+        c.DrawBitmap(UsedBMP.ResizeWithRatio((Preview.Height <= 220) ? 0.45f : 0.25f), ((Preview.Height <= 220) ? 10 : 35), _headerHeight * .25f, ImagePaint);
+    }
+
+    protected override void DrawStatistics(SKCanvas c)
+    {
+        var UsedBMP = (Preview ?? DefaultPreview);
+
+        var outY = _headerHeight + 25f;
+        if (!string.IsNullOrEmpty(Description))
+        {
+            _informationPaint.TextSize = 16;
+            _informationPaint.Color = SKColors.White.WithAlpha(175);
+            _informationPaint.Typeface = Utils.Typefaces.Description;
+            Utils.DrawMultilineText(c, Description, Width - 40, 0, SKTextAlign.Center,
+                new SKRect(20, outY, Width - 20, Height), _informationPaint, out outY);
+            outY += 25;
+        }
+
+        foreach (var stat in _statistics)
+        {
+            stat.Draw(c, Border[0].WithAlpha(100), Width, _headerHeight, ref outY);
+            outY += 50;
+        }
     }
 
     public override void ParseForInfo()
@@ -94,22 +117,26 @@ public class BaseEquippableStats : UStatCreator
                         DamageRange.TryGetValue(out float RangeStartMeters, "RangeStartMeters");
                         DamageRange.TryGetValue(out float RangeEndMeters, "RangeEndMeters");
 
-                        _statistics.Add(new IconStat($"Damage {_rangemap[Index]}", $"{BodyDamage}B-{HeadDamage}H", _health));
+                        _statistics.Add(new IconStat($"Damage {_rangemap[Index]}", BodyDamage, _health));
+                        _statistics.Add(new IconStat($"HDamage {_rangemap[Index]}", HeadDamage, _health));
                         Index++;
                     }
                 }
 
                 if (WeaponStats.TryGetValue(out int MagazineSize, "MagazineSize"))
-                    _statistics.Add(new IconStat("Magazine Size", MagazineSize));
+                    _statistics.Add(new IconStat("Magazine Size", MagazineSize, MagazineSize));
 
                 if (WeaponStats.TryGetValue(out float FireRate, "FireRate"))
-                    _statistics.Add(new IconStat("Fire Rate", FireRate));
+                    _statistics.Add(new IconStat("Fire Rate", FireRate, _genericrange));
+
+                if (WeaponStats.TryGetValue(out float EquipTimeSeconds, "EquipTimeSeconds"))
+                    _statistics.Add(new IconStat("Equip Time", EquipTimeSeconds, _genericrange));
 
                 if (WeaponStats.TryGetValue(out float ReloadTimeSeconds, "ReloadTimeSeconds"))
-                    _statistics.Add(new IconStat("Reload Time", ReloadTimeSeconds));
+                    _statistics.Add(new IconStat("Reload Time", ReloadTimeSeconds, _genericrange));
 
                 if (WeaponStats.TryGetValue(out float RunSpeedMultiplier, "RunSpeedMultiplier"))
-                    _statistics.Add(new IconStat("Speed Mult", RunSpeedMultiplier));
+                    _statistics.Add(new IconStat("Speed Mult", RunSpeedMultiplier, 1));
             }
             else if ((_statistics.Count == 0) && DisplayName.ToUpper() == "MELEE")
             {

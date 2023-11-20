@@ -16,14 +16,14 @@ namespace FModel.Creator.Bases.VAL;
 
 public class BaseValIcon : UCreator
 {
-    public BaseValIcon(UObject uObject, EIconStyle style) : base(uObject, style)
+    public BaseValIcon(UObject uObject, EIconStyle style, int imageMargin = 64) : base(uObject, style)
     {
         Background = new[] { SKColor.Parse("#262630"), SKColor.Parse("#1f1f26") };
         Border = new[] { SKColor.Parse("#262630"), SKColor.Parse("#1f1f26") };
 
         Width = 512;
         Height = 512;
-        ImageMargin = 64;
+        ImageMargin = imageMargin;
     }
 
     public override void ParseForInfo()
@@ -40,8 +40,9 @@ public class BaseValIcon : UCreator
                 Preview = Utils.GetBitmap(iconTextureAssetData as UTexture2D);
         }
 
-        if (Object.TryGetValue(out string defDisplayName, "DisplayName"))
+        if (Object.TryGetValue(out string defDisplayName, "DisplayName", "TitleText"))
         {
+            Description = DisplayName;
             DisplayName = defDisplayName;
         }
     }
@@ -58,6 +59,7 @@ public class BaseValIcon : UCreator
         DrawPreview(c);
         DrawTextBackground(c);
         DrawDisplayName(c);
+        DrawDescription(c);
 
         return new[] { ret };
     }

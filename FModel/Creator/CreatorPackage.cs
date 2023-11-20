@@ -79,6 +79,22 @@ public class CreatorPackage : IDisposable
                 case "EventDataAsset":
                     creator = new BaseEventIcon(_ObjectDefault, _style);
                     return true;
+                case "RecruitmentData":
+                    creator = new BaseEventIcon(_ObjectDefault, _style);
+                    return true;
+                case "MassRewardsCeremonyDataAsset":
+                    creator = new BaseEventIcon(_ObjectDefault, _style);
+                    return true;
+                case "AresPurchasableEquippable":
+                    creator = new BasePurchasableItem(_ObjectDefault, _style);
+                    return true;
+                case "SprayDataAsset":
+                    creator = new BaseValIcon(_ObjectDefault, _style, 0);
+                    return true;
+                case "SprayLevelDataAsset":
+                    creator = new BaseValIcon(_ObjectDefault, _style, 0);
+                    return true;
+                // StorefrontItemDataAsset
                 case "BaseCharacterPrimaryDataAsset_C":
                     creator = new BasePlayableCharacter(_ObjectDefault, _style);
                     return true;
@@ -297,6 +313,9 @@ public class CreatorPackage : IDisposable
                 return true;
             case "WExpHammerChestDefinition":
                 creator = new BaseHammerIcon(_object, _style);
+                return true;
+            case "WExpHelpData":
+                creator = new BaseHelpIcon(_object, _style);
                 return true;
 
             // PortalWars

@@ -60,11 +60,11 @@ public abstract class UCreator
     {
         IsAntialias = true, FilterQuality = SKFilterQuality.High
     };
-    private readonly SKPaint _textBackgroundPaint = new()
+    protected readonly SKPaint _textBackgroundPaint = new()
     {
         IsAntialias = true, FilterQuality = SKFilterQuality.High, Color = new SKColor(0, 0, 50, 75)
     };
-    private readonly SKPaint _shortDescriptionPaint = new()
+    protected readonly SKPaint _shortDescriptionPaint = new()
     {
         IsAntialias = true, FilterQuality = SKFilterQuality.High,
         Color = SKColors.White

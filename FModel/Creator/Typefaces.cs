@@ -70,6 +70,8 @@ public class Typefaces
     private const string _VALORANT_BASE_PATH = "/Game/UI/Fonts/FinalFonts/LOCFonts/";
     private const string _DINNEXTARABIC_BOLD = "DIN_Next_Arabic/DINNextLTArabic-Bold";
     private const string _DINNEXTARABIC_REGULAR = "DIN_Next_Arabic/DINNextLTArabic-Regular";
+    private const string _NEUEFRUTIGER_THAI_RG = "Thai/NeueFrutigerThaiModern-Rg";
+    private const string _NEUEFRUTIGER_THAI_LT = "Thai/NeueFrutigerThaiModern-Lt";
 
     private readonly CUE4ParseViewModel _viewModel;
 
@@ -239,7 +241,7 @@ public class Typefaces
 
                 Description = OnTheFly(_VALORANT_BASE_PATH + _DINNEXTARABIC_REGULAR + _EXT);
 
-                Bottom = OnTheFly(_VALORANT_BASE_PATH + _DINNEXTARABIC_REGULAR + _EXT);
+                Bottom = OnTheFly(_VALORANT_BASE_PATH + _NEUEFRUTIGER_THAI_RG + _EXT);
 
                 break;
             }

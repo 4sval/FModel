@@ -119,7 +119,7 @@ public class UStatCreator : BaseIcon
         c.DrawShapedText(shaper, DisplayName, _headerHeight + _headerHeight / 3 + 10, _headerHeight / 2f + _informationPaint.TextSize / 3, _informationPaint);
     }
 
-    protected void DrawStatistics(SKCanvas c)
+    protected virtual void DrawStatistics(SKCanvas c)
     {
         var outY = _headerHeight + 25f;
         if (!string.IsNullOrEmpty(Description))
