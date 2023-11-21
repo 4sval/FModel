@@ -87,9 +87,9 @@ public class GameSelectorViewModel : ViewModel
             .OrderBy(value => (int)value == ((int)value & ~0xF));
     private IEnumerable<DirectorySettings> EnumerateDetectedGames()
     {
-        yield return GetUnrealEngineGame("Fortnite", "\\FortniteGame\\Content\\Paks", EGame.GAME_UE5_3);
+        yield return GetUnrealEngineGame("Fortnite", "\\FortniteGame\\Content\\Paks", EGame.GAME_UE5_4);
         yield return GetUnrealEngineGame("WorldExplorersLive", "\\WorldExplorers\\Content", EGame.GAME_UE4_25, "Battle Breakers");
-        yield return DirectorySettings.Default("Fortnite [LIVE]", Constants._FN_LIVE_TRIGGER, ue: EGame.GAME_UE5_3);
+        yield return DirectorySettings.Default("Fortnite [LIVE]", Constants._FN_LIVE_TRIGGER, ue: EGame.GAME_UE5_4);
         yield return GetUnrealEngineGame("Pewee", "\\RogueCompany\\Content\\Paks", EGame.GAME_RogueCompany);
         yield return GetUnrealEngineGame("Rosemallow", "\\Indiana\\Content\\Paks", EGame.GAME_UE4_21);
         yield return GetUnrealEngineGame("Catnip", "\\OakGame\\Content\\Paks", EGame.GAME_Borderlands3);
