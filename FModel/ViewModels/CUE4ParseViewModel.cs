@@ -33,6 +33,7 @@ using CUE4Parse.UE4.Wwise;
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
 using CUE4Parse.UE4.Objects.Core.Serialization;
+using CUE4Parse_Conversion.Textures;
 using EpicManifestParser.Objects;
 using FModel.Creator;
 using FModel.Extensions;
@@ -820,6 +821,12 @@ public class CUE4ParseViewModel : ViewModel
                 TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("verse");
                 TabControl.SelectedTab.SetDocumentText(verseDigest.ReadableCode, false, false);
                 return true;
+            }
+            case UTextureCube texture when isNone || saveTextures:
+            {
+                var bitmap = texture.Decode(texture.GetFirstMip())!.ToPanorama();
+                TabControl.SelectedTab.AddImage(texture.Name, texture.RenderNearestNeighbor, bitmap, saveTextures, updateUi);
+                return false;
             }
             case UTexture texture when isNone || saveTextures:
             {
