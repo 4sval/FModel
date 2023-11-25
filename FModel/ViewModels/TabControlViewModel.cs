@@ -229,7 +229,15 @@ public class TabItem : ViewModel
     }
 
     public void AddImage(UTexture texture, bool save, bool updateUi)
-        => AddImage(texture.Name, texture.RenderNearestNeighbor, texture.Decode(UserSettings.Default.CurrentDir.TexturePlatform), save, updateUi);
+    {
+        var img = texture.Decode(UserSettings.Default.CurrentDir.TexturePlatform);
+        if (texture is UTextureCube)
+        {
+            img = img?.ToPanorama();
+        }
+
+        AddImage(texture.Name, texture.RenderNearestNeighbor, img, save, updateUi);
+    }
 
     public void AddImage(string name, bool rnn, SKBitmap[] img, bool save, bool updateUi)
     {

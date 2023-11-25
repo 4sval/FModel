@@ -464,7 +464,9 @@ public class CUE4ParseViewModel : ViewModel
                 ChunkCacheDirectory = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data")),
                 Authorization = new AuthenticationHeaderValue("Bearer", UserSettings.Default.LastAuthResponse.AccessToken)
             });
-            await Provider.MountAsync();
+            var onDemandCount = await Provider.MountAsync();
+            FLogger.Append(ELog.Information, () =>
+                FLogger.Text($"{onDemandCount} on-demand archive{(onDemandCount > 1 ? "s" : "")} streamed via epicgames.com", Constants.WHITE, true));
         });
     }
 
