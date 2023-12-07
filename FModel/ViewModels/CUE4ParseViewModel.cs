@@ -851,6 +851,8 @@ public class CUE4ParseViewModel : ViewModel
                                         !(Provider.InternalGameName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase) && export.Owner != null &&
                                           (export.Owner.Name.EndsWith($"/MI_OfferImages/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                             export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
+                                            export.Owner.Name.Contains("/MI_OfferImages/A_Juno", StringComparison.OrdinalIgnoreCase) ||
+                                            export.Owner.Name.Contains("/MI_OfferImages/A_Sparks", StringComparison.OrdinalIgnoreCase) ||
                                             export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
             {
                 if (SnooperViewer.TryLoadExport(cancellationToken, export))

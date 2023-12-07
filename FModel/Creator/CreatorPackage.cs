@@ -78,6 +78,23 @@ public class CreatorPackage : IDisposable
             case "FortBackpackItemDefinition":
             case "FortEventQuestMapDataAsset":
             case "FortWeaponModItemDefinition":
+            case "FortWeaponModItemDefinitionMagazine":
+            case "FortWeaponModItemDefinitionOptic":
+            case "SparksGuitarItemDefinition":
+            case "SparksBassItemDefinition":
+            case "SparksDrumItemDefinition":
+            case "SparksMicItemDefinition":
+            case "SparksKeyboardItemDefinition":
+            case "FortVehicleCosmeticsItemDefinition_Body":
+            case "FortVehicleCosmeticsItemDefinition_Booster":
+            case "FortVehicleCosmeticsItemDefinition_DriftSmoke":
+            case "FortVehicleCosmeticsItemDefinition_EngineAudio":
+            case "FortVehicleCosmeticsItemDefinition_Skin":
+            case "FortVehicleCosmeticsItemDefinition_Wheel":
+            case "JunoWeaponCreatureItemDefinition":
+            case "JunoBuildInstructionsItemDefinition":
+            case "JunoRecipeBundleItemDefinition":
+            case "SparksAuraItemDefinition":
             case "FortCodeTokenItemDefinition":
             case "FortSchematicItemDefinition":
             case "FortWorldMultiItemDefinition":
@@ -135,6 +152,8 @@ public class CreatorPackage : IDisposable
             case "MaterialInstanceConstant"
                 when _object.Owner != null &&
                      (_object.Owner.Name.EndsWith($"/MI_OfferImages/{_object.Name}", StringComparison.OrdinalIgnoreCase) ||
+                      _object.Owner.Name.Contains("/MI_OfferImages/A_Juno", StringComparison.OrdinalIgnoreCase) ||
+                      _object.Owner.Name.Contains("/MI_OfferImages/A_Sparks", StringComparison.OrdinalIgnoreCase) ||
                       _object.Owner.Name.EndsWith($"/RenderSwitch_Materials/{_object.Name}", StringComparison.OrdinalIgnoreCase) ||
                       _object.Owner.Name.EndsWith($"/MI_BPTile/{_object.Name}", StringComparison.OrdinalIgnoreCase)):
                 creator = new BaseMaterialInstance(_object, _style);
