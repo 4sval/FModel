@@ -200,6 +200,7 @@ public class BaseIcon : UCreator
             1 => 10,
             2 => 8,
             3 => 4,
+            4 => 5,
             _ => 10
         };
 

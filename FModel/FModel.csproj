@@ -148,7 +148,6 @@
     <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.3.6" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NVorbis" Version="0.10.5" />
-    <PackageReference Include="Oodle.NET" Version="1.0.1" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
     <PackageReference Include="OpenTK" Version="4.8.1" />
     <PackageReference Include="RestSharp" Version="110.2.0" />

@@ -71,9 +71,8 @@ public partial class MainWindow
             _applicationView.CUE4Parse.VerifyConsoleVariables(),
             _applicationView.CUE4Parse.VerifyOnDemandArchives(),
             _applicationView.CUE4Parse.InitMappings(),
-            _applicationView.InitImGuiSettings(newOrUpdated),
             _applicationView.InitVgmStream(),
-            _applicationView.InitOodle(),
+            _applicationView.InitImGuiSettings(newOrUpdated),
             Task.Run(() =>
             {
                 if (UserSettings.Default.DiscordRpc == EDiscordRpc.Always)

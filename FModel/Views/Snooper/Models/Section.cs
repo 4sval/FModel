@@ -21,7 +21,6 @@ public class Section
         FirstFaceIndex = firstFaceIndex;
         FirstFaceIndexPtr = new IntPtr(FirstFaceIndex * sizeof(uint));
         Color = Constants.COLOR_PALETTE[MaterialIndex % Constants.PALETTE_LENGTH];
-        Show = true;
     }
 
     public void SetupMaterial(Material material)

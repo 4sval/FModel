@@ -6,7 +6,6 @@ using FModel.ViewModels.Commands;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
 using Ionic.Zip;
-using Oodle.NET;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -15,7 +14,6 @@ using System.Windows;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
-using OodleCUE4 = CUE4Parse.Compression.Oodle;
 
 namespace FModel.ViewModels;
 
@@ -56,7 +54,6 @@ public class ApplicationViewModel : ViewModel
     public SettingsViewModel SettingsView { get; }
     public AesManagerViewModel AesManager { get; }
     public AudioPlayerViewModel AudioPlayer { get; }
-    private OodleCompressor _oodle;
 
     public ApplicationViewModel()
     {
@@ -178,34 +175,6 @@ public class ApplicationViewModel : ViewModel
         else
         {
             FLogger.Append(ELog.Error, () => FLogger.Text("Could not download VgmStream", Constants.WHITE, true));
-        }
-    }
-
-    public async Task InitOodle()
-    {
-        var dataDir = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"));
-        var oodlePath = Path.Combine(dataDir.FullName, OodleCUE4.OODLE_DLL_NAME);
-
-        if (File.Exists(OodleCUE4.OODLE_DLL_NAME))
-        {
-            File.Move(OodleCUE4.OODLE_DLL_NAME, oodlePath, true);
-        }
-        else if (!File.Exists(oodlePath))
-        {
-            var result = await OodleCUE4.DownloadOodleDll(oodlePath);
-            if (!result) return;
-        }
-
-        if (File.Exists("oo2core_8_win64.dll"))
-            File.Delete("oo2core_8_win64.dll");
-
-        _oodle = new OodleCompressor(oodlePath);
-
-        unsafe
-        {
-            OodleCUE4.DecompressFunc = (bufferPtr, bufferSize, outputPtr, outputSize, a, b, c, d, e, f, g, h, i, threadModule) =>
-                _oodle.Decompress(new IntPtr(bufferPtr), bufferSize, new IntPtr(outputPtr), outputSize,
-                    (OodleLZ_FuzzSafe) a, (OodleLZ_CheckCRC) b, (OodleLZ_Verbosity) c, d, e, f, g, h, i, (OodleLZ_Decode_ThreadPhase) threadModule);
         }
     }
 
