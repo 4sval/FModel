@@ -307,6 +307,13 @@ namespace FModel.Settings
             set => SetProperty(ref _addAudio, value);
         }
 
+        private Hotkey _removeAudio = new(Key.X);
+        public Hotkey RemoveAudio
+        {
+            get => _removeAudio;
+            set => SetProperty(ref _removeAudio, value);
+        }
+
         private Hotkey _playPauseAudio = new(Key.K);
         public Hotkey PlayPauseAudio
         {
