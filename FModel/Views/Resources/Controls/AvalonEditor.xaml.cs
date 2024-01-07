@@ -223,10 +223,9 @@ public partial class AvalonEditor
 
     private void OnTabClose(object sender, EventArgs eventArgs)
     {
-        if (eventArgs is not TabControlViewModel.TabEventArgs e || e.TabToRemove.Document == null)
+        if (eventArgs is not TabControlViewModel.TabEventArgs e || e.TabToRemove.Document?.FileName is not { } fileName)
             return;
 
-        var fileName = e.TabToRemove.Document.FileName;
         if (_savedCarets.ContainsKey(fileName))
             _savedCarets.Remove(fileName);
     }

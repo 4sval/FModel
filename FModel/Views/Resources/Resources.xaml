@@ -183,9 +183,6 @@
                     </Setter.Value>
                 </Setter>
             </DataTrigger>
-            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}" Value="{x:Static local:ELoadingMode.Single}">
-                <Setter Property="SelectionMode" Value="Single" />
-            </DataTrigger>
             <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}" Value="{x:Static local:ELoadingMode.Multiple}">
                 <Setter Property="SelectionMode" Value="Extended" />
             </DataTrigger>

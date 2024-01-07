@@ -5,9 +5,9 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>FModel.ico</ApplicationIcon>
-    <Version>4.4.3.4</Version>
-    <AssemblyVersion>4.4.3.4</AssemblyVersion>
-    <FileVersion>4.4.3.4</FileVersion>
+    <Version>4.4.3.5</Version>
+    <AssemblyVersion>4.4.3.5</AssemblyVersion>
+    <FileVersion>4.4.3.5</FileVersion>
     <IsPackable>false</IsPackable>
     <IsPublishable>true</IsPublishable>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
