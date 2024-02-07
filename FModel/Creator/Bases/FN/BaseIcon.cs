@@ -50,9 +50,9 @@ public class BaseIcon : UCreator
             Preview = Utils.GetBitmap(res);
 
         // text
-        if (Object.TryGetValue(out FText displayName, "DisplayName", "DefaultHeaderText", "UIDisplayName", "EntryName", "EventCalloutTitle"))
+        if (Object.TryGetValue(out FText displayName, "DisplayName", "ItemName", "DefaultHeaderText", "UIDisplayName", "EntryName", "EventCalloutTitle"))
             DisplayName = displayName.Text;
-        if (Object.TryGetValue(out FText description, "Description", "GeneralDescription", "DefaultBodyText", "UIDescription", "UIDisplayDescription", "EntryDescription", "EventCalloutDescription"))
+        if (Object.TryGetValue(out FText description, "Description", "ItemDescription", "GeneralDescription", "DefaultBodyText", "UIDescription", "UIDisplayDescription", "EntryDescription", "EventCalloutDescription"))
             Description = description.Text;
         else if (Object.TryGetValue(out FText[] descriptions, "Description"))
             Description = string.Join('\n', descriptions.Select(x => x.Text));
