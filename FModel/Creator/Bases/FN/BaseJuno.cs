@@ -22,7 +22,7 @@ public class BaseJuno : BaseIcon
             _character = new BaseIcon(cid, Style);
             _character.ParseForInfo();
 
-            if (Object.TryGetValue(out FSoftObjectPath assembledMeshSchema, "AssembledMeshSchema") &&
+            if (Object.TryGetValue(out FSoftObjectPath assembledMeshSchema, "AssembledMeshSchema", "LowDetailsAssembledMeshSchema") &&
                 Utils.TryLoadObject(assembledMeshSchema.AssetPathName.Text, out UObject meshSchema) &&
                 meshSchema.TryGetValue(out FInstancedStruct[] additionalData, "AdditionalData"))
             {
