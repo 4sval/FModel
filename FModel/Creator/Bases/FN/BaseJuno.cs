@@ -16,13 +16,13 @@ public class BaseJuno : BaseIcon
 
     public override void ParseForInfo()
     {
-        if (Object.TryGetValue(out FSoftObjectPath baseCid, "BaseAthenaCharacterItemDefinition", "LowDetailsAssembledMeshSchema") &&
+        if (Object.TryGetValue(out FSoftObjectPath baseCid, "BaseAthenaCharacterItemDefinition") &&
             Utils.TryLoadObject(baseCid.AssetPathName.Text, out UObject cid))
         {
             _character = new BaseIcon(cid, Style);
             _character.ParseForInfo();
 
-            if (Object.TryGetValue(out FSoftObjectPath assembledMeshSchema, "AssembledMeshSchema") &&
+            if (Object.TryGetValue(out FSoftObjectPath assembledMeshSchema, "AssembledMeshSchema", "LowDetailsAssembledMeshSchema") &&
                 Utils.TryLoadObject(assembledMeshSchema.AssetPathName.Text, out UObject meshSchema) &&
                 meshSchema.TryGetValue(out FInstancedStruct[] additionalData, "AdditionalData"))
             {
