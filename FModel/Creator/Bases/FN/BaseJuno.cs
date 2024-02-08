@@ -16,7 +16,7 @@ public class BaseJuno : BaseIcon
 
     public override void ParseForInfo()
     {
-        if (Object.TryGetValue(out FSoftObjectPath baseCid, "BaseAthenaCharacterItemDefinition") &&
+        if (Object.TryGetValue(out FSoftObjectPath baseCid, "BaseAthenaCharacterItemDefinition", "LowDetailsAssembledMeshSchema") &&
             Utils.TryLoadObject(baseCid.AssetPathName.Text, out UObject cid))
         {
             _character = new BaseIcon(cid, Style);
