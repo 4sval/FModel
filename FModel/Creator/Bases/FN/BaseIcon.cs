@@ -31,6 +31,7 @@ public class BaseIcon : UCreator
     {
         // rarity
         if (Object.TryGetValue(out FPackageIndex series, "Series")) GetSeries(series);
+        else if (Object.TryGetValue(out FStructFallback componentContainer, "ComponentContainer")) GetSeries(componentContainer);
         else GetRarity(Object.GetOrDefault("Rarity", EFortRarity.Uncommon)); // default is uncommon
 
         // preview
@@ -125,6 +126,21 @@ public class BaseIcon : UCreator
         if (!Utils.TryGetPackageIndexExport(s, out UObject export)) return;
 
         GetSeries(export);
+    }
+
+    private void GetSeries(FStructFallback s)
+    {
+        if (!s.TryGetValue(out FPackageIndex[] components, "Components")) return;
+
+        foreach (var component in components)
+        {
+            if (!component.TryLoad(out var componentObj) ||
+                !componentObj!.TryGetValue(out UObject componentSeriesDef, "Series"))
+                continue;
+
+            GetSeries(componentSeriesDef);
+            break;
+        }
     }
 
     protected void GetSeries(UObject uObject)
