@@ -1,4 +1,4 @@
-﻿using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Objects.UObject;
 using SkiaSharp;
@@ -35,6 +35,13 @@ public class BaseJuno : BaseIcon
                     }
                 }
             }
+        }
+
+        if (Object.TryGetValue(out FSoftObjectPath baseEid, "BaseAthenaDanceItemDefinition") &&
+            Utils.TryLoadObject(baseEid.AssetPathName.Text, out UObject eid))
+        {
+            _character = new BaseIcon(eid, Style);
+            _character.ParseForInfo();
         }
     }
 
