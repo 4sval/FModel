@@ -137,6 +137,7 @@ public class CreatorPackage : IDisposable
                 };
                 return true;
             case "JunoAthenaCharacterItemOverrideDefinition":
+            case "JunoAthenaDanceItemOverrideDefinition":
                 creator = new BaseJuno(_object, _style);
                 return true;
             case "FortTandemCharacterData":
