@@ -42,14 +42,6 @@ jobs:
       fail-fast: false
       matrix: ${{fromJson(needs.setup_matrix.outputs.matrix)}}
     steps:
-      - name: Check out repository code
-      - uses: actions/checkout@v4
-
-      - name: .NET Setup
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ matrix.dotnet-version }}
-
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
