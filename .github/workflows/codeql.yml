@@ -32,12 +32,13 @@ jobs:
             const dotnetVersion = "${{ github.event.inputs.dotnetVersion }}";
             const matrix = {
               include: [
-                { os: osVersion, dotnet-version: dotnetVersion || '6.0.x' },
-                { os: 'windows-latest', dotnet-version: dotnetVersion || '7.0.x' },
-                { os: 'windows-latest', dotnet-version: dotnetVersion || '8.0.x' }
+                { os: osVersion, 'dotnet-version': dotnetVersion || '6.0.x' },
+                { os: 'windows-latest', 'dotnet-version': dotnetVersion || '7.0.x' },
+                { os: 'windows-latest', 'dotnet-version': dotnetVersion || '8.0.x' }
               ]
             };
             return JSON.stringify(matrix);
+
 
             
   analyze:
