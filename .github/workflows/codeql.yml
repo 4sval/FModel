@@ -16,15 +16,16 @@ jobs:
   setup_matrix:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      matrix: ${{ steps.set-matrix.outputs.result }}
     steps:
       - id: set-matrix
         uses: actions/github-script@v7
         with:
+          result-encoding: string
           script: |
-            const dotnetVersion = '${{ github.event.inputs.dotnetVersion }}';
             const latestOnly = ${{ github.event.inputs.latestOnly }} == 'true';
             const osVersion = latestOnly ? 'windows-latest' : 'windows-2019';
+            const dotnetVersion = ${{ github.event.inputs.dotnetVersion }};
             const matrix = {
               include: [
                 { os: osVersion, dotnet-version: dotnetVersion || '6.0.x' },
@@ -32,7 +33,7 @@ jobs:
                 { os: 'windows-latest', dotnet-version: dotnetVersion || '8.0.x' }
               ]
             };
-            core.setOutput('matrix', JSON.stringify(matrix));
+            return JSON.stringify(matrix);
             
   analyze:
     needs: setup_matrix
