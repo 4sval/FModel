@@ -27,9 +27,9 @@ jobs:
         with:
           result-encoding: string
           script: |
-            const latestOnly = ${{ github.event.inputs.latestOnly }} == 'true';
+            const latestOnly = "${{ github.event.inputs.latestOnly }}" == 'true';
             const osVersion = latestOnly ? 'windows-latest' : 'windows-2019';
-            const dotnetVersion = ${{ github.event.inputs.dotnetVersion }};
+            const dotnetVersion = "${{ github.event.inputs.dotnetVersion }}";
             const matrix = {
               include: [
                 { os: osVersion, dotnet-version: dotnetVersion || '6.0.x' },
@@ -38,6 +38,7 @@ jobs:
               ]
             };
             return JSON.stringify(matrix);
+
             
   analyze:
     needs: setup_matrix
