@@ -20,14 +20,27 @@ jobs:
     steps:
       - id: set-matrix
         run: |
-          echo "::set-output name=matrix::${{ toJson({
-            include: [
-              { os: '${{ github.event.inputs.latestOnly == 'true' && 'windows-latest' || 'windows-2019' }}', dotnet-version: ${{ github.event.inputs.dotnetVersion || '6.0.x' }} },
-              { os: '${{ github.event.inputs.latestOnly == 'true' && 'windows-latest' || 'windows-latest' }}', dotnet-version: ${{ github.event.inputs.dotnetVersion || '7.0.x' }} },
-              { os: '${{ github.event.inputs.latestOnly == 'true' && 'windows-latest' || 'windows-latest' }}', dotnet-version: ${{ github.event.inputs.dotnetVersion || '8.0.x' }} }
+          MATRIX_JSON=$(cat <<EOF
+          {
+            "include": [
+              {
+                "os": "${{ github.event.inputs.latestOnly == 'true' && 'windows-latest' || 'windows-2019' }}",
+                "dotnet-version": "${{ github.event.inputs.dotnetVersion || '6.0.x' }}"
+              },
+              {
+                "os": "${{ github.event.inputs.latestOnly == 'true' && 'windows-latest' || 'windows-latest' }}",
+                "dotnet-version": "${{ github.event.inputs.dotnetVersion || '7.0.x' }}"
+              },
+              {
+                "os": "${{ github.event.inputs.latestOnly == 'true' && 'windows-latest' || 'windows-latest' }}",
+                "dotnet-version": "${{ github.event.inputs.dotnetVersion || '8.0.x' }}"
+              }
             ]
-          })}}"
-
+          }
+          EOF
+          )
+          echo "::set-output name=matrix::$MATRIX_JSON"
+          
   analyze:
     needs: setup_matrix
     runs-on: ${{ matrix.os }}
