@@ -28,16 +28,16 @@ jobs:
           result-encoding: string
           script: |
             const latestOnly = "${{ github.event.inputs.latestOnly }}" == 'true';
-            const osVersion = latestOnly ? 'windows-latest' : 'windows-2019';
-            const dotnetVersion = "${{ github.event.inputs.dotnetVersion }}";
-            const matrix = {
-              include: [
-                { os: osVersion, 'dotnet-version': dotnetVersion || '6.0.x' },
-                { os: 'windows-latest', 'dotnet-version': dotnetVersion || '7.0.x' },
-                { os: 'windows-latest', 'dotnet-version': dotnetVersion || '8.0.x' }
-              ]
-            };
+            const dotnetVersions = ["6.0.x", "7.0.x", "8.0.x"];
+            const osVersions = latestOnly ? ['windows-latest'] : ['windows-2019', 'windows-latest'];
+            const matrix = { include: [] };
+            for (const osVersion of osVersions) {
+              for (const dotnetVersion of dotnetVersions) {
+                matrix.include.push({ os: osVersion, 'dotnet-version': dotnetVersion });
+              }
+            }
             return JSON.stringify(matrix);
+
 
 
             
