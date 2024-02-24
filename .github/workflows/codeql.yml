@@ -1,56 +1,68 @@
 name: "CodeQL"
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
   workflow_dispatch:
     inputs:
-        appVersion:
-          description: 'FModel Version And Release Tag'
-          required: false
-          default: '4.4.X.X'
+      dotnetVersion:
+        description: 'Override .NET Version (Default: 6.0.x, 7.0.x, 8.0.x)'
+        required: false
+        default: ''
+      latestOnly:
+        description: 'Scan with only the latest Windows runner (true/false)'
+        required: false
+        default: 'false'
 
 jobs:
-  analyze:
-    name: Analyze
-    runs-on: 'windows-latest'
-    timeout-minutes: 360
-    permissions:
-      security-events: write
-      actions: read
-      contents: read
+  setup_matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: |
+          echo "::set-output name=matrix::${{ toJson({
+            include: [
+              { os: '${{ github.event.inputs.latestOnly == 'true' && 'windows-latest' || 'windows-2019' }}', dotnet-version: ${{ github.event.inputs.dotnetVersion || '6.0.x' }} },
+              { os: '${{ github.event.inputs.latestOnly == 'true' && 'windows-latest' || 'windows-latest' }}', dotnet-version: ${{ github.event.inputs.dotnetVersion || '7.0.x' }} },
+              { os: '${{ github.event.inputs.latestOnly == 'true' && 'windows-latest' || 'windows-latest' }}', dotnet-version: ${{ github.event.inputs.dotnetVersion || '8.0.x' }} }
+            ]
+          })}}"
 
+  analyze:
+    needs: setup_matrix
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
-      matrix:
-        language: [ 'csharp' ]
-
+      matrix: ${{fromJson(needs.setup_matrix.outputs.matrix)}}
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
+      - name: Check out repository code
+      - uses: actions/checkout@v4
+
+      - name: .NET Setup
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
           submodules: 'true'
-
-    - name: Fetch Submodules Recursively
-      run: git submodule update --init --recursive
-
-    - name: .NET 6 Setup
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: '6.0.x'
-
-    # Initializes the CodeQL tools for scanning.
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        languages: ${{ matrix.language }}
-
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v3
-
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
-      with:
-        category: "/language:${{matrix.language}}"
+  
+      - name: Fetch Submodules Recursively
+        run: git submodule update --init --recursive
+  
+      - name: .NET Setup
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+  
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: 'csharp'
+  
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+  
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
