@@ -232,7 +232,7 @@ public class CUE4ParseViewModel : ViewModel
                                 }
                                 if (!_fnLive.IsMatch(fileManifest.FileName)) continue;
 
-                                p.RegisterVfs(fileManifest.FileName, [ fileManifest.GetStream(cacheChunksAsIs) ]
+                                p.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream(cacheChunksAsIs)]
                                     , it => new FStreamArchive(it, manifest.FileManifestList.First(x => x.FileName.Equals(it)).GetStream(cacheChunksAsIs), p.Versions));
                             }
 
@@ -250,7 +250,7 @@ public class CUE4ParseViewModel : ViewModel
 
                             for (var i = 0; i < manifestInfo.Paks.Length; i++)
                             {
-                                p.RegisterVfs(manifestInfo.Paks[i].GetFullName(), new[] { manifestInfo.GetPakStream(i) });
+                                p.RegisterVfs(manifestInfo.Paks[i].GetFullName(), [manifestInfo.GetPakStream(i)]);
                             }
 
                             FLogger.Append(ELog.Information, () =>
@@ -261,9 +261,14 @@ public class CUE4ParseViewModel : ViewModel
 
                     break;
                 case DefaultFileProvider:
-                    var ioStoreOnDemandPath = Path.Combine(UserSettings.Default.GameDirectory, "..\\..\\..\\Cloud\\IoStoreOnDemand.ini");
-                    if (File.Exists(ioStoreOnDemandPath)) IoStoreOnDemand.Read(new StringReader(File.ReadAllText(ioStoreOnDemandPath)));
+                {
+                    var ioStoreOnDemandPath = Path.Combine(UserSettings.Default.GameDirectory,
+                        "..\\..\\..\\Cloud\\IoStoreOnDemand.ini");
+                    using var tr = File.OpenText(ioStoreOnDemandPath);
+                    if (File.Exists(ioStoreOnDemandPath))
+                        IoStoreOnDemand.Read(tr);
                     break;
+                }
             }
 
             Provider.Initialize();
