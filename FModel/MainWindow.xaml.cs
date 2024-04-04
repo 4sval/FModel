@@ -61,6 +61,8 @@ public partial class MainWindow
                 break;
         }
 
+        await _applicationView.CUE4Parse.InitOodle();
+        await _applicationView.CUE4Parse.InitZlib();
         await _applicationView.CUE4Parse.Initialize();
         await _applicationView.AesManager.InitAes();
         await _applicationView.UpdateProvider(true);

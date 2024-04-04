@@ -1,3 +1,10 @@
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.IO.Compression;
+using System.Threading.Tasks;
+using System.Windows;
+
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
@@ -5,12 +12,7 @@ using FModel.Settings;
 using FModel.ViewModels.Commands;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
-using Ionic.Zip;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
-using System.Windows;
+
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
@@ -168,9 +170,17 @@ public class ApplicationViewModel : ViewModel
         await ApplicationService.ApiEndpointView.DownloadFileAsync("https://github.com/vgmstream/vgmstream/releases/latest/download/vgmstream-win.zip", vgmZipFilePath);
         if (new FileInfo(vgmZipFilePath).Length > 0)
         {
-            var zip = ZipFile.Read(vgmZipFilePath);
-            var zipDir = vgmZipFilePath.SubstringBeforeLast("\\");
-            foreach (var e in zip) e.Extract(zipDir, ExtractExistingFileAction.OverwriteSilently);
+            var zipDir = Path.GetDirectoryName(vgmZipFilePath)!;
+            await using var zipFs = File.OpenRead(vgmZipFilePath);
+            using var zip = new ZipArchive(zipFs, ZipArchiveMode.Read);
+
+            foreach (var entry in zip.Entries)
+            {
+                var entryPath = Path.Combine(zipDir, entry.FullName);
+                await using var entryFs = File.OpenRead(entryPath);
+                await using var entryStream = entry.Open();
+                await entryStream.CopyToAsync(entryFs);
+            }
         }
         else
         {
