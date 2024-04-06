@@ -45,6 +45,12 @@
     <None Remove="Resources\gear.png" />
     <None Remove="Resources\localization.png" />
     <None Remove="Resources\materialicon.png" />
+    <None Remove="Resources\square.png" />
+    <None Remove="Resources\square_off.png" />
+    <None Remove="Resources\cube.png" />
+    <None Remove="Resources\cube_off.png" />
+    <None Remove="Resources\light.png" />
+    <None Remove="Resources\light_off.png" />
     <None Remove="Resources\pc.png" />
     <None Remove="Resources\puzzle.png" />
     <None Remove="Resources\roguecompany.png" />
@@ -145,7 +151,7 @@
     <PackageReference Include="CSCore" Version="1.2.1.2" />
     <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
     <PackageReference Include="EpicManifestParser" Version="2.2.0" />
-    <PackageReference Include="ImGui.NET" Version="1.89.9.4" />
+    <PackageReference Include="ImGui.NET" Version="1.90.1.1" />
     <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.3.8" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NVorbis" Version="0.10.5" />
@@ -181,6 +187,12 @@
     <Resource Include="Resources\gear.png" />
     <Resource Include="Resources\localization.png" />
     <Resource Include="Resources\materialicon.png" />
+    <Resource Include="Resources\square.png" />
+    <Resource Include="Resources\square_off.png" />
+    <Resource Include="Resources\cube.png" />
+    <Resource Include="Resources\cube_off.png" />
+    <Resource Include="Resources\light.png" />
+    <Resource Include="Resources\light_off.png" />
     <Resource Include="Resources\pc.png" />
     <Resource Include="Resources\puzzle.png" />
     <Resource Include="Resources\roguecompany.png" />

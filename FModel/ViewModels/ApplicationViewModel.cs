@@ -4,7 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
 using System.Windows;
-
+using CUE4Parse.Compression;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
@@ -190,13 +190,46 @@ public class ApplicationViewModel : ViewModel
 
     public async Task InitImGuiSettings(bool forceDownload)
     {
-        var imgui = Path.Combine(/*UserSettings.Default.OutputDirectory, ".data", */"imgui.ini");
-        if (File.Exists(imgui) && !forceDownload) return;
+        var imgui = "imgui.ini";
+        var imguiPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", imgui);
 
-        await ApplicationService.ApiEndpointView.DownloadFileAsync("https://cdn.fmodel.app/d/configurations/imgui.ini", imgui);
-        if (new FileInfo(imgui).Length == 0)
+        if (File.Exists(imgui)) File.Move(imgui, imguiPath, true);
+        if (File.Exists(imguiPath) && !forceDownload) return;
+
+        await ApplicationService.ApiEndpointView.DownloadFileAsync($"https://cdn.fmodel.app/d/configurations/{imgui}", imguiPath);
+        if (new FileInfo(imguiPath).Length == 0)
         {
             FLogger.Append(ELog.Error, () => FLogger.Text("Could not download ImGui settings", Constants.WHITE, true));
         }
+    }
+
+    public async Task InitOodle()
+    {
+        var oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_DLL_NAME);
+        if (File.Exists(OodleHelper.OODLE_DLL_NAME))
+        {
+            File.Move(OodleHelper.OODLE_DLL_NAME, oodlePath, true);
+        }
+        else if (!File.Exists(oodlePath))
+        {
+            await OodleHelper.DownloadOodleDllAsync(oodlePath);
+        }
+
+        OodleHelper.Initialize(oodlePath);
+    }
+
+    public async Task InitZlib()
+    {
+        var zlibPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", ZlibHelper.DLL_NAME);
+        if (File.Exists(ZlibHelper.DLL_NAME))
+        {
+            File.Move(ZlibHelper.DLL_NAME, zlibPath, true);
+        }
+        else if (!File.Exists(zlibPath))
+        {
+            await ZlibHelper.DownloadDllAsync(zlibPath);
+        }
+
+        ZlibHelper.Initialize(zlibPath);
     }
 }

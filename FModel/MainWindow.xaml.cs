@@ -61,8 +61,8 @@ public partial class MainWindow
                 break;
         }
 
-        await _applicationView.CUE4Parse.InitOodle();
-        await _applicationView.CUE4Parse.InitZlib();
+        await _applicationView.InitOodle();
+        await _applicationView.InitZlib();
         await _applicationView.CUE4Parse.Initialize();
         await _applicationView.AesManager.InitAes();
         await _applicationView.UpdateProvider(true);
@@ -85,10 +85,7 @@ public partial class MainWindow
 #if DEBUG
         await _threadWorkerView.Begin(cancellationToken =>
             _applicationView.CUE4Parse.Extract(cancellationToken,
-                "fortnitegame/Content/Characters/Player/Female/Medium/Bodies/F_Med_Soldier_01/Meshes/F_Med_Soldier_01.uasset"));
-        await _threadWorkerView.Begin(cancellationToken =>
-            _applicationView.CUE4Parse.Extract(cancellationToken,
-                "fortnitegame/Content/Animation/Game/MainPlayer/Emotes/Cowbell/Cowbell_CMM_Loop_M.uasset"));
+                "ShooterGame/Content/Characters/Smonk/S0/3P/Models/TP_Smonk_S0_Skelmesh.uasset"));
 #endif
     }
 

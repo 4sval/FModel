@@ -262,16 +262,18 @@ public class CUE4ParseViewModel : ViewModel
                     break;
                 case DefaultFileProvider:
                 {
-                    var ioStoreOnDemandPath = Path.Combine(UserSettings.Default.GameDirectory,
-                        "..\\..\\..\\Cloud\\IoStoreOnDemand.ini");
-                    using var tr = File.OpenText(ioStoreOnDemandPath);
+                    var ioStoreOnDemandPath = Path.Combine(UserSettings.Default.GameDirectory, "..\\..\\..\\Cloud\\IoStoreOnDemand.ini");
                     if (File.Exists(ioStoreOnDemandPath))
-                        IoStoreOnDemand.Read(tr);
+                    {
+                        using var s = new StreamReader(ioStoreOnDemandPath);
+                        IoStoreOnDemand.Read(s);
+                    }
                     break;
                 }
             }
 
             Provider.Initialize();
+            Log.Information($"{Provider.Versions.Game} ({Provider.Versions.Platform}) | Archives: x{Provider.UnloadedVfs.Count} | AES: x{Provider.RequiredKeys.Count}");
 
             foreach (var vfs in Provider.UnloadedVfs) // push files from the provider to the ui
             {
@@ -319,6 +321,10 @@ public class CUE4ParseViewModel : ViewModel
         }
 
         InternalGameName = Provider.InternalGameName;
+
+        var aesMax = Provider.RequiredKeys.Count + Provider.Keys.Count;
+        var archiveMax = Provider.UnloadedVfs.Count + Provider.MountedVfs.Count;
+        Log.Information($"Project: {InternalGameName} | Mounted: {Provider.MountedVfs.Count}/{archiveMax} | AES: {Provider.Keys.Count}/{aesMax}");
     }
 
     public void ClearProvider()
@@ -363,44 +369,6 @@ public class CUE4ParseViewModel : ViewModel
                 }
             });
         });
-    }
-
-    public async Task<bool> InitOodle()
-    {
-        var dataDir = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data")).FullName;
-        var oodlePath = Path.Combine(dataDir, OodleHelper.OODLE_DLL_NAME);
-        bool result;
-        if (File.Exists(OodleHelper.OODLE_DLL_NAME))
-        {
-            File.Move(OodleHelper.OODLE_DLL_NAME, oodlePath, true);
-            result = true;
-        }
-        else
-        {
-            result = await OodleHelper.DownloadOodleDllAsync(oodlePath);
-        }
-
-        OodleHelper.Initialize(oodlePath);
-        return result;
-    }
-
-    public async Task<bool> InitZlib()
-    {
-        var dataDir = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data")).FullName;
-        var zlibPath = Path.Combine(dataDir, ZlibHelper.DLL_NAME);
-        bool result;
-        if (File.Exists(ZlibHelper.DLL_NAME))
-        {
-            File.Move(ZlibHelper.DLL_NAME, zlibPath, true);
-            result = true;
-        }
-        else
-        {
-            result = await ZlibHelper.DownloadDllAsync(zlibPath);
-        }
-
-        ZlibHelper.Initialize(zlibPath);
-        return result;
     }
 
     public Task InitMappings(bool force = false)
