@@ -61,7 +61,6 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
                 // filter what to show
                 switch (UserSettings.Default.LoadingMode)
                 {
-                    case ELoadingMode.Single:
                     case ELoadingMode.Multiple:
                     {
                         var l = (IList) parameter;

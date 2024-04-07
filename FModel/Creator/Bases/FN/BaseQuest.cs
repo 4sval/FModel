@@ -69,13 +69,19 @@ public class BaseQuest : BaseIcon
         }
         else
         {
-            Description = ShortDescription;
-            if (Object.TryGetValue(out FText completionText, "CompletionText"))
-                Description += "\n" + completionText.Text;
-            if (Object.TryGetValue(out FSoftObjectPath tandemCharacterData, "TandemCharacterData") &&
+            if (!string.IsNullOrEmpty(ShortDescription))
+                Description = ShortDescription;
+            if (string.IsNullOrEmpty(DisplayName) && !string.IsNullOrEmpty(Description))
+                DisplayName = Description;
+            if (DisplayName == Description)
+                Description = string.Empty;
+
+            if ((Object.TryGetValue(out FSoftObjectPath icon, "QuestGiverWidgetIcon", "NotificationIconOverride") &&
+                Utils.TryLoadObject(icon.AssetPathName.Text, out UObject iconObject)) ||
+                (Object.TryGetValue(out FSoftObjectPath tandemCharacterData, "TandemCharacterData") &&
                 Utils.TryLoadObject(tandemCharacterData.AssetPathName.Text, out UObject uObject) &&
                 uObject.TryGetValue(out FSoftObjectPath tandemIcon, "EntryListIcon", "ToastIcon") &&
-                Utils.TryLoadObject(tandemIcon.AssetPathName.Text, out UObject iconObject))
+                Utils.TryLoadObject(tandemIcon.AssetPathName.Text, out iconObject)))
             {
                 Preview = iconObject switch
                 {
@@ -127,9 +133,16 @@ public class BaseQuest : BaseIcon
             }
         }
 
-        if (_reward == null && Object.TryGetValue(out UDataTable rewardsTable, "RewardsTable"))
+        if (_reward == null)
         {
-            if (rewardsTable.TryGetDataTableRow("Default", StringComparison.InvariantCulture, out var row))
+            FName rowName = null;
+            if (Object.TryGetValue(out UDataTable rewardsTable, "RewardsTable"))
+                rowName = new FName("Default");
+            else if (Object.TryGetValue(out FStructFallback[] rewardTableRows, "IndividualRewardTableRows") &&
+                     rewardTableRows.Length > 0 && rewardTableRows[0].TryGetValue(out rowName, "RowName") &&
+                     rewardTableRows[0].TryGetValue(out rewardsTable, "DataTable")) {}
+
+            if (rewardsTable != null && rowName != null && rewardsTable.TryGetDataTableRow(rowName.Text, StringComparison.InvariantCulture, out var row))
             {
                 if (row.TryGetValue(out FName templateId, "TemplateId") &&
                     row.TryGetValue(out int quantity, "Quantity"))

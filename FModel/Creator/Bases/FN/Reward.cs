@@ -64,7 +64,7 @@ public class Reward
         _rewardPaint.TextSize = 50;
         if (HasReward())
         {
-            c.DrawBitmap(_theReward.Preview.Resize((int) rect.Height), new SKPoint(rect.Left, rect.Top), _rewardPaint);
+            c.DrawBitmap((_theReward.Preview ?? _theReward.DefaultPreview).Resize((int) rect.Height), new SKPoint(rect.Left, rect.Top), _rewardPaint);
 
             _rewardPaint.Color = _theReward.Border[0];
             _rewardPaint.Typeface = _rewardQuantity.StartsWith("x") ? Utils.Typefaces.BundleNumber : Utils.Typefaces.Bundle;
@@ -88,7 +88,7 @@ public class Reward
     public void DrawSeasonWin(SKCanvas c, int size)
     {
         if (!HasReward()) return;
-        c.DrawBitmap(_theReward.Preview.Resize(size), new SKPoint(0, 0), _rewardPaint);
+        c.DrawBitmap((_theReward.Preview ?? _theReward.DefaultPreview).Resize(size), new SKPoint(0, 0), _rewardPaint);
     }
 
     public void DrawSeason(SKCanvas c, int x, int y, int areaSize)
@@ -115,33 +115,33 @@ public class Reward
     {
         switch (trigger.ToLower())
         {
-            case "athenabattlestar":
-                _theReward = new BaseIcon(null, EIconStyle.Default);
-                _theReward.Border[0] = SKColor.Parse("FFDB67");
-                _theReward.Background[0] = SKColor.Parse("8F4A20");
-                _theReward.Preview = Utils.GetBitmap("FortniteGame/Content/Athena/UI/Frontend/Art/T_UI_BP_BattleStar_L.T_UI_BP_BattleStar_L");
-                break;
-            case "athenaseasonalxp":
-                _theReward = new BaseIcon(null, EIconStyle.Default);
-                _theReward.Border[0] = SKColor.Parse("E6FDB1");
-                _theReward.Background[0] = SKColor.Parse("51830F");
-                _theReward.Preview = Utils.GetBitmap("FortniteGame/Content/UI/Foundation/Textures/Icons/Items/T-FNBR-XPUncommon-L.T-FNBR-XPUncommon-L");
-                break;
-            case "mtxgiveaway":
-                _theReward = new BaseIcon(null, EIconStyle.Default);
-                _theReward.Border[0] = SKColor.Parse("DCE6FF");
-                _theReward.Background[0] = SKColor.Parse("64A0AF");
-                _theReward.Preview = Utils.GetBitmap("FortniteGame/Content/UI/Foundation/Textures/Icons/Items/T-Items-MTX.T-Items-MTX");
-                break;
+            // case "athenabattlestar":
+            //     _theReward = new BaseIcon(null, EIconStyle.Default);
+            //     _theReward.Border[0] = SKColor.Parse("FFDB67");
+            //     _theReward.Background[0] = SKColor.Parse("8F4A20");
+            //     _theReward.Preview = Utils.GetBitmap("FortniteGame/Content/Athena/UI/Frontend/Art/T_UI_BP_BattleStar_L.T_UI_BP_BattleStar_L");
+            //     break;
+            // case "athenaseasonalxp":
+            //     _theReward = new BaseIcon(null, EIconStyle.Default);
+            //     _theReward.Border[0] = SKColor.Parse("E6FDB1");
+            //     _theReward.Background[0] = SKColor.Parse("51830F");
+            //     _theReward.Preview = Utils.GetBitmap("FortniteGame/Content/UI/Foundation/Textures/Icons/Items/T-FNBR-XPUncommon-L.T-FNBR-XPUncommon-L");
+            //     break;
+            // case "mtxgiveaway":
+            //     _theReward = new BaseIcon(null, EIconStyle.Default);
+            //     _theReward.Border[0] = SKColor.Parse("DCE6FF");
+            //     _theReward.Background[0] = SKColor.Parse("64A0AF");
+            //     _theReward.Preview = Utils.GetBitmap("FortniteGame/Content/UI/Foundation/Textures/Icons/Items/T-Items-MTX.T-Items-MTX");
+            //     break;
             default:
             {
-                var path = Utils.GetFullPath($"FortniteGame/Content/Athena/.*?/{trigger}.*"); // path has no objectname and its needed so we push the trigger again as the objectname
+                var path = Utils.GetFullPath($"FortniteGame/(?:Content/Athena|Content/Items|Plugins/GameFeatures)/.*?/{trigger}.uasset"); // path has no objectname and its needed so we push the trigger again as the objectname
                 if (!string.IsNullOrWhiteSpace(path) && Utils.TryLoadObject(path.Replace("uasset", trigger), out UObject d))
                 {
                     _theReward = new BaseIcon(d, EIconStyle.Default);
                     _theReward.ParseForReward(false);
                     _theReward.Border[0] = SKColors.White;
-                    _rewardQuantity = _theReward.DisplayName;
+                    _rewardQuantity = $"{_theReward.DisplayName} ({_rewardQuantity})";
                 }
 
                 break;

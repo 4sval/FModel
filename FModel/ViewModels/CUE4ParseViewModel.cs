@@ -463,7 +463,7 @@ public class CUE4ParseViewModel : ViewModel
                 ChunkBaseUri = new Uri("https://download.epicgames.com/ias/fortnite/", UriKind.Absolute),
                 ChunkCacheDirectory = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data")),
                 Authorization = new AuthenticationHeaderValue("Bearer", UserSettings.Default.LastAuthResponse.AccessToken),
-                Timeout = TimeSpan.FromSeconds(15)
+                Timeout = TimeSpan.FromSeconds(30)
             });
             var onDemandCount = await Provider.MountAsync();
             FLogger.Append(ELog.Information, () =>

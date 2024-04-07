@@ -54,8 +54,6 @@ public enum EDiscordRpc
 
 public enum ELoadingMode
 {
-    [Description("Single")]
-    Single,
     [Description("Multiple")]
     Multiple,
     [Description("All")]

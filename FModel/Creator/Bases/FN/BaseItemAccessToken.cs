@@ -29,12 +29,12 @@ public class BaseItemAccessToken : UCreator
             _icon.ParseForReward(false);
         }
 
-        if (Object.TryGetValue(out FText displayName, "DisplayName") && displayName.Text != "TBD")
+        if (Object.TryGetValue(out FText displayName, "DisplayName", "ItemName") && displayName.Text != "TBD")
             DisplayName = displayName.Text;
         else
             DisplayName = _icon?.DisplayName;
 
-        Description = Object.TryGetValue(out FText description, "Description") ? description.Text : _icon?.Description;
+        Description = Object.TryGetValue(out FText description, "Description", "ItemDescription") ? description.Text : _icon?.Description;
         if (Object.TryGetValue(out FText unlockDescription, "UnlockDescription")) _unlockedDescription = unlockDescription.Text;
     }
 

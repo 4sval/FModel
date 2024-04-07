@@ -26,7 +26,7 @@ public class BaseBundle : UCreator
     {
         _quests = new List<BaseQuest>();
 
-        if (Object.TryGetValue(out FText displayName, "DisplayName"))
+        if (Object.TryGetValue(out FText displayName, "DisplayName", "ItemName"))
             DisplayName = displayName.Text.ToUpperInvariant();
 
         if (Object.TryGetValue(out FStructFallback[] quests, "QuestInfos")) // prout :)
