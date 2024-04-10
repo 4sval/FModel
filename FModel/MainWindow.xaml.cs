@@ -61,8 +61,8 @@ public partial class MainWindow
                 break;
         }
 
-        await _applicationView.InitOodle();
-        await _applicationView.InitZlib();
+        await ApplicationViewModel.InitOodle();
+        await ApplicationViewModel.InitZlib();
         await _applicationView.CUE4Parse.Initialize();
         await _applicationView.AesManager.InitAes();
         await _applicationView.UpdateProvider(true);
@@ -73,8 +73,8 @@ public partial class MainWindow
             _applicationView.CUE4Parse.VerifyConsoleVariables(),
             _applicationView.CUE4Parse.VerifyOnDemandArchives(),
             _applicationView.CUE4Parse.InitMappings(),
-            _applicationView.InitVgmStream(),
-            _applicationView.InitImGuiSettings(newOrUpdated),
+            ApplicationViewModel.InitVgmStream(),
+            ApplicationViewModel.InitImGuiSettings(newOrUpdated),
             Task.Run(() =>
             {
                 if (UserSettings.Default.DiscordRpc == EDiscordRpc.Always)

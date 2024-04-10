@@ -162,7 +162,7 @@ public class ApplicationViewModel : ViewModel
         RaisePropertyChanged(nameof(GameDisplayName));
     }
 
-    public async Task InitVgmStream()
+    public static async Task InitVgmStream()
     {
         var vgmZipFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "vgmstream-win.zip");
         if (File.Exists(vgmZipFilePath)) return;
@@ -188,7 +188,7 @@ public class ApplicationViewModel : ViewModel
         }
     }
 
-    public async Task InitImGuiSettings(bool forceDownload)
+    public static async Task InitImGuiSettings(bool forceDownload)
     {
         var imgui = "imgui.ini";
         var imguiPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", imgui);
@@ -203,7 +203,7 @@ public class ApplicationViewModel : ViewModel
         }
     }
 
-    public async Task InitOodle()
+    public static async ValueTask InitOodle()
     {
         var oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_DLL_NAME);
         if (File.Exists(OodleHelper.OODLE_DLL_NAME))
@@ -218,14 +218,10 @@ public class ApplicationViewModel : ViewModel
         OodleHelper.Initialize(oodlePath);
     }
 
-    public async Task InitZlib()
+    public static async ValueTask InitZlib()
     {
         var zlibPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", ZlibHelper.DLL_NAME);
-        if (File.Exists(ZlibHelper.DLL_NAME))
-        {
-            File.Move(ZlibHelper.DLL_NAME, zlibPath, true);
-        }
-        else if (!File.Exists(zlibPath))
+        if (!File.Exists(zlibPath))
         {
             await ZlibHelper.DownloadDllAsync(zlibPath);
         }
