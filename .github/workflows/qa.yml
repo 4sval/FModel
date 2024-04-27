@@ -39,7 +39,7 @@ jobs:
           name: 'FModel QA Testing'
           body: 'Dev builds'
           tag: 'qa'
-          artifacts: ${{ github.sha }}.zip
+          artifacts: ${{ github.sha }}.7z
           prerelease: true
           allowUpdates: true
 
@@ -62,4 +62,4 @@ jobs:
           url: "https://api.fmodel.app/v1/infos/${{ secrets.QA_ID }}"
           method: "PATCH"
           bearerToken: ${{ fromJson(steps.fmodel_auth.outputs.response).accessToken }}
-          data: '{"version": "${{ steps.package_version.outputs.version }}-dev+${{ github.sha }}", "downloadUrl": "https://github.com/4sval/FModel/releases/download/qa/${{ github.sha }}.zip"}'
+          data: '{"version": "${{ steps.package_version.outputs.version }}-dev+${{ github.sha }}", "downloadUrl": "https://github.com/4sval/FModel/releases/download/qa/${{ github.sha }}.7z"}'
