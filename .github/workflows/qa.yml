@@ -26,14 +26,14 @@ jobs:
         run: dotnet publish FModel -c Release --no-restore --no-self-contained -r win-x64 -f net8.0-windows -o "./FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false
 
       - name: ZIP File
-      - uses: thedoctor0/zip-release@v0.7.6
+        uses: thedoctor0/zip-release@v0.7.6
         with:
           type: 7z
           filename: ${{ github.sha }}.7z # will end up in working directory not the Publish folder
           path: ./FModel/bin/Publish/FModel.exe
 
       - name: Edit QA Artifact
-      - uses: ncipollo/release-action@v1.14.0
+        uses: ncipollo/release-action@v1.14.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: 'FModel QA Testing'
