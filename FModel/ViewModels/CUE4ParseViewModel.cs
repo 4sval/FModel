@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -7,7 +8,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+
 using AdonisUI.Controls;
+using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Vfs;
@@ -17,23 +20,26 @@ using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
-using CUE4Parse.UE4.Assets.Exports.Verse;
 using CUE4Parse.UE4.Assets.Exports.Sound;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
+using CUE4Parse.UE4.Assets.Exports.Verse;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Localization;
+using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Readers;
 using CUE4Parse.UE4.Shaders;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
+
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
-using CUE4Parse.UE4.Objects.Core.Serialization;
-using EpicManifestParser.Objects;
+
+using EpicManifestParser;
+
 using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;
@@ -42,13 +48,20 @@ using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
 using FModel.Views.Snooper;
+
 using Newtonsoft.Json;
+
 using Ookii.Dialogs.Wpf;
+
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+
 using Serilog;
+
 using SkiaSharp;
+
 using UE4Config.Parsing;
+
 using Application = System.Windows.Application;
 
 namespace FModel.ViewModels;
@@ -190,45 +203,41 @@ public class CUE4ParseViewModel : ViewModel
                         case "FortniteLive":
                         {
                             var manifestInfo = _apiEndpointView.EpicApi.GetManifest(cancellationToken);
-                            if (manifestInfo == null)
+                            if (manifestInfo is null)
                             {
-                                throw new Exception("Could not load latest Fortnite manifest, you may have to switch to your local installation.");
+                                throw new FileLoadException("Could not load latest Fortnite manifest, you may have to switch to your local installation.");
                             }
 
-                            byte[] manifestData;
-                            var chunksDir = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"));
-                            var manifestPath = Path.Combine(chunksDir.FullName, manifestInfo.FileName);
-                            if (File.Exists(manifestPath))
+                            var cacheDir = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data")).FullName;
+                            var manifestOptions = new ManifestParseOptions
                             {
-                                manifestData = File.ReadAllBytes(manifestPath);
-                            }
-                            else
-                            {
-                                manifestData = manifestInfo.DownloadManifestData();
-                                File.WriteAllBytes(manifestPath, manifestData);
-                            }
+                                ChunkCacheDirectory = cacheDir,
+                                ManifestCacheDirectory = cacheDir,
+                                ChunkBaseUrl = "http://epicgames-download1.akamaized.net/Builds/Fortnite/CloudDir/",
+                                Zlibng = ZlibHelper.Instance
+                            };
 
-                            var manifest = new Manifest(manifestData, new ManifestOptions
-                            {
-                                ChunkBaseUri = new Uri("http://epicgames-download1.akamaized.net/Builds/Fortnite/CloudDir/ChunksV4/", UriKind.Absolute),
-                                ChunkCacheDirectory = chunksDir
-                            });
+                            var startTs = Stopwatch.GetTimestamp();
+                            var (manifest, _) = manifestInfo.DownloadAndParseAsync(manifestOptions,
+                                cancellationToken: cancellationToken).GetAwaiter().GetResult();
+                            var parseTime = Stopwatch.GetElapsedTime(startTs);
+                            const bool cacheChunksAsIs = false;
 
-                            foreach (var fileManifest in manifest.FileManifests)
+                            foreach (var fileManifest in manifest.FileManifestList)
                             {
-                                if (fileManifest.Name.Equals("Cloud/IoStoreOnDemand.ini", StringComparison.OrdinalIgnoreCase))
+                                if (fileManifest.FileName.Equals("Cloud/IoStoreOnDemand.ini", StringComparison.OrdinalIgnoreCase))
                                 {
-                                    IoStoreOnDemand.Read(new StreamReader(fileManifest.GetStream()));
+                                    IoStoreOnDemand.Read(new StreamReader(fileManifest.GetStream(cacheChunksAsIs)));
                                     continue;
                                 }
-                                if (!_fnLive.IsMatch(fileManifest.Name)) continue;
+                                if (!_fnLive.IsMatch(fileManifest.FileName)) continue;
 
-                                p.RegisterVfs(fileManifest.Name, new Stream[] { fileManifest.GetStream() }
-                                    , it => new FStreamArchive(it, manifest.FileManifests.First(x => x.Name.Equals(it)).GetStream(), p.Versions));
+                                p.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream(cacheChunksAsIs)]
+                                    , it => new FStreamArchive(it, manifest.FileManifestList.First(x => x.FileName.Equals(it)).GetStream(cacheChunksAsIs), p.Versions));
                             }
 
                             FLogger.Append(ELog.Information, () =>
-                                FLogger.Text($"Fortnite has been loaded successfully in {manifest.ParseTime.TotalMilliseconds}ms", Constants.WHITE, true));
+                                FLogger.Text($"Fortnite [LIVE] has been loaded successfully in {parseTime.TotalMilliseconds}ms", Constants.WHITE, true));
                             break;
                         }
                         case "ValorantLive":
@@ -241,7 +250,7 @@ public class CUE4ParseViewModel : ViewModel
 
                             for (var i = 0; i < manifestInfo.Paks.Length; i++)
                             {
-                                p.RegisterVfs(manifestInfo.Paks[i].GetFullName(), new[] { manifestInfo.GetPakStream(i) });
+                                p.RegisterVfs(manifestInfo.Paks[i].GetFullName(), [manifestInfo.GetPakStream(i)]);
                             }
 
                             FLogger.Append(ELog.Information, () =>
@@ -252,12 +261,19 @@ public class CUE4ParseViewModel : ViewModel
 
                     break;
                 case DefaultFileProvider:
+                {
                     var ioStoreOnDemandPath = Path.Combine(UserSettings.Default.GameDirectory, "..\\..\\..\\Cloud\\IoStoreOnDemand.ini");
-                    if (File.Exists(ioStoreOnDemandPath)) IoStoreOnDemand.Read(new StringReader(File.ReadAllText(ioStoreOnDemandPath)));
+                    if (File.Exists(ioStoreOnDemandPath))
+                    {
+                        using var s = new StreamReader(ioStoreOnDemandPath);
+                        IoStoreOnDemand.Read(s);
+                    }
                     break;
+                }
             }
 
             Provider.Initialize();
+            Log.Information($"{Provider.Versions.Game} ({Provider.Versions.Platform}) | Archives: x{Provider.UnloadedVfs.Count} | AES: x{Provider.RequiredKeys.Count}");
 
             foreach (var vfs in Provider.UnloadedVfs) // push files from the provider to the ui
             {
@@ -305,6 +321,10 @@ public class CUE4ParseViewModel : ViewModel
         }
 
         InternalGameName = Provider.InternalGameName;
+
+        var aesMax = Provider.RequiredKeys.Count + Provider.Keys.Count;
+        var archiveMax = Provider.UnloadedVfs.Count + Provider.MountedVfs.Count;
+        Log.Information($"Project: {InternalGameName} | Mounted: {Provider.MountedVfs.Count}/{archiveMax} | AES: {Provider.Keys.Count}/{aesMax}");
     }
 
     public void ClearProvider()

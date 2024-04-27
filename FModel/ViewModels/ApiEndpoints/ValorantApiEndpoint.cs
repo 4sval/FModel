@@ -1,8 +1,3 @@
-using CUE4Parse.UE4.Exceptions;
-using CUE4Parse.UE4.Readers;
-using FModel.Settings;
-using Ionic.Zlib;
-using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +8,15 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
+using CUE4Parse.Compression;
+using CUE4Parse.UE4.Exceptions;
+using CUE4Parse.UE4.Readers;
+
 using FModel.Framework;
+using FModel.Settings;
+
+using RestSharp;
 
 namespace FModel.ViewModels.ApiEndpoints;
 
@@ -40,26 +43,22 @@ public class VManifest
     public readonly VChunk[] Chunks;
     public readonly VPak[] Paks;
 
-    public VManifest(byte[] data) : this(new FByteArchive("CompressedValorantManifest", data))
-    {
-    }
-
+    public VManifest(byte[] data) : this(new FByteArchive("CompressedValorantManifest", data)) { }
     private VManifest(FArchive Ar)
     {
         using (Ar)
         {
             Header = new VHeader(Ar);
             var compressedBuffer = Ar.ReadBytes((int) Header.CompressedSize);
-            var uncompressedBuffer = ZlibStream.UncompressBuffer(compressedBuffer);
-            if (uncompressedBuffer.Length != Header.UncompressedSize)
-                throw new ParserException(Ar, $"Decompression failed, {uncompressedBuffer.Length} != {Header.UncompressedSize}");
+            var uncompressedBuffer = new byte[(int)Header.UncompressedSize];
+            ZlibHelper.Decompress(compressedBuffer, 0, compressedBuffer.Length, uncompressedBuffer, 0, uncompressedBuffer.Length);
 
-            using var manifest = new FByteArchive("UncompressedValorantManifest", uncompressedBuffer);
-            Chunks = manifest.ReadArray<VChunk>((int) Header.ChunkCount);
-            Paks = manifest.ReadArray((int) Header.PakCount, () => new VPak(manifest));
+            var manifestAr = new FByteArchive("UncompressedValorantManifest", uncompressedBuffer);
+            Chunks = manifestAr.ReadArray<VChunk>((int) Header.ChunkCount);
+            Paks = manifestAr.ReadArray((int) Header.PakCount, () => new VPak(manifestAr));
 
-            if (manifest.Position != manifest.Length)
-                throw new ParserException(manifest, $"Parsing failed, {manifest.Position} != {manifest.Length}");
+            if (manifestAr.Position != manifestAr.Length)
+                throw new ParserException(manifestAr, $"Parsing failed, {manifestAr.Position} != {manifestAr.Length}");
         }
 
         _client = new HttpClient(new HttpClientHandler

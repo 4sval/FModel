@@ -1,10 +1,14 @@
 using System.Threading;
 using System.Threading.Tasks;
-using EpicManifestParser.Objects;
+
+using EpicManifestParser.Api;
+
 using FModel.Framework;
 using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
+
 using RestSharp;
+
 using Serilog;
 
 namespace FModel.ViewModels.ApiEndpoints;
@@ -25,7 +29,7 @@ public class EpicApiEndpoint : AbstractApiProvider
         request.AddHeader("Authorization", $"bearer {UserSettings.Default.LastAuthResponse.AccessToken}");
         var response = await _client.ExecuteAsync(request, token).ConfigureAwait(false);
         Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
-        return response.IsSuccessful ? new ManifestInfo(response.Content) : null;
+        return response.IsSuccessful ? ManifestInfo.Deserialize(response.RawBytes) : null;
     }
 
     public ManifestInfo GetManifest(CancellationToken token)

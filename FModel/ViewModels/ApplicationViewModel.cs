@@ -1,3 +1,10 @@
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.IO.Compression;
+using System.Threading.Tasks;
+using System.Windows;
+using CUE4Parse.Compression;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
@@ -5,12 +12,7 @@ using FModel.Settings;
 using FModel.ViewModels.Commands;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
-using Ionic.Zip;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
-using System.Windows;
+
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
@@ -160,7 +162,7 @@ public class ApplicationViewModel : ViewModel
         RaisePropertyChanged(nameof(GameDisplayName));
     }
 
-    public async Task InitVgmStream()
+    public static async Task InitVgmStream()
     {
         var vgmZipFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "vgmstream-win.zip");
         if (File.Exists(vgmZipFilePath)) return;
@@ -168,9 +170,17 @@ public class ApplicationViewModel : ViewModel
         await ApplicationService.ApiEndpointView.DownloadFileAsync("https://github.com/vgmstream/vgmstream/releases/latest/download/vgmstream-win.zip", vgmZipFilePath);
         if (new FileInfo(vgmZipFilePath).Length > 0)
         {
-            var zip = ZipFile.Read(vgmZipFilePath);
-            var zipDir = vgmZipFilePath.SubstringBeforeLast("\\");
-            foreach (var e in zip) e.Extract(zipDir, ExtractExistingFileAction.OverwriteSilently);
+            var zipDir = Path.GetDirectoryName(vgmZipFilePath)!;
+            await using var zipFs = File.OpenRead(vgmZipFilePath);
+            using var zip = new ZipArchive(zipFs, ZipArchiveMode.Read);
+
+            foreach (var entry in zip.Entries)
+            {
+                var entryPath = Path.Combine(zipDir, entry.FullName);
+                await using var entryFs = File.OpenRead(entryPath);
+                await using var entryStream = entry.Open();
+                await entryStream.CopyToAsync(entryFs);
+            }
         }
         else
         {
@@ -178,15 +188,44 @@ public class ApplicationViewModel : ViewModel
         }
     }
 
-    public async Task InitImGuiSettings(bool forceDownload)
+    public static async Task InitImGuiSettings(bool forceDownload)
     {
-        var imgui = Path.Combine(/*UserSettings.Default.OutputDirectory, ".data", */"imgui.ini");
-        if (File.Exists(imgui) && !forceDownload) return;
+        var imgui = "imgui.ini";
+        var imguiPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", imgui);
 
-        await ApplicationService.ApiEndpointView.DownloadFileAsync("https://cdn.fmodel.app/d/configurations/imgui.ini", imgui);
-        if (new FileInfo(imgui).Length == 0)
+        if (File.Exists(imgui)) File.Move(imgui, imguiPath, true);
+        if (File.Exists(imguiPath) && !forceDownload) return;
+
+        await ApplicationService.ApiEndpointView.DownloadFileAsync($"https://cdn.fmodel.app/d/configurations/{imgui}", imguiPath);
+        if (new FileInfo(imguiPath).Length == 0)
         {
             FLogger.Append(ELog.Error, () => FLogger.Text("Could not download ImGui settings", Constants.WHITE, true));
         }
+    }
+
+    public static async ValueTask InitOodle()
+    {
+        var oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_DLL_NAME);
+        if (File.Exists(OodleHelper.OODLE_DLL_NAME))
+        {
+            File.Move(OodleHelper.OODLE_DLL_NAME, oodlePath, true);
+        }
+        else if (!File.Exists(oodlePath))
+        {
+            await OodleHelper.DownloadOodleDllAsync(oodlePath);
+        }
+
+        OodleHelper.Initialize(oodlePath);
+    }
+
+    public static async ValueTask InitZlib()
+    {
+        var zlibPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", ZlibHelper.DLL_NAME);
+        if (!File.Exists(zlibPath))
+        {
+            await ZlibHelper.DownloadDllAsync(zlibPath);
+        }
+
+        ZlibHelper.Initialize(zlibPath);
     }
 }
