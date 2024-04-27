@@ -321,16 +321,16 @@
                             <TreeView Grid.Row="2" x:Name="AssetsFolderName" Style="{StaticResource AssetsFolderTreeView}" PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick">
                                 <TreeView.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="Extract Folder's Packages" Click="OnFolderExtractClick">
-                                            <MenuItem.Icon>
-                                                <Viewbox Width="16" Height="16">
-                                                    <Canvas Width="24" Height="24">
-                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExtractIcon}" />
-                                                    </Canvas>
-                                                </Viewbox>
-                                            </MenuItem.Icon>
-                                        </MenuItem>
-                                        <Separator />
+                                        <!-- <MenuItem Header="Extract Folder's Packages" Click="OnFolderExtractClick"> -->
+                                        <!--     <MenuItem.Icon> -->
+                                        <!--         <Viewbox Width="16" Height="16"> -->
+                                        <!--             <Canvas Width="24" Height="24"> -->
+                                        <!--                 <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExtractIcon}" /> -->
+                                        <!--             </Canvas> -->
+                                        <!--         </Viewbox> -->
+                                        <!--     </MenuItem.Icon> -->
+                                        <!-- </MenuItem> -->
+                                        <!-- <Separator /> -->
                                         <MenuItem Header="Export Folder's Packages Raw Data (.uasset)" Click="OnFolderExportClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
