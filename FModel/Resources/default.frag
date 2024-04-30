@@ -8,7 +8,7 @@ in vec3 fPos;
 in vec3 fNormal;
 in vec3 fTangent;
 in vec2 fTexCoords;
-in float fTexLayer;
+flat in int fTexLayer;
 in vec4 fColor;
 
 struct Texture
@@ -98,7 +98,7 @@ out vec4 FragColor;
 
 int LayerToIndex()
 {
-    return clamp(int(fTexLayer), 0, uUvCount - 1);
+    return clamp(fTexLayer, 0, uUvCount - 1);
 }
 
 vec4 SamplerToVector(sampler2D s, vec2 coords)

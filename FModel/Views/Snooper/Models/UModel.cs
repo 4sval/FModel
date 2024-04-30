@@ -20,6 +20,7 @@ namespace FModel.Views.Snooper.Models;
 public class VertexAttribute
 {
     public int Size;
+    public VertexAttribPointerType Type;
     public bool Enabled;
 }
 
@@ -28,18 +29,18 @@ public abstract class UModel : IRenderableModel
     protected const int LodLevel = 0;
 
     private readonly UObject _export;
-    private readonly List<VertexAttribute> _vertexAttributes = new()
-    {
-        new VertexAttribute { Size = 1, Enabled = false },  // VertexIndex
-        new VertexAttribute { Size = 3, Enabled = true },   // Position
-        new VertexAttribute { Size = 3, Enabled = false },  // Normal
-        new VertexAttribute { Size = 3, Enabled = false },  // Tangent
-        new VertexAttribute { Size = 2, Enabled = false },  // UV
-        new VertexAttribute { Size = 1, Enabled = false },  // TextureLayer
-        new VertexAttribute { Size = 4, Enabled = false },  // Colors
-        new VertexAttribute { Size = 4, Enabled = false },  // BoneIds
-        new VertexAttribute { Size = 4, Enabled = false }   // BoneWeights
-    };
+    private readonly List<VertexAttribute> _vertexAttributes =
+    [
+        new VertexAttribute { Size = 1, Type = VertexAttribPointerType.Int, Enabled = false },    // VertexIndex
+        new VertexAttribute { Size = 3, Type = VertexAttribPointerType.Float, Enabled = true },   // Position
+        new VertexAttribute { Size = 3, Type = VertexAttribPointerType.Float, Enabled = false },  // Normal
+        new VertexAttribute { Size = 3, Type = VertexAttribPointerType.Float, Enabled = false },  // Tangent
+        new VertexAttribute { Size = 2, Type = VertexAttribPointerType.Float, Enabled = false },  // UV
+        new VertexAttribute { Size = 1, Type = VertexAttribPointerType.Float, Enabled = false },  // TextureLayer
+        new VertexAttribute { Size = 1, Type = VertexAttribPointerType.Float, Enabled = false },  // Colors
+        new VertexAttribute { Size = 4, Type = VertexAttribPointerType.Float, Enabled = false },  // BoneIds
+        new VertexAttribute { Size = 4, Type = VertexAttribPointerType.Float, Enabled = false }   // BoneWeights
+    ];
 
     public int Handle { get; set; }
     public BufferObject<uint> Ebo { get; set; }
@@ -149,24 +150,20 @@ public abstract class UModel : IRenderableModel
 
             if (HasVertexColors)
             {
-                var color = lod.VertexColors[i];
-                Vertices[baseIndex + count++] = color.R;
-                Vertices[baseIndex + count++] = color.G;
-                Vertices[baseIndex + count++] = color.B;
-                Vertices[baseIndex + count++] = color.A;
+                Vertices[baseIndex + count++] = lod.VertexColors[i].ToPackedARGB();
             }
 
             if (vert is CSkelMeshVertex skelVert)
             {
-                var weightsHash = skelVert.UnpackWeights();
-                Vertices[baseIndex + count++] = skelVert.Bone[0];
-                Vertices[baseIndex + count++] = skelVert.Bone[1];
-                Vertices[baseIndex + count++] = skelVert.Bone[2];
-                Vertices[baseIndex + count++] = skelVert.Bone[3];
-                Vertices[baseIndex + count++] = weightsHash[0];
-                Vertices[baseIndex + count++] = weightsHash[1];
-                Vertices[baseIndex + count++] = weightsHash[2];
-                Vertices[baseIndex + count++] = weightsHash[3];
+                int max = skelVert.Influences.Count;
+                for (int j = 0; j < 8; j++)
+                {
+                    var boneID = j < max ? skelVert.Influences[j].Bone : (short) 0;
+                    var weight = j < max ? skelVert.Influences[j].RawWeight : (byte) 0;
+
+                    // Pack bone ID and weight
+                    Vertices[baseIndex + count++] = (boneID << 16) | weight;
+                }
             }
         }
 
@@ -197,8 +194,9 @@ public abstract class UModel : IRenderableModel
 
             if (i != 5 || !broken)
             {
-                Vao.VertexAttributePointer((uint) i, attribute.Size, i == 0 ? VertexAttribPointerType.Int : VertexAttribPointerType.Float, VertexSize, offset);
+                Vao.VertexAttributePointer((uint) i, attribute.Size, attribute.Type, VertexSize, offset);
             }
+
             offset += attribute.Size;
         }
 

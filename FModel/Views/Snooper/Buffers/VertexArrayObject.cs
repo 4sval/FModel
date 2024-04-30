@@ -26,7 +26,8 @@ public class VertexArrayObject<TVertexType, TIndexType> : IDisposable where TVer
         switch (type)
         {
             case VertexAttribPointerType.Int:
-                GL.VertexAttribIPointer(index, count, VertexAttribIntegerType.Int, vertexSize * _sizeOfVertex, (IntPtr) (offset * _sizeOfVertex));
+            case VertexAttribPointerType.UnsignedInt:
+                GL.VertexAttribIPointer(index, count, (VertexAttribIntegerType) type, vertexSize * _sizeOfVertex, offset * _sizeOfVertex);
                 break;
             default:
                 GL.VertexAttribPointer(index, count, type, false, vertexSize * _sizeOfVertex, offset * _sizeOfVertex);
