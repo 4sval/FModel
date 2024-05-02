@@ -38,6 +38,7 @@ using CUE4Parse.UE4.Wwise;
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
 
+using CUE4Parse.GameTypes.UDWN.Encryption.Aes;
 using EpicManifestParser;
 
 using FModel.Creator;
@@ -183,6 +184,11 @@ public class CUE4ParseViewModel : ViewModel
             }
         }
         Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
+        Provider.CustomEncryption = Provider.Versions.Game switch
+        {
+            EGame.GAME_Undawn => ToaaAes.ToaaDecrypt,
+            _ => Provider.CustomEncryption
+        };
 
         GameDirectory = new GameDirectoryViewModel();
         AssetsFolder = new AssetsFolderViewModel();
