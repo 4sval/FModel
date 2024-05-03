@@ -6,6 +6,7 @@ using System.Windows.Input;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
+using CUE4Parse_Conversion.UEFormat.Enums;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using FModel.Framework;
 using FModel.ViewModels;
@@ -354,6 +355,13 @@ namespace FModel.Settings
         {
             get => _socketExportFormat;
             set => SetProperty(ref _socketExportFormat, value);
+        }
+
+        private EFileCompressionFormat _compressionFormat = EFileCompressionFormat.ZSTD;
+        public EFileCompressionFormat CompressionFormat
+        {
+            get => _compressionFormat;
+            set => SetProperty(ref _compressionFormat, value);
         }
 
         private ELodFormat _lodExportFormat = ELodFormat.FirstLod;

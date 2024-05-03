@@ -36,6 +36,8 @@ using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
 
 using CUE4Parse_Conversion;
+using CUE4Parse_Conversion.Animations;
+using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Sounds;
 
 using CUE4Parse.GameTypes.UDWN.Encryption.Aes;
@@ -960,9 +962,15 @@ public class CUE4ParseViewModel : ViewModel
         {
             LodFormat = UserSettings.Default.LodExportFormat,
             MeshFormat = UserSettings.Default.MeshExportFormat,
+            AnimFormat = UserSettings.Default.MeshExportFormat switch
+            {
+                EMeshFormat.ActorX => EAnimFormat.ActorX,
+                _ => EAnimFormat.UEFormat // i think we said ueformat default is okay
+            },
             MaterialFormat = UserSettings.Default.MaterialExportFormat,
             TextureFormat = UserSettings.Default.TextureExportFormat,
             SocketFormat = UserSettings.Default.SocketExportFormat,
+            CompressionFormat = UserSettings.Default.CompressionFormat,
             Platform = UserSettings.Default.CurrentDir.TexturePlatform,
             ExportMorphTargets = UserSettings.Default.SaveMorphTargets,
             ExportMaterials = UserSettings.Default.SaveEmbeddedMaterials
