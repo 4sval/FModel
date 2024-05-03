@@ -39,6 +39,7 @@ using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
 
 using CUE4Parse.GameTypes.UDWN.Encryption.Aes;
+using CUE4Parse.GameTypes.DBD.Encryption.Aes;
 using EpicManifestParser;
 
 using FModel.Creator;
@@ -187,6 +188,7 @@ public class CUE4ParseViewModel : ViewModel
         Provider.CustomEncryption = Provider.Versions.Game switch
         {
             EGame.GAME_Undawn => ToaaAes.ToaaDecrypt,
+            EGame.GAME_DeadbyDaylight => DbDAes.DbDDecrypt,
             _ => Provider.CustomEncryption
         };
 
