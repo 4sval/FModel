@@ -4,6 +4,7 @@ using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Objects.Core.Math;
+using CUE4Parse.UE4.Objects.PhysicsEngine;
 using CUE4Parse.UE4.Objects.UObject;
 using FModel.Views.Snooper.Animations;
 using FModel.Views.Snooper.Buffers;
@@ -42,6 +43,18 @@ public class SkeletalModel : UModel
         {
             if (sockets[i].Load<USkeletalMeshSocket>() is not { } socket) continue;
             Sockets.Add(new Socket(socket));
+        }
+
+        if (export.PhysicsAsset.TryLoad(out UPhysicsAsset physicsAsset))
+        {
+            foreach (var skeletalBodySetup in physicsAsset.SkeletalBodySetups)
+            {
+                if (!skeletalBodySetup.TryLoad(out USkeletalBodySetup bodySetup)) continue;
+                foreach (var convexElem in bodySetup.AggGeom.ConvexElems)
+                {
+                    Collisions.Add(new Collision(convexElem));
+                }
+            }
         }
 
         Morphs = new List<Morph>();

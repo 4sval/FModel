@@ -116,6 +116,7 @@
     <None Remove="Resources\light.vert" />
     <None Remove="Resources\bone.frag" />
     <None Remove="Resources\bone.vert" />
+    <None Remove="Resources\collision.vert" />
   </ItemGroup>
 
   <ItemGroup>
@@ -141,6 +142,7 @@
     <EmbeddedResource Include="Resources\light.vert" />
     <EmbeddedResource Include="Resources\bone.frag" />
     <EmbeddedResource Include="Resources\bone.vert" />
+    <EmbeddedResource Include="Resources\collision.vert" />
   </ItemGroup>
 
   <ItemGroup>

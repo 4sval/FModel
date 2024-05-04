@@ -60,6 +60,7 @@ public abstract class UModel : IRenderableModel
 
     public FBox Box;
     public readonly List<Socket> Sockets;
+    public readonly List<Collision> Collisions;
     public Material[] Materials;
     public bool IsTwoSided;
     public bool IsProp;
@@ -67,12 +68,14 @@ public abstract class UModel : IRenderableModel
     public int VertexSize => _vertexAttributes.Where(x => x.Enabled).Sum(x => x.Size);
     public bool HasVertexColors => _vertexAttributes[(int) EAttribute.Colors].Enabled;
     public bool HasSockets => Sockets.Count > 0;
+    public bool HasCollisions => Collisions.Count > 0;
     public int TransformsCount => Transforms.Count;
 
     public bool IsSetup { get; set; }
     public bool IsVisible { get; set; }
     public bool IsSelected { get; set; }
     public bool ShowWireframe { get; set; }
+    public bool ShowCollisions { get; set; }
     public int SelectedInstance;
 
     protected UModel()
@@ -82,6 +85,7 @@ public abstract class UModel : IRenderableModel
 
         Box = new FBox(new FVector(-2f), new FVector(2f));
         Sockets = new List<Socket>();
+        Collisions = new List<Collision>();
         Transforms = new List<Transform>();
     }
 
@@ -95,6 +99,7 @@ public abstract class UModel : IRenderableModel
 
         Box = new FBox(new FVector(-2f), new FVector(2f));
         Sockets = new List<Socket>();
+        Collisions = new List<Collision>();
         Transforms = new List<Transform>();
         Attachments = new Attachment(Name);
 
@@ -209,6 +214,11 @@ public abstract class UModel : IRenderableModel
             Materials[i].Setup(options, broken ? 1 : UvCount);
         }
 
+        foreach (var collision in Collisions)
+        {
+            collision.Setup();
+        }
+
         if (options.Models.Count == 1 && Sections.All(x => !x.Show))
         {
             IsVisible = true;
@@ -292,6 +302,16 @@ public abstract class UModel : IRenderableModel
         Vao.Unbind();
 
         if (IsTwoSided) GL.Enable(EnableCap.CullFace);
+    }
+
+    public void RenderCollision(Shader shader)
+    {
+        shader.SetUniform("uInstanceMatrix", GetTransform().Matrix);
+        shader.SetUniform("uScaleDown", Constants.SCALE_DOWN_RATIO);
+        foreach (var collision in Collisions)
+        {
+            collision.Render(shader);
+        }
     }
 
     public void Update(Options options)
@@ -381,6 +401,11 @@ public abstract class UModel : IRenderableModel
             socket?.Dispose();
         }
         Sockets.Clear();
+        foreach (var collision in Collisions)
+        {
+            collision?.Dispose();
+        }
+        Collisions.Clear();
 
         GL.DeleteProgram(Handle);
     }

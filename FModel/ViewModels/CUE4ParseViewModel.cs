@@ -399,6 +399,7 @@ public class CUE4ParseViewModel : ViewModel
             else if (endpoint.IsValid)
             {
                 var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
+                if (endpoint.Path == "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']") endpoint.Path = "$.[0].['url','fileName']";
                 var mappings = _apiEndpointView.DynamicApi.GetMappings(default, endpoint.Url, endpoint.Path);
                 if (mappings is { Length: > 0 })
                 {

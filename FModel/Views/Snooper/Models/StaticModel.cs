@@ -1,6 +1,7 @@
 ﻿using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
+using CUE4Parse.UE4.Objects.PhysicsEngine;
 using FModel.Views.Snooper.Shading;
 
 namespace FModel.Views.Snooper.Models;
@@ -52,6 +53,14 @@ public class StaticModel : UModel
     public StaticModel(UStaticMesh export, CStaticMesh staticMesh, Transform transform = null)
         : base(export, staticMesh.LODs[LodLevel], export.Materials, staticMesh.LODs[LodLevel].Verts, staticMesh.LODs.Count, transform)
     {
+        if (export.BodySetup.TryLoad(out UBodySetup bodySetup))
+        {
+            foreach (var convexElem in bodySetup.AggGeom.ConvexElems)
+            {
+                Collisions.Add(new Collision(convexElem));
+            }
+        }
+
         Box = staticMesh.BoundingBox * Constants.SCALE_DOWN_RATIO;
         for (int i = 0; i < export.Sockets.Length; i++)
         {

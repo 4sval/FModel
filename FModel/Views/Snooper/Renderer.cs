@@ -46,6 +46,7 @@ public class Renderer : IDisposable
     private Shader _outline;
     private Shader _light;
     private Shader _bone;
+    private Shader _collision;
     private bool _saveCameraMode;
 
     public bool ShowSkybox;
@@ -227,6 +228,7 @@ public class Renderer : IDisposable
         _outline = new Shader("outline");
         _light = new Shader("light");
         _bone = new Shader("bone");
+        _collision = new Shader("collision", "bone");
 
         Picking.Setup();
         Options.SetupModelsAndLights();
@@ -271,6 +273,11 @@ public class Renderer : IDisposable
             {
                 _bone.Render(viewMatrix, projMatrix);
                 skeletalModel.RenderBones(_bone);
+            }
+            else if (selected.ShowCollisions)
+            {
+                _collision.Render(viewMatrix, projMatrix);
+                selected.RenderCollision(_collision);
             }
 
             _outline.Render(viewMatrix, CameraOp.Position, projMatrix);
@@ -642,6 +649,7 @@ public class Renderer : IDisposable
         _outline?.Dispose();
         _light?.Dispose();
         _bone?.Dispose();
+        _collision?.Dispose();
         Picking?.Dispose();
         Options?.Dispose();
     }

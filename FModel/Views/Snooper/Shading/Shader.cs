@@ -14,12 +14,12 @@ public class Shader : IDisposable
 
     public Shader() : this("default") {}
 
-    public Shader(string name)
+    public Shader(string name1, string name2 = null)
     {
         _handle = GL.CreateProgram();
 
-        var v = LoadShader(ShaderType.VertexShader, $"{name}.vert");
-        var f = LoadShader(ShaderType.FragmentShader, $"{name}.frag");
+        var v = LoadShader(ShaderType.VertexShader, $"{name1}.vert");
+        var f = LoadShader(ShaderType.FragmentShader, $"{name2 ?? name1}.frag");
         GL.AttachShader(_handle, v);
         GL.AttachShader(_handle, f);
         GL.LinkProgram(_handle);
