@@ -53,7 +53,7 @@ public class StaticModel : UModel
     public StaticModel(UStaticMesh export, CStaticMesh staticMesh, Transform transform = null)
         : base(export, staticMesh.LODs[LodLevel], export.Materials, staticMesh.LODs[LodLevel].Verts, staticMesh.LODs.Count, transform)
     {
-        if (export.BodySetup.TryLoad(out UBodySetup bodySetup))
+        if (export.BodySetup.TryLoad(out UBodySetup bodySetup) && bodySetup.AggGeom != null)
         {
             foreach (var convexElem in bodySetup.AggGeom.ConvexElems)
             {

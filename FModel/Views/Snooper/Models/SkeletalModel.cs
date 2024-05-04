@@ -49,7 +49,7 @@ public class SkeletalModel : UModel
         {
             foreach (var skeletalBodySetup in physicsAsset.SkeletalBodySetups)
             {
-                if (!skeletalBodySetup.TryLoad(out USkeletalBodySetup bodySetup)) continue;
+                if (!skeletalBodySetup.TryLoad(out USkeletalBodySetup bodySetup) || bodySetup.AggGeom == null) continue;
                 foreach (var convexElem in bodySetup.AggGeom.ConvexElems)
                 {
                     Collisions.Add(new Collision(convexElem));
