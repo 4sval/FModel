@@ -89,6 +89,7 @@ uniform Parameters uParameters;
 uniform Light uLights[MAX_LIGHT_COUNT];
 uniform int uNumLights;
 uniform int uUvCount;
+uniform float uOpacity;
 uniform bool uHasVertexColors;
 uniform vec3 uSectionColor;
 uniform bool bVertexColors[6];
@@ -214,7 +215,7 @@ void main()
 {
     if (bVertexColors[1])
     {
-        FragColor = vec4(uSectionColor, 1.0);
+        FragColor = vec4(uSectionColor, uOpacity);
     }
     else if (bVertexColors[2] && uHasVertexColors)
     {
@@ -224,7 +225,7 @@ void main()
     {
         int layer = LayerToIndex();
         vec3 normals = ComputeNormals(layer);
-        FragColor = vec4(normals, 1.0);
+        FragColor = vec4(normals, uOpacity);
     }
     else if (bVertexColors[4])
     {
@@ -281,6 +282,6 @@ void main()
         }
 
         result = result / (result + vec3(1.0));
-        FragColor = vec4(pow(result, vec3(1.0 / 2.2)), 1.0);
+        FragColor = vec4(pow(result, vec3(1.0 / 2.2)), uOpacity);
     }
 }

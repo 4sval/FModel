@@ -46,9 +46,14 @@ public class Collision : IDisposable
         shader.SetUniform("uCollisionMatrix", _transform.Matrix);
 
         _vao.Bind();
-        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-        GL.DrawElements(PrimitiveType.Triangles, _ebo.Size, DrawElementsType.UnsignedInt, 0);
-        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+        if (_indexData.Length > 0)
+        {
+            GL.DrawElements(PrimitiveType.Triangles, _ebo.Size, DrawElementsType.UnsignedInt, 0);
+        }
+        else
+        {
+            GL.DrawArrays(PrimitiveType.Points, 0, _vbo.Size);
+        }
         _vao.Unbind();
     }
 

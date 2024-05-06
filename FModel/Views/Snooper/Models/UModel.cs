@@ -151,7 +151,7 @@ public abstract class UModel : IRenderableModel
             Vertices[baseIndex + count++] = vert.Tangent.Y;
             Vertices[baseIndex + count++] = vert.UV.U;
             Vertices[baseIndex + count++] = vert.UV.V;
-            Vertices[baseIndex + count++] = hasCustomUvs ? lod.ExtraUV.Value[0][i].U : .5f;
+            Vertices[baseIndex + count++] = hasCustomUvs ? lod.ExtraUV.Value[0][i].U - 1 : .5f;
 
             if (HasVertexColors)
             {
@@ -250,6 +250,7 @@ public abstract class UModel : IRenderableModel
         if (!outline)
         {
             shader.SetUniform("uUvCount", UvCount);
+            shader.SetUniform("uOpacity", ShowCollisions && IsSelected ? 0.75f : 1f);
             shader.SetUniform("uHasVertexColors", HasVertexColors);
         }
 
@@ -308,10 +309,15 @@ public abstract class UModel : IRenderableModel
     {
         shader.SetUniform("uInstanceMatrix", GetTransform().Matrix);
         shader.SetUniform("uScaleDown", Constants.SCALE_DOWN_RATIO);
+
+        GL.Disable(EnableCap.CullFace);
+        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
         foreach (var collision in Collisions)
         {
             collision.Render(shader);
         }
+        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+        GL.Enable(EnableCap.CullFace);
     }
 
     public void Update(Options options)
@@ -375,18 +381,7 @@ public abstract class UModel : IRenderableModel
 
     public bool Save(out string label, out string savedFilePath)
     {
-        var exportOptions = new ExporterOptions
-        {
-            LodFormat = UserSettings.Default.LodExportFormat,
-            MeshFormat = UserSettings.Default.MeshExportFormat,
-            MaterialFormat = UserSettings.Default.MaterialExportFormat,
-            TextureFormat = UserSettings.Default.TextureExportFormat,
-            SocketFormat = UserSettings.Default.SocketExportFormat,
-            Platform = UserSettings.Default.CurrentDir.TexturePlatform,
-            ExportMorphTargets = UserSettings.Default.SaveMorphTargets,
-            ExportMaterials = UserSettings.Default.SaveEmbeddedMaterials
-        };
-        var toSave = new Exporter(_export, exportOptions);
+        var toSave = new Exporter(_export, UserSettings.Default.ExportOptions);
         return toSave.TryWriteToDir(new DirectoryInfo(UserSettings.Default.ModelDirectory), out label, out savedFilePath);
     }
 

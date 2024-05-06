@@ -959,24 +959,7 @@ public class CUE4ParseViewModel : ViewModel
 
     private void SaveExport(UObject export, bool auto)
     {
-        var exportOptions = new ExporterOptions
-        {
-            LodFormat = UserSettings.Default.LodExportFormat,
-            MeshFormat = UserSettings.Default.MeshExportFormat,
-            AnimFormat = UserSettings.Default.MeshExportFormat switch
-            {
-                EMeshFormat.ActorX => EAnimFormat.ActorX,
-                _ => EAnimFormat.UEFormat // i think we said ueformat default is okay
-            },
-            MaterialFormat = UserSettings.Default.MaterialExportFormat,
-            TextureFormat = UserSettings.Default.TextureExportFormat,
-            SocketFormat = UserSettings.Default.SocketExportFormat,
-            CompressionFormat = UserSettings.Default.CompressionFormat,
-            Platform = UserSettings.Default.CurrentDir.TexturePlatform,
-            ExportMorphTargets = UserSettings.Default.SaveMorphTargets,
-            ExportMaterials = UserSettings.Default.SaveEmbeddedMaterials
-        };
-        var toSave = new Exporter(export, exportOptions);
+        var toSave = new Exporter(export, UserSettings.Default.ExportOptions);
 
         string dir;
         if (!auto)
