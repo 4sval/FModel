@@ -156,7 +156,6 @@ public class ApplicationViewModel : ViewModel
         await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
         {
             CUE4Parse.LoadVfs(cancellationToken, AesManager.AesKeys);
-            CUE4Parse.Provider.LoadIniConfigs();
             AesManager.SetAesKeys();
         });
         RaisePropertyChanged(nameof(GameDisplayName));

@@ -312,6 +312,7 @@ public class CUE4ParseViewModel : ViewModel
             if (k.Length != 66) k = Constants.ZERO_64_CHAR;
             Provider.SubmitKey(key.Guid, new FAesKey(k));
         }
+        Provider.PostMount();
 
         // files in MountedVfs will be enabled
         foreach (var file in GameDirectory.DirectoryFiles)
@@ -437,34 +438,15 @@ public class CUE4ParseViewModel : ViewModel
         });
     }
 
-    private bool _cvaVerifDone { get; set; }
     public Task VerifyConsoleVariables()
     {
-        if (_cvaVerifDone)
-            return Task.CompletedTask;
-
-        return Task.Run(() =>
+        if (Provider.Versions["StripAdditiveRefPose"])
         {
-            foreach (var token in Provider.DefaultEngine.Sections.FirstOrDefault(s => s.Name == "ConsoleVariables")?.Tokens ?? new List<IniToken>())
-            {
-                if (token is not InstructionToken it) continue;
-                var boolValue = it.Value.Equals("1");
+            FLogger.Append(ELog.Warning, () =>
+                FLogger.Text("Additive animations have their reference pose stripped, which will lead to inaccurate preview and export", Constants.WHITE, true));
+        }
 
-                switch (it.Key)
-                {
-                    case "a.StripAdditiveRefPose" when boolValue:
-                        FLogger.Append(ELog.Warning, () =>
-                            FLogger.Text("Additive animations have their reference pose stripped, which will lead to inaccurate preview and export", Constants.WHITE, true));
-                        continue;
-                    case "r.StaticMesh.KeepMobileMinLODSettingOnDesktop":
-                    case "r.SkeletalMesh.KeepMobileMinLODSettingOnDesktop":
-                        Provider.Versions[it.Key[2..]] = boolValue;
-                        continue;
-                }
-            }
-
-            _cvaVerifDone = true;
-        });
+        return Task.CompletedTask;
     }
 
     public Task VerifyOnDemandArchives()
