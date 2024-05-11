@@ -8,7 +8,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-
 using AdonisUI.Controls;
 using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
@@ -34,17 +33,15 @@ using CUE4Parse.UE4.Readers;
 using CUE4Parse.UE4.Shaders;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
-
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Animations;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Sounds;
-
 using CUE4Parse.GameTypes.UDWN.Encryption.Aes;
 using CUE4Parse.GameTypes.DBD.Encryption.Aes;
 using CUE4Parse.GameTypes.PAXDEI.Encryption.Aes;
+using CUE4Parse.GameTypes.NetEase.MAR.Encryption.Aes;
 using EpicManifestParser;
-
 using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;
@@ -53,20 +50,13 @@ using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
 using FModel.Views.Snooper;
-
 using Newtonsoft.Json;
-
 using Ookii.Dialogs.Wpf;
-
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
-
 using Serilog;
-
 using SkiaSharp;
-
 using UE4Config.Parsing;
-
 using Application = System.Windows.Application;
 
 namespace FModel.ViewModels;
@@ -190,8 +180,9 @@ public class CUE4ParseViewModel : ViewModel
         Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
         Provider.CustomEncryption = Provider.Versions.Game switch
         {
+            EGame.GAME_MarvelRivals => MarvelAes.MarvelDecrypt,
             EGame.GAME_Undawn => ToaaAes.ToaaDecrypt,
-            EGame.GAME_DeadbyDaylight => DbDAes.DbDDecrypt,
+            EGame.GAME_DeadByDaylight => DBDAes.DbDDecrypt,
             EGame.GAME_PaxDei => PaxDeiAes.PaxDeiDecrypt,
             _ => Provider.CustomEncryption
         };
