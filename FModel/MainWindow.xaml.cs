@@ -85,7 +85,10 @@ public partial class MainWindow
 #if DEBUG
         // await _threadWorkerView.Begin(cancellationToken =>
         //     _applicationView.CUE4Parse.Extract(cancellationToken,
-        //         "FortniteGame/Content/Environments/Asteria/Props/Coastal/Coastal_Boat_B/Meshes/SM_Coastal_Boat_B.uasset"));
+        //         "fortnitegame/Content/Characters/Player/Female/Large/Bodies/F_LRG_BunnyBR/Meshes/F_LRG_BunnyBR.uasset"));
+        // await _threadWorkerView.Begin(cancellationToken =>
+        //     _applicationView.CUE4Parse.Extract(cancellationToken,
+        //         "FortniteGame/Content/Environments/Helios/Props/GlacierHotel/GlacierHotel_Globe_A/Meshes/SM_GlacierHotel_Globe_A.uasset"));
 #endif
     }
 

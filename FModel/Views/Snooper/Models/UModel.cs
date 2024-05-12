@@ -305,19 +305,10 @@ public abstract class UModel : IRenderableModel
         if (IsTwoSided) GL.Enable(EnableCap.CullFace);
     }
 
-    public void RenderCollision(Shader shader)
+    public virtual void RenderCollision(Shader shader)
     {
         shader.SetUniform("uInstanceMatrix", GetTransform().Matrix);
         shader.SetUniform("uScaleDown", Constants.SCALE_DOWN_RATIO);
-
-        GL.Disable(EnableCap.CullFace);
-        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-        foreach (var collision in Collisions)
-        {
-            collision.Render(shader);
-        }
-        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-        GL.Enable(EnableCap.CullFace);
     }
 
     public void Update(Options options)

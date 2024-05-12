@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
@@ -52,7 +53,23 @@ public class SkeletalModel : UModel
                 if (!skeletalBodySetup.TryLoad(out USkeletalBodySetup bodySetup) || bodySetup.AggGeom == null) continue;
                 foreach (var convexElem in bodySetup.AggGeom.ConvexElems)
                 {
-                    Collisions.Add(new Collision(convexElem));
+                    Collisions.Add(new Collision(convexElem, bodySetup.BoneName));
+                }
+                foreach (var sphereElem in bodySetup.AggGeom.SphereElems)
+                {
+                    Collisions.Add(new Collision(sphereElem, bodySetup.BoneName));
+                }
+                foreach (var boxElem in bodySetup.AggGeom.BoxElems)
+                {
+                    Collisions.Add(new Collision(boxElem, bodySetup.BoneName));
+                }
+                foreach (var sphylElem in bodySetup.AggGeom.SphylElems)
+                {
+                    Collisions.Add(new Collision(sphylElem, bodySetup.BoneName));
+                }
+                foreach (var taperedCapsuleElem in bodySetup.AggGeom.TaperedCapsuleElems)
+                {
+                    Collisions.Add(new Collision(taperedCapsuleElem, bodySetup.BoneName));
                 }
             }
         }
@@ -106,6 +123,26 @@ public class SkeletalModel : UModel
         Vao.VertexAttributePointer(13, 3, VertexAttribPointerType.Float, Morph.VertexSize, 0); // morph position
         Vao.VertexAttributePointer(14, 3, VertexAttribPointerType.Float, Morph.VertexSize, 0); // morph tangent
         Vao.Unbind();
+    }
+
+    public override void RenderCollision(Shader shader)
+    {
+        base.RenderCollision(shader);
+
+        GL.Disable(EnableCap.DepthTest);
+        GL.Disable(EnableCap.CullFace);
+        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+        foreach (var collision in Collisions)
+        {
+            var boneMatrix = Matrix4x4.Identity;
+            if (Skeleton.BonesByLoweredName.TryGetValue(collision.LoweredBoneName, out var bone))
+                boneMatrix = Skeleton.GetBoneMatrix(bone);
+
+            collision.Render(shader, boneMatrix);
+        }
+        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+        GL.Enable(EnableCap.CullFace);
+        GL.Enable(EnableCap.DepthTest);
     }
 
     public void Render(Shader shader)
