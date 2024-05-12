@@ -1,8 +1,10 @@
-﻿using CUE4Parse_Conversion.Meshes.PSK;
+﻿using System.Numerics;
+using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Objects.PhysicsEngine;
 using FModel.Views.Snooper.Shading;
+using OpenTK.Graphics.OpenGL4;
 
 namespace FModel.Views.Snooper.Models;
 
@@ -59,6 +61,22 @@ public class StaticModel : UModel
             {
                 Collisions.Add(new Collision(convexElem));
             }
+            foreach (var sphereElem in bodySetup.AggGeom.SphereElems)
+            {
+                Collisions.Add(new Collision(sphereElem));
+            }
+            foreach (var boxElem in bodySetup.AggGeom.BoxElems)
+            {
+                Collisions.Add(new Collision(boxElem));
+            }
+            foreach (var sphylElem in bodySetup.AggGeom.SphylElems)
+            {
+                Collisions.Add(new Collision(sphylElem));
+            }
+            foreach (var taperedCapsuleElem in bodySetup.AggGeom.TaperedCapsuleElems)
+            {
+                Collisions.Add(new Collision(taperedCapsuleElem));
+            }
         }
 
         Box = staticMesh.BoundingBox * Constants.SCALE_DOWN_RATIO;
@@ -67,5 +85,19 @@ public class StaticModel : UModel
             if (export.Sockets[i].Load<UStaticMeshSocket>() is not { } socket) continue;
             Sockets.Add(new Socket(socket));
         }
+    }
+
+    public override void RenderCollision(Shader shader)
+    {
+        base.RenderCollision(shader);
+
+        GL.Disable(EnableCap.CullFace);
+        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+        foreach (var collision in Collisions)
+        {
+            collision.Render(shader, Matrix4x4.Identity);
+        }
+        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+        GL.Enable(EnableCap.CullFace);
     }
 }
