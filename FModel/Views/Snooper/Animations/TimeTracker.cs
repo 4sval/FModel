@@ -20,6 +20,7 @@ public class TimeTracker : IDisposable
     public bool IsActive;
     public float ElapsedTime;
     public float MaxElapsedTime;
+    public int TimeMultiplier;
 
     public TimeTracker()
     {
@@ -29,7 +30,7 @@ public class TimeTracker : IDisposable
     public void Update(float deltaSeconds)
     {
         if (IsPaused || IsActive) return;
-        ElapsedTime += deltaSeconds;
+        ElapsedTime += deltaSeconds * TimeMultiplier;
         if (ElapsedTime >= MaxElapsedTime) Reset(false);
     }
 
@@ -47,7 +48,11 @@ public class TimeTracker : IDisposable
     {
         IsPaused = false;
         ElapsedTime = 0.0f;
-        if (doMet) MaxElapsedTime = 0.01f;
+        if (doMet)
+        {
+            MaxElapsedTime = 0.01f;
+            TimeMultiplier = 1;
+        }
     }
 
     public void Dispose()
