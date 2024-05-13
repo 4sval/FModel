@@ -41,6 +41,7 @@ using CUE4Parse.GameTypes.UDWN.Encryption.Aes;
 using CUE4Parse.GameTypes.DBD.Encryption.Aes;
 using CUE4Parse.GameTypes.PAXDEI.Encryption.Aes;
 using CUE4Parse.GameTypes.NetEase.MAR.Encryption.Aes;
+using CUE4Parse.GameTypes.FSR.Encryption.Aes;
 using EpicManifestParser;
 using FModel.Creator;
 using FModel.Extensions;
@@ -184,6 +185,7 @@ public class CUE4ParseViewModel : ViewModel
             EGame.GAME_Undawn => ToaaAes.ToaaDecrypt,
             EGame.GAME_DeadByDaylight => DBDAes.DbDDecrypt,
             EGame.GAME_PaxDei => PaxDeiAes.PaxDeiDecrypt,
+            EGame.GAME_3on3FreeStyleRebound => FreeStyleReboundAes.FSRDecrypt,
             _ => Provider.CustomEncryption
         };
 
@@ -663,6 +665,7 @@ public class CUE4ParseViewModel : ViewModel
             case "csv":
             case "pem":
             case "tps":
+            case "lua":
             case "js":
             case "po":
             case "h":
