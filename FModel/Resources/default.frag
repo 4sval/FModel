@@ -164,7 +164,7 @@ vec3 CalcLight(int layer, vec3 normals, vec3 position, vec3 color, float attenua
 
     float nDotH = max(dot(n, h), 0.0);
     float hDotv = max(dot(h, v), 0.0);
-    float nDotL = max(dot(n, l), 0.4);
+    float nDotL = max(dot(n, l), 0.0);
     float nDotV = max(dot(n, v), 0.0);
 
     vec3 f = schlickFresnel(fLambert, specular_masks.g, hDotv);

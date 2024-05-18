@@ -78,6 +78,8 @@ void main()
             }
         }
         finalPos = normalize(finalPos);
+        finalNormal = normalize(finalNormal);
+        finalTangent = normalize(finalTangent);
     }
     else
     {

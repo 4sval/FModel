@@ -414,9 +414,11 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     ImGui.TableNextColumn();
                     ImGui.Text(model.UvCount.ToString("D"));
                     ImGui.TableNextColumn();
-                    if (ImGui.Selectable(model.Name, s.Renderer.Options.SelectedModel == guid, ImGuiSelectableFlags.SpanAllColumns))
+                    var doubleClick = false;
+                    if (ImGui.Selectable(model.Name, s.Renderer.Options.SelectedModel == guid, ImGuiSelectableFlags.SpanAllColumns | ImGuiSelectableFlags.AllowDoubleClick))
                     {
                         s.Renderer.Options.SelectModel(guid);
+                        doubleClick = ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left);
                     }
                     Popup(() =>
                     {
@@ -456,16 +458,17 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                             s.Renderer.IsSkeletonTreeOpen = true;
                             ImGui.SetWindowFocus("Skeleton Tree");
                         }
-                        if (ImGui.MenuItem("Teleport To"))
-                        {
-                            s.Renderer.CameraOp.Teleport(model.GetTransform().Matrix.Translation, model.Box);
-                        }
+                        doubleClick = ImGui.MenuItem("Teleport To");
 
                         if (ImGui.MenuItem("Delete")) s.Renderer.Options.RemoveModel(guid);
                         if (ImGui.MenuItem("Deselect")) s.Renderer.Options.SelectModel(Guid.Empty);
                         ImGui.Separator();
                         if (ImGui.MenuItem("Copy Path to Clipboard")) ImGui.SetClipboardText(model.Path);
                     });
+                    if (doubleClick)
+                    {
+                        s.Renderer.CameraOp.Teleport(model.GetTransform().Matrix.Translation, model.Box);
+                    }
 
                     ImGui.TableNextColumn();
                     ImGui.Image(s.Renderer.Options.Icons[model.Attachments.Icon].GetPointer(), new Vector2(_tableWidth));

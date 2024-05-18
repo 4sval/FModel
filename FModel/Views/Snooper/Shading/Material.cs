@@ -76,7 +76,7 @@ public class Material : IDisposable
 
         if (uvCount < 1 || Parameters.IsNull)
         {
-            Diffuse = [new Texture(new FLinearColor(1f, 1f, 1f, 1f))];
+            Diffuse = [new Texture(new FLinearColor(.6f, .6f, .6f, 1f))];
             Normals = [new Texture(new FLinearColor(0.498f, 0.498f, 0.996f, 1f))];
             SpecularMasks = [new Texture(new FLinearColor(1f, 0.5f, 0.5f, 1f))];
             Emissive = new Texture[1];
