@@ -77,6 +77,7 @@ void main()
                 finalTangent += inverseBoneMatrix * bindTangent * weight;
             }
         }
+        finalPos = normalize(finalPos);
     }
     else
     {

@@ -50,7 +50,14 @@ public partial class App
         var createMe = false;
         if (!Directory.Exists(UserSettings.Default.OutputDirectory))
         {
-            UserSettings.Default.OutputDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Output");
+            var currentDir = Directory.GetCurrentDirectory();
+            var dirInfo = new DirectoryInfo(currentDir);
+            if (dirInfo.Attributes.HasFlag(FileAttributes.Archive))
+                throw new Exception("FModel cannot be run from an archive file. Please extract it and try again.");
+            if (dirInfo.Attributes.HasFlag(FileAttributes.ReadOnly))
+                throw new Exception("FModel cannot be run from a read-only directory. Please move it to a writable location.");
+
+            UserSettings.Default.OutputDirectory = Path.Combine(currentDir, "Output");
         }
 
         if (!Directory.Exists(UserSettings.Default.RawDataDirectory))

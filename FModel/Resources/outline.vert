@@ -53,6 +53,7 @@ void main()
                 finalNormal += transpose(inverse(boneMatrix)) * bindNormal * weight;
             }
         }
+        finalPos = normalize(finalPos);
     }
     else
     {
@@ -60,10 +61,10 @@ void main()
         finalNormal = bindNormal;
     }
 
-    finalPos = vInstanceMatrix * finalPos;
-    float scaleFactor = distance(vec3(finalPos), uViewPos) * 0.0035;
+    vec4 worldPos = vInstanceMatrix * finalPos;
+    float scaleFactor = distance(worldPos.xyz, uViewPos) * 0.0035;
     vec4 nor = transpose(inverse(vInstanceMatrix)) * normalize(finalNormal) * scaleFactor;
     finalPos.xyz += nor.xyz;
 
-    gl_Position = uProjection * uView * finalPos;
+    gl_Position = uProjection * uView * vInstanceMatrix * finalPos;
 }
