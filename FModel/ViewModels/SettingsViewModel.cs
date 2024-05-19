@@ -27,6 +27,13 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _useCustomOutputFolders, value);
     }
 
+    private bool _useCustomEGames;
+    public bool UseCustomEGames
+    {
+        get => _useCustomEGames;
+        set => SetProperty(ref _useCustomEGames, value);
+    }
+
     private EUpdateMode _selectedUpdateMode;
     public EUpdateMode SelectedUpdateMode
     {
@@ -170,6 +177,7 @@ public class SettingsViewModel : ViewModel
 
     public ReadOnlyObservableCollection<EUpdateMode> UpdateModes { get; private set; }
     public ReadOnlyObservableCollection<EGame> UeGames { get; private set; }
+    public ReadOnlyObservableCollection<EGame> CustomUeGames { get; private set; }
     public ReadOnlyObservableCollection<ELanguage> AssetLanguages { get; private set; }
     public ReadOnlyObservableCollection<EAesReload> AesReloads { get; private set; }
     public ReadOnlyObservableCollection<EDiscordRpc> DiscordRpcs { get; private set; }
@@ -265,8 +273,12 @@ public class SettingsViewModel : ViewModel
         SelectedAesReload = UserSettings.Default.AesReload;
         SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
 
+        var ueGames = EnumerateUeGames().ToArray();
+        UseCustomEGames = ueGames[1].Contains(SelectedUeGame);
+
         UpdateModes = new ReadOnlyObservableCollection<EUpdateMode>(new ObservableCollection<EUpdateMode>(EnumerateUpdateModes()));
-        UeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(EnumerateUeGames()));
+        UeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(ueGames[0]));
+        CustomUeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(ueGames[1]));
         AssetLanguages = new ReadOnlyObservableCollection<ELanguage>(new ObservableCollection<ELanguage>(EnumerateAssetLanguages()));
         AesReloads = new ReadOnlyObservableCollection<EAesReload>(new ObservableCollection<EAesReload>(EnumerateAesReloads()));
         DiscordRpcs = new ReadOnlyObservableCollection<EDiscordRpc>(new ObservableCollection<EDiscordRpc>(EnumerateDiscordRpcs()));
@@ -331,11 +343,11 @@ public class SettingsViewModel : ViewModel
     }
 
     private IEnumerable<EUpdateMode> EnumerateUpdateModes() => Enum.GetValues<EUpdateMode>();
-    private IEnumerable<EGame> EnumerateUeGames()
+    private IEnumerable<IGrouping<bool, EGame>> EnumerateUeGames()
         => Enum.GetValues<EGame>()
             .GroupBy(value => (int)value)
             .Select(group => group.First())
-            .OrderBy(value => (int)value == ((int)value & ~0xF));
+            .GroupBy(value => (int)value == ((int)value & ~0xF));
     private IEnumerable<ELanguage> EnumerateAssetLanguages() => Enum.GetValues<ELanguage>();
     private IEnumerable<EAesReload> EnumerateAesReloads() => Enum.GetValues<EAesReload>();
     private IEnumerable<EDiscordRpc> EnumerateDiscordRpcs() => Enum.GetValues<EDiscordRpc>();
