@@ -47,7 +47,7 @@ public class GameSelectorViewModel : ViewModel
         set
         {
             SetProperty(ref _selectedDirectory, value);
-            UseCustomEGames = EnumerateUeGames().ElementAt(1).Contains(_selectedDirectory.UeVersion);
+            if (_selectedDirectory != null) UseCustomEGames = EnumerateUeGames().ElementAt(1).Contains(_selectedDirectory.UeVersion);
         }
     }
 
