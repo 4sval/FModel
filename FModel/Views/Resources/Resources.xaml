@@ -80,6 +80,31 @@
         </Setter>
     </Style>
 
+    <Style x:Key="HighlightedCheckBox" TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="White" />
+        <Style.Triggers>
+            <EventTrigger RoutedEvent="CheckBox.Loaded">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ColorAnimation From="YellowGreen"
+                                        To="Goldenrod"
+                                        Storyboard.TargetProperty="BorderBrush.Color"
+                                        AutoReverse="True"
+                                        RepeatBehavior="Forever"
+                                        Duration="0:0:1" />
+                        <ThicknessAnimation From="0"
+                                            To="2"
+                                            Storyboard.TargetProperty="BorderThickness"
+                                            AutoReverse="True"
+                                            RepeatBehavior="Forever"
+                                            Duration="0:0:1" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Style.Triggers>
+    </Style>
+
     <Style x:Key="CustomSeparator" TargetType="Separator" BasedOn="{StaticResource {x:Type Separator}}">
         <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}"/>
         <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>

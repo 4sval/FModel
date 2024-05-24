@@ -143,7 +143,8 @@
                     </ComboBox>
                     <CheckBox Grid.Row="6" Grid.Column="6" Margin="5 0 0 5" ToolTip="Enable custom UE versions"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
-                              IsChecked="{Binding SettingsView.UseCustomEGames, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                              IsChecked="{Binding SettingsView.UseCustomEGames, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              BorderBrush="White" Style="{StaticResource HighlightedCheckBox}" />
 
                     <TextBlock Grid.Row="7" Grid.Column="0" Text="Texture Platform *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the game's platform to ensure texture compatibility" />
                     <ComboBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.Platforms}" SelectedItem="{Binding SettingsView.SelectedUePlatform, Mode=TwoWay}"

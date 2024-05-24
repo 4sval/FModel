@@ -80,7 +80,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <CheckBox Grid.Row="1" Grid.Column="4" Margin="5 0 0 5" ToolTip="Enable custom UE versions"
-                              IsChecked="{Binding UseCustomEGames, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                              IsChecked="{Binding UseCustomEGames, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              BorderBrush="White" Style="{StaticResource HighlightedCheckBox}" />
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Directory" VerticalAlignment="Center" />
                     <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding SelectedDirectory.GameDirectory, Mode=TwoWay}" />

@@ -42,6 +42,7 @@ using CUE4Parse.GameTypes.DBD.Encryption.Aes;
 using CUE4Parse.GameTypes.PAXDEI.Encryption.Aes;
 using CUE4Parse.GameTypes.NetEase.MAR.Encryption.Aes;
 using CUE4Parse.GameTypes.FSR.Encryption.Aes;
+using CUE4Parse.UE4.Assets.Exports.Atom;
 using EpicManifestParser;
 using FModel.Creator;
 using FModel.Extensions;
@@ -854,6 +855,7 @@ public class CUE4ParseViewModel : ViewModel
                 return false;
             }
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:
+            case UAtomModel when isNone && UserSettings.Default.PreviewStaticMeshes:
             case UStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
             case USkeletalMesh when isNone && UserSettings.Default.PreviewSkeletalMeshes:
             case USkeleton when isNone && UserSettings.Default.SaveSkeletonAsMesh:

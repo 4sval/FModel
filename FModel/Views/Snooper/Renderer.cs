@@ -7,6 +7,7 @@ using CUE4Parse_Conversion.Animations;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
+using CUE4Parse.UE4.Assets.Exports.Atom;
 using CUE4Parse.UE4.Assets.Exports.Component.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
@@ -96,6 +97,9 @@ public class Renderer : IDisposable
                 break;
             case UWorld wd:
                 LoadWorld(cancellationToken, wd, Transform.Identity);
+                break;
+            case UAtomModel at:
+                LoadAtom(cancellationToken, at);
                 break;
         }
         SetupCamera();
@@ -620,6 +624,50 @@ public class Renderer : IDisposable
         for (int j = 0; j < additionalWorlds.Length; j++)
             if (Utils.TryLoadObject(additionalWorlds[j].AssetPathName.Text, out UWorld w))
                 LoadWorld(cancellationToken, w, transform);
+    }
+
+    private void LoadAtom(CancellationToken cancellationToken, UAtomModel original)
+    {
+        var length = original.Primitives.Length;
+        for (var i = 0; i < length; i++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} ... {i}/{length}");
+
+            foreach (var part in original.Primitives[i].Parts)
+            {
+                var fixedPath = part.AtomPrimitive.AssetPathName.Text
+                    .Replace("Primitives", "ProcessedMeshes")
+                    .Replace("VX", "SM_VX");
+                if (!Utils.TryLoadObject(fixedPath, out UStaticMesh staticMesh) || !staticMesh.TryConvert(out var mesh))
+                    continue;
+
+                var guid = staticMesh.LightingGuid;
+                var transform = new Transform
+                {
+                    Position = part.Transforms[0].Translation * Constants.SCALE_DOWN_RATIO,
+                    Rotation = part.Transforms[0].Rotation,
+                    Scale = part.Transforms[0].Scale3D
+                };
+
+                if (Options.TryGetModel(guid, out var model))
+                {
+                    model.AddInstance(transform);
+                }
+                else
+                {
+                    model = new StaticModel(staticMesh, mesh, transform);
+                    foreach (var section in model.Sections)
+                    {
+                        section.Show = true;
+                    }
+                    Options.Models[guid] = model;
+                }
+            }
+        }
+
+        CameraOp.Setup(original.SourceModel.Bounds * Constants.SCALE_DOWN_RATIO);
+        Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} ... {length}/{length}");
     }
 
     public void WindowResized(int width, int height)
