@@ -609,23 +609,13 @@ public class CUE4ParseViewModel : ViewModel
         var fileName = fullPath.SubstringAfterLast('/');
         var ext = fullPath.SubstringAfterLast('.').ToLower();
 
-        if (addNewTab && TabControl.CanAddTabs)
-        {
-            TabControl.AddTab(fileName, directory);
-        }
-        else
-        {
-            TabControl.SelectedTab.Header = fileName;
-            TabControl.SelectedTab.Directory = directory;
-        }
+        if (addNewTab && TabControl.CanAddTabs) TabControl.AddTab(fileName, directory);
+        else TabControl.SelectedTab.SoftReset(fileName, directory);
+        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(ext);
 
         var updateUi = !HasFlag(bulk, EBulkType.Auto);
         var saveProperties = HasFlag(bulk, EBulkType.Properties);
         var saveTextures = HasFlag(bulk, EBulkType.Textures);
-        TabControl.SelectedTab.ClearImages();
-        TabControl.SelectedTab.ResetDocumentText();
-        TabControl.SelectedTab.ScrollTrigger = null;
-        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(ext);
         switch (ext)
         {
             case "uasset":
@@ -801,10 +791,10 @@ public class CUE4ParseViewModel : ViewModel
         }
     }
 
-    public void ExtractAndScroll(CancellationToken cancellationToken, string fullPath, string objectName)
+    public void ExtractAndScroll(CancellationToken cancellationToken, string fullPath, string objectName, string parentExportType)
     {
         Log.Information("User CTRL-CLICKED to extract '{FullPath}'", fullPath);
-        TabControl.AddTab(fullPath.SubstringAfterLast('/'), fullPath.SubstringBeforeLast('/'));
+        TabControl.AddTab(fullPath.SubstringAfterLast('/'), fullPath.SubstringBeforeLast('/'), parentExportType);
         TabControl.SelectedTab.ScrollTrigger = objectName;
 
         var exports = Provider.LoadAllObjects(fullPath);
@@ -855,6 +845,12 @@ public class CUE4ParseViewModel : ViewModel
                 return false;
             }
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:
+            case UBlueprintGeneratedClass when isNone && UserSettings.Default.PreviewWorlds && TabControl.SelectedTab.ParentExportType switch
+            {
+                "JunoBuildInstructionsItemDefinition" => true,
+                "JunoBuildingSetAccountItemDefinition" => true,
+                _ => false
+            }:
             case UAtomModel when isNone && UserSettings.Default.PreviewStaticMeshes:
             case UStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
             case USkeletalMesh when isNone && UserSettings.Default.PreviewSkeletalMeshes:

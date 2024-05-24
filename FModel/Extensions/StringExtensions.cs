@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using ICSharpCode.AvalonEdit.Document;
 
 namespace FModel.Extensions;
 
@@ -94,7 +95,7 @@ public static class StringExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int GetLineNumber(this string s, string lineToFind)
+    public static int GetNameLineNumber(this string s, string lineToFind)
     {
         if (int.TryParse(lineToFind, out var index))
             return s.GetLineNumber(index);
@@ -111,6 +112,24 @@ public static class StringExtensions
         }
 
         return 1;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string GetParentExportType(this TextDocument doc, int startOffset)
+    {
+        var line = doc.GetLineByOffset(startOffset);
+        var lineNumber = line.LineNumber - 1;
+
+        while (doc.GetText(line.Offset, line.Length) is { } content)
+        {
+            if (content.StartsWith("    \"Type\": \"", StringComparison.OrdinalIgnoreCase))
+                return content.Split("\"")[3];
+
+            lineNumber--;
+            line = doc.GetLineByNumber(lineNumber);
+        }
+
+        return string.Empty;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

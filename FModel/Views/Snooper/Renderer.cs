@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
@@ -9,6 +10,7 @@ using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Atom;
 using CUE4Parse.UE4.Assets.Exports.Component.StaticMesh;
+using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
@@ -79,8 +81,8 @@ public class Renderer : IDisposable
     public void Load(CancellationToken cancellationToken, UObject export)
     {
         ShowLights = false;
-        _saveCameraMode = export is not UWorld;
-        CameraOp.Mode = _saveCameraMode ? UserSettings.Default.CameraMode : Camera.WorldMode.FlyCam;
+        Color = VertexColor.Default;
+        _saveCameraMode = export is not UWorld and not UBlueprintGeneratedClass;
         switch (export)
         {
             case UStaticMesh st:
@@ -98,10 +100,15 @@ public class Renderer : IDisposable
             case UWorld wd:
                 LoadWorld(cancellationToken, wd, Transform.Identity);
                 break;
+            case UBlueprintGeneratedClass bp:
+                LoadJunoWorld(cancellationToken, bp, Transform.Identity);
+                Color = VertexColor.Colors;
+                break;
             case UAtomModel at:
                 LoadAtom(cancellationToken, at);
                 break;
         }
+        CameraOp.Mode = _saveCameraMode ? UserSettings.Default.CameraMode : Camera.WorldMode.FlyCam;
         SetupCamera();
     }
 
@@ -433,6 +440,49 @@ public class Renderer : IDisposable
         Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} ... {length}/{length}");
     }
 
+    private void LoadJunoWorld(CancellationToken cancellationToken, UBlueprintGeneratedClass original, Transform transform)
+    {
+        CameraOp.Setup(new FBox(FVector.ZeroVector, new FVector(0, 10, 10)));
+
+        var length = 0;
+        FPackageIndex[] allNodes = [];
+        IPropertyHolder[] records = [];
+        if (original.TryGetValue(out FPackageIndex simpleConstructionScript, "SimpleConstructionScript") &&
+            simpleConstructionScript.TryLoad(out var scs) && scs.TryGetValue(out allNodes, "AllNodes"))
+            length = allNodes.Length;
+        else if (original.TryGetValue(out FPackageIndex inheritableComponentHandler, "InheritableComponentHandler") &&
+            inheritableComponentHandler.TryLoad(out var ich) && ich.TryGetValue(out records, "Records"))
+            length = records.Length;
+
+        for (var i = 0; i < length; i++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            IPropertyHolder actor;
+            if (allNodes is {Length: > 0} && allNodes[i].TryLoad(out UObject node))
+            {
+                actor = node;
+            }
+            else if (records is {Length: > 0})
+            {
+                actor = records[i];
+            }
+            else continue;
+
+            Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} ... {i}/{length}");
+            WorldMesh(actor, transform, true);
+        }
+        Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} ... {length}/{length}");
+
+        if (Options.Models.Count == 1)
+        {
+            var (guid, model) = Options.Models.First();
+            Options.SelectModel(guid);
+            CameraOp.Setup(model.Box);
+            _saveCameraMode = true;
+        }
+    }
+
     private void WorldCamera(UObject actor)
     {
         if (actor.ExportType != "LevelBounds" || !actor.TryGetValue(out FPackageIndex boxComponent, "BoxComponent") ||
@@ -463,7 +513,7 @@ public class Renderer : IDisposable
         }
     }
 
-    private void WorldMesh(UObject actor, Transform transform)
+    private void WorldMesh(IPropertyHolder actor, Transform transform, bool forceShow = false)
     {
         if (actor.TryGetValue(out FPackageIndex[] instanceComponents, "InstanceComponents"))
         {
@@ -491,7 +541,24 @@ public class Renderer : IDisposable
                 else ProcessMesh(actor, staticMeshComp, m, CalculateTransform(staticMeshComp, transform));
             }
         }
-        else if (actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent", "StaticMesh", "Mesh", "LightMesh") &&
+        else if (actor.TryGetValue(out FPackageIndex componentTemplate, "ComponentTemplate") &&
+                 componentTemplate.TryLoad(out UObject compTemplate))
+        {
+            UGeometryCollection geometryCollection = null;
+            if (!compTemplate.TryGetValue(out UStaticMesh m, "StaticMesh") &&
+                compTemplate.TryGetValue(out FPackageIndex restCollection, "RestCollection") &&
+                restCollection.TryLoad(out geometryCollection) && geometryCollection.RootProxyData is { ProxyMeshes.Length: > 0 } rootProxyData)
+            {
+                rootProxyData.ProxyMeshes[0].TryLoad(out m);
+            }
+
+            if (m is { Materials.Length: > 0 })
+            {
+                OverrideJunoVertexColors(m, geometryCollection);
+                ProcessMesh(actor, compTemplate, m, CalculateTransform(compTemplate, transform), forceShow);
+            }
+        }
+        else if (actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent", "ComponentTemplate", "StaticMesh", "Mesh", "LightMesh") &&
                  staticMeshComponent.TryLoad(out UStaticMeshComponent staticMeshComp) &&
                  staticMeshComp.GetStaticMesh().TryLoad(out UStaticMesh m) && m.Materials.Length > 0)
         {
@@ -499,11 +566,14 @@ public class Renderer : IDisposable
         }
     }
 
-    private void ProcessMesh(UObject actor, UStaticMeshComponent staticMeshComp, UStaticMesh m, Transform transform)
+    private void ProcessMesh(IPropertyHolder actor, UStaticMeshComponent staticMeshComp, UStaticMesh m, Transform transform)
+    {
+        OverrideVertexColors(staticMeshComp, m);
+        ProcessMesh(actor, staticMeshComp, m, transform, false);
+    }
+    private void ProcessMesh(IPropertyHolder actor, UObject staticMeshComp, UStaticMesh m, Transform transform, bool forceShow)
     {
         var guid = m.LightingGuid;
-
-        OverrideVertexColors(staticMeshComp, m);
         if (Options.TryGetModel(guid, out var model))
         {
             model.AddInstance(transform);
@@ -561,6 +631,13 @@ public class Renderer : IDisposable
                 }
             }
 
+            if (forceShow)
+            {
+                foreach (var section in model.Sections)
+                {
+                    section.Show = true;
+                }
+            }
             Options.Models[guid] = model;
         }
 
@@ -576,7 +653,7 @@ public class Renderer : IDisposable
         }
     }
 
-    private Transform CalculateTransform(UStaticMeshComponent staticMeshComp, Transform relation)
+    private Transform CalculateTransform(IPropertyHolder staticMeshComp, Transform relation)
     {
         return new Transform
         {
@@ -585,6 +662,60 @@ public class Renderer : IDisposable
             Rotation = staticMeshComp.GetOrDefault("RelativeRotation", FRotator.ZeroRotator).Quaternion(),
             Scale = staticMeshComp.GetOrDefault("RelativeScale3D", FVector.OneVector)
         };
+    }
+
+    private void OverrideJunoVertexColors(UStaticMesh staticMesh, UGeometryCollection geometryCollection = null)
+    {
+        if (staticMesh.RenderData is not { LODs.Length: > 0 } || staticMesh.RenderData.LODs[0].ColorVertexBuffer == null)
+            return;
+
+        var dico = new Dictionary<byte, FColor>();
+        if (geometryCollection?.Materials is not { Length: > 0 })
+        {
+            var distinctReds = new HashSet<byte>();
+            for (int i = 0; i < staticMesh.RenderData.LODs[0].ColorVertexBuffer.Data.Length; i++)
+            {
+                ref var vertexColor = ref staticMesh.RenderData.LODs[0].ColorVertexBuffer.Data[i];
+                var indexAsByte = vertexColor.R;
+                if (vertexColor.R == 255) indexAsByte = vertexColor.A;
+                distinctReds.Add(indexAsByte);
+            }
+
+            foreach (var indexAsByte in distinctReds)
+            {
+                var path = string.Concat("/JunoAtomAssets/Materials/MI_LegoStandard_", indexAsByte, ".MI_LegoStandard_", indexAsByte);
+                if (!Utils.TryLoadObject(path, out UMaterialInterface unrealMaterial))
+                    continue;
+
+                var parameters = new CMaterialParams2();
+                unrealMaterial.GetParams(parameters, EMaterialFormat.FirstLayer);
+
+                if (!parameters.TryGetLinearColor(out var color, "Color"))
+                    color = FLinearColor.Gray;
+
+                dico[indexAsByte] = color.ToFColor(true);
+            }
+        }
+        else foreach (var material in geometryCollection.Materials)
+        {
+            if (!material.TryLoad(out UMaterialInterface unrealMaterial)) continue;
+
+            var parameters = new CMaterialParams2();
+            unrealMaterial.GetParams(parameters, EMaterialFormat.FirstLayer);
+
+            if (!byte.TryParse(material.Name.SubstringAfterLast("_"), out var indexAsByte))
+                indexAsByte = byte.MaxValue;
+            if (!parameters.TryGetLinearColor(out var color, "Color"))
+                color = FLinearColor.Gray;
+
+            dico[indexAsByte] = color.ToFColor(true);
+        }
+
+        for (int i = 0; i < staticMesh.RenderData.LODs[0].ColorVertexBuffer.Data.Length; i++)
+        {
+            ref var vertexColor = ref staticMesh.RenderData.LODs[0].ColorVertexBuffer.Data[i];
+            vertexColor = dico.TryGetValue(vertexColor.R, out var color) ? color : FColor.Gray;
+        }
     }
 
     private void OverrideVertexColors(UStaticMeshComponent staticMeshComp, UStaticMesh staticMesh)

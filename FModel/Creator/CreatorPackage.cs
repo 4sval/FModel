@@ -112,6 +112,7 @@ public class CreatorPackage : IDisposable
             case "FortConversionControlItemDefinition":
             case "FortAccountBuffCreditItemDefinition":
             case "JunoBuildInstructionsItemDefinition":
+            case "JunoBuildingSetAccountItemDefinition":
             case "FortEventCurrencyItemDefinitionRedir":
             case "FortPersistentResourceItemDefinition":
             case "FortWeaponMeleeOffhandItemDefinition":

@@ -95,5 +95,5 @@ void main()
     fTangent = vec3(transpose(inverse(vInstanceMatrix)) * finalTangent);
     fTexCoords = vTexCoords;
     fTexLayer = vTexLayer;
-    fColor = unpackARGB(int(vColor));
+    fColor = unpackARGB(int(vColor)) / 255.0;
 }
