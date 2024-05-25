@@ -57,6 +57,7 @@ public class CreatorPackage : IDisposable
             case "FortAbilityKit":
             case "FortWorkerType":
             case "RewardGraphToken":
+            case "JunoKnowledgeBundle":
             case "FortBannerTokenType":
             case "FortVariantTokenType":
             case "FortDecoItemDefinition":
@@ -117,6 +118,7 @@ public class CreatorPackage : IDisposable
             case "FortPersistentResourceItemDefinition":
             case "FortWeaponMeleeOffhandItemDefinition":
             case "FortHomebaseBannerIconItemDefinition":
+            case "JunoBuildingPropAccountItemDefinition":
             case "FortCampaignHeroLoadoutItemDefinition":
             case "FortConditionalResourceItemDefinition":
             case "FortChallengeBundleScheduleDefinition":

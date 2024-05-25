@@ -8,7 +8,6 @@ using CUE4Parse_Conversion.Animations;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
-using CUE4Parse.UE4.Assets.Exports.Atom;
 using CUE4Parse.UE4.Assets.Exports.Component.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
 using CUE4Parse.UE4.Assets.Exports.Material;
@@ -103,9 +102,6 @@ public class Renderer : IDisposable
             case UBlueprintGeneratedClass bp:
                 LoadJunoWorld(cancellationToken, bp, Transform.Identity);
                 Color = VertexColor.Colors;
-                break;
-            case UAtomModel at:
-                LoadAtom(cancellationToken, at);
                 break;
         }
         CameraOp.Mode = _saveCameraMode ? UserSettings.Default.CameraMode : Camera.WorldMode.FlyCam;
@@ -677,7 +673,7 @@ public class Renderer : IDisposable
             {
                 ref var vertexColor = ref staticMesh.RenderData.LODs[0].ColorVertexBuffer.Data[i];
                 var indexAsByte = vertexColor.R;
-                if (vertexColor.R == 255) indexAsByte = vertexColor.A;
+                if (indexAsByte == 255) indexAsByte = vertexColor.A;
                 distinctReds.Add(indexAsByte);
             }
 
@@ -755,50 +751,6 @@ public class Renderer : IDisposable
         for (int j = 0; j < additionalWorlds.Length; j++)
             if (Utils.TryLoadObject(additionalWorlds[j].AssetPathName.Text, out UWorld w))
                 LoadWorld(cancellationToken, w, transform);
-    }
-
-    private void LoadAtom(CancellationToken cancellationToken, UAtomModel original)
-    {
-        var length = original.Primitives.Length;
-        for (var i = 0; i < length; i++)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} ... {i}/{length}");
-
-            foreach (var part in original.Primitives[i].Parts)
-            {
-                var fixedPath = part.AtomPrimitive.AssetPathName.Text
-                    .Replace("Primitives", "ProcessedMeshes")
-                    .Replace("VX", "SM_VX");
-                if (!Utils.TryLoadObject(fixedPath, out UStaticMesh staticMesh) || !staticMesh.TryConvert(out var mesh))
-                    continue;
-
-                var guid = staticMesh.LightingGuid;
-                var transform = new Transform
-                {
-                    Position = part.Transforms[0].Translation * Constants.SCALE_DOWN_RATIO,
-                    Rotation = part.Transforms[0].Rotation,
-                    Scale = part.Transforms[0].Scale3D
-                };
-
-                if (Options.TryGetModel(guid, out var model))
-                {
-                    model.AddInstance(transform);
-                }
-                else
-                {
-                    model = new StaticModel(staticMesh, mesh, transform);
-                    foreach (var section in model.Sections)
-                    {
-                        section.Show = true;
-                    }
-                    Options.Models[guid] = model;
-                }
-            }
-        }
-
-        CameraOp.Setup(original.SourceModel.Bounds * Constants.SCALE_DOWN_RATIO);
-        Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} ... {length}/{length}");
     }
 
     public void WindowResized(int width, int height)
