@@ -37,6 +37,7 @@ using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
 using CUE4Parse.GameTypes.UDWN.Encryption.Aes;
 using CUE4Parse.GameTypes.DBD.Encryption.Aes;
+using CUE4Parse.GameTypes.DreamStar.Encryption.Aes;
 using CUE4Parse.GameTypes.PAXDEI.Encryption.Aes;
 using CUE4Parse.GameTypes.NetEase.MAR.Encryption.Aes;
 using CUE4Parse.GameTypes.FSR.Encryption.Aes;
@@ -184,6 +185,7 @@ public class CUE4ParseViewModel : ViewModel
             EGame.GAME_DeadByDaylight => DBDAes.DbDDecrypt,
             EGame.GAME_PaxDei => PaxDeiAes.PaxDeiDecrypt,
             EGame.GAME_3on3FreeStyleRebound => FreeStyleReboundAes.FSRDecrypt,
+            EGame.GAME_DreamStar => DreamStarAes.DreamStarDecrypt,
             _ => Provider.CustomEncryption
         };
 

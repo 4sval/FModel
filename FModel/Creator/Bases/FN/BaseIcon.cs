@@ -31,6 +31,7 @@ public class BaseIcon : UCreator
     {
         // rarity
         if (Object.TryGetValue(out FPackageIndex series, "Series")) GetSeries(series);
+        else if (Object.TryGetValue(out FInstancedStruct[] dataList, "DataList")) GetSeries(dataList);
         else if (Object.TryGetValue(out FStructFallback componentContainer, "ComponentContainer")) GetSeries(componentContainer);
         else GetRarity(Object.GetOrDefault("Rarity", EFortRarity.Uncommon)); // default is uncommon
 
@@ -128,19 +129,20 @@ public class BaseIcon : UCreator
         GetSeries(export);
     }
 
+    private void GetSeries(FInstancedStruct[] s)
+    {
+        if (s.FirstOrDefault(d => d.NonConstStruct?.TryGetValue(out FPackageIndex _, "Series") == true) is { } dl)
+            GetSeries(dl.NonConstStruct?.Get<FPackageIndex>("Series"));
+    }
+
     private void GetSeries(FStructFallback s)
     {
         if (!s.TryGetValue(out FPackageIndex[] components, "Components")) return;
+        if (components.FirstOrDefault(c => c.Name.Contains("Series")) is not { } seriesDef ||
+            !seriesDef.TryLoad(out var seriesDefObj) || seriesDefObj is null ||
+            !seriesDefObj.TryGetValue(out UObject series, "Series")) return;
 
-        foreach (var component in components)
-        {
-            if (!component.TryLoad(out var componentObj) ||
-                !componentObj!.TryGetValue(out UObject componentSeriesDef, "Series"))
-                continue;
-
-            GetSeries(componentSeriesDef);
-            break;
-        }
+        GetSeries(series);
     }
 
     protected void GetSeries(UObject uObject)
