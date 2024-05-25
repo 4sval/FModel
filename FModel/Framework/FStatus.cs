@@ -38,8 +38,8 @@ public class FStatus : ViewModel
         UpdateStatusLabel(label);
     }
 
-    public void UpdateStatusLabel(string label)
+    public void UpdateStatusLabel(string label, string prefix = null)
     {
-        Label = Kind == EStatusKind.Loading ? $"{Kind} {label}".Trim() : Kind.ToString();
+        Label = Kind == EStatusKind.Loading ? $"{prefix ?? Kind.ToString()} {label}".Trim() : Kind.ToString();
     }
 }

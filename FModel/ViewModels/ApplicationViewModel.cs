@@ -1,10 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using CUE4Parse.Compression;
+using CUE4Parse.Encryption.Aes;
+using CUE4Parse.UE4.Objects.Core.Misc;
+using CUE4Parse.UE4.VirtualFileSystem;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
@@ -12,7 +17,6 @@ using FModel.Settings;
 using FModel.ViewModels.Commands;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
-
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
@@ -78,6 +82,24 @@ public class ApplicationViewModel : ViewModel
         }
 
         CUE4Parse = new CUE4ParseViewModel();
+        CUE4Parse.Provider.VfsRegistered += (sender, count) =>
+        {
+            if (sender is not IAesVfsReader reader) return;
+            Status.UpdateStatusLabel($"{count} Archives ({reader.Name})", "Registered");
+            CUE4Parse.GameDirectory.Add(reader);
+        };
+        CUE4Parse.Provider.VfsMounted += (sender, count) =>
+        {
+            if (sender is not IAesVfsReader reader) return;
+            Status.UpdateStatusLabel($"{count:N0} Packages ({reader.Name})", "Mounted");
+            CUE4Parse.GameDirectory.Verify(reader);
+        };
+        CUE4Parse.Provider.VfsUnmounted += (sender, _) =>
+        {
+            if (sender is not IAesVfsReader reader) return;
+            CUE4Parse.GameDirectory.Disable(reader);
+        };
+
         CustomDirectories = new CustomDirectoriesViewModel();
         SettingsView = new SettingsViewModel();
         AesManager = new AesManagerViewModel(CUE4Parse);
@@ -155,7 +177,17 @@ public class ApplicationViewModel : ViewModel
         CUE4Parse.ClearProvider();
         await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
         {
-            CUE4Parse.LoadVfs(cancellationToken, AesManager.AesKeys);
+            // TODO: refactor after release, select updated keys only
+            var aes = AesManager.AesKeys.Select(x =>
+            {
+                cancellationToken.ThrowIfCancellationRequested(); // cancel if needed
+
+                var k = x.Key.Trim();
+                if (k.Length != 66) k = Constants.ZERO_64_CHAR;
+                return new KeyValuePair<FGuid, FAesKey>(x.Guid, new FAesKey(k));
+            });
+
+            CUE4Parse.LoadVfs(aes);
             AesManager.SetAesKeys();
         });
         RaisePropertyChanged(nameof(GameDisplayName));

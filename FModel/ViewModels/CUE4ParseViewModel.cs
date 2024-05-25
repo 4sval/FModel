@@ -41,6 +41,7 @@ using CUE4Parse.GameTypes.DreamStar.Encryption.Aes;
 using CUE4Parse.GameTypes.PAXDEI.Encryption.Aes;
 using CUE4Parse.GameTypes.NetEase.MAR.Encryption.Aes;
 using CUE4Parse.GameTypes.FSR.Encryption.Aes;
+using CUE4Parse.UE4.Objects.Core.Misc;
 using EpicManifestParser;
 using FModel.Creator;
 using FModel.Extensions;
@@ -65,8 +66,6 @@ public class CUE4ParseViewModel : ViewModel
 {
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
     private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
-    private readonly Regex _hiddenArchives = new(@"^(?!global|pakchunk.+(optional|ondemand)\-).+(pak|utoc)$", // should be universal
-        RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
     private readonly Regex _fnLive = new(@"^FortniteGame(/|\\)Content(/|\\)Paks(/|\\)",
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
@@ -161,16 +160,14 @@ public class CUE4ParseViewModel : ViewModel
                 Provider = InternalGameName switch
                 {
                     "StateOfDecay2" => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
-                        new DirectoryInfo[]
-                        {
-                            new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
-                            new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
-                        }, SearchOption.AllDirectories, true, versionContainer),
+                    [
+                        new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
+                        new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
+                    ], SearchOption.AllDirectories, true, versionContainer),
                     "eFootball" => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
-                        new DirectoryInfo[]
-                        {
-                            new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\KONAMI\\eFootball\\ST\\Download")
-                        }, SearchOption.AllDirectories, true, versionContainer),
+                    [
+                        new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\KONAMI\\eFootball\\ST\\Download")
+                    ], SearchOption.AllDirectories, true, versionContainer),
                     _ => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, true, versionContainer)
                 };
 
@@ -279,14 +276,6 @@ public class CUE4ParseViewModel : ViewModel
 
             Provider.Initialize();
             Log.Information($"{Provider.Versions.Game} ({Provider.Versions.Platform}) | Archives: x{Provider.UnloadedVfs.Count} | AES: x{Provider.RequiredKeys.Count}");
-
-            foreach (var vfs in Provider.UnloadedVfs) // push files from the provider to the ui
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                if (!_hiddenArchives.IsMatch(vfs.Name)) continue;
-
-                GameDirectory.Add(vfs);
-            }
         });
     }
 
@@ -294,38 +283,10 @@ public class CUE4ParseViewModel : ViewModel
     /// load virtual files system from GameDirectory
     /// </summary>
     /// <returns></returns>
-    public void LoadVfs(CancellationToken token, IEnumerable<FileItem> aesKeys)
+    public void LoadVfs(IEnumerable<KeyValuePair<FGuid, FAesKey>> aesKeys)
     {
-        GameDirectory.DeactivateAll();
-
-        // load files using UnloadedVfs to include non-encrypted vfs
-        foreach (var key in aesKeys)
-        {
-            token.ThrowIfCancellationRequested(); // cancel if needed
-
-            var k = key.Key.Trim();
-            if (k.Length != 66) k = Constants.ZERO_64_CHAR;
-            Provider.SubmitKey(key.Guid, new FAesKey(k));
-        }
+        Provider.SubmitKeys(aesKeys);
         Provider.PostMount();
-
-        // files in MountedVfs will be enabled
-        foreach (var file in GameDirectory.DirectoryFiles)
-        {
-            token.ThrowIfCancellationRequested();
-            if (Provider.MountedVfs.FirstOrDefault(x => x.Name == file.Name) is not { } vfs)
-            {
-                if (Provider.UnloadedVfs.FirstOrDefault(x => x.Name == file.Name) is IoStoreReader store)
-                    file.FileCount = (int) store.TocResource.Header.TocEntryCount - 1;
-
-                continue;
-            }
-
-            file.IsEnabled = true;
-            file.MountPoint = vfs.MountPoint;
-            file.FileCount = vfs.FileCount;
-        }
-
         InternalGameName = Provider.InternalGameName;
 
         var aesMax = Provider.RequiredKeys.Count + Provider.Keys.Count;

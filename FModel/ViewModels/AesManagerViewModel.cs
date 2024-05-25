@@ -8,7 +8,6 @@ using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
-using Serilog;
 
 namespace FModel.ViewModels;
 
