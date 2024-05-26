@@ -126,7 +126,7 @@ public partial class AvalonEditor
 
         if (!tabItem.ShouldScroll) return;
 
-        var lineNumber = avalonEditor.Document.Text.GetLineNumber(tabItem.ScrollTrigger);
+        var lineNumber = avalonEditor.Document.Text.GetNameLineNumber(tabItem.ScrollTrigger);
         var line = avalonEditor.Document.GetLineByNumber(lineNumber);
         avalonEditor.Select(line.Offset, line.Length);
         avalonEditor.ScrollToLine(lineNumber);
@@ -223,10 +223,9 @@ public partial class AvalonEditor
 
     private void OnTabClose(object sender, EventArgs eventArgs)
     {
-        if (eventArgs is not TabControlViewModel.TabEventArgs e || e.TabToRemove.Document == null)
+        if (eventArgs is not TabControlViewModel.TabEventArgs e || e.TabToRemove.Document?.FileName is not { } fileName)
             return;
 
-        var fileName = e.TabToRemove.Document.FileName;
         if (_savedCarets.ContainsKey(fileName))
             _savedCarets.Remove(fileName);
     }

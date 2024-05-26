@@ -54,8 +54,6 @@ public enum EDiscordRpc
 
 public enum ELoadingMode
 {
-    [Description("Single")]
-    Single,
     [Description("Multiple")]
     Multiple,
     [Description("All")]
@@ -71,7 +69,9 @@ public enum EUpdateMode
     [Description("Stable")]
     Stable,
     [Description("Beta")]
-    Beta
+    Beta,
+    [Description("QA Testing")]
+    Qa
 }
 
 public enum ECompressedAudio

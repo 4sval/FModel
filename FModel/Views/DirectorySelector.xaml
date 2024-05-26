@@ -61,14 +61,27 @@
                     </ComboBox>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="UE Versions" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <ComboBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding UeVersions}" Margin="0 0 0 5"
+                    <ComboBox Grid.Row="1" Grid.Column="2" Margin="0 0 0 5"
                               VerticalAlignment="Center" SelectedItem="{Binding SelectedDirectory.UeVersion, Mode=TwoWay}">
+                        <ComboBox.Style>
+                            <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                                <Setter Property="ItemsSource" Value="{Binding UeGames}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding UseCustomEGames}" Value="True">
+                                        <Setter Property="ItemsSource" Value="{Binding CustomUeGames}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ComboBox.Style>
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
+                    <CheckBox Grid.Row="1" Grid.Column="4" Margin="5 0 0 5" ToolTip="Enable custom UE versions"
+                              IsChecked="{Binding UseCustomEGames, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              BorderBrush="White" Style="{StaticResource HighlightedCheckBox}" />
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Directory" VerticalAlignment="Center" />
                     <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding SelectedDirectory.GameDirectory, Mode=TwoWay}" />
@@ -83,7 +96,9 @@
                         </Viewbox>
                     </Button>
                 </Grid>
+
                 <Separator Style="{StaticResource CustomSeparator}" Tag="ADD UNDETECTED GAME" />
+
                 <Expander ExpandDirection="Down" IsExpanded="False">
                     <Grid MaxWidth="{Binding ActualWidth, ElementName=Hello}">
                         <Grid.RowDefinitions>

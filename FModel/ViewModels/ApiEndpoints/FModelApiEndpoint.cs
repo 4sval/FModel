@@ -116,10 +116,13 @@ public class FModelApiEndpoint : AbstractApiProvider
         return communityDesign;
     }
 
-    public void CheckForUpdates(EUpdateMode updateMode)
+    public void CheckForUpdates(EUpdateMode updateMode, bool launch = false)
     {
-        AutoUpdater.ParseUpdateInfoEvent += ParseUpdateInfoEvent;
-        AutoUpdater.CheckForUpdateEvent += CheckForUpdateEvent;
+        if (launch)
+        {
+            AutoUpdater.ParseUpdateInfoEvent += ParseUpdateInfoEvent;
+            AutoUpdater.CheckForUpdateEvent += CheckForUpdateEvent;
+        }
         AutoUpdater.Start($"https://api.fmodel.app/v1/infos/{updateMode}");
     }
 
@@ -130,9 +133,14 @@ public class FModelApiEndpoint : AbstractApiProvider
         {
             args.UpdateInfo = new UpdateInfoEventArgs
             {
-                CurrentVersion = _infos.Version,
+                CurrentVersion = _infos.Version.SubstringBefore('-'),
                 ChangelogURL = _infos.ChangelogUrl,
-                DownloadURL = _infos.DownloadUrl
+                DownloadURL = _infos.DownloadUrl,
+                Mandatory = new CustomMandatory
+                {
+                    Value = UserSettings.Default.UpdateMode == EUpdateMode.Qa,
+                    CommitHash = _infos.Version.SubstringAfter('+')
+                }
             };
         }
     }
@@ -141,8 +149,10 @@ public class FModelApiEndpoint : AbstractApiProvider
     {
         if (args is { CurrentVersion: { } })
         {
+            var qa = (CustomMandatory) args.Mandatory;
             var currentVersion = new System.Version(args.CurrentVersion);
-            if (currentVersion == args.InstalledVersion)
+            if ((qa.Value && qa.CommitHash == UserSettings.Default.CommitHash) || // qa branch : same commit id
+                (!qa.Value && currentVersion == args.InstalledVersion && args.CurrentVersion == UserSettings.Default.CommitHash)) // stable - beta branch : same version + commit id = version
             {
                 if (UserSettings.Default.ShowChangelog)
                     ShowChangelog(args);
@@ -152,7 +162,7 @@ public class FModelApiEndpoint : AbstractApiProvider
             var downgrade = currentVersion < args.InstalledVersion;
             var messageBox = new MessageBoxModel
             {
-                Text = $"The latest version of FModel {UserSettings.Default.UpdateMode} is {args.CurrentVersion}. You are using version {args.InstalledVersion}. Do you want to {(downgrade ? "downgrade" : "update")} the application now?",
+                Text = $"The latest version of FModel {UserSettings.Default.UpdateMode.GetDescription()} is {(qa.Value ? qa.ShortCommitHash : args.CurrentVersion)}. You are using version {(qa.Value ? UserSettings.Default.ShortCommitHash : args.InstalledVersion)}. Do you want to {(downgrade ? "downgrade" : "update")} the application now?",
                 Caption = $"{(downgrade ? "Downgrade" : "Update")} Available",
                 Icon = MessageBoxImage.Question,
                 Buttons = MessageBoxButtons.YesNo(),
@@ -166,7 +176,8 @@ public class FModelApiEndpoint : AbstractApiProvider
             {
                 if (AutoUpdater.DownloadUpdate(args))
                 {
-                    UserSettings.Default.ShowChangelog = true;
+                    UserSettings.Default.ShowChangelog = currentVersion != args.InstalledVersion;
+                    UserSettings.Default.CommitHash = qa.CommitHash;
                     Application.Current.Shutdown();
                 }
             }
@@ -195,4 +206,10 @@ public class FModelApiEndpoint : AbstractApiProvider
         _applicationView.CUE4Parse.TabControl.SelectedTab.SetDocumentText(response.Content, false, false);
         UserSettings.Default.ShowChangelog = false;
     }
+}
+
+public class CustomMandatory : Mandatory
+{
+    public string CommitHash { get; set; }
+    public string ShortCommitHash => CommitHash[..7];
 }

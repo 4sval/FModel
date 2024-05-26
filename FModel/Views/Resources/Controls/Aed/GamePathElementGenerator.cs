@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using FModel.Extensions;
 using ICSharpCode.AvalonEdit.Rendering;
 
 namespace FModel.Views.Resources.Controls;
@@ -29,8 +30,10 @@ public class GamePathElementGenerator : VisualLineElementGenerator
     public override VisualLineElement ConstructElement(int offset)
     {
         var m = FindMatch(offset);
-        if (!m.Success || m.Index != 0) return null;
+        if (!m.Success || m.Index != 0 ||
+            !m.Groups.TryGetValue("target", out var g)) return null;
 
-        return m.Groups.TryGetValue("target", out var g) ? new GamePathVisualLineText(g.Value, CurrentContext.VisualLine, g.Length + g.Index + 1) : null;
+        var parentExportType = CurrentContext.Document.GetParentExportType(offset);
+        return new GamePathVisualLineText(g.Value, parentExportType, CurrentContext.VisualLine, g.Length + g.Index + 1);
     }
 }

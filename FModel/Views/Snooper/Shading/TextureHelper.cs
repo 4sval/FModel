@@ -16,18 +16,19 @@ public static class TextureHelper
             // R: Whatever (AO / S / E / ...)
             // G: Roughness
             // B: Metallic
+            case "GAMEFACE":
             case "HK_PROJECT":
             case "COSMICSHAKE":
             case "PHOENIX":
             case "ATOMICHEART":
             {
-                texture.SwizzleMask = new []
-                {
+                texture.SwizzleMask =
+                [
                     (int) PixelFormat.Red,
                     (int) PixelFormat.Blue,
                     (int) PixelFormat.Green,
                     (int) PixelFormat.Alpha
-                };
+                ];
                 break;
             }
             // R: Metallic
@@ -37,13 +38,13 @@ public static class TextureHelper
             case "DIVINEKNOCKOUT":
             case "MOONMAN":
             {
-                texture.SwizzleMask = new []
-                {
+                texture.SwizzleMask =
+                [
                     (int) PixelFormat.Blue,
                     (int) PixelFormat.Red,
                     (int) PixelFormat.Green,
                     (int) PixelFormat.Alpha
-                };
+                ];
                 break;
             }
             // R: Roughness
@@ -52,13 +53,13 @@ public static class TextureHelper
             case "CCFF7R":
             case "PJ033":
             {
-                texture.SwizzleMask = new []
-                {
+                texture.SwizzleMask =
+                [
                     (int) PixelFormat.Blue,
                     (int) PixelFormat.Green,
                     (int) PixelFormat.Red,
                     (int) PixelFormat.Alpha
-                };
+                ];
                 break;
             }
         }

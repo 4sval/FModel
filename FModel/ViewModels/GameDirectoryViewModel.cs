@@ -1,8 +1,11 @@
 using FModel.Framework;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Data;
+using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.VirtualFileSystem;
 
@@ -72,6 +75,17 @@ public class FileItem : ViewModel
         Length = length;
     }
 
+    public FileItem(IAesVfsReader reader)
+    {
+        Name = reader.Name;
+        Length = reader.Length;
+        Guid = reader.EncryptionKeyGuid;
+        IsEncrypted = reader.IsEncrypted;
+        IsEnabled = false;
+        Key = string.Empty;
+        FileCount = reader is IoStoreReader storeReader ? (int) storeReader.TocResource.Header.TocEntryCount - 1 : 0;
+    }
+
     public override string ToString()
     {
         return $"{Name} | {Key}";
@@ -84,31 +98,35 @@ public class GameDirectoryViewModel : ViewModel
     public readonly ObservableCollection<FileItem> DirectoryFiles;
     public ICollectionView DirectoryFilesView { get; }
 
+    private readonly Regex _hiddenArchives = new(@"^(?!global|pakchunk.+(optional|ondemand)\-).+(pak|utoc)$", // should be universal
+        RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
     public GameDirectoryViewModel()
     {
         DirectoryFiles = new ObservableCollection<FileItem>();
         DirectoryFilesView = new ListCollectionView(DirectoryFiles) { SortDescriptions = { new SortDescription("Name", ListSortDirection.Ascending) } };
     }
 
-    public void DeactivateAll()
-    {
-        foreach (var file in DirectoryFiles)
-        {
-            file.IsEnabled = false;
-        }
-    }
-
     public void Add(IAesVfsReader reader)
     {
-        Application.Current.Dispatcher.Invoke(() =>
-        {
-            DirectoryFiles.Add(new FileItem(reader.Name, reader.Length)
-            {
-                Guid = reader.EncryptionKeyGuid,
-                IsEncrypted = reader.IsEncrypted,
-                IsEnabled = false,
-                Key = string.Empty
-            });
-        });
+        if (!_hiddenArchives.IsMatch(reader.Name)) return;
+
+        var fileItem = new FileItem(reader);
+        Application.Current.Dispatcher.Invoke(() => DirectoryFiles.Add(fileItem));
+    }
+
+    public void Verify(IAesVfsReader reader)
+    {
+        if (DirectoryFiles.FirstOrDefault(x => x.Name == reader.Name) is not { } file) return;
+
+        file.IsEnabled = true;
+        file.MountPoint = reader.MountPoint;
+        file.FileCount = reader.FileCount;
+    }
+
+    public void Disable(IAesVfsReader reader)
+    {
+        if (DirectoryFiles.FirstOrDefault(x => x.Name == reader.Name) is not { } file) return;
+        file.IsEnabled = false;
     }
 }

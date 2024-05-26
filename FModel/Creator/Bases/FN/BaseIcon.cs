@@ -31,6 +31,8 @@ public class BaseIcon : UCreator
     {
         // rarity
         if (Object.TryGetValue(out FPackageIndex series, "Series")) GetSeries(series);
+        else if (Object.TryGetValue(out FInstancedStruct[] dataList, "DataList")) GetSeries(dataList);
+        else if (Object.TryGetValue(out FStructFallback componentContainer, "ComponentContainer")) GetSeries(componentContainer);
         else GetRarity(Object.GetOrDefault("Rarity", EFortRarity.Uncommon)); // default is uncommon
 
         // preview
@@ -38,7 +40,7 @@ public class BaseIcon : UCreator
             Preview = preview;
         else if (Object.TryGetValue(out FPackageIndex itemDefinition, "HeroDefinition", "WeaponDefinition"))
             Preview = Utils.GetBitmap(itemDefinition);
-        else if (Object.TryGetValue(out FSoftObjectPath largePreview, "LargePreviewImage", "EntryListIcon", "SmallPreviewImage", "ItemDisplayAsset", "LargeIcon", "ToastIcon", "SmallIcon"))
+        else if (Object.TryGetValue(out FSoftObjectPath largePreview, "LargePreviewImage", "EntryListIcon", "SmallPreviewImage", "BundleImage", "ItemDisplayAsset", "LargeIcon", "ToastIcon", "SmallIcon"))
             Preview = Utils.GetBitmap(largePreview);
         else if (Object.TryGetValue(out string s, "LargePreviewImage") && !string.IsNullOrEmpty(s))
             Preview = Utils.GetBitmap(s);
@@ -50,9 +52,9 @@ public class BaseIcon : UCreator
             Preview = Utils.GetBitmap(res);
 
         // text
-        if (Object.TryGetValue(out FText displayName, "DisplayName", "DefaultHeaderText", "UIDisplayName", "EntryName", "EventCalloutTitle"))
+        if (Object.TryGetValue(out FText displayName, "DisplayName", "ItemName", "BundleName", "DefaultHeaderText", "UIDisplayName", "EntryName", "EventCalloutTitle"))
             DisplayName = displayName.Text;
-        if (Object.TryGetValue(out FText description, "Description", "GeneralDescription", "DefaultBodyText", "UIDescription", "UIDisplayDescription", "EntryDescription", "EventCalloutDescription"))
+        if (Object.TryGetValue(out FText description, "Description", "ItemDescription", "BundleDescription", "GeneralDescription", "DefaultBodyText", "UIDescription", "UIDisplayDescription", "EntryDescription", "EventCalloutDescription"))
             Description = description.Text;
         else if (Object.TryGetValue(out FText[] descriptions, "Description"))
             Description = string.Join('\n', descriptions.Select(x => x.Text));
@@ -125,6 +127,22 @@ public class BaseIcon : UCreator
         if (!Utils.TryGetPackageIndexExport(s, out UObject export)) return;
 
         GetSeries(export);
+    }
+
+    private void GetSeries(FInstancedStruct[] s)
+    {
+        if (s.FirstOrDefault(d => d.NonConstStruct?.TryGetValue(out FPackageIndex _, "Series") == true) is { } dl)
+            GetSeries(dl.NonConstStruct?.Get<FPackageIndex>("Series"));
+    }
+
+    private void GetSeries(FStructFallback s)
+    {
+        if (!s.TryGetValue(out FPackageIndex[] components, "Components")) return;
+        if (components.FirstOrDefault(c => c.Name.Contains("Series")) is not { } seriesDef ||
+            !seriesDef.TryLoad(out var seriesDefObj) || seriesDefObj is null ||
+            !seriesDefObj.TryGetValue(out UObject series, "Series")) return;
+
+        GetSeries(series);
     }
 
     protected void GetSeries(UObject uObject)
@@ -200,6 +218,7 @@ public class BaseIcon : UCreator
             1 => 10,
             2 => 8,
             3 => 4,
+            4 => 5,
             _ => 10
         };
 

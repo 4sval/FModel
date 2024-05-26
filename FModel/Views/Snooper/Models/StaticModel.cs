@@ -1,7 +1,10 @@
-﻿using CUE4Parse_Conversion.Meshes.PSK;
+﻿using System.Numerics;
+using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
+using CUE4Parse.UE4.Objects.PhysicsEngine;
 using FModel.Views.Snooper.Shading;
+using OpenTK.Graphics.OpenGL4;
 
 namespace FModel.Views.Snooper.Models;
 
@@ -52,11 +55,49 @@ public class StaticModel : UModel
     public StaticModel(UStaticMesh export, CStaticMesh staticMesh, Transform transform = null)
         : base(export, staticMesh.LODs[LodLevel], export.Materials, staticMesh.LODs[LodLevel].Verts, staticMesh.LODs.Count, transform)
     {
+        if (export.BodySetup.TryLoad(out UBodySetup bodySetup) && bodySetup.AggGeom != null)
+        {
+            foreach (var convexElem in bodySetup.AggGeom.ConvexElems)
+            {
+                Collisions.Add(new Collision(convexElem));
+            }
+            foreach (var sphereElem in bodySetup.AggGeom.SphereElems)
+            {
+                Collisions.Add(new Collision(sphereElem));
+            }
+            foreach (var boxElem in bodySetup.AggGeom.BoxElems)
+            {
+                Collisions.Add(new Collision(boxElem));
+            }
+            foreach (var sphylElem in bodySetup.AggGeom.SphylElems)
+            {
+                Collisions.Add(new Collision(sphylElem));
+            }
+            foreach (var taperedCapsuleElem in bodySetup.AggGeom.TaperedCapsuleElems)
+            {
+                Collisions.Add(new Collision(taperedCapsuleElem));
+            }
+        }
+
         Box = staticMesh.BoundingBox * Constants.SCALE_DOWN_RATIO;
         for (int i = 0; i < export.Sockets.Length; i++)
         {
             if (export.Sockets[i].Load<UStaticMeshSocket>() is not { } socket) continue;
             Sockets.Add(new Socket(socket));
         }
+    }
+
+    public override void RenderCollision(Shader shader)
+    {
+        base.RenderCollision(shader);
+
+        GL.Disable(EnableCap.CullFace);
+        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+        foreach (var collision in Collisions)
+        {
+            collision.Render(shader, Matrix4x4.Identity);
+        }
+        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+        GL.Enable(EnableCap.CullFace);
     }
 }

@@ -8,7 +8,7 @@ in vec3 fPos;
 in vec3 fNormal;
 in vec3 fTangent;
 in vec2 fTexCoords;
-in float fTexLayer;
+flat in int fTexLayer;
 in vec4 fColor;
 
 struct Texture
@@ -89,6 +89,7 @@ uniform Parameters uParameters;
 uniform Light uLights[MAX_LIGHT_COUNT];
 uniform int uNumLights;
 uniform int uUvCount;
+uniform float uOpacity;
 uniform bool uHasVertexColors;
 uniform vec3 uSectionColor;
 uniform bool bVertexColors[6];
@@ -98,7 +99,7 @@ out vec4 FragColor;
 
 int LayerToIndex()
 {
-    return clamp(int(fTexLayer), 0, uUvCount - 1);
+    return clamp(fTexLayer, 0, uUvCount - 1);
 }
 
 vec4 SamplerToVector(sampler2D s, vec2 coords)
@@ -148,6 +149,11 @@ vec3 CalcLight(int layer, vec3 normals, vec3 position, vec3 color, float attenua
 {
     vec3 fLambert = SamplerToVector(uParameters.Diffuse[layer].Sampler).rgb * uParameters.Diffuse[layer].Color.rgb;
     vec3 specular_masks = SamplerToVector(uParameters.SpecularMasks[layer].Sampler).rgb;
+    float cavity = specular_masks.g;
+    if (uParameters.HasAo)
+    {
+        cavity = SamplerToVector(uParameters.Ao.Sampler).g;
+    }
     float roughness = mix(uParameters.RoughnessMin, uParameters.RoughnessMax, specular_masks.b);
 
     vec3 l = normalize(uViewPos - fPos);
@@ -165,7 +171,7 @@ vec3 CalcLight(int layer, vec3 normals, vec3 position, vec3 color, float attenua
 
     vec3 kS = f;
     vec3 kD = 1.0 - kS;
-    kD *= 1.0 - specular_masks.g;
+    kD *= 1.0 - cavity;
 
     vec3 specBrdfNom = ggxDistribution(roughness, nDotH) * geomSmith(roughness, nDotL) * geomSmith(roughness, nDotV) * f;
     float specBrdfDenom = 4.0 * nDotV * nDotL + 0.0001;
@@ -212,30 +218,32 @@ vec3 CalcSpotLight(int layer, vec3 normals, Light light)
 
 void main()
 {
+    int layer = LayerToIndex();
+    vec3 normals = ComputeNormals(layer);
+    vec3 lightDir = normalize(uViewPos - fPos);
+    float diffuseFactor = max(dot(normals, lightDir), 0.4);
+
     if (bVertexColors[1])
     {
-        FragColor = vec4(uSectionColor, 1.0);
+        FragColor = vec4(diffuseFactor * uSectionColor, uOpacity);
     }
     else if (bVertexColors[2] && uHasVertexColors)
     {
-        FragColor = fColor;
+        FragColor = vec4(diffuseFactor * fColor.rgb, fColor.a);
     }
     else if (bVertexColors[3])
     {
-        int layer = LayerToIndex();
-        vec3 normals = ComputeNormals(layer);
-        FragColor = vec4(normals, 1.0);
+        FragColor = vec4(normals, uOpacity);
     }
     else if (bVertexColors[4])
     {
-        FragColor = SamplerToVector(uParameters.Diffuse[0].Sampler);
+        vec4 diffuse = SamplerToVector(uParameters.Diffuse[0].Sampler);
+        FragColor = vec4(diffuseFactor * diffuse.rgb, diffuse.a);
     }
     else
     {
-        int layer = LayerToIndex();
-        vec3 normals = ComputeNormals(layer);
         vec4 diffuse = SamplerToVector(uParameters.Diffuse[layer].Sampler);
-        vec3 result = uParameters.Diffuse[layer].Color.rgb * diffuse.rgb;
+        vec3 result = diffuseFactor * diffuse.rgb * uParameters.Diffuse[layer].Color.rgb;
 
         if (uParameters.HasAo)
         {
@@ -245,7 +253,7 @@ void main()
                 vec3 color = uParameters.Ao.ColorBoost.Color * uParameters.Ao.ColorBoost.Exponent;
                 result = mix(result, result * color, m.b);
             }
-            result = vec3(uParameters.Ao.AmbientOcclusion) * result * m.r;
+            result *= m.r;
         }
 
         vec2 coords = fTexCoords;
@@ -263,7 +271,7 @@ void main()
         }
 
         {
-            result += CalcLight(layer, normals, uViewPos, vec3(0.75), 1.0, false);
+            result += CalcLight(layer, normals, uViewPos, vec3(1.0), 1.0, false);
 
             vec3 lights = vec3(uNumLights > 0 ? 0 : 1);
             for (int i = 0; i < uNumLights; i++)
@@ -281,6 +289,6 @@ void main()
         }
 
         result = result / (result + vec3(1.0));
-        FragColor = vec4(pow(result, vec3(1.0 / 2.2)), 1.0);
+        FragColor = vec4(pow(result, vec3(1.0 / 2.2)), uOpacity);
     }
 }

@@ -36,7 +36,7 @@ public class BaseSeason : UCreator
     {
         _bookXpSchedule = Array.Empty<Page>();
 
-        if (Object.TryGetValue(out FText displayName, "DisplayName"))
+        if (Object.TryGetValue(out FText displayName, "DisplayName", "ItemName"))
             DisplayName = displayName.Text.ToUpperInvariant();
 
         if (Object.TryGetValue(out FStructFallback seasonFirstWinRewards, "SeasonFirstWinRewards") &&

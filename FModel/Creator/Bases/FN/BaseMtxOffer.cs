@@ -17,10 +17,9 @@ public class BaseMtxOffer : UCreator
 
     public override void ParseForInfo()
     {
-        if (Object.TryGetValue(out FStructFallback typeImage, "DetailsImage", "TileImage") &&
-            typeImage.TryGetValue(out FPackageIndex resource, "ResourceObject"))
+        if (Object.TryGetValue(out FSoftObjectPath image, "SoftDetailsImage", "SoftTileImage"))
         {
-            Preview = Utils.GetBitmap(resource);
+            Preview = Utils.GetBitmap(image);
         }
 
         if (Object.TryGetValue(out FStructFallback gradient, "Gradient") &&

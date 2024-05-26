@@ -41,8 +41,6 @@ public partial class App
         {
             UserSettings.Default = JsonConvert.DeserializeObject<UserSettings>(
                 File.ReadAllText(UserSettings.FilePath), JsonNetSerializer.SerializerSettings);
-
-            /*if (UserSettings.Default.ShowChangelog) */MigrateV1Games();
         }
         catch
         {
@@ -52,7 +50,14 @@ public partial class App
         var createMe = false;
         if (!Directory.Exists(UserSettings.Default.OutputDirectory))
         {
-            UserSettings.Default.OutputDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Output");
+            var currentDir = Directory.GetCurrentDirectory();
+            var dirInfo = new DirectoryInfo(currentDir);
+            if (dirInfo.Attributes.HasFlag(FileAttributes.Archive))
+                throw new Exception("FModel cannot be run from an archive file. Please extract it and try again.");
+            if (dirInfo.Attributes.HasFlag(FileAttributes.ReadOnly))
+                throw new Exception("FModel cannot be run from a read-only directory. Please move it to a writable location.");
+
+            UserSettings.Default.OutputDirectory = Path.Combine(currentDir, "Output");
         }
 
         if (!Directory.Exists(UserSettings.Default.RawDataDirectory))
@@ -141,17 +146,6 @@ public partial class App
         }
 
         e.Handled = true;
-    }
-
-    private void MigrateV1Games()
-    {
-        foreach ((var gameDir, var setting) in UserSettings.Default.ManualGames)
-        {
-            if (!Directory.Exists(gameDir)) continue;
-            UserSettings.Default.PerDirectory[gameDir] =
-                DirectorySettings.Default(setting.GameName, setting.GameDirectory, true, setting.OverridedGame, setting.AesKeys?.MainKey);
-        }
-        UserSettings.Default.ManualGames.Clear();
     }
 
     private string GetOperatingSystemProductName()

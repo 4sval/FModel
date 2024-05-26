@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
+using CUE4Parse_Conversion.UEFormat.Enums;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using FModel.Framework;
 using FModel.Services;
@@ -23,6 +25,13 @@ public class SettingsViewModel : ViewModel
     {
         get => _useCustomOutputFolders;
         set => SetProperty(ref _useCustomOutputFolders, value);
+    }
+
+    private bool _useCustomEGames;
+    public bool UseCustomEGames
+    {
+        get => _useCustomEGames;
+        set => SetProperty(ref _useCustomEGames, value);
     }
 
     private EUpdateMode _selectedUpdateMode;
@@ -120,7 +129,12 @@ public class SettingsViewModel : ViewModel
     public EMeshFormat SelectedMeshExportFormat
     {
         get => _selectedMeshExportFormat;
-        set => SetProperty(ref _selectedMeshExportFormat, value);
+        set
+        {
+            SetProperty(ref _selectedMeshExportFormat, value);
+            RaisePropertyChanged(nameof(SocketSettingsEnabled));
+            RaisePropertyChanged(nameof(CompressionSettingsEnabled));
+        }
     }
 
     private ESocketFormat _selectedSocketExportFormat;
@@ -128,6 +142,13 @@ public class SettingsViewModel : ViewModel
     {
         get => _selectedSocketExportFormat;
         set => SetProperty(ref _selectedSocketExportFormat, value);
+    }
+
+    private EFileCompressionFormat _selectedCompressionFormat;
+    public EFileCompressionFormat SelectedCompressionFormat
+    {
+        get => _selectedCompressionFormat;
+        set => SetProperty(ref _selectedCompressionFormat, value);
     }
 
     private ELodFormat _selectedLodExportFormat;
@@ -151,8 +172,12 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedTextureExportFormat, value);
     }
 
+    public bool SocketSettingsEnabled => SelectedMeshExportFormat == EMeshFormat.ActorX;
+    public bool CompressionSettingsEnabled => SelectedMeshExportFormat == EMeshFormat.UEFormat;
+
     public ReadOnlyObservableCollection<EUpdateMode> UpdateModes { get; private set; }
     public ReadOnlyObservableCollection<EGame> UeGames { get; private set; }
+    public ReadOnlyObservableCollection<EGame> CustomUeGames { get; private set; }
     public ReadOnlyObservableCollection<ELanguage> AssetLanguages { get; private set; }
     public ReadOnlyObservableCollection<EAesReload> AesReloads { get; private set; }
     public ReadOnlyObservableCollection<EDiscordRpc> DiscordRpcs { get; private set; }
@@ -160,6 +185,7 @@ public class SettingsViewModel : ViewModel
     public ReadOnlyObservableCollection<EIconStyle> CosmeticStyles { get; private set; }
     public ReadOnlyObservableCollection<EMeshFormat> MeshExportFormats { get; private set; }
     public ReadOnlyObservableCollection<ESocketFormat> SocketExportFormats { get; private set; }
+    public ReadOnlyObservableCollection<EFileCompressionFormat> CompressionFormats { get; private set; }
     public ReadOnlyObservableCollection<ELodFormat> LodExportFormats { get; private set; }
     public ReadOnlyObservableCollection<EMaterialFormat> MaterialExportFormats { get; private set; }
     public ReadOnlyObservableCollection<ETextureFormat> TextureExportFormats { get; private set; }
@@ -183,6 +209,7 @@ public class SettingsViewModel : ViewModel
     private EIconStyle _cosmeticStyleSnapshot;
     private EMeshFormat _meshExportFormatSnapshot;
     private ESocketFormat _socketExportFormatSnapshot;
+    private EFileCompressionFormat _compressionFormatSnapshot;
     private ELodFormat _lodExportFormatSnapshot;
     private EMaterialFormat _materialExportFormatSnapshot;
     private ETextureFormat _textureExportFormatSnapshot;
@@ -223,6 +250,7 @@ public class SettingsViewModel : ViewModel
         _cosmeticStyleSnapshot = UserSettings.Default.CosmeticStyle;
         _meshExportFormatSnapshot = UserSettings.Default.MeshExportFormat;
         _socketExportFormatSnapshot = UserSettings.Default.SocketExportFormat;
+        _compressionFormatSnapshot = UserSettings.Default.CompressionFormat;
         _lodExportFormatSnapshot = UserSettings.Default.LodExportFormat;
         _materialExportFormatSnapshot = UserSettings.Default.MaterialExportFormat;
         _textureExportFormatSnapshot = UserSettings.Default.TextureExportFormat;
@@ -238,14 +266,19 @@ public class SettingsViewModel : ViewModel
         SelectedCosmeticStyle = _cosmeticStyleSnapshot;
         SelectedMeshExportFormat = _meshExportFormatSnapshot;
         SelectedSocketExportFormat = _socketExportFormatSnapshot;
+        SelectedCompressionFormat = _selectedCompressionFormat;
         SelectedLodExportFormat = _lodExportFormatSnapshot;
         SelectedMaterialExportFormat = _materialExportFormatSnapshot;
         SelectedTextureExportFormat = _textureExportFormatSnapshot;
         SelectedAesReload = UserSettings.Default.AesReload;
         SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
 
+        var ueGames = EnumerateUeGames().ToArray();
+        UseCustomEGames = ueGames[1].Contains(SelectedUeGame);
+
         UpdateModes = new ReadOnlyObservableCollection<EUpdateMode>(new ObservableCollection<EUpdateMode>(EnumerateUpdateModes()));
-        UeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(EnumerateUeGames()));
+        UeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(ueGames[0]));
+        CustomUeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(ueGames[1]));
         AssetLanguages = new ReadOnlyObservableCollection<ELanguage>(new ObservableCollection<ELanguage>(EnumerateAssetLanguages()));
         AesReloads = new ReadOnlyObservableCollection<EAesReload>(new ObservableCollection<EAesReload>(EnumerateAesReloads()));
         DiscordRpcs = new ReadOnlyObservableCollection<EDiscordRpc>(new ObservableCollection<EDiscordRpc>(EnumerateDiscordRpcs()));
@@ -253,6 +286,7 @@ public class SettingsViewModel : ViewModel
         CosmeticStyles = new ReadOnlyObservableCollection<EIconStyle>(new ObservableCollection<EIconStyle>(EnumerateCosmeticStyles()));
         MeshExportFormats = new ReadOnlyObservableCollection<EMeshFormat>(new ObservableCollection<EMeshFormat>(EnumerateMeshExportFormat()));
         SocketExportFormats = new ReadOnlyObservableCollection<ESocketFormat>(new ObservableCollection<ESocketFormat>(EnumerateSocketExportFormat()));
+        CompressionFormats = new ReadOnlyObservableCollection<EFileCompressionFormat>(new ObservableCollection<EFileCompressionFormat>(EnumerateCompressionFormat()));
         LodExportFormats = new ReadOnlyObservableCollection<ELodFormat>(new ObservableCollection<ELodFormat>(EnumerateLodExportFormat()));
         MaterialExportFormats = new ReadOnlyObservableCollection<EMaterialFormat>(new ObservableCollection<EMaterialFormat>(EnumerateMaterialExportFormat()));
         TextureExportFormats = new ReadOnlyObservableCollection<ETextureFormat>(new ObservableCollection<ETextureFormat>(EnumerateTextureExportFormat()));
@@ -295,6 +329,7 @@ public class SettingsViewModel : ViewModel
         UserSettings.Default.CosmeticStyle = SelectedCosmeticStyle;
         UserSettings.Default.MeshExportFormat = SelectedMeshExportFormat;
         UserSettings.Default.SocketExportFormat = SelectedSocketExportFormat;
+        UserSettings.Default.CompressionFormat = SelectedCompressionFormat;
         UserSettings.Default.LodExportFormat = SelectedLodExportFormat;
         UserSettings.Default.MaterialExportFormat = SelectedMaterialExportFormat;
         UserSettings.Default.TextureExportFormat = SelectedTextureExportFormat;
@@ -308,11 +343,11 @@ public class SettingsViewModel : ViewModel
     }
 
     private IEnumerable<EUpdateMode> EnumerateUpdateModes() => Enum.GetValues<EUpdateMode>();
-    private IEnumerable<EGame> EnumerateUeGames()
+    private IEnumerable<IGrouping<bool, EGame>> EnumerateUeGames()
         => Enum.GetValues<EGame>()
             .GroupBy(value => (int)value)
             .Select(group => group.First())
-            .OrderBy(value => (int)value == ((int)value & ~0xF));
+            .GroupBy(value => (int)value == ((int)value & ~0xF));
     private IEnumerable<ELanguage> EnumerateAssetLanguages() => Enum.GetValues<ELanguage>();
     private IEnumerable<EAesReload> EnumerateAesReloads() => Enum.GetValues<EAesReload>();
     private IEnumerable<EDiscordRpc> EnumerateDiscordRpcs() => Enum.GetValues<EDiscordRpc>();
@@ -320,6 +355,7 @@ public class SettingsViewModel : ViewModel
     private IEnumerable<EIconStyle> EnumerateCosmeticStyles() => Enum.GetValues<EIconStyle>();
     private IEnumerable<EMeshFormat> EnumerateMeshExportFormat() => Enum.GetValues<EMeshFormat>();
     private IEnumerable<ESocketFormat> EnumerateSocketExportFormat() => Enum.GetValues<ESocketFormat>();
+    private IEnumerable<EFileCompressionFormat> EnumerateCompressionFormat() => Enum.GetValues<EFileCompressionFormat>();
     private IEnumerable<ELodFormat> EnumerateLodExportFormat() => Enum.GetValues<ELodFormat>();
     private IEnumerable<EMaterialFormat> EnumerateMaterialExportFormat() => Enum.GetValues<EMaterialFormat>();
     private IEnumerable<ETextureFormat> EnumerateTextureExportFormat() => Enum.GetValues<ETextureFormat>();

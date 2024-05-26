@@ -57,6 +57,7 @@ public class CreatorPackage : IDisposable
             case "FortAbilityKit":
             case "FortWorkerType":
             case "RewardGraphToken":
+            case "JunoKnowledgeBundle":
             case "FortBannerTokenType":
             case "FortVariantTokenType":
             case "FortDecoItemDefinition":
@@ -64,13 +65,18 @@ public class CreatorPackage : IDisposable
             case "FortAmmoItemDefinition":
             case "FortEmoteItemDefinition":
             case "FortBadgeItemDefinition":
+            case "SparksMicItemDefinition":
             case "FortAwardItemDefinition":
+            case "SparksAuraItemDefinition":
+            case "SparksDrumItemDefinition":
+            case "SparksBassItemDefinition":
             case "FortGadgetItemDefinition":
             case "AthenaCharmItemDefinition":
             case "FortPlaysetItemDefinition":
             case "FortGiftBoxItemDefinition":
             case "FortOutpostItemDefinition":
             case "FortVehicleItemDefinition":
+            case "SparksGuitarItemDefinition":
             case "FortCardPackItemDefinition":
             case "FortDefenderItemDefinition":
             case "FortCurrencyItemDefinition":
@@ -80,43 +86,62 @@ public class CreatorPackage : IDisposable
             case "FortWeaponModItemDefinition":
             case "FortCodeTokenItemDefinition":
             case "FortSchematicItemDefinition":
+            case "SparksKeyboardItemDefinition":
             case "FortWorldMultiItemDefinition":
             case "FortAlterationItemDefinition":
             case "FortExpeditionItemDefinition":
             case "FortIngredientItemDefinition":
+            case "StWFortAccoladeItemDefinition":
             case "FortAccountBuffItemDefinition":
             case "FortWeaponMeleeItemDefinition":
             case "FortPlayerPerksItemDefinition":
             case "FortPlaysetPropItemDefinition":
+            case "JunoRecipeBundleItemDefinition":
             case "FortHomebaseNodeItemDefinition":
             case "FortNeverPersistItemDefinition":
             case "FortPlayerAugmentItemDefinition":
+            case "FortSmartBuildingItemDefinition":
+            case "FortWeaponModItemDefinitionOptic":
             case "RadioContentSourceItemDefinition":
             case "FortPlaysetGrenadeItemDefinition":
+            case "JunoWeaponCreatureItemDefinition":
             case "FortPersonalVehicleItemDefinition":
             case "FortGameplayModifierItemDefinition":
             case "FortHardcoreModifierItemDefinition":
+            case "FortWeaponModItemDefinitionMagazine":
             case "FortConsumableAccountItemDefinition":
             case "FortConversionControlItemDefinition":
             case "FortAccountBuffCreditItemDefinition":
+            case "JunoBuildInstructionsItemDefinition":
+            case "JunoBuildingSetAccountItemDefinition":
             case "FortEventCurrencyItemDefinitionRedir":
             case "FortPersistentResourceItemDefinition":
+            case "FortWeaponMeleeOffhandItemDefinition":
             case "FortHomebaseBannerIconItemDefinition":
+            case "JunoBuildingPropAccountItemDefinition":
             case "FortCampaignHeroLoadoutItemDefinition":
             case "FortConditionalResourceItemDefinition":
             case "FortChallengeBundleScheduleDefinition":
             case "FortWeaponMeleeDualWieldItemDefinition":
             case "FortDailyRewardScheduleTokenDefinition":
             case "FortCreativeWeaponRangedItemDefinition":
+            case "FortVehicleCosmeticsItemDefinition_Body":
+            case "FortVehicleCosmeticsItemDefinition_Skin":
+            case "FortVehicleCosmeticsItemDefinition_Wheel":
             case "FortCreativeRealEstatePlotItemDefinition":
+            case "FortVehicleCosmeticsItemDefinition_Booster":
             case "AthenaDanceItemDefinition_AdHocSquadsJoin_C":
-            case "StWFortAccoladeItemDefinition":
-            case "FortSmartBuildingItemDefinition":
+            case "FortVehicleCosmeticsItemDefinition_DriftSmoke":
+            case "FortVehicleCosmeticsItemDefinition_EngineAudio":
                 creator = _style switch
                 {
                     EIconStyle.Cataba => new BaseCommunity(_object, _style, "Cataba"),
                     _ => new BaseIcon(_object, _style)
                 };
+                return true;
+            case "JunoAthenaCharacterItemOverrideDefinition":
+            case "JunoAthenaDanceItemOverrideDefinition":
+                creator = new BaseJuno(_object, _style);
                 return true;
             case "FortTandemCharacterData":
                 creator = new BaseTandem(_object, _style);
@@ -134,7 +159,7 @@ public class CreatorPackage : IDisposable
                 return true;
             case "MaterialInstanceConstant"
                 when _object.Owner != null &&
-                     (_object.Owner.Name.EndsWith($"/MI_OfferImages/{_object.Name}", StringComparison.OrdinalIgnoreCase) ||
+                     (_object.Owner.Name.Contains("/MI_OfferImages/", StringComparison.OrdinalIgnoreCase) ||
                       _object.Owner.Name.EndsWith($"/RenderSwitch_Materials/{_object.Name}", StringComparison.OrdinalIgnoreCase) ||
                       _object.Owner.Name.EndsWith($"/MI_BPTile/{_object.Name}", StringComparison.OrdinalIgnoreCase)):
                 creator = new BaseMaterialInstance(_object, _style);

@@ -42,6 +42,12 @@ public class Options
         Icons = new Dictionary<string, Texture>
         {
             ["material"] = new ("materialicon"),
+            ["square"] = new ("square"),
+            ["square_off"] = new ("square_off"),
+            ["cube"] = new ("cube"),
+            ["cube_off"] = new ("cube_off"),
+            ["light"] = new ("light"),
+            ["light_off"] = new ("light_off"),
             ["noimage"] = new ("T_Placeholder_Item_Image"),
             ["checker"] = new ("checker"),
             ["pointlight"] = new ("pointlight"),

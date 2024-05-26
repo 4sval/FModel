@@ -38,7 +38,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
     public override async void Execute(LoadingModesViewModel contextViewModel, object parameter)
     {
         if (_applicationView.CUE4Parse.GameDirectory.HasNoFile) return;
-        if (_applicationView.CUE4Parse.Provider.Files.Count <= 0)
+        if (_applicationView.CUE4Parse.Provider.Keys.Count == 0 && _applicationView.CUE4Parse.Provider.RequiredKeys.Count > 0)
         {
             FLogger.Append(ELog.Error, () =>
                 FLogger.Text("An encrypted archive has been found. In order to decrypt it, please specify a working AES encryption key", Constants.WHITE, true));
@@ -61,7 +61,6 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
                 // filter what to show
                 switch (UserSettings.Default.LoadingMode)
                 {
-                    case ELoadingMode.Single:
                     case ELoadingMode.Multiple:
                     {
                         var l = (IList) parameter;

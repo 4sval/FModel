@@ -1,5 +1,7 @@
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
+using CUE4Parse.UE4.Assets.Objects;
+using CUE4Parse.UE4.Objects.UObject;
 using SkiaSharp;
 
 namespace FModel.Creator.Bases.FN;
@@ -14,13 +16,16 @@ public class BaseOfferDisplayData : UCreator
 
     public override void ParseForInfo()
     {
-        if (!Object.TryGetValue(out UMaterialInterface[] presentations, "Presentations"))
+        if (!Object.TryGetValue(out FStructFallback[] contextualPresentations, "ContextualPresentations"))
             return;
 
-        _offerImages = new BaseMaterialInstance[presentations.Length];
+        _offerImages = new BaseMaterialInstance[contextualPresentations.Length];
         for (var i = 0; i < _offerImages.Length; i++)
         {
-            var offerImage = new BaseMaterialInstance(presentations[i], Style);
+            if (!contextualPresentations[i].TryGetValue(out FSoftObjectPath material, "Material") ||
+                !material.TryLoad(out UMaterialInterface presentation)) continue;
+
+            var offerImage = new BaseMaterialInstance(presentation, Style);
             offerImage.ParseForInfo();
             _offerImages[i] = offerImage;
         }

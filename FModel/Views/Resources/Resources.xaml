@@ -80,6 +80,31 @@
         </Setter>
     </Style>
 
+    <Style x:Key="HighlightedCheckBox" TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="White" />
+        <Style.Triggers>
+            <EventTrigger RoutedEvent="CheckBox.Loaded">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ColorAnimation From="YellowGreen"
+                                        To="Goldenrod"
+                                        Storyboard.TargetProperty="BorderBrush.Color"
+                                        AutoReverse="True"
+                                        RepeatBehavior="Forever"
+                                        Duration="0:0:1" />
+                        <ThicknessAnimation From="0"
+                                            To="2"
+                                            Storyboard.TargetProperty="BorderThickness"
+                                            AutoReverse="True"
+                                            RepeatBehavior="Forever"
+                                            Duration="0:0:1" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Style.Triggers>
+    </Style>
+
     <Style x:Key="CustomSeparator" TargetType="Separator" BasedOn="{StaticResource {x:Type Separator}}">
         <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}"/>
         <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
@@ -182,9 +207,6 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
-            </DataTrigger>
-            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}" Value="{x:Static local:ELoadingMode.Single}">
-                <Setter Property="SelectionMode" Value="Single" />
             </DataTrigger>
             <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}" Value="{x:Static local:ELoadingMode.Multiple}">
                 <Setter Property="SelectionMode" Value="Extended" />
@@ -859,7 +881,7 @@
                                         </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Save Model (.psk)" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Models">
+                                <MenuItem Header="Save Model" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Models">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
                                             <Canvas Width="24" Height="24">
@@ -868,7 +890,7 @@
                                         </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Save Animation (.psa)" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Animations">
+                                <MenuItem Header="Save Animation" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Animations">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
                                             <Canvas Width="24" Height="24">

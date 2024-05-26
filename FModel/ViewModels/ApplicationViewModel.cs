@@ -1,3 +1,15 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using CUE4Parse.Compression;
+using CUE4Parse.Encryption.Aes;
+using CUE4Parse.UE4.Objects.Core.Misc;
+using CUE4Parse.UE4.VirtualFileSystem;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
@@ -5,17 +17,9 @@ using FModel.Settings;
 using FModel.ViewModels.Commands;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
-using Ionic.Zip;
-using Oodle.NET;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
-using System.Windows;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
-using OodleCUE4 = CUE4Parse.Compression.Oodle;
 
 namespace FModel.ViewModels;
 
@@ -46,7 +50,7 @@ public class ApplicationViewModel : ViewModel
     public CopyCommand CopyCommand => _copyCommand ??= new CopyCommand(this);
     private CopyCommand _copyCommand;
 
-    public string InitialWindowTitle => $"FModel {UserSettings.Default.UpdateMode}";
+    public string InitialWindowTitle => $"FModel {UserSettings.Default.UpdateMode.GetDescription()}";
     public string GameDisplayName => CUE4Parse.Provider.GameDisplayName ?? "Unknown";
     public string TitleExtra => $"({UserSettings.Default.CurrentDir.UeVersion}){(Build != EBuildKind.Release ? $" ({Build})" : "")}";
 
@@ -56,7 +60,6 @@ public class ApplicationViewModel : ViewModel
     public SettingsViewModel SettingsView { get; }
     public AesManagerViewModel AesManager { get; }
     public AudioPlayerViewModel AudioPlayer { get; }
-    private OodleCompressor _oodle;
 
     public ApplicationViewModel()
     {
@@ -79,6 +82,24 @@ public class ApplicationViewModel : ViewModel
         }
 
         CUE4Parse = new CUE4ParseViewModel();
+        CUE4Parse.Provider.VfsRegistered += (sender, count) =>
+        {
+            if (sender is not IAesVfsReader reader) return;
+            Status.UpdateStatusLabel($"{count} Archives ({reader.Name})", "Registered");
+            CUE4Parse.GameDirectory.Add(reader);
+        };
+        CUE4Parse.Provider.VfsMounted += (sender, count) =>
+        {
+            if (sender is not IAesVfsReader reader) return;
+            Status.UpdateStatusLabel($"{count:N0} Packages ({reader.Name})", "Mounted");
+            CUE4Parse.GameDirectory.Verify(reader);
+        };
+        CUE4Parse.Provider.VfsUnmounted += (sender, _) =>
+        {
+            if (sender is not IAesVfsReader reader) return;
+            CUE4Parse.GameDirectory.Disable(reader);
+        };
+
         CustomDirectories = new CustomDirectoriesViewModel();
         SettingsView = new SettingsViewModel();
         AesManager = new AesManagerViewModel(CUE4Parse);
@@ -156,14 +177,23 @@ public class ApplicationViewModel : ViewModel
         CUE4Parse.ClearProvider();
         await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
         {
-            CUE4Parse.LoadVfs(cancellationToken, AesManager.AesKeys);
-            CUE4Parse.Provider.LoadIniConfigs();
+            // TODO: refactor after release, select updated keys only
+            var aes = AesManager.AesKeys.Select(x =>
+            {
+                cancellationToken.ThrowIfCancellationRequested(); // cancel if needed
+
+                var k = x.Key.Trim();
+                if (k.Length != 66) k = Constants.ZERO_64_CHAR;
+                return new KeyValuePair<FGuid, FAesKey>(x.Guid, new FAesKey(k));
+            });
+
+            CUE4Parse.LoadVfs(aes);
             AesManager.SetAesKeys();
         });
         RaisePropertyChanged(nameof(GameDisplayName));
     }
 
-    public async Task InitVgmStream()
+    public static async Task InitVgmStream()
     {
         var vgmZipFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "vgmstream-win.zip");
         if (File.Exists(vgmZipFilePath)) return;
@@ -171,9 +201,17 @@ public class ApplicationViewModel : ViewModel
         await ApplicationService.ApiEndpointView.DownloadFileAsync("https://github.com/vgmstream/vgmstream/releases/latest/download/vgmstream-win.zip", vgmZipFilePath);
         if (new FileInfo(vgmZipFilePath).Length > 0)
         {
-            var zip = ZipFile.Read(vgmZipFilePath);
-            var zipDir = vgmZipFilePath.SubstringBeforeLast("\\");
-            foreach (var e in zip) e.Extract(zipDir, ExtractExistingFileAction.OverwriteSilently);
+            var zipDir = Path.GetDirectoryName(vgmZipFilePath)!;
+            await using var zipFs = File.OpenRead(vgmZipFilePath);
+            using var zip = new ZipArchive(zipFs, ZipArchiveMode.Read);
+
+            foreach (var entry in zip.Entries)
+            {
+                var entryPath = Path.Combine(zipDir, entry.FullName);
+                await using var entryFs = File.OpenRead(entryPath);
+                await using var entryStream = entry.Open();
+                await entryStream.CopyToAsync(entryFs);
+            }
         }
         else
         {
@@ -181,43 +219,44 @@ public class ApplicationViewModel : ViewModel
         }
     }
 
-    public async Task InitOodle()
+    public static async Task InitImGuiSettings(bool forceDownload)
     {
-        var dataDir = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"));
-        var oodlePath = Path.Combine(dataDir.FullName, OodleCUE4.OODLE_DLL_NAME);
+        var imgui = "imgui.ini";
+        var imguiPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", imgui);
 
-        if (File.Exists(OodleCUE4.OODLE_DLL_NAME))
-        {
-            File.Move(OodleCUE4.OODLE_DLL_NAME, oodlePath, true);
-        }
-        else if (!File.Exists(oodlePath))
-        {
-            var result = await OodleCUE4.DownloadOodleDll(oodlePath);
-            if (!result) return;
-        }
+        if (File.Exists(imgui)) File.Move(imgui, imguiPath, true);
+        if (File.Exists(imguiPath) && !forceDownload) return;
 
-        if (File.Exists("oo2core_8_win64.dll"))
-            File.Delete("oo2core_8_win64.dll");
-
-        _oodle = new OodleCompressor(oodlePath);
-
-        unsafe
-        {
-            OodleCUE4.DecompressFunc = (bufferPtr, bufferSize, outputPtr, outputSize, a, b, c, d, e, f, g, h, i, threadModule) =>
-                _oodle.Decompress(new IntPtr(bufferPtr), bufferSize, new IntPtr(outputPtr), outputSize,
-                    (OodleLZ_FuzzSafe) a, (OodleLZ_CheckCRC) b, (OodleLZ_Verbosity) c, d, e, f, g, h, i, (OodleLZ_Decode_ThreadPhase) threadModule);
-        }
-    }
-
-    public async Task InitImGuiSettings(bool forceDownload)
-    {
-        var imgui = Path.Combine(/*UserSettings.Default.OutputDirectory, ".data", */"imgui.ini");
-        if (File.Exists(imgui) && !forceDownload) return;
-
-        await ApplicationService.ApiEndpointView.DownloadFileAsync("https://cdn.fmodel.app/d/configurations/imgui.ini", imgui);
-        if (new FileInfo(imgui).Length == 0)
+        await ApplicationService.ApiEndpointView.DownloadFileAsync($"https://cdn.fmodel.app/d/configurations/{imgui}", imguiPath);
+        if (new FileInfo(imguiPath).Length == 0)
         {
             FLogger.Append(ELog.Error, () => FLogger.Text("Could not download ImGui settings", Constants.WHITE, true));
         }
+    }
+
+    public static async ValueTask InitOodle()
+    {
+        var oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_DLL_NAME);
+        if (File.Exists(OodleHelper.OODLE_DLL_NAME))
+        {
+            File.Move(OodleHelper.OODLE_DLL_NAME, oodlePath, true);
+        }
+        else if (!File.Exists(oodlePath))
+        {
+            await OodleHelper.DownloadOodleDllAsync(oodlePath);
+        }
+
+        OodleHelper.Initialize(oodlePath);
+    }
+
+    public static async ValueTask InitZlib()
+    {
+        var zlibPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", ZlibHelper.DLL_NAME);
+        if (!File.Exists(zlibPath))
+        {
+            await ZlibHelper.DownloadDllAsync(zlibPath);
+        }
+
+        ZlibHelper.Initialize(zlibPath);
     }
 }
