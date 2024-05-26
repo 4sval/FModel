@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using FModel.Framework;
 using FModel.ViewModels.ApiEndpoints;
 using Newtonsoft.Json;
