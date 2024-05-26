@@ -126,6 +126,7 @@ public static class StringExtensions
                 return content.Split("\"")[3];
 
             lineNumber--;
+            if (lineNumber < 1) break;
             line = doc.GetLineByNumber(lineNumber);
         }
 

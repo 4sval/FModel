@@ -16,6 +16,7 @@ public static class TextureHelper
             // R: Whatever (AO / S / E / ...)
             // G: Roughness
             // B: Metallic
+            case "GAMEFACE":
             case "HK_PROJECT":
             case "COSMICSHAKE":
             case "PHOENIX":
