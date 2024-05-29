@@ -98,7 +98,7 @@ public class Material : IDisposable
             }
 
             {   // ambient occlusion + color boost
-                if (Parameters.TryGetTexture2d(out var original, "M", "AEM", "AO", "Mask") &&
+                if (Parameters.TryGetTexture2d(out var original, "M", "AEM", "AO") &&
                     !original.Name.Equals("T_BlackMask") && options.TryGetTexture(original, false, out var transformed))
                 {
                     HasAo = true;
