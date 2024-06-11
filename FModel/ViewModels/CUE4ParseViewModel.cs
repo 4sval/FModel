@@ -216,26 +216,26 @@ public class CUE4ParseViewModel : ViewModel
                                 ChunkCacheDirectory = cacheDir,
                                 ManifestCacheDirectory = cacheDir,
                                 ChunkBaseUrl = "http://epicgames-download1.akamaized.net/Builds/Fortnite/CloudDir/",
-                                Zlibng = ZlibHelper.Instance
+                                Zlibng = ZlibHelper.Instance,
+                                CacheChunksAsIs = false
                             };
 
                             var startTs = Stopwatch.GetTimestamp();
                             var (manifest, _) = manifestInfo.DownloadAndParseAsync(manifestOptions,
                                 cancellationToken: cancellationToken).GetAwaiter().GetResult();
                             var parseTime = Stopwatch.GetElapsedTime(startTs);
-                            const bool cacheChunksAsIs = false;
 
                             foreach (var fileManifest in manifest.FileManifestList)
                             {
                                 if (fileManifest.FileName.Equals("Cloud/IoStoreOnDemand.ini", StringComparison.OrdinalIgnoreCase))
                                 {
-                                    IoStoreOnDemand.Read(new StreamReader(fileManifest.GetStream(cacheChunksAsIs)));
+                                    IoStoreOnDemand.Read(new StreamReader(fileManifest.GetStream()));
                                     continue;
                                 }
                                 if (!_fnLive.IsMatch(fileManifest.FileName)) continue;
 
-                                p.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream(cacheChunksAsIs)]
-                                    , it => new FStreamArchive(it, manifest.FileManifestList.First(x => x.FileName.Equals(it)).GetStream(cacheChunksAsIs), p.Versions));
+                                p.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream()]
+                                    , it => new FStreamArchive(it, manifest.FileManifestList.First(x => x.FileName.Equals(it)).GetStream(), p.Versions));
                             }
 
                             FLogger.Append(ELog.Information, () =>

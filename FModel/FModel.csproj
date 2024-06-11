@@ -152,7 +152,7 @@
     <PackageReference Include="AvalonEdit" Version="6.3.0.90" />
     <PackageReference Include="CSCore" Version="1.2.1.2" />
     <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
-    <PackageReference Include="EpicManifestParser" Version="2.2.1" />
+    <PackageReference Include="EpicManifestParser" Version="2.3.0" />
     <PackageReference Include="ImGui.NET" Version="1.90.8.1" />
     <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.3.8" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
