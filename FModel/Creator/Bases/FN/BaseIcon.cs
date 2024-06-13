@@ -24,7 +24,7 @@ public class BaseIcon : UCreator
     protected string ShortDescription { get; set; }
     protected string CosmeticSource { get; set; }
     protected Dictionary<string, SKBitmap> UserFacingFlags { get; set; }
-    private FInstancedStruct[] DataList { get; set; }
+    protected FInstancedStruct[] DataList { get; set; }
 
     public BaseIcon(UObject uObject, EIconStyle style) : base(uObject, style) { }
 

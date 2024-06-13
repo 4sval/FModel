@@ -72,6 +72,7 @@ public static class Utils
                     return GetBitmap(material);
                 default:
                 {
+                    if (export.TryGetValue(out FInstancedStruct[] dataList, "DataList")) return GetBitmap(dataList);
                     if (export.TryGetValue(out FSoftObjectPath previewImage, "LargePreviewImage", "SmallPreviewImage")) return GetBitmap(previewImage);
                     if (export.TryGetValue(out string largePreview, "LargePreviewImage")) return GetBitmap(largePreview);
                     if (export.TryGetValue(out FPackageIndex smallPreview, "SmallPreviewImage"))
@@ -88,12 +89,14 @@ public static class Utils
 
     public static SKBitmap GetBitmap(FInstancedStruct[] structs)
     {
-        foreach (var struc in structs)
+        if (structs.FirstOrDefault(d => d.NonConstStruct?.TryGetValue(out FSoftObjectPath p, "LargeIcon") == true && !p.AssetPathName.IsNone) is { NonConstStruct: not null } isl)
         {
-            if (struc.NonConstStruct?.TryGetValue(out FSoftObjectPath icon, "LargeIcon", "Icon") == true && !icon.AssetPathName.IsNone)
-            {
-                return GetBitmap(icon);
-            }
+            return GetBitmap(isl.NonConstStruct.Get<FSoftObjectPath>("LargeIcon"));
+        }
+
+        if (structs.FirstOrDefault(d => d.NonConstStruct?.TryGetValue(out FSoftObjectPath p, "Icon") == true && !p.AssetPathName.IsNone) is { NonConstStruct: not null } isi)
+        {
+            return GetBitmap(isi.NonConstStruct.Get<FSoftObjectPath>("Icon"));
         }
 
         return null;
