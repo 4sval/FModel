@@ -55,7 +55,7 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Output Directory *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Directory where log files, backups and other do-not-delete files will be put in." />
-                    <TextBox x:Name="ImJackedBro" Grid.Row="0" Grid.Column="2" Text="{Binding OutputDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
+                    <TextBox x:Name="ImJackedBro" Grid.Row="0" Grid.Column="2" IsReadOnly="True" Text="{Binding OutputDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
                     <Button Grid.Row="0" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseOutput" Margin="0 0 0 5" />
 
                     <CheckBox Grid.Row="0" Grid.Column="6" Margin="5 0 0 5" ToolTip="Customize the directory of more output folders"
@@ -79,19 +79,19 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="Export Raw Data Directory *" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
-                        <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding RawDataDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
+                        <TextBox Grid.Row="0" Grid.Column="2" IsReadOnly="True" Text="{Binding RawDataDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
                         <Button Grid.Row="0" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseRawData" Margin="0 0 0 5" />
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Save Properties Directory *" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
-                        <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding PropertiesDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
+                        <TextBox Grid.Row="1" Grid.Column="2" IsReadOnly="True" Text="{Binding PropertiesDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
                         <Button Grid.Row="1" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseProperties" Margin="0 0 0 5" />
 
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="Save Texture Directory *" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
-                        <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding TextureDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
+                        <TextBox Grid.Row="2" Grid.Column="2" IsReadOnly="True" Text="{Binding TextureDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
                         <Button Grid.Row="2" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseTexture" Margin="0 0 0 5" />
 
                         <TextBlock Grid.Row="3" Grid.Column="0" Text="Save Audio Directory *" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
-                        <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding AudioDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
+                        <TextBox Grid.Row="3" Grid.Column="2" IsReadOnly="True" Text="{Binding AudioDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
                         <Button Grid.Row="3" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseAudio" Margin="0 0 0 5" />
                     </Grid>
 
@@ -118,7 +118,7 @@
                     <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="GAME"></Separator>
 
                     <TextBlock Grid.Row="5" Grid.Column="0" Text="Archive Directory *" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <TextBox Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" Text="{Binding GameDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
+                    <TextBox Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" IsReadOnly="True" Text="{Binding GameDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
                     <Button Grid.Row="5" Grid.Column="6" Content="..." HorizontalAlignment="Right" Click="OnBrowseDirectories" Margin="0 0 0 5" />
 
                     <TextBlock Grid.Row="6" Grid.Column="0" Text="UE Versions *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the UE version to use when parsing packages" />
@@ -342,7 +342,7 @@
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Model Export Directory *" VerticalAlignment="Center" Margin="0 0 0 5"
                                ToolTip="This will be the directory where Meshes, Materials and Animations will be exported" />
-                    <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding ModelDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
+                    <TextBox Grid.Row="0" Grid.Column="2" IsReadOnly="True" Text="{Binding ModelDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
                     <Button Grid.Row="0" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseModels" Margin="0 0 0 5" />
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Mesh Format" VerticalAlignment="Center" Margin="0 0 0 5"/>

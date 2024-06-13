@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using FModel.Framework;
@@ -12,7 +12,7 @@ public class ApiEndpointViewModel
     private readonly RestClient _client = new (new RestClientOptions
     {
         UserAgent = $"FModel/{Constants.APP_VERSION}",
-        MaxTimeout = 3 * 1000
+        Timeout = TimeSpan.FromSeconds(5)
     }, configureSerialization: s => s.UseSerializer<JsonNetSerializer>());
 
     public FortniteApiEndpoint FortniteApi { get; }

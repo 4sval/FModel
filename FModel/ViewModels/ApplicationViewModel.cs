@@ -208,7 +208,7 @@ public class ApplicationViewModel : ViewModel
             foreach (var entry in zip.Entries)
             {
                 var entryPath = Path.Combine(zipDir, entry.FullName);
-                await using var entryFs = File.OpenRead(entryPath);
+                await using var entryFs = File.Create(entryPath);
                 await using var entryStream = entry.Open();
                 await entryStream.CopyToAsync(entryFs);
             }

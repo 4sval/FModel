@@ -22,6 +22,7 @@ public static class TextureHelper
             case "PHOENIX":
             case "ATOMICHEART":
             case "MULTIVERSUS":
+            case "BODYCAM":
             {
                 texture.SwizzleMask =
                 [
