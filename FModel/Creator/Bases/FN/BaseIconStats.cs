@@ -87,16 +87,16 @@ public class BaseIconStats : BaseIcon
             if (weaponRowValue.TryGetValue(out int bpc, "BulletsPerCartridge"))
             {
                 var multiplier = bpc != 0f ? bpc : 1;
+                weaponRowValue.TryGetValue(out float dmgCritical, "DamageZone_Critical");
                 if (weaponRowValue.TryGetValue(out float dmgPb, "DmgPB") && dmgPb != 0f)
                 {
                     _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "35D04D1B45737BEA25B69686D9E085B9", "Damage"), dmgPb * multiplier, 200));
                 }
-
-                if (weaponRowValue.TryGetValue(out float mdpc, "MaxDamagePerCartridge") && mdpc >= 0f)
+                if (weaponRowValue.TryGetValue(out float mdpc, "MaxDamagePerCartridge") && mdpc > 0f && dmgPb * dmgCritical * multiplier > mdpc)
                 {
                     _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "0DEF2455463B008C4499FEA03D149EDF", "Headshot Damage"), mdpc, 200));
                 }
-                else if (weaponRowValue.TryGetValue(out float dmgCritical, "DamageZone_Critical"))
+                else
                 {
                     _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "0DEF2455463B008C4499FEA03D149EDF", "Headshot Damage"), dmgPb * dmgCritical * multiplier, 200));
                 }
