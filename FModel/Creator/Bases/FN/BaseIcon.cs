@@ -24,21 +24,29 @@ public class BaseIcon : UCreator
     protected string ShortDescription { get; set; }
     protected string CosmeticSource { get; set; }
     protected Dictionary<string, SKBitmap> UserFacingFlags { get; set; }
+    private FInstancedStruct[] DataList { get; set; }
 
     public BaseIcon(UObject uObject, EIconStyle style) : base(uObject, style) { }
 
     public void ParseForReward(bool isUsingDisplayAsset)
     {
+        if (Object.TryGetValue(out FInstancedStruct[] dataList, "DataList"))
+        {
+            DataList = dataList;
+            GetSeries(DataList);
+        }
+
         // rarity
         if (Object.TryGetValue(out FPackageIndex series, "Series")) GetSeries(series);
-        else if (Object.TryGetValue(out FInstancedStruct[] dataList, "DataList")) GetSeries(dataList);
         else if (Object.TryGetValue(out FStructFallback componentContainer, "ComponentContainer")) GetSeries(componentContainer);
         else GetRarity(Object.GetOrDefault("Rarity", EFortRarity.Uncommon)); // default is uncommon
 
         // preview
         if (isUsingDisplayAsset && Utils.TryGetDisplayAsset(Object, out var preview))
             Preview = preview;
-        else if (Object.TryGetValue(out FPackageIndex itemDefinition, "HeroDefinition", "WeaponDefinition"))
+        else if (Preview == null)
+            Preview = Utils.GetBitmap(DataList);
+        else if (Preview == null && Object.TryGetValue(out FPackageIndex itemDefinition, "HeroDefinition", "WeaponDefinition"))
             Preview = Utils.GetBitmap(itemDefinition);
         else if (Object.TryGetValue(out FSoftObjectPath largePreview, "LargePreviewImage", "EntryListIcon", "SmallPreviewImage", "BundleImage", "ItemDisplayAsset", "LargeIcon", "ToastIcon", "SmallIcon"))
             Preview = Utils.GetBitmap(largePreview);

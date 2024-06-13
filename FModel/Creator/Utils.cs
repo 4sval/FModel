@@ -11,6 +11,7 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Textures;
+using CUE4Parse.UE4.Assets.Objects;
 using FModel.Framework;
 using FModel.Extensions;
 using FModel.Services;
@@ -83,6 +84,19 @@ public static class Utils
                 }
             }
         }
+    }
+
+    public static SKBitmap GetBitmap(FInstancedStruct[] structs)
+    {
+        foreach (var struc in structs)
+        {
+            if (struc.NonConstStruct?.TryGetValue(out FSoftObjectPath icon, "LargeIcon", "Icon") == true && !icon.AssetPathName.IsNone)
+            {
+                return GetBitmap(icon);
+            }
+        }
+
+        return null;
     }
 
     public static SKBitmap GetBitmap(UMaterialInstanceConstant material)
