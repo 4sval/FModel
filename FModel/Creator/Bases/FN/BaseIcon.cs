@@ -24,18 +24,11 @@ public class BaseIcon : UCreator
     protected string ShortDescription { get; set; }
     protected string CosmeticSource { get; set; }
     protected Dictionary<string, SKBitmap> UserFacingFlags { get; set; }
-    protected FInstancedStruct[] DataList { get; set; }
 
     public BaseIcon(UObject uObject, EIconStyle style) : base(uObject, style) { }
 
     public void ParseForReward(bool isUsingDisplayAsset)
     {
-        if (Object.TryGetValue(out FInstancedStruct[] dataList, "DataList"))
-        {
-            DataList = dataList;
-            GetSeries(DataList);
-        }
-
         // rarity
         if (Object.TryGetValue(out FPackageIndex series, "Series")) GetSeries(series);
         else if (Object.TryGetValue(out FStructFallback componentContainer, "ComponentContainer")) GetSeries(componentContainer);
@@ -44,9 +37,7 @@ public class BaseIcon : UCreator
         // preview
         if (isUsingDisplayAsset && Utils.TryGetDisplayAsset(Object, out var preview))
             Preview = preview;
-        else if (Preview == null)
-            Preview = Utils.GetBitmap(DataList);
-        else if (Preview == null && Object.TryGetValue(out FPackageIndex itemDefinition, "HeroDefinition", "WeaponDefinition"))
+        else if (Object.TryGetValue(out FPackageIndex itemDefinition, "HeroDefinition", "WeaponDefinition"))
             Preview = Utils.GetBitmap(itemDefinition);
         else if (Object.TryGetValue(out FSoftObjectPath largePreview, "LargePreviewImage", "EntryListIcon", "SmallPreviewImage", "BundleImage", "ItemDisplayAsset", "LargeIcon", "ToastIcon", "SmallIcon"))
             Preview = Utils.GetBitmap(largePreview);
@@ -58,6 +49,12 @@ public class BaseIcon : UCreator
             Preview = Utils.GetBitmap(materialInstancePreview);
         else if (Object.TryGetValue(out FStructFallback brush, "IconBrush") && brush.TryGetValue(out UTexture2D res, "ResourceObject"))
             Preview = Utils.GetBitmap(res);
+
+        if (Object.TryGetValue(out FInstancedStruct[] dataList, "DataList"))
+        {
+            GetSeries(dataList);
+            Preview ??= Utils.GetBitmap(dataList);
+        }
 
         // text
         if (Object.TryGetValue(out FText displayName, "DisplayName", "ItemName", "BundleName", "DefaultHeaderText", "UIDisplayName", "EntryName", "EventCalloutTitle"))
