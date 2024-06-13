@@ -29,17 +29,17 @@ public class Texture : IDisposable
     public int Height;
 
     private const int DisabledChannel = (int)BlendingFactor.Zero;
-    private readonly bool[] _values = { true, true, true, true };
-    private readonly string[] _labels = { "R", "G", "B", "A" };
+    private readonly bool[] _values = [true, true, true, true];
+    private readonly string[] _labels = ["R", "G", "B", "A"];
     public int[] SwizzleMask =
-    {
+    [
         (int) PixelFormat.Red,
         (int) PixelFormat.Green,
         (int) PixelFormat.Blue,
         (int) PixelFormat.Alpha
-    };
+    ];
 
-    public Texture(TextureType type)
+    private Texture(TextureType type)
     {
         _handle = GL.GenTexture();
         _type = type;

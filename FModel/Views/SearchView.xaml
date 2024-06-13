@@ -200,7 +200,7 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Save Model (.psk)" Command="{Binding DataContext.RightClickMenuCommand}">
+                            <MenuItem Header="Save Model" Command="{Binding DataContext.RightClickMenuCommand}">
                                 <MenuItem.CommandParameter>
                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                         <Binding Source="Assets_Save_Models" />
@@ -215,7 +215,7 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Save Animation (.psa)" Command="{Binding DataContext.RightClickMenuCommand}">
+                            <MenuItem Header="Save Animation" Command="{Binding DataContext.RightClickMenuCommand}">
                                 <MenuItem.CommandParameter>
                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                         <Binding Source="Assets_Save_Animations" />

@@ -11,8 +11,21 @@ public static class EnumExtensions
     {
         var fi = value.GetType().GetField(value.ToString());
         if (fi == null) return $"{value} ({value:D})";
+
         var attributes = (DescriptionAttribute[]) fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
-        return attributes.Length > 0 ? attributes[0].Description : $"{value} ({value:D})";
+        if (attributes.Length > 0) return attributes[0].Description;
+
+
+        var suffix = $"{value:D}";
+        var current = Convert.ToInt32(suffix);
+        var target = current & ~0xF;
+        if (current != target)
+        {
+            var values = Enum.GetValues(value.GetType());
+            var index = Array.IndexOf(values, value);
+            suffix = values.GetValue(index - (current - target))?.ToString();
+        }
+        return $"{value} ({suffix})";
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

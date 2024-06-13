@@ -10,28 +10,38 @@ namespace FModel.Views.Snooper.Shading;
 public class Shader : IDisposable
 {
     private readonly int _handle;
+    private readonly int _vHandle;
+    private readonly int _fHandle;
     private readonly Dictionary<string, int> _uniformsLocation = new ();
 
     public Shader() : this("default") {}
 
-    public Shader(string name)
+    public Shader(string name1, string name2 = null)
     {
         _handle = GL.CreateProgram();
+        _vHandle = LoadShader(ShaderType.VertexShader, $"{name1}.vert");
+        _fHandle = LoadShader(ShaderType.FragmentShader, $"{name2 ?? name1}.frag");
+        Attach();
+    }
 
-        var v = LoadShader(ShaderType.VertexShader, $"{name}.vert");
-        var f = LoadShader(ShaderType.FragmentShader, $"{name}.frag");
-        GL.AttachShader(_handle, v);
-        GL.AttachShader(_handle, f);
+    private void Attach()
+    {
+        GL.AttachShader(_handle, _vHandle);
+        GL.AttachShader(_handle, _fHandle);
         GL.LinkProgram(_handle);
         GL.GetProgram(_handle, GetProgramParameterName.LinkStatus, out var status);
         if (status == 0)
         {
             throw new Exception($"Program failed to link with error: {GL.GetProgramInfoLog(_handle)}");
         }
-        GL.DetachShader(_handle, v);
-        GL.DetachShader(_handle, f);
-        GL.DeleteShader(v);
-        GL.DeleteShader(f);
+    }
+
+    private void Detach()
+    {
+        GL.DetachShader(_handle, _vHandle);
+        GL.DetachShader(_handle, _fHandle);
+        GL.DeleteShader(_vHandle);
+        GL.DeleteShader(_fHandle);
     }
 
     private int LoadShader(ShaderType type, string file)
@@ -130,6 +140,7 @@ public class Shader : IDisposable
 
     public void Dispose()
     {
+        Detach();
         GL.DeleteProgram(_handle);
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using FModel.Framework;
 using FModel.ViewModels.ApiEndpoints;
 using Newtonsoft.Json;
@@ -17,7 +17,7 @@ public class EndpointSettings : ViewModel
                 return new EndpointSettings[]
                 {
                     new("https://fortnitecentral.genxgames.gg/api/v1/aes", "$.['mainKey','dynamicKeys']"),
-                    new("https://fortnitecentral.genxgames.gg/api/v1/mappings", "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']")
+                    new("https://fortnitecentral.genxgames.gg/api/v1/mappings", "$.[0].['url','fileName']") // just get the first available, not just oodle! (Unfortunately not default except when resetting settings)
                 };
             default:
                 return new EndpointSettings[] { new(), new() };

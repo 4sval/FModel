@@ -24,11 +24,18 @@ public class BaseIcon : UCreator
     protected string ShortDescription { get; set; }
     protected string CosmeticSource { get; set; }
     protected Dictionary<string, SKBitmap> UserFacingFlags { get; set; }
+    protected FInstancedStruct[] DataList { get; set; }
 
     public BaseIcon(UObject uObject, EIconStyle style) : base(uObject, style) { }
 
     public void ParseForReward(bool isUsingDisplayAsset)
     {
+        if (Object.TryGetValue(out FInstancedStruct[] dataList, "DataList"))
+        {
+            DataList = dataList;
+            GetSeries(DataList);
+        }
+
         // rarity
         if (Object.TryGetValue(out FPackageIndex series, "Series")) GetSeries(series);
         else if (Object.TryGetValue(out FStructFallback componentContainer, "ComponentContainer")) GetSeries(componentContainer);
@@ -37,9 +44,11 @@ public class BaseIcon : UCreator
         // preview
         if (isUsingDisplayAsset && Utils.TryGetDisplayAsset(Object, out var preview))
             Preview = preview;
-        else if (Object.TryGetValue(out FPackageIndex itemDefinition, "HeroDefinition", "WeaponDefinition"))
+        else if (Preview == null)
+            Preview = Utils.GetBitmap(DataList);
+        else if (Preview == null && Object.TryGetValue(out FPackageIndex itemDefinition, "HeroDefinition", "WeaponDefinition"))
             Preview = Utils.GetBitmap(itemDefinition);
-        else if (Object.TryGetValue(out FSoftObjectPath largePreview, "LargePreviewImage", "EntryListIcon", "SmallPreviewImage", "ItemDisplayAsset", "LargeIcon", "ToastIcon", "SmallIcon"))
+        else if (Object.TryGetValue(out FSoftObjectPath largePreview, "LargePreviewImage", "EntryListIcon", "SmallPreviewImage", "BundleImage", "ItemDisplayAsset", "LargeIcon", "ToastIcon", "SmallIcon"))
             Preview = Utils.GetBitmap(largePreview);
         else if (Object.TryGetValue(out string s, "LargePreviewImage") && !string.IsNullOrEmpty(s))
             Preview = Utils.GetBitmap(s);
@@ -51,9 +60,9 @@ public class BaseIcon : UCreator
             Preview = Utils.GetBitmap(res);
 
         // text
-        if (Object.TryGetValue(out FText displayName, "DisplayName", "ItemName", "DefaultHeaderText", "UIDisplayName", "EntryName", "EventCalloutTitle"))
+        if (Object.TryGetValue(out FText displayName, "DisplayName", "ItemName", "BundleName", "DefaultHeaderText", "UIDisplayName", "EntryName", "EventCalloutTitle"))
             DisplayName = displayName.Text;
-        if (Object.TryGetValue(out FText description, "Description", "ItemDescription", "GeneralDescription", "DefaultBodyText", "UIDescription", "UIDisplayDescription", "EntryDescription", "EventCalloutDescription"))
+        if (Object.TryGetValue(out FText description, "Description", "ItemDescription", "BundleDescription", "GeneralDescription", "DefaultBodyText", "UIDescription", "UIDisplayDescription", "EntryDescription", "EventCalloutDescription"))
             Description = description.Text;
         else if (Object.TryGetValue(out FText[] descriptions, "Description"))
             Description = string.Join('\n', descriptions.Select(x => x.Text));
@@ -128,19 +137,20 @@ public class BaseIcon : UCreator
         GetSeries(export);
     }
 
+    private void GetSeries(FInstancedStruct[] s)
+    {
+        if (s.FirstOrDefault(d => d.NonConstStruct?.TryGetValue(out FPackageIndex _, "Series") == true) is { } dl)
+            GetSeries(dl.NonConstStruct?.Get<FPackageIndex>("Series"));
+    }
+
     private void GetSeries(FStructFallback s)
     {
         if (!s.TryGetValue(out FPackageIndex[] components, "Components")) return;
+        if (components.FirstOrDefault(c => c.Name.Contains("Series")) is not { } seriesDef ||
+            !seriesDef.TryLoad(out var seriesDefObj) || seriesDefObj is null ||
+            !seriesDefObj.TryGetValue(out UObject series, "Series")) return;
 
-        foreach (var component in components)
-        {
-            if (!component.TryLoad(out var componentObj) ||
-                !componentObj!.TryGetValue(out UObject componentSeriesDef, "Series"))
-                continue;
-
-            GetSeries(componentSeriesDef);
-            break;
-        }
+        GetSeries(series);
     }
 
     protected void GetSeries(UObject uObject)

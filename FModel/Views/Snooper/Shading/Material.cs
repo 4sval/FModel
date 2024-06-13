@@ -76,12 +76,12 @@ public class Material : IDisposable
 
         if (uvCount < 1 || Parameters.IsNull)
         {
-            Diffuse = new[] { options.Icons["checker"] };
-            Normals = new[] { new Texture(new FLinearColor(0.498f, 0.498f, 0.996f, 1f)) };
-            SpecularMasks = new [] { new Texture(new FLinearColor(1f, 0.5f, 0.5f, 1f)) };
+            Diffuse = [new Texture(FLinearColor.Gray)];
+            Normals = [new Texture(new FLinearColor(0.5f, 0.5f, 1f, 1f))];
+            SpecularMasks = [new Texture(new FLinearColor(1f, 0.5f, 0.5f, 1f))];
             Emissive = new Texture[1];
-            DiffuseColor = new[] { Vector4.One };
-            EmissiveColor = new[] { Vector4.One };
+            DiffuseColor = [Vector4.One];
+            EmissiveColor = [Vector4.One];
         }
         else
         {
@@ -98,11 +98,11 @@ public class Material : IDisposable
             }
 
             {   // ambient occlusion + color boost
-                if (Parameters.TryGetTexture2d(out var original, "M", "AEM", "AO", "Mask") &&
+                if (Parameters.TryGetTexture2d(out var original, "M", "AEM", "AO") &&
                     !original.Name.Equals("T_BlackMask") && options.TryGetTexture(original, false, out var transformed))
                 {
                     HasAo = true;
-                    Ao = new AoParams { Texture = transformed, AmbientOcclusion = 0.7f };
+                    Ao = new AoParams { Texture = transformed };
                     if (Parameters.TryGetLinearColor(out var l, "Skin Boost Color And Exponent"))
                     {
                         Ao.HasColorBoost = true;
@@ -242,7 +242,6 @@ public class Material : IDisposable
         shader.SetUniform("uParameters.Ao.HasColorBoost", Ao.HasColorBoost);
         shader.SetUniform("uParameters.Ao.ColorBoost.Color", Ao.ColorBoost.Color);
         shader.SetUniform("uParameters.Ao.ColorBoost.Exponent", Ao.ColorBoost.Exponent);
-        shader.SetUniform("uParameters.Ao.AmbientOcclusion", Ao.AmbientOcclusion);
         shader.SetUniform("uParameters.HasAo", HasAo);
 
         shader.SetUniform("uParameters.EmissiveRegion", EmissiveRegion);
@@ -269,18 +268,13 @@ public class Material : IDisposable
             ImGui.DragFloat("", ref EmissiveMult, _step, _zero, _infinite, _mult, _clamp);
             ImGui.PopID();
 
-            if (HasAo)
+            if (HasAo && Ao.HasColorBoost)
             {
-                SnimGui.Layout("Ambient Occlusion");ImGui.PushID(id++);
-                ImGui.DragFloat("", ref Ao.AmbientOcclusion, _step, _zero, 1.0f, _mult, _clamp);ImGui.PopID();
-                if (Ao.HasColorBoost)
-                {
-                    SnimGui.Layout("Color Boost");ImGui.PushID(id++);
-                    ImGui.ColorEdit3("", ref Ao.ColorBoost.Color);ImGui.PopID();
-                    SnimGui.Layout("Color Boost Exponent");ImGui.PushID(id++);
-                    ImGui.DragFloat("", ref Ao.ColorBoost.Exponent, _step, _zero, _infinite, _mult, _clamp);
-                    ImGui.PopID();
-                }
+                SnimGui.Layout("Color Boost");ImGui.PushID(id++);
+                ImGui.ColorEdit3("", ref Ao.ColorBoost.Color);ImGui.PopID();
+                SnimGui.Layout("Color Boost Exponent");ImGui.PushID(id++);
+                ImGui.DragFloat("", ref Ao.ColorBoost.Exponent, _step, _zero, _infinite, _mult, _clamp);
+                ImGui.PopID();
             }
             ImGui.EndTable();
         }
@@ -401,7 +395,6 @@ public class Material : IDisposable
 public struct AoParams
 {
     public Texture Texture;
-    public float AmbientOcclusion;
 
     public Boost ColorBoost;
     public bool HasColorBoost;

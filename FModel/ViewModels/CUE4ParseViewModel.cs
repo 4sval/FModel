@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -8,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using AdonisUI.Controls;
+using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Vfs;
@@ -17,13 +19,14 @@ using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
-using CUE4Parse.UE4.Assets.Exports.Verse;
 using CUE4Parse.UE4.Assets.Exports.Sound;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
+using CUE4Parse.UE4.Assets.Exports.Verse;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Localization;
+using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Readers;
@@ -32,8 +35,14 @@ using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
-using CUE4Parse.UE4.Objects.Core.Serialization;
-using EpicManifestParser.Objects;
+using CUE4Parse.GameTypes.UDWN.Encryption.Aes;
+using CUE4Parse.GameTypes.DBD.Encryption.Aes;
+using CUE4Parse.GameTypes.DreamStar.Encryption.Aes;
+using CUE4Parse.GameTypes.PAXDEI.Encryption.Aes;
+using CUE4Parse.GameTypes.NetEase.MAR.Encryption.Aes;
+using CUE4Parse.GameTypes.FSR.Encryption.Aes;
+using CUE4Parse.UE4.Objects.Core.Misc;
+using EpicManifestParser;
 using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;
@@ -57,8 +66,6 @@ public class CUE4ParseViewModel : ViewModel
 {
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
     private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
-    private readonly Regex _hiddenArchives = new(@"^(?!global|pakchunk.+(optional|ondemand)\-).+(pak|utoc)$", // should be universal
-        RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
     private readonly Regex _fnLive = new(@"^FortniteGame(/|\\)Content(/|\\)Paks(/|\\)",
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
@@ -99,7 +106,7 @@ public class CUE4ParseViewModel : ViewModel
                     new GameWindowSettings { UpdateFrequency = htz },
                     new NativeWindowSettings
                     {
-                        Size = new OpenTK.Mathematics.Vector2i(
+                        ClientSize = new OpenTK.Mathematics.Vector2i(
                             Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenWidth * .75 * scale),
                             Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenHeight * .85 * scale)),
                         NumberOfSamples = Constants.SAMPLES_COUNT,
@@ -153,16 +160,14 @@ public class CUE4ParseViewModel : ViewModel
                 Provider = InternalGameName switch
                 {
                     "StateOfDecay2" => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
-                        new DirectoryInfo[]
-                        {
-                            new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
-                            new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
-                        }, SearchOption.AllDirectories, true, versionContainer),
+                    [
+                        new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
+                        new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
+                    ], SearchOption.AllDirectories, true, versionContainer),
                     "eFootball" => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
-                        new DirectoryInfo[]
-                        {
-                            new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\KONAMI\\eFootball\\ST\\Download")
-                        }, SearchOption.AllDirectories, true, versionContainer),
+                    [
+                        new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\KONAMI\\eFootball\\ST\\Download")
+                    ], SearchOption.AllDirectories, true, versionContainer),
                     _ => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, true, versionContainer)
                 };
 
@@ -170,6 +175,16 @@ public class CUE4ParseViewModel : ViewModel
             }
         }
         Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
+        Provider.CustomEncryption = Provider.Versions.Game switch
+        {
+            EGame.GAME_MarvelRivals => MarvelAes.MarvelDecrypt,
+            EGame.GAME_Undawn => ToaaAes.ToaaDecrypt,
+            EGame.GAME_DeadByDaylight => DBDAes.DbDDecrypt,
+            EGame.GAME_PaxDei => PaxDeiAes.PaxDeiDecrypt,
+            EGame.GAME_3on3FreeStyleRebound => FreeStyleReboundAes.FSRDecrypt,
+            EGame.GAME_DreamStar => DreamStarAes.DreamStarDecrypt,
+            _ => Provider.CustomEncryption
+        };
 
         GameDirectory = new GameDirectoryViewModel();
         AssetsFolder = new AssetsFolderViewModel();
@@ -190,45 +205,41 @@ public class CUE4ParseViewModel : ViewModel
                         case "FortniteLive":
                         {
                             var manifestInfo = _apiEndpointView.EpicApi.GetManifest(cancellationToken);
-                            if (manifestInfo == null)
+                            if (manifestInfo is null)
                             {
-                                throw new Exception("Could not load latest Fortnite manifest, you may have to switch to your local installation.");
+                                throw new FileLoadException("Could not load latest Fortnite manifest, you may have to switch to your local installation.");
                             }
 
-                            byte[] manifestData;
-                            var chunksDir = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"));
-                            var manifestPath = Path.Combine(chunksDir.FullName, manifestInfo.FileName);
-                            if (File.Exists(manifestPath))
+                            var cacheDir = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data")).FullName;
+                            var manifestOptions = new ManifestParseOptions
                             {
-                                manifestData = File.ReadAllBytes(manifestPath);
-                            }
-                            else
-                            {
-                                manifestData = manifestInfo.DownloadManifestData();
-                                File.WriteAllBytes(manifestPath, manifestData);
-                            }
+                                ChunkCacheDirectory = cacheDir,
+                                ManifestCacheDirectory = cacheDir,
+                                ChunkBaseUrl = "http://epicgames-download1.akamaized.net/Builds/Fortnite/CloudDir/",
+                                Zlibng = ZlibHelper.Instance,
+                                CacheChunksAsIs = false
+                            };
 
-                            var manifest = new Manifest(manifestData, new ManifestOptions
-                            {
-                                ChunkBaseUri = new Uri("http://epicgames-download1.akamaized.net/Builds/Fortnite/CloudDir/ChunksV4/", UriKind.Absolute),
-                                ChunkCacheDirectory = chunksDir
-                            });
+                            var startTs = Stopwatch.GetTimestamp();
+                            var (manifest, _) = manifestInfo.DownloadAndParseAsync(manifestOptions,
+                                cancellationToken: cancellationToken).GetAwaiter().GetResult();
+                            var parseTime = Stopwatch.GetElapsedTime(startTs);
 
-                            foreach (var fileManifest in manifest.FileManifests)
+                            foreach (var fileManifest in manifest.FileManifestList)
                             {
-                                if (fileManifest.Name.Equals("Cloud/IoStoreOnDemand.ini", StringComparison.OrdinalIgnoreCase))
+                                if (fileManifest.FileName.Equals("Cloud/IoStoreOnDemand.ini", StringComparison.OrdinalIgnoreCase))
                                 {
                                     IoStoreOnDemand.Read(new StreamReader(fileManifest.GetStream()));
                                     continue;
                                 }
-                                if (!_fnLive.IsMatch(fileManifest.Name)) continue;
+                                if (!_fnLive.IsMatch(fileManifest.FileName)) continue;
 
-                                p.RegisterVfs(fileManifest.Name, new Stream[] { fileManifest.GetStream() }
-                                    , it => new FStreamArchive(it, manifest.FileManifests.First(x => x.Name.Equals(it)).GetStream(), p.Versions));
+                                p.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream()]
+                                    , it => new FStreamArchive(it, manifest.FileManifestList.First(x => x.FileName.Equals(it)).GetStream(), p.Versions));
                             }
 
                             FLogger.Append(ELog.Information, () =>
-                                FLogger.Text($"Fortnite has been loaded successfully in {manifest.ParseTime.TotalMilliseconds}ms", Constants.WHITE, true));
+                                FLogger.Text($"Fortnite [LIVE] has been loaded successfully in {parseTime.TotalMilliseconds}ms", Constants.WHITE, true));
                             break;
                         }
                         case "ValorantLive":
@@ -241,7 +252,7 @@ public class CUE4ParseViewModel : ViewModel
 
                             for (var i = 0; i < manifestInfo.Paks.Length; i++)
                             {
-                                p.RegisterVfs(manifestInfo.Paks[i].GetFullName(), new[] { manifestInfo.GetPakStream(i) });
+                                p.RegisterVfs(manifestInfo.Paks[i].GetFullName(), [manifestInfo.GetPakStream(i)]);
                             }
 
                             FLogger.Append(ELog.Information, () =>
@@ -252,20 +263,19 @@ public class CUE4ParseViewModel : ViewModel
 
                     break;
                 case DefaultFileProvider:
+                {
                     var ioStoreOnDemandPath = Path.Combine(UserSettings.Default.GameDirectory, "..\\..\\..\\Cloud\\IoStoreOnDemand.ini");
-                    if (File.Exists(ioStoreOnDemandPath)) IoStoreOnDemand.Read(new StringReader(File.ReadAllText(ioStoreOnDemandPath)));
+                    if (File.Exists(ioStoreOnDemandPath))
+                    {
+                        using var s = new StreamReader(ioStoreOnDemandPath);
+                        IoStoreOnDemand.Read(s);
+                    }
                     break;
+                }
             }
 
             Provider.Initialize();
-
-            foreach (var vfs in Provider.UnloadedVfs) // push files from the provider to the ui
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                if (!_hiddenArchives.IsMatch(vfs.Name)) continue;
-
-                GameDirectory.Add(vfs);
-            }
+            Log.Information($"{Provider.Versions.Game} ({Provider.Versions.Platform}) | Archives: x{Provider.UnloadedVfs.Count} | AES: x{Provider.RequiredKeys.Count}");
         });
     }
 
@@ -273,38 +283,15 @@ public class CUE4ParseViewModel : ViewModel
     /// load virtual files system from GameDirectory
     /// </summary>
     /// <returns></returns>
-    public void LoadVfs(CancellationToken token, IEnumerable<FileItem> aesKeys)
+    public void LoadVfs(IEnumerable<KeyValuePair<FGuid, FAesKey>> aesKeys)
     {
-        GameDirectory.DeactivateAll();
-
-        // load files using UnloadedVfs to include non-encrypted vfs
-        foreach (var key in aesKeys)
-        {
-            token.ThrowIfCancellationRequested(); // cancel if needed
-
-            var k = key.Key.Trim();
-            if (k.Length != 66) k = Constants.ZERO_64_CHAR;
-            Provider.SubmitKey(key.Guid, new FAesKey(k));
-        }
-
-        // files in MountedVfs will be enabled
-        foreach (var file in GameDirectory.DirectoryFiles)
-        {
-            token.ThrowIfCancellationRequested();
-            if (Provider.MountedVfs.FirstOrDefault(x => x.Name == file.Name) is not { } vfs)
-            {
-                if (Provider.UnloadedVfs.FirstOrDefault(x => x.Name == file.Name) is IoStoreReader store)
-                    file.FileCount = (int) store.TocResource.Header.TocEntryCount - 1;
-
-                continue;
-            }
-
-            file.IsEnabled = true;
-            file.MountPoint = vfs.MountPoint;
-            file.FileCount = vfs.FileCount;
-        }
-
+        Provider.SubmitKeys(aesKeys);
+        Provider.PostMount();
         InternalGameName = Provider.InternalGameName;
+
+        var aesMax = Provider.RequiredKeys.Count + Provider.Keys.Count;
+        var archiveMax = Provider.UnloadedVfs.Count + Provider.MountedVfs.Count;
+        Log.Information($"Project: {InternalGameName} | Mounted: {Provider.MountedVfs.Count}/{archiveMax} | AES: {Provider.Keys.Count}/{aesMax}");
     }
 
     public void ClearProvider()
@@ -369,6 +356,7 @@ public class CUE4ParseViewModel : ViewModel
             else if (endpoint.IsValid)
             {
                 var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
+                if (endpoint.Path == "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']") endpoint.Path = "$.[0].['url','fileName']";
                 var mappings = _apiEndpointView.DynamicApi.GetMappings(default, endpoint.Url, endpoint.Path);
                 if (mappings is { Length: > 0 })
                 {
@@ -406,34 +394,15 @@ public class CUE4ParseViewModel : ViewModel
         });
     }
 
-    private bool _cvaVerifDone { get; set; }
     public Task VerifyConsoleVariables()
     {
-        if (_cvaVerifDone)
-            return Task.CompletedTask;
-
-        return Task.Run(() =>
+        if (Provider.Versions["StripAdditiveRefPose"])
         {
-            foreach (var token in Provider.DefaultEngine.Sections.FirstOrDefault(s => s.Name == "ConsoleVariables")?.Tokens ?? new List<IniToken>())
-            {
-                if (token is not InstructionToken it) continue;
-                var boolValue = it.Value.Equals("1");
+            FLogger.Append(ELog.Warning, () =>
+                FLogger.Text("Additive animations have their reference pose stripped, which will lead to inaccurate preview and export", Constants.WHITE, true));
+        }
 
-                switch (it.Key)
-                {
-                    case "a.StripAdditiveRefPose" when boolValue:
-                        FLogger.Append(ELog.Warning, () =>
-                            FLogger.Text("Additive animations have their reference pose stripped, which will lead to inaccurate preview and export", Constants.WHITE, true));
-                        continue;
-                    case "r.StaticMesh.KeepMobileMinLODSettingOnDesktop":
-                    case "r.SkeletalMesh.KeepMobileMinLODSettingOnDesktop":
-                        Provider.Versions[it.Key[2..]] = boolValue;
-                        continue;
-                }
-            }
-
-            _cvaVerifDone = true;
-        });
+        return Task.CompletedTask;
     }
 
     public Task VerifyOnDemandArchives()
@@ -600,23 +569,13 @@ public class CUE4ParseViewModel : ViewModel
         var fileName = fullPath.SubstringAfterLast('/');
         var ext = fullPath.SubstringAfterLast('.').ToLower();
 
-        if (addNewTab && TabControl.CanAddTabs)
-        {
-            TabControl.AddTab(fileName, directory);
-        }
-        else
-        {
-            TabControl.SelectedTab.Header = fileName;
-            TabControl.SelectedTab.Directory = directory;
-        }
+        if (addNewTab && TabControl.CanAddTabs) TabControl.AddTab(fileName, directory);
+        else TabControl.SelectedTab.SoftReset(fileName, directory);
+        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(ext);
 
         var updateUi = !HasFlag(bulk, EBulkType.Auto);
         var saveProperties = HasFlag(bulk, EBulkType.Properties);
         var saveTextures = HasFlag(bulk, EBulkType.Textures);
-        TabControl.SelectedTab.ClearImages();
-        TabControl.SelectedTab.ResetDocumentText();
-        TabControl.SelectedTab.ScrollTrigger = null;
-        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(ext);
         switch (ext)
         {
             case "uasset":
@@ -657,6 +616,7 @@ public class CUE4ParseViewModel : ViewModel
             case "csv":
             case "pem":
             case "tps":
+            case "lua":
             case "js":
             case "po":
             case "h":
@@ -791,10 +751,10 @@ public class CUE4ParseViewModel : ViewModel
         }
     }
 
-    public void ExtractAndScroll(CancellationToken cancellationToken, string fullPath, string objectName)
+    public void ExtractAndScroll(CancellationToken cancellationToken, string fullPath, string objectName, string parentExportType)
     {
         Log.Information("User CTRL-CLICKED to extract '{FullPath}'", fullPath);
-        TabControl.AddTab(fullPath.SubstringAfterLast('/'), fullPath.SubstringBeforeLast('/'));
+        TabControl.AddTab(fullPath.SubstringAfterLast('/'), fullPath.SubstringBeforeLast('/'), parentExportType);
         TabControl.SelectedTab.ScrollTrigger = objectName;
 
         var exports = Provider.LoadAllObjects(fullPath);
@@ -845,6 +805,13 @@ public class CUE4ParseViewModel : ViewModel
                 return false;
             }
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:
+            case UBlueprintGeneratedClass when isNone && UserSettings.Default.PreviewWorlds && TabControl.SelectedTab.ParentExportType switch
+            {
+                "JunoBuildInstructionsItemDefinition" => true,
+                "JunoBuildingSetAccountItemDefinition" => true,
+                "JunoBuildingPropAccountItemDefinition" => true,
+                _ => false
+            }:
             case UStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
             case USkeletalMesh when isNone && UserSettings.Default.PreviewSkeletalMeshes:
             case USkeleton when isNone && UserSettings.Default.SaveSkeletonAsMesh:
@@ -928,18 +895,7 @@ public class CUE4ParseViewModel : ViewModel
 
     private void SaveExport(UObject export, bool auto)
     {
-        var exportOptions = new ExporterOptions
-        {
-            LodFormat = UserSettings.Default.LodExportFormat,
-            MeshFormat = UserSettings.Default.MeshExportFormat,
-            MaterialFormat = UserSettings.Default.MaterialExportFormat,
-            TextureFormat = UserSettings.Default.TextureExportFormat,
-            SocketFormat = UserSettings.Default.SocketExportFormat,
-            Platform = UserSettings.Default.CurrentDir.TexturePlatform,
-            ExportMorphTargets = UserSettings.Default.SaveMorphTargets,
-            ExportMaterials = UserSettings.Default.SaveEmbeddedMaterials
-        };
-        var toSave = new Exporter(export, exportOptions);
+        var toSave = new Exporter(export, UserSettings.Default.ExportOptions);
 
         string dir;
         if (!auto)

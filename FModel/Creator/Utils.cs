@@ -11,6 +11,7 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Textures;
+using CUE4Parse.UE4.Assets.Objects;
 using FModel.Framework;
 using FModel.Extensions;
 using FModel.Services;
@@ -71,6 +72,7 @@ public static class Utils
                     return GetBitmap(material);
                 default:
                 {
+                    if (export.TryGetValue(out FInstancedStruct[] dataList, "DataList")) return GetBitmap(dataList);
                     if (export.TryGetValue(out FSoftObjectPath previewImage, "LargePreviewImage", "SmallPreviewImage")) return GetBitmap(previewImage);
                     if (export.TryGetValue(out string largePreview, "LargePreviewImage")) return GetBitmap(largePreview);
                     if (export.TryGetValue(out FPackageIndex smallPreview, "SmallPreviewImage"))
@@ -83,6 +85,21 @@ public static class Utils
                 }
             }
         }
+    }
+
+    public static SKBitmap GetBitmap(FInstancedStruct[] structs)
+    {
+        if (structs.FirstOrDefault(d => d.NonConstStruct?.TryGetValue(out FSoftObjectPath p, "LargeIcon") == true && !p.AssetPathName.IsNone) is { NonConstStruct: not null } isl)
+        {
+            return GetBitmap(isl.NonConstStruct.Get<FSoftObjectPath>("LargeIcon"));
+        }
+
+        if (structs.FirstOrDefault(d => d.NonConstStruct?.TryGetValue(out FSoftObjectPath p, "Icon") == true && !p.AssetPathName.IsNone) is { NonConstStruct: not null } isi)
+        {
+            return GetBitmap(isi.NonConstStruct.Get<FSoftObjectPath>("Icon"));
+        }
+
+        return null;
     }
 
     public static SKBitmap GetBitmap(UMaterialInstanceConstant material)

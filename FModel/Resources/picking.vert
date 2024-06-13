@@ -1,8 +1,8 @@
 ﻿#version 460 core
 
 layout (location = 1) in vec3 vPos;
-layout (location = 7) in vec4 vBoneIds;
-layout (location = 8) in vec4 vBoneWeights;
+layout (location = 7) in vec4 vBoneInfluence;
+layout (location = 8) in vec4 vBoneInfluenceExtra;
 layout (location = 9) in mat4 vInstanceMatrix;
 layout (location = 13) in vec3 vMorphTargetPos;
 
@@ -20,6 +20,11 @@ uniform mat4 uProjection;
 uniform float uMorphTime;
 uniform bool uIsAnimated;
 
+vec2 unpackBoneIDsAndWeights(int packedData)
+{
+    return vec2(float((packedData >> 16) & 0xFFFF), float(packedData & 0xFFFF));
+}
+
 void main()
 {
     vec4 bindPos = vec4(mix(vPos, vMorphTargetPos, uMorphTime), 1.0);
@@ -27,12 +32,19 @@ void main()
     vec4 finalPos = vec4(0.0);
     if (uIsAnimated)
     {
-        for(int i = 0 ; i < 4; i++)
+        vec4 boneInfluences[2];
+        boneInfluences[0] = vBoneInfluence;
+        boneInfluences[1] = vBoneInfluenceExtra;
+        for(int i = 0 ; i < 2; i++)
         {
-            int boneIndex = int(vBoneIds[i]);
-            if(boneIndex < 0) break;
+            for(int j = 0; j < 4; j++)
+            {
+                vec2 boneInfluence = unpackBoneIDsAndWeights(int(boneInfluences[i][j]));
+                int boneIndex = int(boneInfluence.x);
+                float weight = boneInfluence.y;
 
-            finalPos += uFinalBonesMatrix[boneIndex] * inverse(uRestBonesMatrix[boneIndex]) * bindPos * vBoneWeights[i];
+                finalPos += uFinalBonesMatrix[boneIndex] * inverse(uRestBonesMatrix[boneIndex]) * bindPos * weight;
+            }
         }
     }
     else finalPos = bindPos;

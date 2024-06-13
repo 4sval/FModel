@@ -1,5 +1,7 @@
+using System.Linq;
 using CUE4Parse.GameTypes.FN.Enums;
 using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Objects.GameplayTags;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Versions;
@@ -32,10 +34,27 @@ public class BaseCommunity : BaseIcon
     {
         ParseForReward(UserSettings.Default.CosmeticDisplayAsset);
 
-        if (Object.TryGetValue(out FPackageIndex series, "Series") && Utils.TryGetPackageIndexExport(series, out UObject export))
-            _rarityName = export.Name;
+        if (Object.TryGetValue(out FPackageIndex series, "Series"))
+        {
+            _rarityName = series.Name;
+        }
+        else if (Object.TryGetValue(out FInstancedStruct[] dataList, "DataList") &&
+                 dataList.FirstOrDefault(d => d.NonConstStruct?.TryGetValue(out FPackageIndex _, "Series") == true) is { } dl)
+        {
+            _rarityName = dl.NonConstStruct?.Get<FPackageIndex>("Series").Name;
+        }
+        else if (Object.TryGetValue(out FStructFallback componentContainer, "ComponentContainer") &&
+                 componentContainer.TryGetValue(out FPackageIndex[] components, "Components") &&
+                 components.FirstOrDefault(c => c.Name.Contains("Series")) is { } seriesDef &&
+                 seriesDef.TryLoad(out var seriesDefObj) && seriesDefObj is not null &&
+                 seriesDefObj.TryGetValue(out series, "Series"))
+        {
+            _rarityName = series.Name;
+        }
         else
+        {
             _rarityName = Object.GetOrDefault("Rarity", EFortRarity.Uncommon).GetDescription();
+        }
 
         if (Object.TryGetValue(out FGameplayTagContainer gameplayTags, "GameplayTags"))
             CheckGameplayTags(gameplayTags);

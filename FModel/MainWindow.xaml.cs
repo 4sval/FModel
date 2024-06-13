@@ -61,6 +61,8 @@ public partial class MainWindow
                 break;
         }
 
+        await ApplicationViewModel.InitOodle();
+        await ApplicationViewModel.InitZlib();
         await _applicationView.CUE4Parse.Initialize();
         await _applicationView.AesManager.InitAes();
         await _applicationView.UpdateProvider(true);
@@ -71,8 +73,8 @@ public partial class MainWindow
             _applicationView.CUE4Parse.VerifyConsoleVariables(),
             _applicationView.CUE4Parse.VerifyOnDemandArchives(),
             _applicationView.CUE4Parse.InitMappings(),
-            _applicationView.InitVgmStream(),
-            _applicationView.InitImGuiSettings(newOrUpdated),
+            ApplicationViewModel.InitVgmStream(),
+            ApplicationViewModel.InitImGuiSettings(newOrUpdated),
             Task.Run(() =>
             {
                 if (UserSettings.Default.DiscordRpc == EDiscordRpc.Always)
@@ -81,12 +83,12 @@ public partial class MainWindow
         ).ConfigureAwait(false);
 
 #if DEBUG
-        await _threadWorkerView.Begin(cancellationToken =>
-            _applicationView.CUE4Parse.Extract(cancellationToken,
-                "fortnitegame/Content/Characters/Player/Female/Medium/Bodies/F_Med_Soldier_01/Meshes/F_Med_Soldier_01.uasset"));
-        await _threadWorkerView.Begin(cancellationToken =>
-            _applicationView.CUE4Parse.Extract(cancellationToken,
-                "fortnitegame/Content/Animation/Game/MainPlayer/Emotes/Cowbell/Cowbell_CMM_Loop_M.uasset"));
+        // await _threadWorkerView.Begin(cancellationToken =>
+        //     _applicationView.CUE4Parse.Extract(cancellationToken,
+        //         "fortnitegame/Content/Characters/Player/Female/Large/Bodies/F_LRG_BunnyBR/Meshes/F_LRG_BunnyBR.uasset"));
+        // await _threadWorkerView.Begin(cancellationToken =>
+        //     _applicationView.CUE4Parse.Extract(cancellationToken,
+        //         "FortniteGame/Content/Environments/Helios/Props/GlacierHotel/GlacierHotel_Globe_A/Meshes/SM_GlacierHotel_Globe_A.uasset"));
 #endif
     }
 

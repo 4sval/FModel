@@ -215,15 +215,11 @@ public class SnimGui
         ImGui.SeparatorText("Editor");
         if (ImGui.BeginTable("world_editor", 2))
         {
-            Layout("Skybox");ImGui.PushID(1);
-            ImGui.Checkbox("", ref s.Renderer.ShowSkybox);
-            ImGui.PopID();Layout("Grid");ImGui.PushID(2);
-            ImGui.Checkbox("", ref s.Renderer.ShowGrid);
-            ImGui.PopID();Layout("Lights");ImGui.PushID(3);
-            ImGui.Checkbox("", ref s.Renderer.ShowLights);
-            ImGui.PopID();Layout("Animate With Rotation Only");ImGui.PushID(4);
+            Layout("Animate With Rotation Only");ImGui.PushID(1);
             ImGui.Checkbox("", ref s.Renderer.AnimateWithRotationOnly);
-            ImGui.PopID();Layout("Vertex Colors");ImGui.PushID(5);
+            ImGui.PopID();Layout("Time Multiplier");ImGui.PushID(2);
+            ImGui.DragInt("", ref s.Renderer.Options.Tracker.TimeMultiplier, 0.1f, 1, 8, "x%i", ImGuiSliderFlags.NoInput);
+            ImGui.PopID();Layout("Vertex Colors");ImGui.PushID(3);
             var c = (int) s.Renderer.Color;
             ImGui.Combo("vertex_colors", ref c,
                 "Default\0Sections\0Colors\0Normals\0Texture Coordinates\0");
@@ -418,15 +414,18 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     ImGui.TableNextColumn();
                     ImGui.Text(model.UvCount.ToString("D"));
                     ImGui.TableNextColumn();
-                    if (ImGui.Selectable(model.Name, s.Renderer.Options.SelectedModel == guid, ImGuiSelectableFlags.SpanAllColumns))
+                    var doubleClick = false;
+                    if (ImGui.Selectable(model.Name, s.Renderer.Options.SelectedModel == guid, ImGuiSelectableFlags.SpanAllColumns | ImGuiSelectableFlags.AllowDoubleClick))
                     {
                         s.Renderer.Options.SelectModel(guid);
+                        doubleClick = ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left);
                     }
                     Popup(() =>
                     {
                         s.Renderer.Options.SelectModel(guid);
                         if (ImGui.MenuItem("Show", null, model.IsVisible)) model.IsVisible = !model.IsVisible;
                         if (ImGui.MenuItem("Wireframe", null, model.ShowWireframe)) model.ShowWireframe = !model.ShowWireframe;
+                        if (ImGui.MenuItem("Collisions", null, model.ShowCollisions, model.HasCollisions)) model.ShowCollisions = !model.ShowCollisions;
                         ImGui.Separator();
                         if (ImGui.MenuItem("Save"))
                         {
@@ -459,16 +458,17 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                             s.Renderer.IsSkeletonTreeOpen = true;
                             ImGui.SetWindowFocus("Skeleton Tree");
                         }
-                        if (ImGui.MenuItem("Teleport To"))
-                        {
-                            s.Renderer.CameraOp.Teleport(model.GetTransform().Matrix.Translation, model.Box);
-                        }
+                        doubleClick = ImGui.MenuItem("Teleport To");
 
                         if (ImGui.MenuItem("Delete")) s.Renderer.Options.RemoveModel(guid);
                         if (ImGui.MenuItem("Deselect")) s.Renderer.Options.SelectModel(Guid.Empty);
                         ImGui.Separator();
                         if (ImGui.MenuItem("Copy Path to Clipboard")) ImGui.SetClipboardText(model.Path);
                     });
+                    if (doubleClick)
+                    {
+                        s.Renderer.CameraOp.Teleport(model.GetTransform().Matrix.Translation, model.Box);
+                    }
 
                     ImGui.TableNextColumn();
                     ImGui.Image(s.Renderer.Options.Icons[model.Attachments.Icon].GetPointer(), new Vector2(_tableWidth));
@@ -783,13 +783,36 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                 s.CursorState = CursorState.Normal;
             }
 
+            const float margin = 7.5f;
+            var buttonWidth = 14.0f * ImGui.GetWindowDpiScale();
+            var basePos = new Vector2( size.X - buttonWidth - margin * 2, ImGui.GetFrameHeight() + margin);
+            ImGui.SetCursorPos(basePos);
+            ImGui.PushStyleColor(ImGuiCol.Button, Vector4.Zero);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.2f));
+            ImGui.ImageButton("skybox_btn", s.Renderer.Options.Icons[s.Renderer.ShowSkybox ? "cube" : "cube_off"].GetPointer(), new Vector2(buttonWidth));
+            TooltipCheckbox("Skybox", ref s.Renderer.ShowSkybox);
+
+            basePos.X -= buttonWidth + margin;
+            ImGui.SetCursorPos(basePos);
+            ImGui.ImageButton("grid_btn", s.Renderer.Options.Icons[s.Renderer.ShowGrid ? "square" : "square_off"].GetPointer(), new Vector2(buttonWidth));
+            TooltipCheckbox("Grid", ref s.Renderer.ShowGrid);
+
+            basePos.X -= buttonWidth + margin;
+            ImGui.SetCursorPos(basePos);
+            ImGui.ImageButton("lights_btn", s.Renderer.Options.Icons[s.Renderer.ShowLights ? "light" : "light_off"].GetPointer(), new Vector2(buttonWidth));
+            TooltipCheckbox("Lights", ref s.Renderer.ShowLights);
+
+            ImGui.PopStyleColor();
+
+
             float framerate = ImGui.GetIO().Framerate;
-            ImGui.SetCursorPos(size with { X = 7.5f });
+            ImGui.SetCursorPos(size with { X = margin });
             ImGui.Text($"FPS: {framerate:0} ({1000.0f / framerate:0.##} ms)");
 
             const string label = "Previewed content may differ from final version saved or used in-game.";
-            ImGui.SetCursorPos(size with { X = size.X - ImGui.CalcTextSize(label).X - 7.5f });
+            ImGui.SetCursorPos(size with { X = size.X - ImGui.CalcTextSize(label).X - margin });
             ImGui.TextColored(new Vector4(0.50f, 0.50f, 0.50f, 1.00f), label);
+
         }, false);
         ImGui.PopStyleVar();
     }
@@ -904,6 +927,17 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
             ImGui.EndTooltip();
         }
         if (ImGui.IsItemClicked()) ImGui.SetClipboardText(text ?? label);
+    }
+
+    private static void TooltipCheckbox(string tooltip, ref bool value)
+    {
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.BeginTooltip();
+            ImGui.Text($"{tooltip}: {value}");
+            ImGui.EndTooltip();
+        }
+        if (ImGui.IsItemClicked()) value = !value;
     }
 
     private void Theme()

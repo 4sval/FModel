@@ -20,6 +20,7 @@ namespace FModel.Views.Snooper.Models;
 public class VertexAttribute
 {
     public int Size;
+    public VertexAttribPointerType Type;
     public bool Enabled;
 }
 
@@ -28,18 +29,18 @@ public abstract class UModel : IRenderableModel
     protected const int LodLevel = 0;
 
     private readonly UObject _export;
-    private readonly List<VertexAttribute> _vertexAttributes = new()
-    {
-        new VertexAttribute { Size = 1, Enabled = false },  // VertexIndex
-        new VertexAttribute { Size = 3, Enabled = true },   // Position
-        new VertexAttribute { Size = 3, Enabled = false },  // Normal
-        new VertexAttribute { Size = 3, Enabled = false },  // Tangent
-        new VertexAttribute { Size = 2, Enabled = false },  // UV
-        new VertexAttribute { Size = 1, Enabled = false },  // TextureLayer
-        new VertexAttribute { Size = 4, Enabled = false },  // Colors
-        new VertexAttribute { Size = 4, Enabled = false },  // BoneIds
-        new VertexAttribute { Size = 4, Enabled = false }   // BoneWeights
-    };
+    private readonly List<VertexAttribute> _vertexAttributes =
+    [
+        new VertexAttribute { Size = 1, Type = VertexAttribPointerType.Int, Enabled = false },    // VertexIndex
+        new VertexAttribute { Size = 3, Type = VertexAttribPointerType.Float, Enabled = true },   // Position
+        new VertexAttribute { Size = 3, Type = VertexAttribPointerType.Float, Enabled = false },  // Normal
+        new VertexAttribute { Size = 3, Type = VertexAttribPointerType.Float, Enabled = false },  // Tangent
+        new VertexAttribute { Size = 2, Type = VertexAttribPointerType.Float, Enabled = false },  // UV
+        new VertexAttribute { Size = 1, Type = VertexAttribPointerType.Float, Enabled = false },  // TextureLayer
+        new VertexAttribute { Size = 1, Type = VertexAttribPointerType.Float, Enabled = false },  // Colors
+        new VertexAttribute { Size = 4, Type = VertexAttribPointerType.Float, Enabled = false },  // BoneIds
+        new VertexAttribute { Size = 4, Type = VertexAttribPointerType.Float, Enabled = false }   // BoneWeights
+    ];
 
     public int Handle { get; set; }
     public BufferObject<uint> Ebo { get; set; }
@@ -59,6 +60,7 @@ public abstract class UModel : IRenderableModel
 
     public FBox Box;
     public readonly List<Socket> Sockets;
+    public readonly List<Collision> Collisions;
     public Material[] Materials;
     public bool IsTwoSided;
     public bool IsProp;
@@ -66,12 +68,14 @@ public abstract class UModel : IRenderableModel
     public int VertexSize => _vertexAttributes.Where(x => x.Enabled).Sum(x => x.Size);
     public bool HasVertexColors => _vertexAttributes[(int) EAttribute.Colors].Enabled;
     public bool HasSockets => Sockets.Count > 0;
+    public bool HasCollisions => Collisions.Count > 0;
     public int TransformsCount => Transforms.Count;
 
     public bool IsSetup { get; set; }
     public bool IsVisible { get; set; }
     public bool IsSelected { get; set; }
     public bool ShowWireframe { get; set; }
+    public bool ShowCollisions { get; set; }
     public int SelectedInstance;
 
     protected UModel()
@@ -81,6 +85,7 @@ public abstract class UModel : IRenderableModel
 
         Box = new FBox(new FVector(-2f), new FVector(2f));
         Sockets = new List<Socket>();
+        Collisions = new List<Collision>();
         Transforms = new List<Transform>();
     }
 
@@ -94,6 +99,7 @@ public abstract class UModel : IRenderableModel
 
         Box = new FBox(new FVector(-2f), new FVector(2f));
         Sockets = new List<Socket>();
+        Collisions = new List<Collision>();
         Transforms = new List<Transform>();
         Attachments = new Attachment(Name);
 
@@ -145,28 +151,24 @@ public abstract class UModel : IRenderableModel
             Vertices[baseIndex + count++] = vert.Tangent.Y;
             Vertices[baseIndex + count++] = vert.UV.U;
             Vertices[baseIndex + count++] = vert.UV.V;
-            Vertices[baseIndex + count++] = hasCustomUvs ? lod.ExtraUV.Value[0][i].U : .5f;
+            Vertices[baseIndex + count++] = hasCustomUvs ? lod.ExtraUV.Value[0][i].U - 1 : .5f;
 
             if (HasVertexColors)
             {
-                var color = lod.VertexColors[i];
-                Vertices[baseIndex + count++] = color.R;
-                Vertices[baseIndex + count++] = color.G;
-                Vertices[baseIndex + count++] = color.B;
-                Vertices[baseIndex + count++] = color.A;
+                Vertices[baseIndex + count++] = lod.VertexColors[i].ToPackedARGB();
             }
 
             if (vert is CSkelMeshVertex skelVert)
             {
-                var weightsHash = skelVert.UnpackWeights();
-                Vertices[baseIndex + count++] = skelVert.Bone[0];
-                Vertices[baseIndex + count++] = skelVert.Bone[1];
-                Vertices[baseIndex + count++] = skelVert.Bone[2];
-                Vertices[baseIndex + count++] = skelVert.Bone[3];
-                Vertices[baseIndex + count++] = weightsHash[0];
-                Vertices[baseIndex + count++] = weightsHash[1];
-                Vertices[baseIndex + count++] = weightsHash[2];
-                Vertices[baseIndex + count++] = weightsHash[3];
+                int max = skelVert.Influences.Count;
+                for (int j = 0; j < 8; j++)
+                {
+                    var boneID = j < max ? skelVert.Influences[j].Bone : (short) 0;
+                    var weight = j < max ? skelVert.Influences[j].RawWeight : (byte) 0;
+
+                    // Pack bone ID and weight
+                    Vertices[baseIndex + count++] = (boneID << 16) | weight;
+                }
             }
         }
 
@@ -197,8 +199,9 @@ public abstract class UModel : IRenderableModel
 
             if (i != 5 || !broken)
             {
-                Vao.VertexAttributePointer((uint) i, attribute.Size, i == 0 ? VertexAttribPointerType.Int : VertexAttribPointerType.Float, VertexSize, offset);
+                Vao.VertexAttributePointer((uint) i, attribute.Size, attribute.Type, VertexSize, offset);
             }
+
             offset += attribute.Size;
         }
 
@@ -209,6 +212,11 @@ public abstract class UModel : IRenderableModel
         {
             if (!Materials[i].IsUsed) continue;
             Materials[i].Setup(options, broken ? 1 : UvCount);
+        }
+
+        foreach (var collision in Collisions)
+        {
+            collision.Setup();
         }
 
         if (options.Models.Count == 1 && Sections.All(x => !x.Show))
@@ -242,6 +250,7 @@ public abstract class UModel : IRenderableModel
         if (!outline)
         {
             shader.SetUniform("uUvCount", UvCount);
+            shader.SetUniform("uOpacity", ShowCollisions && IsSelected ? 0.75f : 1f);
             shader.SetUniform("uHasVertexColors", HasVertexColors);
         }
 
@@ -294,6 +303,12 @@ public abstract class UModel : IRenderableModel
         Vao.Unbind();
 
         if (IsTwoSided) GL.Enable(EnableCap.CullFace);
+    }
+
+    public virtual void RenderCollision(Shader shader)
+    {
+        shader.SetUniform("uInstanceMatrix", GetTransform().Matrix);
+        shader.SetUniform("uScaleDown", Constants.SCALE_DOWN_RATIO);
     }
 
     public void Update(Options options)
@@ -357,18 +372,7 @@ public abstract class UModel : IRenderableModel
 
     public bool Save(out string label, out string savedFilePath)
     {
-        var exportOptions = new ExporterOptions
-        {
-            LodFormat = UserSettings.Default.LodExportFormat,
-            MeshFormat = UserSettings.Default.MeshExportFormat,
-            MaterialFormat = UserSettings.Default.MaterialExportFormat,
-            TextureFormat = UserSettings.Default.TextureExportFormat,
-            SocketFormat = UserSettings.Default.SocketExportFormat,
-            Platform = UserSettings.Default.CurrentDir.TexturePlatform,
-            ExportMorphTargets = UserSettings.Default.SaveMorphTargets,
-            ExportMaterials = UserSettings.Default.SaveEmbeddedMaterials
-        };
-        var toSave = new Exporter(_export, exportOptions);
+        var toSave = new Exporter(_export, UserSettings.Default.ExportOptions);
         return toSave.TryWriteToDir(new DirectoryInfo(UserSettings.Default.ModelDirectory), out label, out savedFilePath);
     }
 
@@ -383,6 +387,11 @@ public abstract class UModel : IRenderableModel
             socket?.Dispose();
         }
         Sockets.Clear();
+        foreach (var collision in Collisions)
+        {
+            collision?.Dispose();
+        }
+        Collisions.Clear();
 
         GL.DeleteProgram(Handle);
     }

@@ -1,6 +1,7 @@
 ﻿using FModel.ViewModels;
 using Ookii.Dialogs.Wpf;
 using System.Windows;
+using CUE4Parse.Utils;
 
 namespace FModel.Views;
 
@@ -38,6 +39,7 @@ public partial class DirectorySelector
         var folderBrowser = new VistaFolderBrowserDialog {ShowNewFolderButton = false};
         if (folderBrowser.ShowDialog() == true)
         {
+            HelloMyNameIsGame.Text = folderBrowser.SelectedPath.SubstringAfterLast('\\');
             HelloGameMyNameIsDirectory.Text = folderBrowser.SelectedPath;
         }
     }

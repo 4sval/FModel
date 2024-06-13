@@ -10,56 +10,54 @@ jobs:
 
     steps:
       - name: GIT Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
-          submodules: 'true'
-
-      - name: Fetch Submodules Recursively
-        run: git submodule update --init --recursive
+          submodules: 'recursive'
 
       - name: .NET 8 Setup
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
       - name: .NET Restore
         run: dotnet restore FModel
 
-      - name: Get Version
-        id: package_version
-        uses: KageKirin/get-csproj-version@v1.0.0
-        with:
-          file: FModel/FModel.csproj
-          regex: '^(?<major>[0-9])\.(?<minor>[0-9])\.(?<buildmetadata>[0-9])\.(?<patch>[0-9])$'
-
       - name: .NET Publish
-        run: dotnet publish FModel -c Release --no-self-contained -r win-x64 -f net8.0-windows -o "./FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false
+        run: dotnet publish "./FModel/FModel.csproj" -c Release --no-restore --no-self-contained -r win-x64 -f net8.0-windows -o "./FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false
 
       - name: ZIP File
-        uses: papeloto/action-zip@v1
+        uses: thedoctor0/zip-release@0.7.6
         with:
-          files: ./FModel/bin/Publish/FModel.exe
-          dest: ${{ github.sha }}.zip # will end up in working directory not the Publish folder
+          type: zip
+          filename: ${{ github.sha }}.zip # will end up in working directory not the Publish folder
+          path: ./FModel/bin/Publish/FModel.exe
 
       - name: Edit QA Artifact
-        id: edited_release
-        uses: johnwbyrd/update-release@v1.0.0
+        uses: ncipollo/release-action@v1.14.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          release: FModel QA Testing
-          tag: qa
+          name: 'FModel QA Testing'
+          body: 'Dev builds'
+          tag: 'qa'
+          artifacts: ${{ github.sha }}.zip
           prerelease: true
-          files: ${{ github.sha }}.zip
+          allowUpdates: true
+
+      - name: Get Version
+        id: package_version
+        uses: kzrnm/get-net-sdk-project-versions-action@v2
+        with:
+          proj-path: ./FModel/FModel.csproj
 
       - name: FModel Auth
         id: fmodel_auth
-        uses: fjogeleit/http-request-action@v1.14.1
+        uses: fjogeleit/http-request-action@v1.15.5
         with:
           url: "https://api.fmodel.app/v1/oauth/token"
           data: '{"username": "${{ secrets.API_USERNAME }}", "password": "${{ secrets.API_PASSWORD }}"}'
 
       - name: FModel Deploy Build
-        uses: fjogeleit/http-request-action@v1.14.1
+        uses: fjogeleit/http-request-action@v1.15.5
         with:
           url: "https://api.fmodel.app/v1/infos/${{ secrets.QA_ID }}"
           method: "PATCH"

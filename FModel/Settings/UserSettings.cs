@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
+using CUE4Parse_Conversion;
+using CUE4Parse_Conversion.Animations;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
+using CUE4Parse_Conversion.UEFormat.Enums;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using FModel.Framework;
 using FModel.ViewModels;
@@ -46,6 +49,25 @@ namespace FModel.Settings
             endpoint = Default.CurrentDir.Endpoints[(int) type];
             return endpoint.Overwrite || endpoint.IsValid;
         }
+
+        [JsonIgnore]
+        public ExporterOptions ExportOptions => new()
+        {
+            LodFormat = Default.LodExportFormat,
+            MeshFormat = Default.MeshExportFormat,
+            AnimFormat = Default.MeshExportFormat switch
+            {
+                EMeshFormat.UEFormat => EAnimFormat.UEFormat,
+                _ => EAnimFormat.ActorX
+            },
+            MaterialFormat = Default.MaterialExportFormat,
+            TextureFormat = Default.TextureExportFormat,
+            SocketFormat = Default.SocketExportFormat,
+            CompressionFormat = Default.CompressionFormat,
+            Platform = Default.CurrentDir.TexturePlatform,
+            ExportMorphTargets = Default.SaveMorphTargets,
+            ExportMaterials = Default.SaveEmbeddedMaterials
+        };
 
         private bool _showChangelog = true;
         public bool ShowChangelog
@@ -354,6 +376,13 @@ namespace FModel.Settings
         {
             get => _socketExportFormat;
             set => SetProperty(ref _socketExportFormat, value);
+        }
+
+        private EFileCompressionFormat _compressionFormat = EFileCompressionFormat.ZSTD;
+        public EFileCompressionFormat CompressionFormat
+        {
+            get => _compressionFormat;
+            set => SetProperty(ref _compressionFormat, value);
         }
 
         private ELodFormat _lodExportFormat = ELodFormat.FirstLod;

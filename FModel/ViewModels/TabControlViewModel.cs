@@ -86,6 +86,8 @@ public class TabImage : ViewModel
 
 public class TabItem : ViewModel
 {
+    public string ParentExportType { get; private set; }
+
     private string _header;
     public string Header
     {
@@ -211,20 +213,28 @@ public class TabItem : ViewModel
     private GoToCommand _goToCommand;
     public GoToCommand GoToCommand => _goToCommand ??= new GoToCommand(null);
 
-    public TabItem(string header, string directory)
+    public TabItem(string header, string directory, string parentExportType)
     {
         Header = header;
         Directory = directory;
+        ParentExportType = parentExportType;
         _images = new ObservableCollection<TabImage>();
     }
 
-    public void ClearImages()
+    public void SoftReset(string header, string directory)
     {
+        Header = header;
+        Directory = directory;
+        ParentExportType = string.Empty;
+        ScrollTrigger = null;
         Application.Current.Dispatcher.Invoke(() =>
         {
             _images.Clear();
             SelectedImage = null;
             RaisePropertyChanged("HasMultipleImages");
+
+            Document ??= new TextDocument();
+            Document.Text = string.Empty;
         });
     }
 
@@ -271,15 +281,6 @@ public class TabItem : ViewModel
             Document.UndoStack.ClearAll();
 
             if (save) SaveProperty(updateUi);
-        });
-    }
-
-    public void ResetDocumentText()
-    {
-        Application.Current.Dispatcher.Invoke(() =>
-        {
-            Document ??= new TextDocument();
-            Document.Text = string.Empty;
         });
     }
 
@@ -368,12 +369,13 @@ public class TabControlViewModel : ViewModel
         SelectedTab = TabsItems.FirstOrDefault();
     }
 
-    public void AddTab(string header = null, string directory = null)
+    public void AddTab(string header = null, string directory = null, string parentExportType = null)
     {
         if (!CanAddTabs) return;
 
         var h = header ?? "New Tab";
         var d = directory ?? string.Empty;
+        var p = parentExportType ?? string.Empty;
         if (SelectedTab is { Header : "New Tab" })
         {
             SelectedTab.Header = h;
@@ -383,7 +385,7 @@ public class TabControlViewModel : ViewModel
 
         Application.Current.Dispatcher.Invoke(() =>
         {
-            _tabItems.Add(new TabItem(h, d));
+            _tabItems.Add(new TabItem(h, d, p));
             SelectedTab = _tabItems.Last();
         });
     }
@@ -445,6 +447,6 @@ public class TabControlViewModel : ViewModel
 
     private static IEnumerable<TabItem> EnumerateTabs()
     {
-        yield return new TabItem("New Tab", string.Empty);
+        yield return new TabItem("New Tab", string.Empty, string.Empty);
     }
 }
