@@ -13,7 +13,7 @@ public class CustomDirectory : ViewModel
             case "Fortnite [LIVE]":
                 return new List<CustomDirectory>
                 {
-                    new("Cosmetics", "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/"),
+                    new("Cosmetics", "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics"),
                     new("Emotes [AUDIO]", "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Sounds/Emotes/"),
                     new("Music Packs [AUDIO]", "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Sounds/MusicPacks/"),
                     new("Weapons", "FortniteGame/Content/Athena/Items/Weapons/"),
