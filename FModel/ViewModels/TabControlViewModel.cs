@@ -240,18 +240,31 @@ public class TabItem : ViewModel
 
     public void AddImage(UTexture texture, bool save, bool updateUi)
     {
-        var img = texture.Decode(UserSettings.Default.CurrentDir.TexturePlatform);
-        if (texture is UTextureCube)
+        var appendLayerNumber = false;
+        var img = new SKBitmap[1];
+        if (texture is UTexture2DArray textureArray)
         {
-            img = img?.ToPanorama();
+            img = textureArray.DecodeTextureArray(UserSettings.Default.CurrentDir.TexturePlatform);
+            appendLayerNumber = true;
+        }
+        else
+        {
+            img[0] = texture.Decode(UserSettings.Default.CurrentDir.TexturePlatform);
+            if (texture is UTextureCube)
+            {
+                img[0] = img[0]?.ToPanorama();
+            }
         }
 
-        AddImage(texture.Name, texture.RenderNearestNeighbor, img, save, updateUi);
+        AddImage(texture.Name, texture.RenderNearestNeighbor, img, save, updateUi, appendLayerNumber);
     }
 
-    public void AddImage(string name, bool rnn, SKBitmap[] img, bool save, bool updateUi)
+    public void AddImage(string name, bool rnn, SKBitmap[] img, bool save, bool updateUi, bool appendLayerNumber = false)
     {
-        foreach (var i in img) AddImage(name, rnn, i, save, updateUi);
+        for (var i = 0; i < img.Length; i++)
+        {
+            AddImage($"{name}{(appendLayerNumber ? $"_{i}" : "")}", rnn, img[i], save, updateUi);
+        }
     }
 
     public void AddImage(string name, bool rnn, SKBitmap img, bool save, bool updateUi)
