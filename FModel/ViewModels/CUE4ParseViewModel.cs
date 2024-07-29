@@ -847,7 +847,7 @@ public class CUE4ParseViewModel : ViewModel
             case UAnimMontage when HasFlag(bulk, EBulkType.Animations):
             case UAnimComposite when HasFlag(bulk, EBulkType.Animations):
             {
-                SaveExport(export, HasFlag(bulk, EBulkType.Auto));
+                SaveExport(export, updateUi);
                 return true;
             }
             default:
@@ -893,29 +893,21 @@ public class CUE4ParseViewModel : ViewModel
         });
     }
 
-    private void SaveExport(UObject export, bool auto)
+    private void SaveExport(UObject export, bool updateUi = true)
     {
         var toSave = new Exporter(export, UserSettings.Default.ExportOptions);
-
-        string dir;
-        if (!auto)
-        {
-            var folderBrowser = new VistaFolderBrowserDialog();
-            if (folderBrowser.ShowDialog() == true)
-                dir = folderBrowser.SelectedPath;
-            else return;
-        }
-        else dir = UserSettings.Default.ModelDirectory;
-
-        var toSaveDirectory = new DirectoryInfo(dir);
+        var toSaveDirectory = new DirectoryInfo(UserSettings.Default.ModelDirectory);
         if (toSave.TryWriteToDir(toSaveDirectory, out var label, out var savedFilePath))
         {
             Log.Information("Successfully saved {FilePath}", savedFilePath);
-            FLogger.Append(ELog.Information, () =>
+            if (updateUi)
             {
-                FLogger.Text("Successfully saved ", Constants.WHITE);
-                FLogger.Link(label, savedFilePath, true);
-            });
+                FLogger.Append(ELog.Information, () =>
+                {
+                    FLogger.Text("Successfully saved ", Constants.WHITE);
+                    FLogger.Link(label, savedFilePath, true);
+                });
+            }
         }
         else
         {
