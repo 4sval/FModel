@@ -41,6 +41,7 @@ using CUE4Parse.GameTypes.DreamStar.Encryption.Aes;
 using CUE4Parse.GameTypes.PAXDEI.Encryption.Aes;
 using CUE4Parse.GameTypes.NetEase.MAR.Encryption.Aes;
 using CUE4Parse.GameTypes.FSR.Encryption.Aes;
+using CUE4Parse.GameTypes.DeltaForce.Encryption.Aes;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using EpicManifestParser;
 using FModel.Creator;
@@ -183,6 +184,7 @@ public class CUE4ParseViewModel : ViewModel
             EGame.GAME_PaxDei => PaxDeiAes.PaxDeiDecrypt,
             EGame.GAME_3on3FreeStyleRebound => FreeStyleReboundAes.FSRDecrypt,
             EGame.GAME_DreamStar => DreamStarAes.DreamStarDecrypt,
+            EGame.GAME_DeltaForceHawkOps => DeltaForceAes.DeltaForceDecrypt,
             _ => Provider.CustomEncryption
         };
 
