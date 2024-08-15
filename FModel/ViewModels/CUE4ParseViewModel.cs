@@ -872,7 +872,7 @@ public class CUE4ParseViewModel : ViewModel
     {
         if (fullPath.StartsWith("/")) fullPath = fullPath[1..];
         var savedAudioPath = Path.Combine(UserSettings.Default.AudioDirectory,
-            UserSettings.Default.KeepDirectoryStructure ? fullPath : fullPath.SubstringAfterLast('/')).Replace('\\', '/') + $".{ext.ToLower()}";
+            UserSettings.Default.KeepDirectoryStructure ? fullPath : fullPath.SubstringAfterLast('/')).Replace('\\', '/') + $".{ext.ToLowerInvariant()}";
 
         if (!UserSettings.Default.IsAutoOpenSounds)
         {
