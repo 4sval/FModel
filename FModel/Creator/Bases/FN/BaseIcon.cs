@@ -34,26 +34,29 @@ public class BaseIcon : UCreator
         else if (Object.TryGetValue(out FStructFallback componentContainer, "ComponentContainer")) GetSeries(componentContainer);
         else GetRarity(Object.GetOrDefault("Rarity", EFortRarity.Uncommon)); // default is uncommon
 
-        // preview
-        if (isUsingDisplayAsset && Utils.TryGetDisplayAsset(Object, out var preview))
-            Preview = preview;
-        else if (Object.TryGetValue(out FPackageIndex itemDefinition, "HeroDefinition", "WeaponDefinition"))
-            Preview = Utils.GetBitmap(itemDefinition);
-        else if (Object.TryGetValue(out FSoftObjectPath largePreview, "LargePreviewImage", "EntryListIcon", "SmallPreviewImage", "BundleImage", "ItemDisplayAsset", "LargeIcon", "ToastIcon", "SmallIcon"))
-            Preview = Utils.GetBitmap(largePreview);
-        else if (Object.TryGetValue(out string s, "LargePreviewImage") && !string.IsNullOrEmpty(s))
-            Preview = Utils.GetBitmap(s);
-        else if (Object.TryGetValue(out FPackageIndex otherPreview, "SmallPreviewImage", "ToastIcon", "access_item"))
-            Preview = Utils.GetBitmap(otherPreview);
-        else if (Object.TryGetValue(out UMaterialInstanceConstant materialInstancePreview, "EventCalloutImage"))
-            Preview = Utils.GetBitmap(materialInstancePreview);
-        else if (Object.TryGetValue(out FStructFallback brush, "IconBrush") && brush.TryGetValue(out UTexture2D res, "ResourceObject"))
-            Preview = Utils.GetBitmap(res);
-
         if (Object.TryGetValue(out FInstancedStruct[] dataList, "DataList"))
         {
             GetSeries(dataList);
-            Preview ??= Utils.GetBitmap(dataList);
+            Preview = Utils.GetBitmap(dataList);
+        }
+
+        // preview
+        if (Preview is null)
+        {
+            if (isUsingDisplayAsset && Utils.TryGetDisplayAsset(Object, out var preview))
+                Preview = preview;
+            else if (Object.TryGetValue(out FPackageIndex itemDefinition, "HeroDefinition", "WeaponDefinition"))
+                Preview = Utils.GetBitmap(itemDefinition);
+            else if (Object.TryGetValue(out FSoftObjectPath largePreview, "LargePreviewImage", "EntryListIcon", "SmallPreviewImage", "BundleImage", "ItemDisplayAsset", "LargeIcon", "ToastIcon", "SmallIcon"))
+                Preview = Utils.GetBitmap(largePreview);
+            else if (Object.TryGetValue(out string s, "LargePreviewImage") && !string.IsNullOrEmpty(s))
+                Preview = Utils.GetBitmap(s);
+            else if (Object.TryGetValue(out FPackageIndex otherPreview, "SmallPreviewImage", "ToastIcon", "access_item"))
+                Preview = Utils.GetBitmap(otherPreview);
+            else if (Object.TryGetValue(out UMaterialInstanceConstant materialInstancePreview, "EventCalloutImage"))
+                Preview = Utils.GetBitmap(materialInstancePreview);
+            else if (Object.TryGetValue(out FStructFallback brush, "IconBrush") && brush.TryGetValue(out UTexture2D res, "ResourceObject"))
+                Preview = Utils.GetBitmap(res);
         }
 
         // text
