@@ -1471,6 +1471,222 @@
         <Setter Property="Focusable" Value="False" />
     </Style>
 
+    <Style x:Key="UComboBox" TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+        <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="UE5 / UE4 / GameName..." />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Grid>
+                        <Border x:Name="Border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding adonisExtensions:CornerRadiusExtension.CornerRadius}"/>
+
+                        <Border x:Name="SpotlightLayer"
+                                Background="{TemplateBinding adonisExtensions:CursorSpotlightExtension.BackgroundBrush}"
+                                BorderBrush="{TemplateBinding adonisExtensions:CursorSpotlightExtension.BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding adonisExtensions:CornerRadiusExtension.CornerRadius}"
+                                adonisExtensions:CursorSpotlightExtension.MouseEventSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ComboBox}}"
+                                SnapsToDevicePixels="False"/>
+
+                        <ToggleButton x:Name="ToggleButton"
+                                      ClickMode="Press"
+                                      Focusable="False"
+                                      Foreground="{TemplateBinding Foreground}"
+                                      adonisExtensions:CornerRadiusExtension.CornerRadius="{TemplateBinding adonisExtensions:CornerRadiusExtension.CornerRadius}"
+                                      IsChecked="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                      Template="{StaticResource ComboBoxToggleButtonTemplate}"/>
+
+                        <Border Margin="0, 0, 11, 0">
+
+                            <DockPanel Margin="{TemplateBinding Padding}">
+
+                                <adonisControls:ValidationErrorIndicator x:Name="ErrorAlertHost"
+                                                                         ValidatedElement="{Binding ., RelativeSource={RelativeSource TemplatedParent}}"
+                                                                         IsValidatedElementFocused="False"
+                                                                         IsErrorMessageDisplayOnFocusEnabled="{TemplateBinding adonisExtensions:ValidationExtension.IsErrorMessageVisibleOnFocus}"
+                                                                         IsErrorMessageDisplayOnMouseOverEnabled="{TemplateBinding adonisExtensions:ValidationExtension.IsErrorMessageVisibleOnMouseOver}"
+                                                                         ErrorMessagePlacement="{TemplateBinding adonisExtensions:ValidationExtension.ErrorMessagePlacement}"
+                                                                         Visibility="Collapsed"
+                                                                         DockPanel.Dock="Left"
+                                                                         Margin="0, 0, 4, 0"/>
+
+                                <ContentPresenter x:Name="ContentSite"
+                                                  IsHitTestVisible="False"
+                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  Content="{TemplateBinding ComboBox.SelectionBoxItem}"
+                                                  ContentTemplate="{TemplateBinding ComboBox.SelectionBoxItemTemplate}"
+                                                  ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
+
+
+                                <TextBox x:Name="PART_EditableTextBox"
+                                         IsReadOnly="{TemplateBinding IsReadOnly}"
+                                         Background="{TemplateBinding Background}"
+                                         Foreground="{TemplateBinding Foreground}"
+                                         Visibility="Hidden"
+                                         HorizontalAlignment="Stretch"
+                                         VerticalAlignment="Stretch"
+                                         HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                         VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                         Focusable="True">
+                                    <TextBox.Template>
+                                        <ControlTemplate TargetType="TextBox" >
+                                            <Grid>
+                                                <ContentPresenter x:Name="PlaceholderHost"
+                                                                  Content="{Binding Path=(adonisExtensions:WatermarkExtension.Watermark), RelativeSource={RelativeSource FindAncestor, AncestorType=ComboBox}}"
+                                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                                  Opacity="0.5"
+                                                                  IsHitTestVisible="False"
+                                                                  Visibility="Collapsed"/>
+
+                                                <ScrollViewer Name="PART_ContentHost"
+                                                              Focusable="False"
+                                                              HorizontalScrollBarVisibility="Hidden"
+                                                              VerticalScrollBarVisibility="Hidden"
+                                                              Template="{StaticResource TextBoxScrollViewerTemplate}"/>
+                                            </Grid>
+
+                                            <ControlTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding Path=(adonisExtensions:WatermarkExtension.IsWatermarkVisible), RelativeSource={RelativeSource FindAncestor, AncestorType=ComboBox}}" Value="True">
+                                                    <Setter Property="Visibility" TargetName="PlaceholderHost" Value="Visible"/>
+                                                </DataTrigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </TextBox.Template>
+                                </TextBox>
+                            </DockPanel>
+                        </Border>
+
+                        <!-- Popup showing items -->
+                        <Popup x:Name="PART_Popup"
+                               Placement="Bottom"
+                               Focusable="False"
+                               AllowsTransparency="True"
+                               IsOpen="{TemplateBinding ComboBox.IsDropDownOpen}"
+                               PopupAnimation="Slide"
+                               adonisExtensions:LayerExtension.IncreaseLayer="True">
+
+                            <Grid x:Name="DropDown"
+                                  SnapsToDevicePixels="True"
+                                  MinWidth="{TemplateBinding FrameworkElement.ActualWidth}"
+                                  MaxHeight="{TemplateBinding ComboBox.MaxDropDownHeight}">
+
+                                <Border x:Name="DropDownBorder"
+                                        Background="{TemplateBinding Background}"
+                                        Margin="0, 1, 0, 0"
+                                        CornerRadius="{TemplateBinding adonisExtensions:CornerRadiusExtension.CornerRadius}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        BorderBrush="{TemplateBinding BorderBrush}">
+
+                                    <ScrollViewer x:Name="DropDownScroller"
+                                                  SnapsToDevicePixels="True"
+                                                  adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode="{Binding Path=(adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode), RelativeSource={RelativeSource TemplatedParent}}"
+                                                  adonisExtensions:ScrollViewerExtension.HorizontalScrollBarExpansionMode="{Binding Path=(adonisExtensions:ScrollViewerExtension.HorizontalScrollBarExpansionMode), RelativeSource={RelativeSource TemplatedParent}}"
+                                                  adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement="{Binding Path=(adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement), RelativeSource={RelativeSource TemplatedParent}}"
+                                                  adonisExtensions:ScrollViewerExtension.HorizontalScrollBarPlacement="{Binding Path=(adonisExtensions:ScrollViewerExtension.HorizontalScrollBarPlacement), RelativeSource={RelativeSource TemplatedParent}}"
+                                                  adonisExtensions:ScrollViewerExtension.HideScrollBarsUntilMouseOver="{Binding Path=(adonisExtensions:ScrollViewerExtension.HideScrollBarsUntilMouseOver), RelativeSource={RelativeSource TemplatedParent}}">
+                                        <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    </ScrollViewer>
+                                </Border>
+
+                                <StackPanel x:Name="BlindIndicator"
+                                            Grid.ZIndex="1"
+                                            Focusable="False"
+                                            Margin="0 7 0 0"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Top"
+                                            Visibility="Visible"
+                                            MinHeight="15">
+                                    <ContentControl ContentTemplate="{DynamicResource {x:Static adonisUi:Templates.Expander}}"
+                                                    Foreground="{TemplateBinding Foreground}"
+                                                    Focusable="False"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    RenderTransformOrigin="0.5 0.5">
+                                        <ContentControl.RenderTransform>
+                                            <TransformGroup>
+                                                <RotateTransform Angle="180"/>
+                                                <TranslateTransform Y="0"/>
+                                            </TransformGroup>
+                                        </ContentControl.RenderTransform>
+                                        <ContentControl.Triggers>
+                                            <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                                                <BeginStoryboard>
+                                                    <BeginStoryboard.Storyboard>
+                                                        <Storyboard RepeatBehavior="Forever">
+                                                            <DoubleAnimation
+                                                                Storyboard.TargetProperty="RenderTransform.Children[0].Angle"
+                                                                From="190" To="170" Duration="0:0:0.3"
+                                                                AutoReverse="True" />
+                                                            <DoubleAnimation
+                                                                Storyboard.TargetProperty="RenderTransform.Children[1].Y"
+                                                                From="-1" To="1" Duration="0:0:0.2"
+                                                                AutoReverse="True" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard.Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                        </ContentControl.Triggers>
+                                    </ContentControl>
+                                    <!-- <TextBlock Text="Game-Specific Versions" -->
+                                    <!--            Foreground="{TemplateBinding Foreground}" -->
+                                    <!--            FontSize="9" -->
+                                    <!--            TextAlignment="Center"> -->
+                                    <!-- </TextBlock> -->
+
+                                    <!-- <StackPanel.Background> -->
+                                    <!--     <LinearGradientBrush StartPoint="0,0" EndPoint="0,1"> -->
+                                    <!--         <GradientStop Color="#35000000" Offset="0" /> -->
+                                    <!--         <GradientStop Color="#00000000" Offset="1" /> -->
+                                    <!--     </LinearGradientBrush> -->
+                                    <!-- </StackPanel.Background> -->
+                                </StackPanel>
+                            </Grid>
+                        </Popup>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+
+                        <Trigger Property="HasItems" Value="False">
+                            <Setter Property="FrameworkElement.MinHeight" TargetName="DropDownBorder" Value="95"/>
+                            <Setter Property="Visibility" TargetName="BlindIndicator" Value="Collapsed" />
+                        </Trigger>
+
+                        <Trigger Property="IsGrouping" Value="True">
+                            <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+                        </Trigger>
+
+                        <Trigger Property="IsEditable" Value="True">
+                            <Setter Property="KeyboardNavigation.IsTabStop" Value="False"/>
+                            <Setter Property="UIElement.Visibility" TargetName="PART_EditableTextBox" Value="Visible"/>
+                            <Setter Property="UIElement.Visibility" TargetName="ContentSite" Value="Collapsed"/>
+                            <Setter Property="HorizontalAlignment" TargetName="ToggleButton" Value="Right"/>
+                            <Setter Property="HorizontalAlignment" TargetName="ToggleButton" Value="Right"/>
+                        </Trigger>
+
+                        <Trigger Property="Validation.HasError" Value="True">
+                            <Setter Property="Visibility" TargetName="ErrorAlertHost" Value="Visible"/>
+                            <Setter Property="BorderBrush" TargetName="Border" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}"/>
+                            <Setter Property="BorderBrush" TargetName="SpotlightLayer" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}"/>
+                        </Trigger>
+
+                        <Trigger Property="IsFocused" SourceName="PART_EditableTextBox" Value="True">
+                            <Setter Property="IsValidatedElementFocused" TargetName="ErrorAlertHost" Value="True"/>
+                        </Trigger>
+
+                        <Trigger Property="IsDropDownOpen" Value="True">
+                            <Setter Property="IsValidatedElementFocused" TargetName="ErrorAlertHost" Value="True"/>
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="{x:Type Button}" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
         <Setter Property="Focusable" Value="False" />
     </Style>

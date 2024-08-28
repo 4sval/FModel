@@ -33,28 +33,16 @@ public class GameSelectorViewModel : ViewModel
         public IList<CustomDirectory> CustomDirectories { get; set; }
     }
 
-    private bool _useCustomEGames;
-    public bool UseCustomEGames
-    {
-        get => _useCustomEGames;
-        set => SetProperty(ref _useCustomEGames, value);
-    }
-
     private DirectorySettings _selectedDirectory;
     public DirectorySettings SelectedDirectory
     {
         get => _selectedDirectory;
-        set
-        {
-            SetProperty(ref _selectedDirectory, value);
-            if (_selectedDirectory != null) UseCustomEGames = EnumerateUeGames().ElementAt(1).Contains(_selectedDirectory.UeVersion);
-        }
+        set => SetProperty(ref _selectedDirectory, value);
     }
 
     private readonly ObservableCollection<DirectorySettings> _detectedDirectories;
     public ReadOnlyObservableCollection<DirectorySettings> DetectedDirectories { get; }
     public ReadOnlyObservableCollection<EGame> UeGames { get; }
-    public ReadOnlyObservableCollection<EGame> CustomUeGames { get; }
 
     public GameSelectorViewModel(string gameDirectory)
     {
@@ -73,9 +61,7 @@ public class GameSelectorViewModel : ViewModel
         else
             SelectedDirectory = DetectedDirectories.FirstOrDefault();
 
-        var ueGames = EnumerateUeGames().ToArray();
-        UeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(ueGames[0]));
-        CustomUeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(ueGames[1]));
+        UeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(EnumerateUeGames()));
     }
 
     public void AddUndetectedDir(string gameDirectory) => AddUndetectedDir(gameDirectory.SubstringAfterLast('\\'), gameDirectory);
@@ -94,11 +80,11 @@ public class GameSelectorViewModel : ViewModel
         SelectedDirectory = DetectedDirectories.Last();
     }
 
-    private IEnumerable<IGrouping<bool, EGame>> EnumerateUeGames()
+    private IEnumerable<EGame> EnumerateUeGames()
         => Enum.GetValues<EGame>()
             .GroupBy(value => (int)value)
             .Select(group => group.First())
-            .GroupBy(value => (int)value == ((int)value & ~0xF));
+            .OrderBy(value => (int)value == ((int)value & ~0xF));
     private IEnumerable<DirectorySettings> EnumerateDetectedGames()
     {
         yield return GetUnrealEngineGame("Fortnite", "\\FortniteGame\\Content\\Paks", EGame.GAME_UE5_5);
