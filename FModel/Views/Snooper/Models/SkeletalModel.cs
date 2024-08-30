@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using CUE4Parse_Conversion.Meshes.PSK;
@@ -74,11 +74,15 @@ public class SkeletalModel : UModel
             }
         }
 
-        Morphs = new List<Morph>();
-        for (var i = 0; i < export.MorphTargets.Length; i++)
+        Morphs = [];
+        if (export.MorphTargets.Length == 0) return;
+
+        export.PopulateMorphTargetVerticesData();
+
+        foreach (var morph in export.MorphTargets)
         {
-            if (!export.MorphTargets[i].TryLoad(out UMorphTarget morphTarget) ||
-                morphTarget.MorphLODModels.Length < 1 || morphTarget.MorphLODModels[0].Vertices.Length < 1)
+            if (!morph.TryLoad(out UMorphTarget morphTarget) || morphTarget.MorphLODModels.Length < 1 ||
+                morphTarget.MorphLODModels[0].Vertices.Length < 1)
                 continue;
 
             Morphs.Add(new Morph(Vertices, VertexSize, morphTarget));
@@ -87,10 +91,10 @@ public class SkeletalModel : UModel
 
     public SkeletalModel(USkeleton export, FBox box) : base(export)
     {
-        Indices = Array.Empty<uint>();
-        Materials = Array.Empty<Material>();
-        Vertices = Array.Empty<float>();
-        Sections = Array.Empty<Section>();
+        Indices = [];
+        Materials = [];
+        Vertices = [];
+        Sections = [];
         AddInstance(Transform.Identity);
 
         Box = box * Constants.SCALE_DOWN_RATIO;
