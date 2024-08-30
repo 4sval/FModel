@@ -142,7 +142,7 @@ public partial class App
         if (messageBox.Result == MessageBoxResult.Custom && (EErrorKind) messageBox.ButtonPressed.Id != EErrorKind.Ignore)
         {
             if ((EErrorKind) messageBox.ButtonPressed.Id == EErrorKind.ResetSettings)
-                UserSettings.Default = new UserSettings();
+                UserSettings.Delete();
 
             ApplicationService.ApplicationView.Restart();
         }

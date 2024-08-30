@@ -32,16 +32,21 @@ namespace FModel.Settings
             Default = new UserSettings();
         }
 
+        private static bool _bSave = true;
         public static void Save()
         {
-            if (Default == null) return;
+            if (!_bSave || Default == null) return;
             Default.PerDirectory[Default.CurrentDir.GameDirectory] = Default.CurrentDir;
             File.WriteAllText(FilePath, JsonConvert.SerializeObject(Default, Formatting.Indented));
         }
 
         public static void Delete()
         {
-            if (File.Exists(FilePath)) File.Delete(FilePath);
+            if (File.Exists(FilePath))
+            {
+                _bSave = false;
+                File.Delete(FilePath);
+            }
         }
 
         public static bool IsEndpointValid(EEndpointType type, out EndpointSettings endpoint)
