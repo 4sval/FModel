@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Objects.Core.Math;
 using OpenTK.Graphics.OpenGL4;
@@ -56,6 +57,27 @@ public class Morph : IDisposable
                 Vertices[baseIndex + count++] = vertices[i + 7];
                 Vertices[baseIndex + count++] = vertices[i + 8];
                 Vertices[baseIndex + count++] = vertices[i + 9];
+            }
+        }
+    }
+
+    public Morph(float[] vertices, Dictionary<uint, int> dict, UMorphTarget morphTarget)
+    {
+        Name = morphTarget.Name;
+        Vertices = new float[vertices.Length];
+        Array.Copy(vertices, Vertices, vertices.Length);
+
+        foreach (var vert in morphTarget.MorphLODModels[0].Vertices)
+        {
+            var count = 0;
+            if (dict.TryGetValue(vert.SourceIdx, out var baseIndex))
+            {
+                Vertices[baseIndex + count++] += vert.PositionDelta.X * Constants.SCALE_DOWN_RATIO;
+                Vertices[baseIndex + count++] += vert.PositionDelta.Z * Constants.SCALE_DOWN_RATIO;
+                Vertices[baseIndex + count++] += vert.PositionDelta.Y * Constants.SCALE_DOWN_RATIO;
+                Vertices[baseIndex + count++] += vert.TangentZDelta.X;
+                Vertices[baseIndex + count++] += vert.TangentZDelta.Z;
+                Vertices[baseIndex + count++] += vert.TangentZDelta.Y;
             }
         }
     }
