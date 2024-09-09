@@ -327,10 +327,8 @@ public class TabItem : ViewModel
 
     private void SaveImage(TabImage image, string path)
     {
-        var skImage = image.ToSkBitmap();
-
-        var encodedImage = skImage.Encode(UserSettings.Default.TextureExportFormat, 100);
-        File.WriteAllBytes(path, encodedImage.ToArray());
+        using var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read);
+        fs.Write(image.ImageBuffer, 0, image.ImageBuffer.Length);
     }
 
     public void SaveProperty(bool updateUi)
