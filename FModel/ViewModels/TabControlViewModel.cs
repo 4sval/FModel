@@ -81,7 +81,6 @@ public class TabImage : ViewModel
     }
 
     private SKBitmap _bmp;
-    public SKBitmap ToSkBitmap() => _bmp;
     private void ResetImage() => SetImage(_bmp);
 }
 
