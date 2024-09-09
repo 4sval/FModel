@@ -69,7 +69,7 @@ public class TabImage : ViewModel
             return;
         }
         _bmp = bitmap;
-        using var data = _bmp.Encode(NoAlpha ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
+        using var data = _bmp.Encode(NoAlpha ? ETextureFormat.Jpeg : UserSettings.Default.TextureExportFormat, 100);
         using var stream = new MemoryStream(ImageBuffer = data.ToArray(), false);
         var image = new BitmapImage();
         image.BeginInit();
