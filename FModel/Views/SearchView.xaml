@@ -185,7 +185,7 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Save Texture (.png)" Command="{Binding DataContext.RightClickMenuCommand}">
+                            <MenuItem Header="Save Texture" Command="{Binding DataContext.RightClickMenuCommand}">
                                 <MenuItem.CommandParameter>
                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                         <Binding Source="Assets_Save_Textures" />

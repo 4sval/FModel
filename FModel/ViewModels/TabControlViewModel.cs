@@ -69,7 +69,7 @@ public class TabImage : ViewModel
             return;
         }
         _bmp = bitmap;
-        using var data = _bmp.Encode(NoAlpha ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
+        using var data = _bmp.Encode(NoAlpha ? ETextureFormat.Jpeg : UserSettings.Default.TextureExportFormat, 100);
         using var stream = new MemoryStream(ImageBuffer = data.ToArray(), false);
         var image = new BitmapImage();
         image.BeginInit();
@@ -301,7 +301,15 @@ public class TabItem : ViewModel
     private void SaveImage(TabImage image, bool updateUi)
     {
         if (image == null) return;
-        var fileName = $"{image.ExportName}.png";
+
+        var ext = UserSettings.Default.TextureExportFormat switch
+        {
+            ETextureFormat.Png => ".png",
+            ETextureFormat.Tga => ".tga",
+            _ => ".png"
+        };
+
+        var fileName = image.ExportName + ext;
         var path = Path.Combine(UserSettings.Default.TextureDirectory,
             UserSettings.Default.KeepDirectoryStructure ? Directory : "", fileName!).Replace('\\', '/');
 
