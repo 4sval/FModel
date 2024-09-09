@@ -81,6 +81,7 @@ public class TabImage : ViewModel
     }
 
     private SKBitmap _bmp;
+    public SKBitmap ToSkBitmap() => _bmp;
     private void ResetImage() => SetImage(_bmp);
 }
 
@@ -301,7 +302,15 @@ public class TabItem : ViewModel
     private void SaveImage(TabImage image, bool updateUi)
     {
         if (image == null) return;
-        var fileName = $"{image.ExportName}.png";
+
+        var ext = UserSettings.Default.TextureExportFormat switch
+        {
+            ETextureFormat.Png => ".png",
+            ETextureFormat.Tga => ".tga",
+            _ => ".png"
+        };
+
+        var fileName = image.ExportName + ext;
         var path = Path.Combine(UserSettings.Default.TextureDirectory,
             UserSettings.Default.KeepDirectoryStructure ? Directory : "", fileName!).Replace('\\', '/');
 
@@ -318,8 +327,10 @@ public class TabItem : ViewModel
 
     private void SaveImage(TabImage image, string path)
     {
-        using var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read);
-        fs.Write(image.ImageBuffer, 0, image.ImageBuffer.Length);
+        var skImage = image.ToSkBitmap();
+
+        var encodedImage = skImage.Encode(UserSettings.Default.TextureExportFormat, 100);
+        File.WriteAllBytes(path, encodedImage.ToArray());
     }
 
     public void SaveProperty(bool updateUi)
