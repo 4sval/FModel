@@ -42,6 +42,9 @@ using CUE4Parse.GameTypes.PAXDEI.Encryption.Aes;
 using CUE4Parse.GameTypes.NetEase.MAR.Encryption.Aes;
 using CUE4Parse.GameTypes.FSR.Encryption.Aes;
 using CUE4Parse.GameTypes.DeltaForce.Encryption.Aes;
+using CUE4Parse.GameTypes.MJS.Encryption.Aes;
+using CUE4Parse.GameTypes.Rennsport.Encryption.Aes;
+using CUE4Parse.GameTypes.FunkoFusion.Encryption.Aes;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using EpicManifestParser;
 using FModel.Creator;
@@ -185,6 +188,9 @@ public class CUE4ParseViewModel : ViewModel
             EGame.GAME_3on3FreeStyleRebound => FreeStyleReboundAes.FSRDecrypt,
             EGame.GAME_DreamStar => DreamStarAes.DreamStarDecrypt,
             EGame.GAME_DeltaForceHawkOps => DeltaForceAes.DeltaForceDecrypt,
+            EGame.GAME_MonsterJamShowdown => MonsterJamShowdownAes.MonsterJamShowdownDecrypt,
+            EGame.GAME_Rennsport => RennsportAes.RennsportDecrypt,
+            EGame.GAME_FunkoFusion => FunkoFusionAes.FunkoFusionDecrypt,
             _ => Provider.CustomEncryption
         };
 
@@ -584,7 +590,7 @@ public class CUE4ParseViewModel : ViewModel
             case "umap":
             {
                 var exports = Provider.LoadAllObjects(fullPath);
-                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), saveProperties, updateUi);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), saveProperties, updateUi);
                 if (HasFlag(bulk, EBulkType.Properties)) break; // do not search for viewable exports if we are dealing with jsons
 
                 foreach (var e in exports)
