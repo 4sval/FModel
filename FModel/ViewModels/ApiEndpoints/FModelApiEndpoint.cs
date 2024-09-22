@@ -22,6 +22,7 @@ namespace FModel.ViewModels.ApiEndpoints;
 
 public class FModelApiEndpoint : AbstractApiProvider
 {
+    private GitHubCommit[] _commits;
     private News _news;
     private Info _infos;
     private Donator[] _donators;
@@ -31,6 +32,16 @@ public class FModelApiEndpoint : AbstractApiProvider
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
 
     public FModelApiEndpoint(RestClient client) : base(client) { }
+
+    public async Task<GitHubCommit[]> GetGitHubCommitHistoryAsync(string branch = "dev", int page = 1, int limit = 20)
+    {
+        var request = new FRestRequest(Constants.COMMITS_LINK);
+        request.AddParameter("sha", branch);
+        request.AddParameter("page", page);
+        request.AddParameter("per_page", limit);
+        var response = await _client.ExecuteAsync<GitHubCommit[]>(request).ConfigureAwait(false);
+        return response.Data;
+    }
 
     public async Task<News> GetNewsAsync(CancellationToken token, string game)
     {

@@ -21,6 +21,7 @@ public static class Constants
     public const string BLUE = "#528BCC";
 
     public const string ISSUE_LINK = "https://github.com/4sval/FModel/discussions/categories/q-a";
+    public const string COMMITS_LINK = "https://api.github.com/repos/4sval/FModel/commits";
     public const string DONATE_LINK = "https://fmodel.app/donate";
     public const string DISCORD_LINK = "https://fmodel.app/discord";
 
