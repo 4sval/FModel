@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using CUE4Parse.UE4.Versions;
@@ -7,6 +8,27 @@ using SkiaSharp;
 using J = Newtonsoft.Json.JsonPropertyAttribute;
 
 namespace FModel.ViewModels.ApiEndpoints.Models;
+
+public class GitHubCommit
+{
+    [J("sha")] public string Sha { get; private set; }
+    [J("commit")] public Commit Commit { get; private set; }
+    [J("author")] public Author Author { get; private set; }
+}
+
+public class Commit
+{
+    [J("author")] public Author Author { get; set; }
+    [J("message")] public string Message { get; set; }
+}
+
+public class Author
+{
+    [J("name")] public string Name { get; set; }
+    [J("date")] public DateTime Date { get; set; }
+    [J("avatar_url")] public string AvatarUrl { get; set; }
+    [J("html_url")] public string HtmlUrl { get; set; }
+}
 
 [DebuggerDisplay("{" + nameof(Messages) + "}")]
 public class News
