@@ -12,7 +12,7 @@ public class RelativeDateTimeConverter : IValueConverter
     {
         if (value is DateTime dateTime)
         {
-            var timeSpan = DateTime.Now - dateTime;
+            var timeSpan = DateTime.Now - dateTime.ToLocalTime();
 
             int time;
             string unit;
