@@ -129,6 +129,7 @@ public class CreatorPackage : IDisposable
             case "FortPersistentResourceItemDefinition":
             case "FortWeaponMeleeOffhandItemDefinition":
             case "FortHomebaseBannerIconItemDefinition":
+            case "FortVehicleCosmeticsVariantTokenType":
             case "JunoBuildingPropAccountItemDefinition":
             case "FortCampaignHeroLoadoutItemDefinition":
             case "FortConditionalResourceItemDefinition":
