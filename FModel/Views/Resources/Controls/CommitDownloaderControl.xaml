@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="FModel.Views.Resources.Controls.CommitDownloaderControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="15" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Viewbox Grid.Column="0" Width="16" Height="16" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Canvas Width="16" Height="16">
+                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"
+                          Data="{StaticResource ArchiveIcon}" />
+                </Canvas>
+            </Viewbox>
+            <StackPanel Grid.Column="2">
+                <TextBlock Text="Size" FontSize="10" />
+                <TextBlock FontSize="10" Text="{Binding CommitAsset.Size, Converter={x:Static converters:SizeToStringConverter.Instance}, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+            </StackPanel>
+        </Grid>
+
+        <Button Grid.Column="2" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Download"
+                Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Grid}}"
+                Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}">
+            <Viewbox Width="16" Height="16" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Canvas Width="16" Height="16">
+                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"
+                          Data="M2.75 14A1.75 1.75 0 0 1 1 12.25v-2.5a.75.75 0 0 1 1.5 0v2.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25v-2.5a.75.75 0 0 1 1.5 0v2.5A1.75 1.75 0 0 1 13.25 14Z" />
+                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"
+                          Data="M11.78 4.72a.749.749 0 1 1-1.06 1.06L8.75 3.811V9.5a.75.75 0 0 1-1.5 0V3.811L5.28 5.78a.749.749 0 1 1-1.06-1.06l3.25-3.25a.749.749 0 0 1 1.06 0l3.25 3.25Z" />
+                </Canvas>
+            </Viewbox>
+        </Button>
+    </Grid>
+</UserControl>
+

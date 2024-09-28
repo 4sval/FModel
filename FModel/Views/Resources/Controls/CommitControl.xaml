@@ -2,7 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
-             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI">
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+             xmlns:controls="clr-namespace:FModel.Views.Resources.Controls">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -10,17 +11,15 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="5"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
+    <Border BorderThickness="1" CornerRadius="0.5"
+            BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer4BackgroundBrush}}">
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
-                BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer2HighlightBorderBrush}}"
-                BorderThickness="1" Padding="5">
-            <Grid>
+            <Grid Grid.Column="0" Margin="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -65,17 +64,20 @@
                     </TextBlock>
                 </Grid>
             </Grid>
-        </Border>
 
-        <Button Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" ToolTip="Download" Padding="4"
-                Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}">
-            <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
-                <Canvas Width="24" Height="24">
-                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"
-                          Data="{StaticResource ArchiveIcon}" />
-                </Canvas>
-            </Viewbox>
-        </Button>
-    </Grid>
+            <controls:CommitDownloaderControl Grid.Column="1" CommitAsset="{Binding Asset}">
+                <controls:CommitDownloaderControl.Style>
+                    <Style TargetType="controls:CommitDownloaderControl">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsDownloadable}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </controls:CommitDownloaderControl.Style>
+            </controls:CommitDownloaderControl>
+        </Grid>
+    </Border>
 </UserControl>
 
