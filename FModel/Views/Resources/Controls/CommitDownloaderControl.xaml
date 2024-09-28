@@ -38,7 +38,8 @@
 
         <Button Grid.Column="2" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Download"
                 Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Grid}}"
-                Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}">
+                Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                Click="OnDownload">
             <Viewbox Width="16" Height="16" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <Canvas Width="16" Height="16">
                     <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"
