@@ -45,6 +45,8 @@ public class UpdateViewModel : ViewModel
 #else
         var qa = await _apiEndpointView.FModelApi.GetGitHubReleaseAsync("qa");
 #endif
+
+        qa.Assets.OrderByDescending(x => x.CreatedAt).First().IsLatest = true;
         foreach (var asset in qa.Assets)
         {
             var commitSha = asset.Name.SubstringBeforeLast(".zip");

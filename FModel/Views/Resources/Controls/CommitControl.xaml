@@ -65,7 +65,7 @@
                 </Grid>
             </Grid>
 
-            <controls:CommitDownloaderControl Grid.Column="1" CommitAsset="{Binding Asset}">
+            <controls:CommitDownloaderControl Grid.Column="1" CommitAsset="{Binding Asset}" IsCurrent="{Binding IsCurrent}">
                 <controls:CommitDownloaderControl.Style>
                     <Style TargetType="controls:CommitDownloaderControl">
                         <Setter Property="Visibility" Value="Collapsed" />

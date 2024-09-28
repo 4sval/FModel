@@ -5,6 +5,7 @@ using CUE4Parse.UE4.Versions;
 using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;
+using FModel.Settings;
 using SkiaSharp;
 using J = Newtonsoft.Json.JsonPropertyAttribute;
 
@@ -15,12 +16,20 @@ public class GitHubRelease
     [J("assets")] public GitHubAsset[] Assets { get; private set; }
 }
 
-public class GitHubAsset
+public class GitHubAsset : ViewModel
 {
     [J("name")] public string Name { get; private set; }
     [J("size")] public int Size { get; private set; }
     [J("download_count")] public int DownloadCount { get; private set; }
     [J("browser_download_url")] public string BrowserDownloadUrl { get; private set; }
+    [J("created_at")] public DateTime CreatedAt { get; private set; }
+
+    private bool _isLatest;
+    public bool IsLatest
+    {
+        get => _isLatest;
+        set => SetProperty(ref _isLatest, value);
+    }
 }
 
 public class GitHubCommit : ViewModel
@@ -39,6 +48,8 @@ public class GitHubCommit : ViewModel
             RaisePropertyChanged(nameof(IsDownloadable));
         }
     }
+
+    public bool IsCurrent => Sha == UserSettings.Default.CommitHash;
 
     public string ShortSha => Sha[..7];
     public bool IsDownloadable => Asset != null;

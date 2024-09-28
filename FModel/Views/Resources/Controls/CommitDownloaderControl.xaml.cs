@@ -21,6 +21,15 @@ public partial class CommitDownloaderControl : UserControl
         set { SetValue(CommitAssetProperty, value); }
     }
 
+    public static readonly DependencyProperty IsCurrentProperty =
+        DependencyProperty.Register("IsCurrent", typeof(bool), typeof(CommitDownloaderControl), new PropertyMetadata(null));
+
+    public bool IsCurrent
+    {
+        get { return (bool)GetValue(IsCurrentProperty); }
+        set { SetValue(IsCurrentProperty, value); }
+    }
+
     private void OnDownload(object sender, RoutedEventArgs e)
     {
         AutoUpdater.DownloadUpdate(new UpdateInfoEventArgs { DownloadURL = CommitAsset.BrowserDownloadUrl });

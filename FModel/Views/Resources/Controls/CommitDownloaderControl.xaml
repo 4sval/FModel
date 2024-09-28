@@ -15,9 +15,49 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="15" />
             <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="15" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Border Grid.Column="0"
+                BorderThickness="1"
+                CornerRadius="2.5"
+                Padding="5,2"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+            <TextBlock FontSize="9" Foreground="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=Border}}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                                <Setter Property="Text" Value="Current" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding CommitAsset.IsLatest, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
+                                <Setter Property="Text" Value="Latest" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Setter Property="BorderBrush" Value="#3f92b9" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CommitAsset.IsLatest, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Setter Property="BorderBrush" Value="#3fb950" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+        </Border>
+
+        <Grid Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="5" />
@@ -36,9 +76,10 @@
             </StackPanel>
         </Grid>
 
-        <Button Grid.Column="2" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Download"
+        <Button Grid.Column="4" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Download"
                 Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Grid}}"
                 Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                IsEnabled="{Binding IsCurrent, Converter={x:Static converters:InvertBooleanConverter.Instance}}"
                 Click="OnDownload">
             <Viewbox Width="16" Height="16" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <Canvas Width="16" Height="16">
