@@ -8,11 +8,23 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+
 using AdonisUI.Controls;
+
 using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Vfs;
+using CUE4Parse.GameTypes.DBD.Encryption.Aes;
+using CUE4Parse.GameTypes.DeltaForce.Encryption.Aes;
+using CUE4Parse.GameTypes.DreamStar.Encryption.Aes;
+using CUE4Parse.GameTypes.FSR.Encryption.Aes;
+using CUE4Parse.GameTypes.FunkoFusion.Encryption.Aes;
+using CUE4Parse.GameTypes.MJS.Encryption.Aes;
+using CUE4Parse.GameTypes.NetEase.MAR.Encryption.Aes;
+using CUE4Parse.GameTypes.PAXDEI.Encryption.Aes;
+using CUE4Parse.GameTypes.Rennsport.Encryption.Aes;
+using CUE4Parse.GameTypes.UDWN.Encryption.Aes;
 using CUE4Parse.MappingsProvider;
 using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets.Exports;
@@ -26,6 +38,7 @@ using CUE4Parse.UE4.Assets.Exports.Verse;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Localization;
+using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Oodle.Objects;
@@ -33,20 +46,12 @@ using CUE4Parse.UE4.Readers;
 using CUE4Parse.UE4.Shaders;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
+
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
-using CUE4Parse.GameTypes.UDWN.Encryption.Aes;
-using CUE4Parse.GameTypes.DBD.Encryption.Aes;
-using CUE4Parse.GameTypes.DreamStar.Encryption.Aes;
-using CUE4Parse.GameTypes.PAXDEI.Encryption.Aes;
-using CUE4Parse.GameTypes.NetEase.MAR.Encryption.Aes;
-using CUE4Parse.GameTypes.FSR.Encryption.Aes;
-using CUE4Parse.GameTypes.DeltaForce.Encryption.Aes;
-using CUE4Parse.GameTypes.MJS.Encryption.Aes;
-using CUE4Parse.GameTypes.Rennsport.Encryption.Aes;
-using CUE4Parse.GameTypes.FunkoFusion.Encryption.Aes;
-using CUE4Parse.UE4.Objects.Core.Misc;
+
 using EpicManifestParser;
+
 using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;
@@ -55,13 +60,18 @@ using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
 using FModel.Views.Snooper;
+
 using Newtonsoft.Json;
-using Ookii.Dialogs.Wpf;
+
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+
 using Serilog;
+
 using SkiaSharp;
+
 using UE4Config.Parsing;
+
 using Application = System.Windows.Application;
 
 namespace FModel.ViewModels;
@@ -70,7 +80,7 @@ public class CUE4ParseViewModel : ViewModel
 {
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
     private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
-    private readonly Regex _fnLive = new(@"^FortniteGame(/|\\)Content(/|\\)Paks(/|\\)",
+    private readonly Regex _fnLive = new(@"^FortniteGame[/\\]Content[/\\]Paks[/\\]",
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private string _internalGameName;
@@ -240,10 +250,14 @@ public class CUE4ParseViewModel : ViewModel
                                     IoStoreOnDemand.Read(new StreamReader(fileManifest.GetStream()));
                                     continue;
                                 }
-                                if (!_fnLive.IsMatch(fileManifest.FileName)) continue;
+
+                                if (!_fnLive.IsMatch(fileManifest.FileName))
+                                {
+                                    continue;
+                                }
 
                                 p.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream()]
-                                    , it => new FStreamArchive(it, manifest.FileManifestList.First(x => x.FileName.Equals(it)).GetStream(), p.Versions));
+                                    , it => new FRandomAccessStreamArchive(it, manifest.FileManifestList.First(x => x.FileName.Equals(it)).GetStream(), p.Versions));
                             }
 
                             FLogger.Append(ELog.Information, () =>
