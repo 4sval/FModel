@@ -15,7 +15,7 @@ using CUE4Parse.UE4.Readers;
 
 using FModel.Framework;
 using FModel.Settings;
-
+using OffiUtils;
 using RestSharp;
 
 namespace FModel.ViewModels.ApiEndpoints;
@@ -117,7 +117,7 @@ public class VManifest
         return chunkBytes;
     }
 
-    public Stream GetPakStream(int index) => new VPakStream(this, index);
+    public VPakStream GetPakStream(int index) => new VPakStream(this, index);
 }
 
 public readonly struct VHeader
@@ -179,7 +179,7 @@ public readonly struct VChunk
     public string GetUrl() => $"https://fmodel.fortnite-api.com/valorant/v2/chunks/{Id}";
 }
 
-public class VPakStream : Stream, ICloneable
+public class VPakStream : Stream, IRandomAccessStream, ICloneable
 {
     private readonly VManifest _manifest;
     private readonly int _pakIndex;
@@ -203,11 +203,22 @@ public class VPakStream : Stream, ICloneable
 
     public object Clone() => new VPakStream(_manifest, _pakIndex, _position);
 
-    public override int Read(byte[] buffer, int offset, int count) => ReadAsync(buffer, offset, count, CancellationToken.None).GetAwaiter().GetResult();
+    public override int Read(byte[] buffer, int offset, int count) =>
+        ReadAsync(buffer, offset, count, CancellationToken.None).GetAwaiter().GetResult();
+
+    public int ReadAt(long position, byte[] buffer, int offset, int count) =>
+        ReadAtAsync(position, buffer, offset, count, CancellationToken.None).GetAwaiter().GetResult();
 
     public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
     {
-        var (i, startPos) = GetChunkIndex(_position);
+        var bytesRead = await ReadAtAsync(_position, buffer, offset, count, cancellationToken);
+        _position += bytesRead;
+        return bytesRead;
+    }
+
+    public async Task<int> ReadAtAsync(long position, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+    {
+        var (i, startPos) = GetChunkIndex(position);
         if (i == -1) return 0;
 
         await PrefetchAsync(i, startPos, count, cancellationToken).ConfigureAwait(false);
@@ -234,8 +245,12 @@ public class VPakStream : Stream, ICloneable
             if (++i == _chunks.Length) break;
         }
 
-        _position += bytesRead;
         return bytesRead;
+    }
+
+    public Task<int> ReadAtAsync(long position, Memory<byte> memory, CancellationToken cancellationToken)
+    {
+        throw new NotSupportedException();
     }
 
     private async Task PrefetchAsync(int i, uint startPos, long count, CancellationToken cancellationToken, int concurrentDownloads = 4)

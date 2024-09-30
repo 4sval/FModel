@@ -63,7 +63,7 @@ using FModel.Views.Resources.Controls;
 using FModel.Views.Snooper;
 
 using Newtonsoft.Json;
-
+using OffiUtils;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 
@@ -258,7 +258,7 @@ public class CUE4ParseViewModel : ViewModel
                                     continue;
                                 }
 
-                                p.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream()]
+                                p.RegisterVfs(fileManifest.FileName, [(IRandomAccessStream)fileManifest.GetStream()]
                                     , it => new FRandomAccessStreamArchive(it, manifest.FileManifestList.First(x => x.FileName.Equals(it)).GetStream(), p.Versions));
                             }
 
@@ -276,7 +276,7 @@ public class CUE4ParseViewModel : ViewModel
 
                             for (var i = 0; i < manifestInfo.Paks.Length; i++)
                             {
-                                p.RegisterVfs(manifestInfo.Paks[i].GetFullName(), [manifestInfo.GetPakStream(i)]);
+                                p.RegisterVfs(manifestInfo.Paks[i].GetFullName(), [(IRandomAccessStream)manifestInfo.GetPakStream(i)]);
                             }
 
                             FLogger.Append(ELog.Information, () =>
