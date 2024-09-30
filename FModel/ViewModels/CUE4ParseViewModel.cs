@@ -25,6 +25,7 @@ using CUE4Parse.GameTypes.NetEase.MAR.Encryption.Aes;
 using CUE4Parse.GameTypes.PAXDEI.Encryption.Aes;
 using CUE4Parse.GameTypes.Rennsport.Encryption.Aes;
 using CUE4Parse.GameTypes.UDWN.Encryption.Aes;
+using CUE4Parse.GameTypes.THPS.Encryption.Aes;
 using CUE4Parse.MappingsProvider;
 using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets.Exports;
@@ -201,6 +202,7 @@ public class CUE4ParseViewModel : ViewModel
             EGame.GAME_MonsterJamShowdown => MonsterJamShowdownAes.MonsterJamShowdownDecrypt,
             EGame.GAME_Rennsport => RennsportAes.RennsportDecrypt,
             EGame.GAME_FunkoFusion => FunkoFusionAes.FunkoFusionDecrypt,
+            EGame.GAME_TonyHawkProSkater12 => THPS12Aes.THPS12Decrypt,
             _ => Provider.CustomEncryption
         };
 
@@ -678,6 +680,16 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
                     var registry = new FAssetRegistryState(archive);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), saveProperties, updateUi);
+                }
+
+                break;
+            }
+            case "bin" when fileName.Contains("GlobalShaderCache"):
+            {
+                if (Provider.TryCreateReader(fullPath, out var archive))
+                {
+                    var registry = new FGlobalShaderCache(archive);
                     TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), saveProperties, updateUi);
                 }
 
