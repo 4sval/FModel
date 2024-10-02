@@ -147,11 +147,17 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Changelog" Command="{Binding MenuCommand}" CommandParameter="Help_Changelog">
+                <MenuItem Header="Releases" Command="{Binding MenuCommand}" CommandParameter="Help_Releases">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource NoteIcon}" />
+                                <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M16 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+                                <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M12 8m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+                                <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M12 16m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+                                <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M12 15v-6" />
+                                <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M15 11l-2 -2" />
+                                <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M11 7l-1.9 -1.9" />
+                                <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M13.446 2.6l7.955 7.954a2.045 2.045 0 0 1 0 2.892l-7.955 7.955a2.045 2.045 0 0 1 -2.892 0l-7.955 -7.955a2.045 2.045 0 0 1 0 -2.892l7.955 -7.955a2.045 2.045 0 0 1 2.892 0z" />
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>

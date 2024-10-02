@@ -45,8 +45,6 @@ public partial class MainWindow
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        var result = new UpdateView().ShowDialog();
-
         var newOrUpdated = UserSettings.Default.ShowChangelog;
 #if !DEBUG
         ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(UserSettings.Default.UpdateMode, true);

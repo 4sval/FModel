@@ -10,7 +10,6 @@ using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.VirtualFileSystem;
-using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -50,7 +49,7 @@ public class ApplicationViewModel : ViewModel
     public CopyCommand CopyCommand => _copyCommand ??= new CopyCommand(this);
     private CopyCommand _copyCommand;
 
-    public string InitialWindowTitle => $"FModel {UserSettings.Default.UpdateMode.GetDescription()}";
+    public string InitialWindowTitle => $"FModel ({UserSettings.Default.ShortCommitHash})";
     public string GameDisplayName => CUE4Parse.Provider.GameDisplayName ?? "Unknown";
     public string TitleExtra => $"({UserSettings.Default.CurrentDir.UeVersion}){(Build != EBuildKind.Release ? $" ({Build})" : "")}";
 

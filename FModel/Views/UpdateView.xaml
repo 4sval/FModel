@@ -5,12 +5,12 @@
                              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
                              xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
-                             MinHeight="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.20'}"
-                             Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.50'}"
-                             Loaded="OnLoaded">
+                             WindowStartupLocation="CenterScreen" IconVisibility="Collapsed" ResizeMode="CanMinimize" Loaded="OnLoaded"
+                             MinHeight="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.40'}"
+                             Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.35'}">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
-            <Setter Property="Title" Value="Update Viewer for now" />
+            <Setter Property="Title" Value="Releases" />
         </Style>
     </adonisControls:AdonisWindow.Style>
     <adonisControls:AdonisWindow.Resources>
@@ -20,17 +20,35 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </adonisControls:AdonisWindow.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top">
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Title, RelativeSource={RelativeSource AncestorType=adonisControls:AdonisWindow}}" Value="Releases">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
 
-        <Button Grid.Row="0">Download Latest</Button>
-        <Separator Grid.Row="1" Style="{StaticResource CustomSeparator}" Tag="History" />
+            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                <Button>Download Latest Release</Button>
+                <TextBlock Text="Remind Me:" />
+                <ComboBox>
+                    <ComboBoxItem Content="In 3 Days" />
+                    <ComboBoxItem Content="Next Week" />
+                    <ComboBoxItem Content="Next Month" />
+                    <!-- TODO: show that it can be manually updated via Help > Releases -->
+                    <ComboBoxItem Content="Never" />
+                </ComboBox>
+            </WrapPanel>
 
-        <ItemsControl Grid.Row="2" ItemsSource="{Binding CommitsView}">
+            <Separator Style="{StaticResource CustomSeparator}" Tag="History" />
+        </StackPanel>
+
+        <ItemsControl DockPanel.Dock="Bottom" ItemsSource="{Binding CommitsView}">
             <ItemsControl.GroupStyle>
                 <GroupStyle>
                     <GroupStyle.ContainerStyle>
@@ -69,6 +87,6 @@
                 </ControlTemplate>
             </ItemsControl.Template>
         </ItemsControl>
-    </Grid>
+    </DockPanel>
 </adonisControls:AdonisWindow>
 

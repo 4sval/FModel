@@ -32,7 +32,7 @@
                             <DataTrigger Binding="{Binding IsCurrent}" Value="True">
                                 <Setter Property="Text" Value="Current" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding CommitAsset.IsLatest, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
+                            <DataTrigger Binding="{Binding Asset.IsLatest}" Value="True">
                                 <Setter Property="Text" Value="Latest" />
                             </DataTrigger>
                         </Style.Triggers>
@@ -47,10 +47,12 @@
                         <DataTrigger Binding="{Binding IsCurrent}" Value="True">
                             <Setter Property="Visibility" Value="Visible" />
                             <Setter Property="BorderBrush" Value="#3f92b9" />
+                            <Setter Property="Background" Value="#0f3f92b9" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding CommitAsset.IsLatest, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
+                        <DataTrigger Binding="{Binding Asset.IsLatest}" Value="True">
                             <Setter Property="Visibility" Value="Visible" />
                             <Setter Property="BorderBrush" Value="#3fb950" />
+                            <Setter Property="Background" Value="#0f3fb950" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
@@ -72,7 +74,7 @@
             </Viewbox>
             <StackPanel Grid.Column="2">
                 <TextBlock Text="Size" FontSize="10" />
-                <TextBlock FontSize="10" Text="{Binding CommitAsset.Size, Converter={x:Static converters:SizeToStringConverter.Instance}, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                <TextBlock FontSize="10" Text="{Binding Asset.Size, Converter={x:Static converters:SizeToStringConverter.Instance}}" />
             </StackPanel>
         </Grid>
 

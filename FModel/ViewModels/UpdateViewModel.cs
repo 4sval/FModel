@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
@@ -8,7 +7,6 @@ using FModel.Framework;
 using FModel.Services;
 using FModel.ViewModels.ApiEndpoints.Models;
 using FModel.Views.Resources.Converters;
-using Newtonsoft.Json;
 
 namespace FModel.ViewModels;
 
@@ -31,19 +29,11 @@ public class UpdateViewModel : ViewModel
     public async Task Load()
     {
 #if DEBUG
-        Commits.AddRange(JsonConvert.DeserializeObject<GitHubCommit[]>(await File.ReadAllTextAsync(@"C:\Users\valen\Downloads\history.json")));
+        Commits.AddRange(Newtonsoft.Json.JsonConvert.DeserializeObject<GitHubCommit[]>(await System.IO.File.ReadAllTextAsync(@"C:\Users\valen\Downloads\history.json")));
+        var qa = Newtonsoft.Json.JsonConvert.DeserializeObject<GitHubRelease>(await System.IO.File.ReadAllTextAsync(@"C:\Users\valen\Downloads\qa.json"));
 #else
-        Commits.AddRange(await _apiEndpointView.FModelApi.GetGitHubCommitHistoryAsync());
-#endif
-        _ = PostLoad();
-    }
-
-    private async Task PostLoad()
-    {
-#if DEBUG
-        var qa = JsonConvert.DeserializeObject<GitHubRelease>(await File.ReadAllTextAsync(@"C:\Users\valen\Downloads\qa.json"));
-#else
-        var qa = await _apiEndpointView.FModelApi.GetGitHubReleaseAsync("qa");
+        Commits.AddRange(await _apiEndpointView.GitHubApi.GetCommitHistoryAsync());
+        var qa = await _apiEndpointView.GitHubApi.GetReleaseAsync("qa");
 #endif
 
         qa.Assets.OrderByDescending(x => x.CreatedAt).First().IsLatest = true;
