@@ -15,6 +15,7 @@ using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Vfs;
+using CUE4Parse.GameTypes.ApexMobile.Encryption.Aes;
 using CUE4Parse.GameTypes.DBD.Encryption.Aes;
 using CUE4Parse.GameTypes.DeltaForce.Encryption.Aes;
 using CUE4Parse.GameTypes.DreamStar.Encryption.Aes;
@@ -24,6 +25,7 @@ using CUE4Parse.GameTypes.MJS.Encryption.Aes;
 using CUE4Parse.GameTypes.NetEase.MAR.Encryption.Aes;
 using CUE4Parse.GameTypes.PAXDEI.Encryption.Aes;
 using CUE4Parse.GameTypes.Rennsport.Encryption.Aes;
+using CUE4Parse.GameTypes.Snowbreak.Encryption.Aes;
 using CUE4Parse.GameTypes.UDWN.Encryption.Aes;
 using CUE4Parse.GameTypes.THPS.Encryption.Aes;
 using CUE4Parse.MappingsProvider;
@@ -50,7 +52,6 @@ using CUE4Parse.UE4.Wwise;
 
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
-
 using EpicManifestParser;
 
 using FModel.Creator;
@@ -192,6 +193,8 @@ public class CUE4ParseViewModel : ViewModel
         Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
         Provider.CustomEncryption = Provider.Versions.Game switch
         {
+            EGame.GAME_ApexLegendsMobile => ApexLegendsMobileAes.DecryptApexMobile,
+            EGame.GAME_Snowbreak => SnowbreakAes.SnowbreakDecrypt,
             EGame.GAME_MarvelRivals => MarvelAes.MarvelDecrypt,
             EGame.GAME_Undawn => ToaaAes.ToaaDecrypt,
             EGame.GAME_DeadByDaylight => DBDAes.DbDDecrypt,
@@ -606,7 +609,7 @@ public class CUE4ParseViewModel : ViewModel
             case "umap":
             {
                 var exports = Provider.LoadAllObjects(fullPath);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), saveProperties, updateUi);
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), saveProperties, updateUi);
                 if (HasFlag(bulk, EBulkType.Properties)) break; // do not search for viewable exports if we are dealing with jsons
 
                 foreach (var e in exports)
@@ -685,7 +688,7 @@ public class CUE4ParseViewModel : ViewModel
 
                 break;
             }
-            case "bin" when fileName.Contains("GlobalShaderCache"):
+            case "bin" when fileName.Contains("GlobalShaderCache", StringComparison.OrdinalIgnoreCase):
             {
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
