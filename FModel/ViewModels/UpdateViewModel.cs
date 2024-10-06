@@ -1,10 +1,12 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
+using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
 using FModel.ViewModels.Commands;
 using FModel.Views.Resources.Converters;
@@ -28,6 +30,9 @@ public class UpdateViewModel : ViewModel
         {
             GroupDescriptions = { new PropertyGroupDescription("Commit.Author.Date", new DateTimeToDateConverter()) }
         };
+
+        if (UserSettings.Default.NextUpdateCheck < DateTime.Now)
+            RemindMeCommand.Execute(this, null);
     }
 
     public async Task Load()

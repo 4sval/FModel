@@ -49,7 +49,7 @@ public class ApplicationViewModel : ViewModel
     public CopyCommand CopyCommand => _copyCommand ??= new CopyCommand(this);
     private CopyCommand _copyCommand;
 
-    public string InitialWindowTitle => $"FModel ({UserSettings.Default.ShortCommitHash})";
+    public string InitialWindowTitle => $"FModel ({Constants.APP_SHORT_COMMIT_ID})";
     public string GameDisplayName => CUE4Parse.Provider.GameDisplayName ?? "Unknown";
     public string TitleExtra => $"({UserSettings.Default.CurrentDir.UeVersion}){(Build != EBuildKind.Release ? $" ({Build})" : "")}";
 
@@ -143,7 +143,7 @@ public class ApplicationViewModel : ViewModel
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "dotnet",
-                    Arguments = $"\"{Path.GetFullPath(Environment.GetCommandLineArgs()[0])}\"",
+                    Arguments = $"\"{path}\"",
                     UseShellExecute = false,
                     RedirectStandardOutput = false,
                     RedirectStandardError = false,

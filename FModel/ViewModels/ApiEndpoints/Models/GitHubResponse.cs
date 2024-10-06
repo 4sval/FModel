@@ -63,13 +63,24 @@ public class GitHubCommit : ViewModel
         }
     }
 
-    public bool IsCurrent => Sha == UserSettings.Default.CommitHash;
+    public bool IsCurrent => Sha == Constants.APP_COMMIT_ID;
     public string ShortSha => Sha[..7];
     public bool IsDownloadable => Asset != null;
 
     public void Download()
     {
-        if (IsCurrent) return;
+        if (IsCurrent)
+        {
+            MessageBox.Show(new MessageBoxModel
+            {
+                Text = "You are already on the latest version.",
+                Caption = "Update FModel",
+                Icon = MessageBoxImage.Information,
+                Buttons = [MessageBoxButtons.Ok()],
+                IsSoundEnabled = false
+            });
+            return;
+        }
 
         var messageBox = new MessageBoxModel
         {
@@ -87,7 +98,6 @@ public class GitHubCommit : ViewModel
         {
             if (AutoUpdater.DownloadUpdate(new UpdateInfoEventArgs { DownloadURL = Asset.BrowserDownloadUrl }))
             {
-                UserSettings.Default.CommitHash = Sha;
                 Application.Current.Shutdown();
             }
         }

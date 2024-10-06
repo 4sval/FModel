@@ -156,8 +156,8 @@ public class FModelApiEndpoint : AbstractApiProvider
 
             var qa = (CustomMandatory) args.Mandatory;
             var currentVersion = new System.Version(args.CurrentVersion);
-            if ((qa.Value && qa.CommitHash == UserSettings.Default.CommitHash) || // qa branch : same commit id
-                (!qa.Value && currentVersion == args.InstalledVersion && args.CurrentVersion == UserSettings.Default.CommitHash)) // stable - beta branch : same version + commit id = version
+            if ((qa.Value && qa.CommitHash == Constants.APP_COMMIT_ID) || // qa branch : same commit id
+                (!qa.Value && currentVersion == args.InstalledVersion)) // stable - beta branch : same version + commit id = version
             {
                 if (UserSettings.Default.ShowChangelog)
                     ShowChangelog(args);
