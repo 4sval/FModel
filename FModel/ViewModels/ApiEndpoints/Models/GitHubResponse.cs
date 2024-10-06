@@ -24,6 +24,7 @@ public class GitHubAsset : ViewModel
     [J("download_count")] public int DownloadCount { get; private set; }
     [J("browser_download_url")] public string BrowserDownloadUrl { get; private set; }
     [J("created_at")] public DateTime CreatedAt { get; private set; }
+    [J("uploader")] public Author Uploader { get; private set; }
 
     private bool _isLatest;
     public bool IsLatest
@@ -48,8 +49,8 @@ public class GitHubCommit : ViewModel
         }
     }
 
-    [J("commit")] public Commit Commit { get; private set; }
-    [J("author")] public Author Author { get; private set; }
+    [J("commit")] public Commit Commit { get; set; }
+    [J("author")] public Author Author { get; set; }
 
     private GitHubAsset _asset;
     public GitHubAsset Asset
@@ -107,6 +108,7 @@ public class Commit
 public class Author
 {
     [J("name")] public string Name { get; set; }
+    [J("login")] public string Login { get; set; }
     [J("date")] public DateTime Date { get; set; }
     [J("avatar_url")] public string AvatarUrl { get; set; }
     [J("html_url")] public string HtmlUrl { get; set; }

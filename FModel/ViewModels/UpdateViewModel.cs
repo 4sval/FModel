@@ -45,6 +45,20 @@ public class UpdateViewModel : ViewModel
             {
                 commit.Asset = asset;
             }
+            else
+            {
+                Commits.Add(new GitHubCommit
+                {
+                    Sha = commitSha,
+                    Commit = new Commit
+                    {
+                        Message = "No commit message",
+                        Author = new Author { Name = asset.Uploader.Login, Date = asset.CreatedAt }
+                    },
+                    Author = asset.Uploader,
+                    Asset = asset
+                });
+            }
         }
     }
 

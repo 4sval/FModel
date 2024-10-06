@@ -42,16 +42,16 @@
                 <ColumnDefinition Width="5" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Grid.Style>
-                <Style TargetType="Grid">
-                    <Setter Property="Visibility" Value="Visible" />
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Title, RelativeSource={RelativeSource AncestorType=adonisControls:AdonisWindow}}" Value="Releases">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
+            <!-- <Grid.Style> -->
+            <!--     <Style TargetType="Grid"> -->
+            <!--         <Setter Property="Visibility" Value="Visible" /> -->
+            <!--         <Style.Triggers> -->
+            <!--             <DataTrigger Binding="{Binding Title, RelativeSource={RelativeSource AncestorType=adonisControls:AdonisWindow}}" Value="Releases"> -->
+            <!--                 <Setter Property="Visibility" Value="Collapsed" /> -->
+            <!--             </DataTrigger> -->
+            <!--         </Style.Triggers> -->
+            <!--     </Style> -->
+            <!-- </Grid.Style> -->
 
             <Button Grid.Column="0" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
                     VerticalAlignment="Top" Height="{Binding ActualHeight, ElementName=RemindButton}"

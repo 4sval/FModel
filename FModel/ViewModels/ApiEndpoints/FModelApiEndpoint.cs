@@ -153,6 +153,7 @@ public class FModelApiEndpoint : AbstractApiProvider
         if (args is { CurrentVersion: { } })
         {
             UserSettings.Default.LastUpdateCheck = DateTime.Now;
+
             var qa = (CustomMandatory) args.Mandatory;
             var currentVersion = new System.Version(args.CurrentVersion);
             if ((qa.Value && qa.CommitHash == UserSettings.Default.CommitHash) || // qa branch : same commit id
