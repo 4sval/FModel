@@ -20,6 +20,7 @@ public class ApiEndpointViewModel
     public FortniteCentralApiEndpoint CentralApi { get; }
     public EpicApiEndpoint EpicApi { get; }
     public FModelApiEndpoint FModelApi { get; }
+    public GitHubApiEndpoint GitHubApi { get; }
     public DynamicApiEndpoint DynamicApi { get; }
 
     public ApiEndpointViewModel()
@@ -29,6 +30,7 @@ public class ApiEndpointViewModel
         CentralApi = new FortniteCentralApiEndpoint(_client);
         EpicApi = new EpicApiEndpoint(_client);
         FModelApi = new FModelApiEndpoint(_client);
+        GitHubApi = new GitHubApiEndpoint(_client);
         DynamicApi = new DynamicApiEndpoint(_client);
     }
 

@@ -106,7 +106,7 @@ public partial class App
             outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [FModel] [{Level:u3}] {Message:lj}{NewLine}{Exception}").CreateLogger();
 #endif
 
-        Log.Information("Version {Version}", Constants.APP_VERSION);
+        Log.Information("Version {Version} ({CommitId})", Constants.APP_VERSION, Constants.APP_COMMIT_ID);
         Log.Information("{OS}", GetOperatingSystemProductName());
         Log.Information("{RuntimeVer}", RuntimeInformation.FrameworkDescription);
         Log.Information("Culture {SysLang}", CultureInfo.CurrentCulture);

@@ -186,11 +186,18 @@ namespace FModel.Settings
             set => SetProperty(ref _updateMode, value);
         }
 
-        private string _commitHash = Constants.APP_VERSION;
-        public string CommitHash
+        private DateTime _lastUpdateCheck = DateTime.MinValue;
+        public DateTime LastUpdateCheck
         {
-            get => _commitHash;
-            set => SetProperty(ref _commitHash, value);
+            get => _lastUpdateCheck;
+            set => SetProperty(ref _lastUpdateCheck, value);
+        }
+
+        private DateTime _nextUpdateCheck = DateTime.Now;
+        public DateTime NextUpdateCheck
+        {
+            get => _nextUpdateCheck;
+            set => SetProperty(ref _nextUpdateCheck, value);
         }
 
         private bool _keepDirectoryStructure = true;
@@ -265,8 +272,6 @@ namespace FModel.Settings
 
         [JsonIgnore]
         public DirectorySettings CurrentDir { get; set; }
-        [JsonIgnore]
-        public string ShortCommitHash => CommitHash[..7];
 
         /// <summary>
         /// TO DELETEEEEEEEEEEEEE

@@ -10,6 +10,7 @@ using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
+using FModel.Views;
 using Newtonsoft.Json;
 using RestSharp;
 using Serilog;
@@ -118,6 +119,8 @@ public class FModelApiEndpoint : AbstractApiProvider
 
     public void CheckForUpdates(EUpdateMode updateMode, bool launch = false)
     {
+        if (DateTime.Now < UserSettings.Default.NextUpdateCheck) return;
+
         if (launch)
         {
             AutoUpdater.ParseUpdateInfoEvent += ParseUpdateInfoEvent;
@@ -149,43 +152,20 @@ public class FModelApiEndpoint : AbstractApiProvider
     {
         if (args is { CurrentVersion: { } })
         {
+            UserSettings.Default.LastUpdateCheck = DateTime.Now;
+
             var qa = (CustomMandatory) args.Mandatory;
             var currentVersion = new System.Version(args.CurrentVersion);
-            if ((qa.Value && qa.CommitHash == UserSettings.Default.CommitHash) || // qa branch : same commit id
-                (!qa.Value && currentVersion == args.InstalledVersion && args.CurrentVersion == UserSettings.Default.CommitHash)) // stable - beta branch : same version + commit id = version
+            if ((qa.Value && qa.CommitHash == Constants.APP_COMMIT_ID) || // qa branch : same commit id
+                (!qa.Value && currentVersion == args.InstalledVersion)) // stable - beta branch : same version + commit id = version
             {
                 if (UserSettings.Default.ShowChangelog)
                     ShowChangelog(args);
                 return;
             }
 
-            var downgrade = currentVersion < args.InstalledVersion;
-            var messageBox = new MessageBoxModel
-            {
-                Text = $"The latest version of FModel {UserSettings.Default.UpdateMode.GetDescription()} is {(qa.Value ? qa.ShortCommitHash : args.CurrentVersion)}. You are using version {(qa.Value ? UserSettings.Default.ShortCommitHash : args.InstalledVersion)}. Do you want to {(downgrade ? "downgrade" : "update")} the application now?",
-                Caption = $"{(downgrade ? "Downgrade" : "Update")} Available",
-                Icon = MessageBoxImage.Question,
-                Buttons = MessageBoxButtons.YesNo(),
-                IsSoundEnabled = false
-            };
-
-            MessageBox.Show(messageBox);
-            if (messageBox.Result != MessageBoxResult.Yes) return;
-
-            try
-            {
-                if (AutoUpdater.DownloadUpdate(args))
-                {
-                    UserSettings.Default.ShowChangelog = currentVersion != args.InstalledVersion;
-                    UserSettings.Default.CommitHash = qa.CommitHash;
-                    Application.Current.Shutdown();
-                }
-            }
-            catch (Exception exception)
-            {
-                UserSettings.Default.ShowChangelog = false;
-                MessageBox.Show(exception.Message, exception.GetType().ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            const string message = "A new update is available!";
+            Helper.OpenWindow<AdonisWindow>(message, () => new UpdateView { Title = message, ResizeMode = ResizeMode.NoResize }.ShowDialog());
         }
         else
         {
