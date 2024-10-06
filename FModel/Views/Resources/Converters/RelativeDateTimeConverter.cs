@@ -16,6 +16,9 @@ public class RelativeDateTimeConverter : IValueConverter
 
             int time;
             string unit;
+            if (timeSpan.TotalSeconds < 30)
+                return "Just now";
+
             if (timeSpan.TotalMinutes < 1)
             {
                 time = timeSpan.Seconds;

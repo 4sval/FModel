@@ -29,11 +29,11 @@
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsCurrent}" Value="True">
-                                <Setter Property="Text" Value="Current" />
-                            </DataTrigger>
                             <DataTrigger Binding="{Binding Asset.IsLatest}" Value="True">
                                 <Setter Property="Text" Value="Latest" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                                <Setter Property="Text" Value="Current" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -44,15 +44,15 @@
                 <Style TargetType="Border">
                     <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsCurrent}" Value="True">
-                            <Setter Property="Visibility" Value="Visible" />
-                            <Setter Property="BorderBrush" Value="#3f92b9" />
-                            <Setter Property="Background" Value="#0f3f92b9" />
-                        </DataTrigger>
                         <DataTrigger Binding="{Binding Asset.IsLatest}" Value="True">
                             <Setter Property="Visibility" Value="Visible" />
                             <Setter Property="BorderBrush" Value="#3fb950" />
                             <Setter Property="Background" Value="#0f3fb950" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Setter Property="BorderBrush" Value="#3f92b9" />
+                            <Setter Property="Background" Value="#0f3f92b9" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

@@ -151,13 +151,7 @@
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
-                                <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M16 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
-                                <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M12 8m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
-                                <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M12 16m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
-                                <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M12 15v-6" />
-                                <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M15 11l-2 -2" />
-                                <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M11 7l-1.9 -1.9" />
-                                <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M13.446 2.6l7.955 7.954a2.045 2.045 0 0 1 0 2.892l-7.955 7.955a2.045 2.045 0 0 1 -2.892 0l-7.955 -7.955a2.045 2.045 0 0 1 0 -2.892l7.955 -7.955a2.045 2.045 0 0 1 2.892 0z" />
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource GitHubIcon}" />
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
@@ -803,12 +797,16 @@
                             <Style TargetType="StatusBarItem">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsAutoOpenSounds, Source={x:Static settings:UserSettings.Default}}" Value="False">
-                                        <Setter Property="Visibility" Value="Hidden" />
+                                        <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </StatusBarItem.Style>
                         <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="SND" />
+                    </StatusBarItem>
+
+                    <StatusBarItem Margin="10 0 0 0">
+                        <TextBlock Text="{Binding LastUpdateCheck, Source={x:Static local:Settings.UserSettings.Default}, Converter={x:Static converters:RelativeDateTimeConverter.Instance}, StringFormat=Last Refresh: {0}}" />
                     </StatusBarItem>
                 </StackPanel>
             </StatusBarItem>

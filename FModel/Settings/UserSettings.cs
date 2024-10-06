@@ -186,6 +186,20 @@ namespace FModel.Settings
             set => SetProperty(ref _updateMode, value);
         }
 
+        private DateTime _lastUpdateCheck = DateTime.MinValue;
+        public DateTime LastUpdateCheck
+        {
+            get => _lastUpdateCheck;
+            set => SetProperty(ref _lastUpdateCheck, value);
+        }
+
+        private DateTime _nextUpdateCheck = DateTime.Now;
+        public DateTime NextUpdateCheck
+        {
+            get => _nextUpdateCheck;
+            set => SetProperty(ref _nextUpdateCheck, value);
+        }
+
         private string _commitHash = Constants.APP_VERSION;
         public string CommitHash
         {

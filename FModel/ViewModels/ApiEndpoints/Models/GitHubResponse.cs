@@ -1,6 +1,13 @@
 ﻿using System;
+using System.Windows;
+using AdonisUI.Controls;
+using AutoUpdaterDotNET;
 using FModel.Framework;
 using FModel.Settings;
+using MessageBox = AdonisUI.Controls.MessageBox;
+using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
+using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
+using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 using J = Newtonsoft.Json.JsonPropertyAttribute;
 
 namespace FModel.ViewModels.ApiEndpoints.Models;
@@ -58,6 +65,37 @@ public class GitHubCommit : ViewModel
     public bool IsCurrent => Sha == UserSettings.Default.CommitHash;
     public string ShortSha => Sha[..7];
     public bool IsDownloadable => Asset != null;
+
+    public void Download()
+    {
+        if (IsCurrent) return;
+
+        var messageBox = new MessageBoxModel
+        {
+            Text = $"Are you sure you want to update to version '{ShortSha}'?{(!Asset.IsLatest ? "\nThis is not the latest version." : "")}",
+            Caption = "Update FModel",
+            Icon = MessageBoxImage.Question,
+            Buttons = MessageBoxButtons.YesNo(),
+            IsSoundEnabled = false
+        };
+
+        MessageBox.Show(messageBox);
+        if (messageBox.Result != MessageBoxResult.Yes) return;
+
+        try
+        {
+            if (AutoUpdater.DownloadUpdate(new UpdateInfoEventArgs { DownloadURL = Asset.BrowserDownloadUrl }))
+            {
+                UserSettings.Default.CommitHash = Sha;
+                Application.Current.Shutdown();
+            }
+        }
+        catch (Exception exception)
+        {
+            UserSettings.Default.ShowChangelog = false;
+            MessageBox.Show(exception.Message, exception.GetType().ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
 }
 
 public class Commit

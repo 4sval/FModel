@@ -6,6 +6,7 @@ using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.ViewModels.ApiEndpoints.Models;
+using FModel.ViewModels.Commands;
 using FModel.Views.Resources.Converters;
 
 namespace FModel.ViewModels;
@@ -13,6 +14,9 @@ namespace FModel.ViewModels;
 public class UpdateViewModel : ViewModel
 {
     private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
+
+    private RemindMeCommand _remindMeCommand;
+    public RemindMeCommand RemindMeCommand => _remindMeCommand ??= new RemindMeCommand(this);
 
     public RangeObservableCollection<GitHubCommit> Commits { get; }
     public ICollectionView CommitsView { get; }
@@ -28,15 +32,11 @@ public class UpdateViewModel : ViewModel
 
     public async Task Load()
     {
-#if DEBUG
-        Commits.AddRange(Newtonsoft.Json.JsonConvert.DeserializeObject<GitHubCommit[]>(await System.IO.File.ReadAllTextAsync(@"C:\Users\valen\Downloads\history.json")));
-        var qa = Newtonsoft.Json.JsonConvert.DeserializeObject<GitHubRelease>(await System.IO.File.ReadAllTextAsync(@"C:\Users\valen\Downloads\qa.json"));
-#else
         Commits.AddRange(await _apiEndpointView.GitHubApi.GetCommitHistoryAsync());
-        var qa = await _apiEndpointView.GitHubApi.GetReleaseAsync("qa");
-#endif
 
+        var qa = await _apiEndpointView.GitHubApi.GetReleaseAsync("qa");
         qa.Assets.OrderByDescending(x => x.CreatedAt).First().IsLatest = true;
+
         foreach (var asset in qa.Assets)
         {
             var commitSha = asset.Name.SubstringBeforeLast(".zip");
@@ -46,5 +46,10 @@ public class UpdateViewModel : ViewModel
                 commit.Asset = asset;
             }
         }
+    }
+
+    public void DownloadLatest()
+    {
+        Commits.FirstOrDefault(x => x.Asset.IsLatest)?.Download();
     }
 }

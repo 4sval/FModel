@@ -18,9 +18,6 @@ public class GitHubApiEndpoint : AbstractApiProvider
         request.AddParameter("page", page);
         request.AddParameter("per_page", limit);
         var response = await _client.ExecuteAsync<GitHubCommit[]>(request).ConfigureAwait(false);
-#if DEBUG
-        System.IO.File.WriteAllTextAsync(@"C:\Users\valen\Downloads\history.json", Newtonsoft.Json.JsonConvert.SerializeObject(response.Data));
-#endif
         return response.Data;
     }
 
@@ -28,9 +25,6 @@ public class GitHubApiEndpoint : AbstractApiProvider
     {
         var request = new FRestRequest($"{Constants.GH_RELEASES}/tags/{tag}");
         var response = await _client.ExecuteAsync<GitHubRelease>(request).ConfigureAwait(false);
-#if DEBUG
-        System.IO.File.WriteAllTextAsync(@"C:\Users\valen\Downloads\qa.json", Newtonsoft.Json.JsonConvert.SerializeObject(response.Data));
-#endif
         return response.Data;
     }
 }

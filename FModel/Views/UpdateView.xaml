@@ -1,7 +1,9 @@
 ﻿<adonisControls:AdonisWindow x:Class="FModel.Views.UpdateView"
                              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                             xmlns:local="clr-namespace:FModel"
                              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+                             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
                              xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
@@ -20,10 +22,28 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </adonisControls:AdonisWindow.Resources>
-    <DockPanel>
-        <StackPanel DockPanel.Dock="Top">
-            <StackPanel.Style>
-                <Style TargetType="StackPanel">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center" Margin="10">
+            All releases listed below are available for download. They are sorted by date, with the latest release at the top.
+            We regularly remove old ones to keep the list clean and up to date with the latest UE releases.
+            If you wish to manually check for updates, this window is accessible via the Help > Releases menu.
+        </TextBlock>
+
+        <Grid Grid.Row="1" HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.Style>
+                <Style TargetType="Grid">
                     <Setter Property="Visibility" Value="Visible" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Title, RelativeSource={RelativeSource AncestorType=adonisControls:AdonisWindow}}" Value="Releases">
@@ -31,62 +51,64 @@
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </StackPanel.Style>
+            </Grid.Style>
 
-            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Center">
-                <Button>Download Latest Release</Button>
-                <TextBlock Text="Remind Me:" />
-                <ComboBox>
-                    <ComboBoxItem Content="In 3 Days" />
-                    <ComboBoxItem Content="Next Week" />
-                    <ComboBoxItem Content="Next Month" />
-                    <!-- TODO: show that it can be manually updated via Help > Releases -->
-                    <ComboBoxItem Content="Never" />
-                </ComboBox>
-            </WrapPanel>
+            <Button Grid.Column="0" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
+                    VerticalAlignment="Top" Height="{Binding ActualHeight, ElementName=RemindButton}"
+                    Click="OnDownloadLatest">
+                Download Latest Release
+            </Button>
+            <StackPanel Grid.Column="2">
+                <adonisControls:SplitButton x:Name="RemindButton" Content="Remind Me Now ..." Command="{Binding RemindMeCommand}">
+                    <adonisControls:SplitButton.SplitMenu>
+                        <ContextMenu>
+                            <MenuItem Header="In 3 Days" Command="{Binding RemindMeCommand}" CommandParameter="Days" />
+                            <MenuItem Header="Next Week" Command="{Binding RemindMeCommand}" CommandParameter="Week" />
+                            <MenuItem Header="Next Month" Command="{Binding RemindMeCommand}" CommandParameter="Month" />
+                            <MenuItem Header="Never" Command="{Binding RemindMeCommand}" CommandParameter="Never" />
+                        </ContextMenu>
+                    </adonisControls:SplitButton.SplitMenu>
+                </adonisControls:SplitButton>
+                <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Right" FontSize="10" Margin="0 2.5 0 0"
+                           Text="{Binding NextUpdateCheck, Source={x:Static local:Settings.UserSettings.Default}, StringFormat=Next Refresh: {0:MMM d, yyyy}}" />
+            </StackPanel>
+        </Grid>
 
-            <Separator Style="{StaticResource CustomSeparator}" Tag="History" />
-        </StackPanel>
-
-        <ItemsControl DockPanel.Dock="Bottom" ItemsSource="{Binding CommitsView}">
-            <ItemsControl.GroupStyle>
-                <GroupStyle>
-                    <GroupStyle.ContainerStyle>
-                        <Style TargetType="GroupItem">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="GroupItem">
-                                        <GroupBox adonisExtensions:LayerExtension.Layer="3"
-                                                  Header="{Binding Name}"
-                                                  HeaderStringFormat="Commits on {0:MMM d, yyyy}"
-                                                  Margin="0 0 0 5">
-                                            <ItemsPresenter />
-                                        </GroupBox>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </GroupStyle.ContainerStyle>
-                    <GroupStyle.Panel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Vertical" />
-                        </ItemsPanelTemplate>
-                    </GroupStyle.Panel>
-                </GroupStyle>
-            </ItemsControl.GroupStyle>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <controls:CommitControl Margin="0 0 0 1" />
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-            <ItemsControl.Template>
-                <ControlTemplate TargetType="ItemsControl">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                        <ItemsPresenter />
-                    </ScrollViewer>
-                </ControlTemplate>
-            </ItemsControl.Template>
-        </ItemsControl>
-    </DockPanel>
+        <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="History" />
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl ItemsSource="{Binding CommitsView}">
+                <ItemsControl.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.ContainerStyle>
+                            <Style TargetType="GroupItem">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="GroupItem">
+                                            <GroupBox adonisExtensions:LayerExtension.Layer="3"
+                                                      Header="{Binding Name}"
+                                                      HeaderStringFormat="Commits on {0:MMM d, yyyy}"
+                                                      Margin="0 0 0 5">
+                                                <ItemsPresenter />
+                                            </GroupBox>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </GroupStyle.ContainerStyle>
+                        <GroupStyle.Panel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Vertical" />
+                            </ItemsPanelTemplate>
+                        </GroupStyle.Panel>
+                    </GroupStyle>
+                </ItemsControl.GroupStyle>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <controls:CommitControl Margin="0 0 0 1" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
 </adonisControls:AdonisWindow>
 
