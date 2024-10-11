@@ -57,7 +57,7 @@ public class UpdateViewModel : ViewModel
                     Sha = commitSha,
                     Commit = new Commit
                     {
-                        Message = "No commit message",
+                        Message = $"FModel ({commitSha[..7]})",
                         Author = new Author { Name = asset.Uploader.Login, Date = asset.CreatedAt }
                     },
                     Author = asset.Uploader,

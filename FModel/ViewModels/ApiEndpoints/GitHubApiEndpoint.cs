@@ -7,8 +7,6 @@ namespace FModel.ViewModels.ApiEndpoints;
 
 public class GitHubApiEndpoint : AbstractApiProvider
 {
-    private GitHubCommit[] _commits;
-
     public GitHubApiEndpoint(RestClient client) : base(client) { }
 
     public async Task<GitHubCommit[]> GetCommitHistoryAsync(string branch = "dev", int page = 1, int limit = 20)

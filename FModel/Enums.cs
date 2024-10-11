@@ -20,8 +20,7 @@ public enum EErrorKind
 public enum SettingsOut
 {
     ReloadLocres,
-    ReloadMappings,
-    CheckForUpdates
+    ReloadMappings
 }
 
 public enum EStatusKind
@@ -64,15 +63,15 @@ public enum ELoadingMode
     AllButModified
 }
 
-public enum EUpdateMode
-{
-    [Description("Stable")]
-    Stable,
-    [Description("Beta")]
-    Beta,
-    [Description("QA Testing")]
-    Qa
-}
+// public enum EUpdateMode
+// {
+//     [Description("Stable")]
+//     Stable,
+//     [Description("Beta")]
+//     Beta,
+//     [Description("QA Testing")]
+//     Qa
+// }
 
 public enum ECompressedAudio
 {

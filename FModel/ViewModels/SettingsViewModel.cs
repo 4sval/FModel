@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
@@ -25,13 +24,6 @@ public class SettingsViewModel : ViewModel
     {
         get => _useCustomOutputFolders;
         set => SetProperty(ref _useCustomOutputFolders, value);
-    }
-
-    private EUpdateMode _selectedUpdateMode;
-    public EUpdateMode SelectedUpdateMode
-    {
-        get => _selectedUpdateMode;
-        set => SetProperty(ref _selectedUpdateMode, value);
     }
 
     private ETexturePlatform _selectedUePlatform;
@@ -168,7 +160,6 @@ public class SettingsViewModel : ViewModel
     public bool SocketSettingsEnabled => SelectedMeshExportFormat == EMeshFormat.ActorX;
     public bool CompressionSettingsEnabled => SelectedMeshExportFormat == EMeshFormat.UEFormat;
 
-    public ReadOnlyObservableCollection<EUpdateMode> UpdateModes { get; private set; }
     public ReadOnlyObservableCollection<EGame> UeGames { get; private set; }
     public ReadOnlyObservableCollection<ELanguage> AssetLanguages { get; private set; }
     public ReadOnlyObservableCollection<EAesReload> AesReloads { get; private set; }
@@ -190,7 +181,6 @@ public class SettingsViewModel : ViewModel
     private string _audioSnapshot;
     private string _modelSnapshot;
     private string _gameSnapshot;
-    private EUpdateMode _updateModeSnapshot;
     private ETexturePlatform _uePlatformSnapshot;
     private EGame _ueGameSnapshot;
     private IList<FCustomVersion> _customVersionsSnapshot;
@@ -222,7 +212,6 @@ public class SettingsViewModel : ViewModel
         _audioSnapshot = UserSettings.Default.AudioDirectory;
         _modelSnapshot = UserSettings.Default.ModelDirectory;
         _gameSnapshot = UserSettings.Default.GameDirectory;
-        _updateModeSnapshot = UserSettings.Default.UpdateMode;
         _uePlatformSnapshot = UserSettings.Default.CurrentDir.TexturePlatform;
         _ueGameSnapshot = UserSettings.Default.CurrentDir.UeVersion;
         _customVersionsSnapshot = UserSettings.Default.CurrentDir.Versioning.CustomVersions;
@@ -247,7 +236,6 @@ public class SettingsViewModel : ViewModel
         _materialExportFormatSnapshot = UserSettings.Default.MaterialExportFormat;
         _textureExportFormatSnapshot = UserSettings.Default.TextureExportFormat;
 
-        SelectedUpdateMode = _updateModeSnapshot;
         SelectedUePlatform = _uePlatformSnapshot;
         SelectedUeGame = _ueGameSnapshot;
         SelectedCustomVersions = _customVersionsSnapshot;
@@ -265,7 +253,6 @@ public class SettingsViewModel : ViewModel
         SelectedAesReload = UserSettings.Default.AesReload;
         SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
 
-        UpdateModes = new ReadOnlyObservableCollection<EUpdateMode>(new ObservableCollection<EUpdateMode>(EnumerateUpdateModes()));
         UeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(EnumerateUeGames()));
         AssetLanguages = new ReadOnlyObservableCollection<ELanguage>(new ObservableCollection<ELanguage>(EnumerateAssetLanguages()));
         AesReloads = new ReadOnlyObservableCollection<EAesReload>(new ObservableCollection<EAesReload>(EnumerateAesReloads()));
@@ -290,8 +277,6 @@ public class SettingsViewModel : ViewModel
             whatShouldIDo.Add(SettingsOut.ReloadLocres);
         if (_mappingsUpdate)
             whatShouldIDo.Add(SettingsOut.ReloadMappings);
-        if (_updateModeSnapshot != SelectedUpdateMode)
-            whatShouldIDo.Add(SettingsOut.CheckForUpdates);
 
         if (_ueGameSnapshot != SelectedUeGame || _customVersionsSnapshot != SelectedCustomVersions ||
             _uePlatformSnapshot != SelectedUePlatform || _optionsSnapshot != SelectedOptions || // combobox
@@ -305,7 +290,6 @@ public class SettingsViewModel : ViewModel
             _gameSnapshot != UserSettings.Default.GameDirectory) // textbox
             restart = true;
 
-        UserSettings.Default.UpdateMode = SelectedUpdateMode;
         UserSettings.Default.CurrentDir.UeVersion = SelectedUeGame;
         UserSettings.Default.CurrentDir.TexturePlatform = SelectedUePlatform;
         UserSettings.Default.CurrentDir.Versioning.CustomVersions = SelectedCustomVersions;
@@ -330,7 +314,6 @@ public class SettingsViewModel : ViewModel
         return restart;
     }
 
-    private IEnumerable<EUpdateMode> EnumerateUpdateModes() => Enum.GetValues<EUpdateMode>();
     private IEnumerable<EGame> EnumerateUeGames()
         => Enum.GetValues<EGame>()
             .GroupBy(value => (int)value)

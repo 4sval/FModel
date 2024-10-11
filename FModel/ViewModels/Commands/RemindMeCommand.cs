@@ -20,8 +20,8 @@ public class RemindMeCommand : ViewModelCommand<UpdateViewModel>
                 break;
             case "Week":
                 // check for update next week (a week starts on Monday)
-                var delay = DayOfWeek.Monday - DateTime.Now.DayOfWeek;
-                UserSettings.Default.NextUpdateCheck = DateTime.Now.AddDays(delay);
+                var delay = (DayOfWeek.Monday - DateTime.Now.DayOfWeek + 7) % 7;
+                UserSettings.Default.NextUpdateCheck = DateTime.Now.AddDays(delay == 0 ? 7 : delay);
                 break;
             case "Month":
                 // check for update next month (if today is 31st, it will be 1st of next month)

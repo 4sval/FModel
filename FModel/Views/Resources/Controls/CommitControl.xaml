@@ -27,7 +27,7 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" Text="{Binding Commit.Message, Converter={x:Static converters:CommitMessageConverter.Instance}, ConverterParameter=Title}" FontWeight="Bold" />
+                <TextBlock Grid.Row="0" Text="{Binding Commit.Message, Converter={x:Static converters:CommitMessageConverter.Instance}, ConverterParameter=Title}" FontWeight="Bold" TextWrapping="Wrap" />
                 <TextBlock Grid.Row="1" Text="{Binding Commit.Message, Converter={x:Static converters:CommitMessageConverter.Instance}, ConverterParameter=Description}" TextWrapping="Wrap">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
@@ -57,7 +57,7 @@
                     <TextBlock Grid.Column="2" FontSize="11">
                         <TextBlock.Text>
                             <MultiBinding StringFormat="{}{0} committed {1}">
-                                <Binding Path="Commit.Author.Name" />
+                                <Binding Path="Author.Login" />
                                 <Binding Path="Commit.Author.Date" Converter="{x:Static converters:RelativeDateTimeConverter.Instance}" />
                             </MultiBinding>
                         </TextBlock.Text>

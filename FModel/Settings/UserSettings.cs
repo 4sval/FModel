@@ -179,13 +179,6 @@ namespace FModel.Settings
             set => SetProperty(ref _loadingMode, value);
         }
 
-        private EUpdateMode _updateMode = EUpdateMode.Beta;
-        public EUpdateMode UpdateMode
-        {
-            get => _updateMode;
-            set => SetProperty(ref _updateMode, value);
-        }
-
         private DateTime _lastUpdateCheck = DateTime.MinValue;
         public DateTime LastUpdateCheck
         {
