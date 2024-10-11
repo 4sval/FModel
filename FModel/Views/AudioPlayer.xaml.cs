@@ -75,6 +75,8 @@ public partial class AudioPlayer
             _applicationView.AudioPlayer.Previous();
         else if (UserSettings.Default.NextAudio.IsTriggered(e.Key))
             _applicationView.AudioPlayer.Next();
+        else if (UserSettings.Default.RemoveAudio.IsTriggered(e.Key))
+            _applicationView.AudioPlayer.Remove();
     }
 
     private void OnAudioFileMouseDoubleClick(object sender, MouseButtonEventArgs e)
