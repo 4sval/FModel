@@ -125,9 +125,9 @@ public class FModelApiEndpoint : AbstractApiProvider
                 CurrentVersion = _infos.Version.SubstringBefore('-'),
                 ChangelogURL = _infos.ChangelogUrl,
                 DownloadURL = _infos.DownloadUrl,
-                Mandatory = new Mandatory
+                Mandatory = new CustomMandatory
                 {
-                    MinimumVersion = _infos.Version.SubstringAfter('+')
+                    CommitHash = _infos.Version.SubstringAfter('+')
                 }
             };
         }
@@ -139,7 +139,7 @@ public class FModelApiEndpoint : AbstractApiProvider
         {
             UserSettings.Default.LastUpdateCheck = DateTime.Now;
 
-            if (args.Mandatory.MinimumVersion == Constants.APP_COMMIT_ID)
+            if (((CustomMandatory)args.Mandatory).CommitHash == Constants.APP_COMMIT_ID)
             {
                 if (UserSettings.Default.ShowChangelog)
                     ShowChangelog(args);
@@ -172,4 +172,10 @@ public class FModelApiEndpoint : AbstractApiProvider
         _applicationView.CUE4Parse.TabControl.SelectedTab.SetDocumentText(response.Content, false, false);
         UserSettings.Default.ShowChangelog = false;
     }
+}
+
+public class CustomMandatory : Mandatory
+{
+    public string CommitHash { get; set; }
+    public string ShortCommitHash => CommitHash[..7];
 }
