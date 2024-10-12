@@ -245,7 +245,9 @@ public class CUE4ParseViewModel : ViewModel
 
                             var startTs = Stopwatch.GetTimestamp();
                             var (manifest, _) = manifestInfo.DownloadAndParseAsync(manifestOptions,
-                                cancellationToken: cancellationToken).GetAwaiter().GetResult();
+                                cancellationToken: cancellationToken,
+                                elementManifestPredicate: x => x.Uri.Host is ("epicgames-download1.akamaized.net" or "download.epicgames.com")
+                                ).GetAwaiter().GetResult();
                             var parseTime = Stopwatch.GetElapsedTime(startTs);
 
                             foreach (var fileManifest in manifest.FileManifestList)
