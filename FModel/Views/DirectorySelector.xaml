@@ -52,14 +52,17 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Detected Game" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <ComboBox Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding DetectedDirectories}" Margin="0 0 0 5"
-                              VerticalAlignment="Center" SelectedItem="{Binding SelectedDirectory, Mode=TwoWay}">
+                    <controls:FilterableComboBox Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3"
+                                                 ItemsSource="{Binding DetectedDirectories}" Margin="0 0 0 5"
+                                                 Style="{StaticResource UComboBox}"
+                                                 adonisExtensions:WatermarkExtension.Watermark="Search for a game..."
+                                                 VerticalAlignment="Center" SelectedItem="{Binding SelectedDirectory, Mode=TwoWay}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding GameName, Converter={x:Static converters:StringToGameConverter.Instance}}" />
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
-                    </ComboBox>
+                    </controls:FilterableComboBox>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="UE Versions" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:FilterableComboBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"

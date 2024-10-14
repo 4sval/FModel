@@ -65,18 +65,66 @@
                 </Grid>
             </Grid>
 
-            <controls:CommitDownloaderControl Grid.Column="1" Commit="{Binding}">
-                <controls:CommitDownloaderControl.Style>
-                    <Style TargetType="controls:CommitDownloaderControl">
-                        <Setter Property="Visibility" Value="Collapsed" />
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsDownloadable}" Value="True">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </controls:CommitDownloaderControl.Style>
-            </controls:CommitDownloaderControl>
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="15" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0"
+                        BorderThickness="1"
+                        CornerRadius="2.5"
+                        Padding="5,2"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                    <TextBlock FontSize="9" Foreground="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=Border}}">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Asset.IsLatest}" Value="True">
+                                        <Setter Property="Text" Value="Latest" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                                        <Setter Property="Text" Value="Current" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Asset.IsLatest}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Setter Property="BorderBrush" Value="#3fb950" />
+                                    <Setter Property="Background" Value="#0f3fb950" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Setter Property="BorderBrush" Value="#3f92b9" />
+                                    <Setter Property="Background" Value="#0f3f92b9" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                </Border>
+
+                <controls:CommitDownloaderControl Grid.Column="2" Commit="{Binding}">
+                    <controls:CommitDownloaderControl.Style>
+                        <Style TargetType="controls:CommitDownloaderControl">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsDownloadable}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </controls:CommitDownloaderControl.Style>
+                </controls:CommitDownloaderControl>
+            </Grid>
         </Grid>
     </Border>
 </UserControl>

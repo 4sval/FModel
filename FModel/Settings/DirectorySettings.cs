@@ -113,6 +113,11 @@ public class DirectorySettings : ViewModel, ICloneable
         return HashCode.Combine(GameDirectory, (int) UeVersion);
     }
 
+    public override string ToString()
+    {
+        return GameName;
+    }
+
     public object Clone()
     {
         return this.MemberwiseClone();
