@@ -66,6 +66,8 @@ public class CreatorPackage : IDisposable
             case "FortBadgeItemDefinition":
             case "SparksMicItemDefinition":
             case "FortAwardItemDefinition":
+            case "FortStackItemDefinition":
+            case "FortWorldItemDefinition":
             case "SparksAuraItemDefinition":
             case "SparksDrumItemDefinition":
             case "SparksBassItemDefinition":
@@ -75,6 +77,8 @@ public class CreatorPackage : IDisposable
             case "FortGiftBoxItemDefinition":
             case "FortOutpostItemDefinition":
             case "FortVehicleItemDefinition":
+            case "FortMissionItemDefinition":
+            case "FortAccountItemDefinition":
             case "SparksGuitarItemDefinition":
             case "FortCardPackItemDefinition":
             case "FortDefenderItemDefinition":
@@ -82,28 +86,33 @@ public class CreatorPackage : IDisposable
             case "FortResourceItemDefinition":
             case "FortBackpackItemDefinition":
             case "FortEventQuestMapDataAsset":
+            case "FortBuildingItemDefinition":
             case "FortWeaponModItemDefinition":
             case "FortCodeTokenItemDefinition":
             case "FortSchematicItemDefinition":
+            case "FortAlterableItemDefinition":
             case "SparksKeyboardItemDefinition":
             case "FortWorldMultiItemDefinition":
             case "FortAlterationItemDefinition":
             case "FortExpeditionItemDefinition":
             case "FortIngredientItemDefinition":
+            case "FortConsumableItemDefinition":
             case "StWFortAccoladeItemDefinition":
             case "FortAccountBuffItemDefinition":
-            case "FortWeaponMeleeItemDefinition":
             case "FortPlayerPerksItemDefinition":
             case "FortPlaysetPropItemDefinition":
+            case "FortPrerollDataItemDefinition":
             case "JunoRecipeBundleItemDefinition":
             case "FortHomebaseNodeItemDefinition":
             case "FortNeverPersistItemDefinition":
             case "FortPlayerAugmentItemDefinition":
             case "FortSmartBuildingItemDefinition":
+            case "FortGiftBoxUnlockItemDefinition":
             case "FortWeaponModItemDefinitionOptic":
             case "RadioContentSourceItemDefinition":
             case "FortPlaysetGrenadeItemDefinition":
             case "JunoWeaponCreatureItemDefinition":
+            case "FortEventDependentItemDefinition":
             case "FortPersonalVehicleItemDefinition":
             case "FortGameplayModifierItemDefinition":
             case "FortHardcoreModifierItemDefinition":
@@ -112,21 +121,23 @@ public class CreatorPackage : IDisposable
             case "FortConversionControlItemDefinition":
             case "FortAccountBuffCreditItemDefinition":
             case "JunoBuildInstructionsItemDefinition":
+            case "FortCharacterCosmeticItemDefinition":
             case "JunoBuildingSetAccountItemDefinition":
             case "FortEventCurrencyItemDefinitionRedir":
             case "FortPersistentResourceItemDefinition":
             case "FortWeaponMeleeOffhandItemDefinition":
             case "FortHomebaseBannerIconItemDefinition":
+            case "FortVehicleCosmeticsVariantTokenType":
             case "JunoBuildingPropAccountItemDefinition":
             case "FortCampaignHeroLoadoutItemDefinition":
             case "FortConditionalResourceItemDefinition":
             case "FortChallengeBundleScheduleDefinition":
             case "FortDailyRewardScheduleTokenDefinition":
-            case "FortCreativeWeaponRangedItemDefinition":
             case "FortVehicleCosmeticsItemDefinition_Body":
             case "FortVehicleCosmeticsItemDefinition_Skin":
             case "FortVehicleCosmeticsItemDefinition_Wheel":
             case "FortCreativeRealEstatePlotItemDefinition":
+            case "FortDeployableBaseCloudSaveItemDefinition":
             case "FortVehicleCosmeticsItemDefinition_Booster":
             case "AthenaDanceItemDefinition_AdHocSquadsJoin_C":
             case "FortVehicleCosmeticsItemDefinition_DriftSmoke":
