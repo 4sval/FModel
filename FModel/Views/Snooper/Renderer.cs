@@ -103,6 +103,9 @@ public class Renderer : IDisposable
                 LoadJunoWorld(cancellationToken, bp, Transform.Identity);
                 Color = VertexColor.Colors;
                 break;
+            case UPaperSprite ps:
+                LoadPaperSprite(ps);
+                break;
         }
         CameraOp.Mode = _saveCameraMode ? UserSettings.Default.CameraMode : Camera.WorldMode.FlyCam;
         SetupCamera();
@@ -394,6 +397,23 @@ public class Renderer : IDisposable
             return;
 
         Options.Models[guid] = new StaticModel(original, mesh);
+        Options.SelectModel(guid);
+    }
+
+    private void LoadPaperSprite(UPaperSprite original)
+    {
+        if (!(original.BakedSourceTexture?.TryLoad(out UTexture2D texture) ?? false))
+            return;
+
+        var guid = texture.LightingGuid;
+        if (Options.TryGetModel(guid, out var model))
+        {
+            model.AddInstance(Transform.Identity);
+            Application.Current.Dispatcher.Invoke(() => model.SetupInstances());
+            return;
+        }
+
+        Options.Models[guid] = new StaticModel(original, texture);
         Options.SelectModel(guid);
     }
 

@@ -1,7 +1,10 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
+using CUE4Parse.UE4.Assets.Exports.Texture;
+using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.PhysicsEngine;
 using FModel.Views.Snooper.Shading;
 using OpenTK.Graphics.OpenGL4;
@@ -50,6 +53,59 @@ public class StaticModel : UModel
         AddInstance(Transform.Identity);
 
         Box = staticMesh.BoundingBox * 1.5f * Constants.SCALE_DOWN_RATIO;
+    }
+
+    public StaticModel(UPaperSprite paperSprite, UTexture2D texture) : base(paperSprite)
+    {
+        Indices = new uint[paperSprite.BakedRenderData.Length];
+        for (int i = 0; i < Indices.Length; i++)
+        {
+            Indices[i] = (uint) i;
+        }
+
+        Vertices = new float[paperSprite.BakedRenderData.Length * VertexSize];
+        for (int i = 0; i < paperSprite.BakedRenderData.Length; i++)
+        {
+            var count = 0;
+            var baseIndex = i * VertexSize;
+            var vert = paperSprite.BakedRenderData[i];
+            var u = vert.Z;
+            var v = vert.W;
+
+            Vertices[baseIndex + count++] = i;
+            Vertices[baseIndex + count++] = vert.X * paperSprite.PixelsPerUnrealUnit * Constants.SCALE_DOWN_RATIO;
+            Vertices[baseIndex + count++] = vert.Y * paperSprite.PixelsPerUnrealUnit * Constants.SCALE_DOWN_RATIO;
+            Vertices[baseIndex + count++] = 0;
+            Vertices[baseIndex + count++] = 0;
+            Vertices[baseIndex + count++] = 0;
+            Vertices[baseIndex + count++] = 0;
+            Vertices[baseIndex + count++] = 0;
+            Vertices[baseIndex + count++] = 0;
+            Vertices[baseIndex + count++] = 0;
+            Vertices[baseIndex + count++] = u;
+            Vertices[baseIndex + count++] = v;
+            Vertices[baseIndex + count++] = .5f;
+        }
+
+        Materials = new Material[1];
+        if (paperSprite.DefaultMaterial?.TryLoad(out UMaterialInstance unrealMaterial) ?? false)
+        {
+            Materials[0] = new Material(unrealMaterial);
+        }
+        else
+        {
+            Materials[0] = new Material();
+        }
+        Materials[0].Parameters.Textures[CMaterialParams2.FallbackDiffuse] = texture;
+        Materials[0].IsUsed = true;
+
+        Sections = new Section[1];
+        Sections[0] = new Section(0, Indices.Length, 0);
+
+        AddInstance(Transform.Identity);
+
+        var backward = new FVector(0, Math.Max(paperSprite.BakedSourceDimension.X, paperSprite.BakedSourceDimension.Y) / 2, 0);
+        Box = new FBox(-backward, backward) * Constants.SCALE_DOWN_RATIO;
     }
 
     public StaticModel(UStaticMesh export, CStaticMesh staticMesh, Transform transform = null)

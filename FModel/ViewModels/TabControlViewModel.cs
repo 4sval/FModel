@@ -68,9 +68,13 @@ public class TabImage : ViewModel
             Image = null;
             return;
         }
+
         _bmp = bitmap;
         using var data = _bmp.Encode(NoAlpha ? ETextureFormat.Jpeg : UserSettings.Default.TextureExportFormat, 100);
         using var stream = new MemoryStream(ImageBuffer = data.ToArray(), false);
+        if (UserSettings.Default.TextureExportFormat == ETextureFormat.Tga)
+            return;
+
         var image = new BitmapImage();
         image.BeginInit();
         image.CacheOption = BitmapCacheOption.OnLoad;
@@ -305,6 +309,7 @@ public class TabItem : ViewModel
         var ext = UserSettings.Default.TextureExportFormat switch
         {
             ETextureFormat.Png => ".png",
+            ETextureFormat.Jpeg => ".jpg",
             ETextureFormat.Tga => ".tga",
             _ => ".png"
         };

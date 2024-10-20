@@ -851,6 +851,7 @@ public class CUE4ParseViewModel : ViewModel
                 "JunoBuildingPropAccountItemDefinition" => true,
                 _ => false
             }:
+            case UPaperSprite when isNone && UserSettings.Default.PreviewMaterials:
             case UStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
             case USkeletalMesh when isNone && UserSettings.Default.PreviewSkeletalMeshes:
             case USkeleton when isNone && UserSettings.Default.SaveSkeletonAsMesh:
