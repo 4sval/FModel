@@ -33,7 +33,6 @@ public class CreatorPackage : IDisposable
         switch (_object.ExportType)
         {
             // Fortnite
-            case "FortCreativeWeaponMeleeItemDefinition":
             case "AthenaConsumableEmoteItemDefinition":
             case "AthenaSkyDiveContrailItemDefinition":
             case "AthenaLoadingScreenItemDefinition":
@@ -100,7 +99,6 @@ public class CreatorPackage : IDisposable
             case "FortConsumableItemDefinition":
             case "StWFortAccoladeItemDefinition":
             case "FortAccountBuffItemDefinition":
-            case "FortWeaponMeleeItemDefinition":
             case "FortPlayerPerksItemDefinition":
             case "FortPlaysetPropItemDefinition":
             case "FortPrerollDataItemDefinition":
@@ -134,9 +132,7 @@ public class CreatorPackage : IDisposable
             case "FortCampaignHeroLoadoutItemDefinition":
             case "FortConditionalResourceItemDefinition":
             case "FortChallengeBundleScheduleDefinition":
-            case "FortWeaponMeleeDualWieldItemDefinition":
             case "FortDailyRewardScheduleTokenDefinition":
-            case "FortCreativeWeaponRangedItemDefinition":
             case "FortVehicleCosmeticsItemDefinition_Body":
             case "FortVehicleCosmeticsItemDefinition_Skin":
             case "FortVehicleCosmeticsItemDefinition_Wheel":
@@ -165,6 +161,10 @@ public class CreatorPackage : IDisposable
             case "FortContextTrapItemDefinition":
             case "FortWeaponRangedItemDefinition":
             case "Daybreak_LevelExitVehicle_PartItemDefinition_C":
+            case "FortWeaponMeleeItemDefinition":
+            case "FortWeaponMeleeDualWieldItemDefinition":
+            case "FortCreativeWeaponMeleeItemDefinition":
+            case "FortCreativeWeaponRangedItemDefinition":
                 creator = new BaseIconStats(_object, _style);
                 return true;
             case "FortItemSeriesDefinition":
@@ -203,6 +203,9 @@ public class CreatorPackage : IDisposable
             //     return true;
             case "FortItemAccessTokenType":
                 creator = new BaseItemAccessToken(_object, _style);
+                return true;
+            case "PaperSprite":
+                creator = new BasePaperSprite(_object, _style);
                 return true;
             case "FortCreativeOption":
             case "PlaylistUserOptionEnum":
