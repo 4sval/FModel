@@ -154,7 +154,16 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
         FLogger.Append(ELog.Information, () =>
             FLogger.Text($"Backup file older than current game is '{openFileDialog.FileName.SubstringAfterLast("\\")}'", Constants.WHITE, true));
 
-        using var fileStream = new FileStream(openFileDialog.FileName, FileMode.Open);
+        var mode = UserSettings.Default.LoadingMode;
+        var entries = ParseBackup(openFileDialog.FileName, mode, cancellationToken);
+
+        _applicationView.Status.UpdateStatusLabel($"{mode.ToString()[6..]} Folders & Packages");
+        _applicationView.CUE4Parse.AssetsFolder.BulkPopulate(entries);
+    }
+
+    private List<VfsEntry> ParseBackup(string path, ELoadingMode mode, CancellationToken cancellationToken = default)
+    {
+        using var fileStream = new FileStream(path, FileMode.Open);
         using var memoryStream = new MemoryStream();
 
         if (fileStream.ReadUInt32() == _IS_LZ4)
@@ -169,25 +178,41 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
         using var archive = new FStreamArchive(fileStream.Name, memoryStream);
         var entries = new List<VfsEntry>();
 
-        var mode = UserSettings.Default.LoadingMode;
         switch (mode)
         {
             case ELoadingMode.AllButNew:
             {
-                var paths = new Dictionary<string, int>();
-                while (archive.Position < archive.Length)
+                var paths = new HashSet<string>();
+                var magic = archive.Read<uint>();
+                if (magic != BackupManagerViewModel.FBKP_MAGIC)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
+                    archive.Position -= sizeof(uint);
+                    while (archive.Position < archive.Length)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
 
-                    archive.Position += 29;
-                    paths[archive.ReadString().ToLower()[1..]] = 0;
-                    archive.Position += 4;
+                        archive.Position += 29;
+                        paths.Add(archive.ReadString().ToLower()[1..]);
+                        archive.Position += 4;
+                    }
+                }
+                else
+                {
+                    var version = archive.Read<EBackupVersion>();
+                    var count = archive.Read<int>();
+                    for (var i = 0; i < count; i++)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        archive.Position += sizeof(long) + sizeof(byte);
+                        paths.Add(archive.ReadString().ToLower()[1..]);
+                    }
                 }
 
                 foreach (var (key, value) in _applicationView.CUE4Parse.Provider.Files)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    if (value is not VfsEntry entry || paths.ContainsKey(key) || entry.Path.EndsWith(".uexp") ||
+                    if (value is not VfsEntry entry || paths.Contains(key) || entry.Path.EndsWith(".uexp") ||
                         entry.Path.EndsWith(".ubulk") || entry.Path.EndsWith(".uptnl")) continue;
 
                     entries.Add(entry);
@@ -198,31 +223,54 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
             }
             case ELoadingMode.AllButModified:
             {
-                while (archive.Position < archive.Length)
+                var magic = archive.Read<uint>();
+                if (magic != BackupManagerViewModel.FBKP_MAGIC)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
+                    archive.Position -= sizeof(uint);
+                    while (archive.Position < archive.Length)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
 
-                    archive.Position += 16;
-                    var uncompressedSize = archive.Read<long>();
-                    var isEncrypted = archive.ReadFlag();
-                    archive.Position += 4;
-                    var fullPath = archive.ReadString().ToLower()[1..];
-                    archive.Position += 4;
+                        archive.Position += 16;
+                        var uncompressedSize = archive.Read<long>();
+                        var isEncrypted = archive.ReadFlag();
+                        archive.Position += 4;
+                        var fullPath = archive.ReadString().ToLower()[1..];
+                        archive.Position += 4;
 
-                    if (fullPath.EndsWith(".uexp") || fullPath.EndsWith(".ubulk") || fullPath.EndsWith(".uptnl") ||
-                        !_applicationView.CUE4Parse.Provider.Files.TryGetValue(fullPath, out var asset) || asset is not VfsEntry entry ||
-                        entry.Size == uncompressedSize && entry.IsEncrypted == isEncrypted)
-                        continue;
-
-                    entries.Add(entry);
-                    _applicationView.Status.UpdateStatusLabel(entry.Vfs.Name);
+                        AddEntry(fullPath, uncompressedSize, isEncrypted, entries);
+                    }
                 }
+                else
+                {
+                    var version = archive.Read<EBackupVersion>();
+                    var count = archive.Read<int>();
+                    for (var i = 0; i < count; i++)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
 
+                        var uncompressedSize = archive.Read<long>();
+                        var isEncrypted = archive.ReadFlag();
+                        var fullPath = archive.ReadString().ToLower()[1..];
+
+                        AddEntry(fullPath, uncompressedSize, isEncrypted, entries);
+                    }
+                }
                 break;
             }
         }
 
-        _applicationView.Status.UpdateStatusLabel($"{mode.ToString()[6..]} Folders & Packages");
-        _applicationView.CUE4Parse.AssetsFolder.BulkPopulate(entries);
+        return entries;
+    }
+
+    private void AddEntry(string path, long uncompressedSize, bool isEncrypted, List<VfsEntry> entries)
+    {
+        if (path.EndsWith(".uexp") || path.EndsWith(".ubulk") || path.EndsWith(".uptnl") ||
+            !_applicationView.CUE4Parse.Provider.Files.TryGetValue(path, out var asset) || asset is not VfsEntry entry ||
+            entry.Size == uncompressedSize && entry.IsEncrypted == isEncrypted)
+            return;
+
+        entries.Add(entry);
+        _applicationView.Status.UpdateStatusLabel(entry.Vfs.Name);
     }
 }

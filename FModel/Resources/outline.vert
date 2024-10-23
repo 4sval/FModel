@@ -27,10 +27,18 @@ vec2 unpackBoneIDsAndWeights(int packedData)
     return vec2(float((packedData >> 16) & 0xFFFF), float(packedData & 0xFFFF));
 }
 
+vec4 calculateScale(vec4 bindPos, vec4 bindNormal)
+{
+    vec4 worldPos = vInstanceMatrix * bindPos;
+    float scaleFactor = length(uViewPos - worldPos.xyz) * 0.0035;
+    return transpose(inverse(vInstanceMatrix)) * bindNormal * scaleFactor;
+}
+
 void main()
 {
     vec4 bindPos = vec4(mix(vPos, vMorphTargetPos, uMorphTime), 1.0);
     vec4 bindNormal = vec4(vNormal, 1.0);
+    bindPos.xyz += calculateScale(bindPos, bindNormal).xyz;
 
     vec4 finalPos = vec4(0.0);
     vec4 finalNormal = vec4(0.0);
@@ -53,19 +61,12 @@ void main()
                 finalNormal += transpose(inverse(boneMatrix)) * bindNormal * weight;
             }
         }
-        finalPos = normalize(finalPos);
-        finalNormal = normalize(finalNormal);
     }
     else
     {
         finalPos = bindPos;
         finalNormal = bindNormal;
     }
-
-    vec4 worldPos = vInstanceMatrix * finalPos;
-    float scaleFactor = length(uViewPos - worldPos.xyz) * 0.0035;
-    vec4 nor = transpose(inverse(vInstanceMatrix)) * finalNormal * scaleFactor;
-    finalPos.xyz += nor.xyz;
 
     gl_Position = uProjection * uView * vInstanceMatrix * finalPos;
 }

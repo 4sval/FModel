@@ -54,9 +54,8 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             case "Help_Donate":
                 Process.Start(new ProcessStartInfo { FileName = Constants.DONATE_LINK, UseShellExecute = true });
                 break;
-            case "Help_Changelog":
-                UserSettings.Default.ShowChangelog = true;
-                ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(UserSettings.Default.UpdateMode);
+            case "Help_Releases":
+                Helper.OpenWindow<AdonisWindow>("Releases", () => new UpdateView().Show());
                 break;
             case "Help_BugsReport":
                 Process.Start(new ProcessStartInfo { FileName = Constants.ISSUE_LINK, UseShellExecute = true });

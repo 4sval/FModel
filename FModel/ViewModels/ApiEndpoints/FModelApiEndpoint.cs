@@ -10,13 +10,13 @@ using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
+using FModel.Views;
 using Newtonsoft.Json;
 using RestSharp;
 using Serilog;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
-using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 
 namespace FModel.ViewModels.ApiEndpoints;
 
@@ -44,19 +44,6 @@ public class FModelApiEndpoint : AbstractApiProvider
     public News GetNews(CancellationToken token, string game)
     {
         return _news ??= GetNewsAsync(token, game).GetAwaiter().GetResult();
-    }
-
-    public async Task<Info> GetInfosAsync(CancellationToken token, EUpdateMode updateMode)
-    {
-        var request = new FRestRequest($"https://api.fmodel.app/v1/infos/{updateMode}");
-        var response = await _client.ExecuteAsync<Info>(request, token).ConfigureAwait(false);
-        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
-        return response.Data;
-    }
-
-    public Info GetInfos(CancellationToken token, EUpdateMode updateMode)
-    {
-        return _infos ?? GetInfosAsync(token, updateMode).GetAwaiter().GetResult();
     }
 
     public async Task<Donator[]> GetDonatorsAsync()
@@ -116,14 +103,16 @@ public class FModelApiEndpoint : AbstractApiProvider
         return communityDesign;
     }
 
-    public void CheckForUpdates(EUpdateMode updateMode, bool launch = false)
+    public void CheckForUpdates(bool launch = false)
     {
+        if (DateTime.Now < UserSettings.Default.NextUpdateCheck) return;
+
         if (launch)
         {
             AutoUpdater.ParseUpdateInfoEvent += ParseUpdateInfoEvent;
             AutoUpdater.CheckForUpdateEvent += CheckForUpdateEvent;
         }
-        AutoUpdater.Start($"https://api.fmodel.app/v1/infos/{updateMode}");
+        AutoUpdater.Start("https://api.fmodel.app/v1/infos/Qa");
     }
 
     private void ParseUpdateInfoEvent(ParseUpdateInfoEventArgs args)
@@ -138,7 +127,6 @@ public class FModelApiEndpoint : AbstractApiProvider
                 DownloadURL = _infos.DownloadUrl,
                 Mandatory = new CustomMandatory
                 {
-                    Value = UserSettings.Default.UpdateMode == EUpdateMode.Qa,
                     CommitHash = _infos.Version.SubstringAfter('+')
                 }
             };
@@ -149,43 +137,21 @@ public class FModelApiEndpoint : AbstractApiProvider
     {
         if (args is { CurrentVersion: { } })
         {
-            var qa = (CustomMandatory) args.Mandatory;
-            var currentVersion = new System.Version(args.CurrentVersion);
-            if ((qa.Value && qa.CommitHash == UserSettings.Default.CommitHash) || // qa branch : same commit id
-                (!qa.Value && currentVersion == args.InstalledVersion && args.CurrentVersion == UserSettings.Default.CommitHash)) // stable - beta branch : same version + commit id = version
+            UserSettings.Default.LastUpdateCheck = DateTime.Now;
+
+            if (((CustomMandatory)args.Mandatory).CommitHash == Constants.APP_COMMIT_ID)
             {
                 if (UserSettings.Default.ShowChangelog)
                     ShowChangelog(args);
+
                 return;
             }
 
-            var downgrade = currentVersion < args.InstalledVersion;
-            var messageBox = new MessageBoxModel
-            {
-                Text = $"The latest version of FModel {UserSettings.Default.UpdateMode.GetDescription()} is {(qa.Value ? qa.ShortCommitHash : args.CurrentVersion)}. You are using version {(qa.Value ? UserSettings.Default.ShortCommitHash : args.InstalledVersion)}. Do you want to {(downgrade ? "downgrade" : "update")} the application now?",
-                Caption = $"{(downgrade ? "Downgrade" : "Update")} Available",
-                Icon = MessageBoxImage.Question,
-                Buttons = MessageBoxButtons.YesNo(),
-                IsSoundEnabled = false
-            };
+            var currentVersion = new System.Version(args.CurrentVersion);
+            UserSettings.Default.ShowChangelog = currentVersion != args.InstalledVersion;
 
-            MessageBox.Show(messageBox);
-            if (messageBox.Result != MessageBoxResult.Yes) return;
-
-            try
-            {
-                if (AutoUpdater.DownloadUpdate(args))
-                {
-                    UserSettings.Default.ShowChangelog = currentVersion != args.InstalledVersion;
-                    UserSettings.Default.CommitHash = qa.CommitHash;
-                    Application.Current.Shutdown();
-                }
-            }
-            catch (Exception exception)
-            {
-                UserSettings.Default.ShowChangelog = false;
-                MessageBox.Show(exception.Message, exception.GetType().ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            const string message = "A new update is available!";
+            Helper.OpenWindow<AdonisWindow>(message, () => new UpdateView { Title = message, ResizeMode = ResizeMode.NoResize }.ShowDialog());
         }
         else
         {
@@ -199,7 +165,7 @@ public class FModelApiEndpoint : AbstractApiProvider
     {
         var request = new FRestRequest(args.ChangelogURL);
         var response = _client.Execute(request);
-        if (string.IsNullOrEmpty(response.Content)) return;
+        if (!response.IsSuccessful || string.IsNullOrEmpty(response.Content)) return;
 
         _applicationView.CUE4Parse.TabControl.AddTab($"Release Notes: {args.CurrentVersion}");
         _applicationView.CUE4Parse.TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("changelog");

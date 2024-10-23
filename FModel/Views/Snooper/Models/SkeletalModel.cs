@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using CUE4Parse_Conversion.Meshes.PSK;
@@ -74,23 +74,45 @@ public class SkeletalModel : UModel
             }
         }
 
-        Morphs = new List<Morph>();
-        for (var i = 0; i < export.MorphTargets.Length; i++)
+        Morphs = [];
+        if (export.MorphTargets.Length == 0) return;
+
+        export.PopulateMorphTargetVerticesData();
+
+        var verticesCount = Vertices.Length / VertexSize;
+        var cachedVertices = new float[verticesCount * Morph.VertexSize];
+        var vertexLookup = new Dictionary<uint, int>(verticesCount);
+        for (int i = 0; i < Vertices.Length; i += VertexSize)
         {
-            if (!export.MorphTargets[i].TryLoad(out UMorphTarget morphTarget) ||
-                morphTarget.MorphLODModels.Length < 1 || morphTarget.MorphLODModels[0].Vertices.Length < 1)
+            var count = 0;
+            var baseIndex = i / VertexSize * Morph.VertexSize;
+            vertexLookup[(uint) Vertices[i]] = baseIndex;
+            {
+                cachedVertices[baseIndex + count++] = Vertices[i + 1];
+                cachedVertices[baseIndex + count++] = Vertices[i + 2];
+                cachedVertices[baseIndex + count++] = Vertices[i + 3];
+                cachedVertices[baseIndex + count++] = Vertices[i + 7];
+                cachedVertices[baseIndex + count++] = Vertices[i + 8];
+                cachedVertices[baseIndex + count++] = Vertices[i + 9];
+            }
+        }
+
+        foreach (var morph in export.MorphTargets)
+        {
+            if (!morph.TryLoad(out UMorphTarget morphTarget) || morphTarget.MorphLODModels.Length < 1 ||
+                morphTarget.MorphLODModels[0].Vertices.Length < 1)
                 continue;
 
-            Morphs.Add(new Morph(Vertices, VertexSize, morphTarget));
+            Morphs.Add(new Morph(cachedVertices, vertexLookup, morphTarget));
         }
     }
 
     public SkeletalModel(USkeleton export, FBox box) : base(export)
     {
-        Indices = Array.Empty<uint>();
-        Materials = Array.Empty<Material>();
-        Vertices = Array.Empty<float>();
-        Sections = Array.Empty<Section>();
+        Indices = [];
+        Materials = [];
+        Vertices = [];
+        Sections = [];
         AddInstance(Transform.Identity);
 
         Box = box * Constants.SCALE_DOWN_RATIO;

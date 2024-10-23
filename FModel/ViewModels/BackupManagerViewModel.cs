@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.VirtualFileSystem;
 using FModel.Framework;
 using FModel.Services;
@@ -20,6 +21,8 @@ namespace FModel.ViewModels;
 
 public class BackupManagerViewModel : ViewModel
 {
+    public const uint FBKP_MAGIC = 0x504B4246;
+
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
     private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
@@ -64,23 +67,21 @@ public class BackupManagerViewModel : ViewModel
             var backupFolder = Path.Combine(UserSettings.Default.OutputDirectory, "Backups");
             var fileName = $"{_gameName}_{DateTime.Now:MM'_'dd'_'yyyy}.fbkp";
             var fullPath = Path.Combine(backupFolder, fileName);
+            var func = new Func<GameFile, bool>(x => !x.Path.EndsWith(".uexp") && !x.Path.EndsWith(".ubulk") && !x.Path.EndsWith(".uptnl"));
 
             using var fileStream = new FileStream(fullPath, FileMode.Create);
             using var compressedStream = LZ4Stream.Encode(fileStream, LZ4Level.L00_FAST);
             using var writer = new BinaryWriter(compressedStream);
+            writer.Write(FBKP_MAGIC);
+            writer.Write((byte) EBackupVersion.Latest);
+            writer.Write(_applicationView.CUE4Parse.Provider.Files.Values.Count(func));
+
             foreach (var asset in _applicationView.CUE4Parse.Provider.Files.Values)
             {
-                if (asset is not VfsEntry entry || entry.Path.EndsWith(".uexp") ||
-                    entry.Path.EndsWith(".ubulk") || entry.Path.EndsWith(".uptnl"))
-                    continue;
-
-                writer.Write((long) 0);
-                writer.Write((long) 0);
-                writer.Write(entry.Size);
-                writer.Write(entry.IsEncrypted);
-                writer.Write(0);
-                writer.Write($"/{entry.Path.ToLower()}");
-                writer.Write(0);
+                if (!func(asset)) continue;
+                writer.Write(asset.Size);
+                writer.Write(asset.IsEncrypted);
+                writer.Write($"/{asset.Path.ToLower()}");
             }
 
             SaveCheck(fullPath, fileName, "created", "create");
@@ -115,4 +116,13 @@ public class BackupManagerViewModel : ViewModel
             FLogger.Append(ELog.Error, () => FLogger.Text($"Could not {type2} '{fileName}'", Constants.WHITE, true));
         }
     }
+}
+
+public enum EBackupVersion : byte
+{
+    BeforeVersionWasAdded = 0,
+    Initial,
+
+    LatestPlusOne,
+    Latest = LatestPlusOne - 1
 }

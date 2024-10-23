@@ -32,16 +32,21 @@ namespace FModel.Settings
             Default = new UserSettings();
         }
 
+        private static bool _bSave = true;
         public static void Save()
         {
-            if (Default == null) return;
+            if (!_bSave || Default == null) return;
             Default.PerDirectory[Default.CurrentDir.GameDirectory] = Default.CurrentDir;
             File.WriteAllText(FilePath, JsonConvert.SerializeObject(Default, Formatting.Indented));
         }
 
         public static void Delete()
         {
-            if (File.Exists(FilePath)) File.Delete(FilePath);
+            if (File.Exists(FilePath))
+            {
+                _bSave = false;
+                File.Delete(FilePath);
+            }
         }
 
         public static bool IsEndpointValid(EEndpointType type, out EndpointSettings endpoint)
@@ -174,18 +179,18 @@ namespace FModel.Settings
             set => SetProperty(ref _loadingMode, value);
         }
 
-        private EUpdateMode _updateMode = EUpdateMode.Beta;
-        public EUpdateMode UpdateMode
+        private DateTime _lastUpdateCheck = DateTime.MinValue;
+        public DateTime LastUpdateCheck
         {
-            get => _updateMode;
-            set => SetProperty(ref _updateMode, value);
+            get => _lastUpdateCheck;
+            set => SetProperty(ref _lastUpdateCheck, value);
         }
 
-        private string _commitHash = Constants.APP_VERSION;
-        public string CommitHash
+        private DateTime _nextUpdateCheck = DateTime.Now;
+        public DateTime NextUpdateCheck
         {
-            get => _commitHash;
-            set => SetProperty(ref _commitHash, value);
+            get => _nextUpdateCheck;
+            set => SetProperty(ref _nextUpdateCheck, value);
         }
 
         private bool _keepDirectoryStructure = true;
@@ -260,8 +265,6 @@ namespace FModel.Settings
 
         [JsonIgnore]
         public DirectorySettings CurrentDir { get; set; }
-        [JsonIgnore]
-        public string ShortCommitHash => CommitHash[..7];
 
         /// <summary>
         /// TO DELETEEEEEEEEEEEEE

@@ -51,9 +51,6 @@ public partial class SettingsView
                 case SettingsOut.ReloadMappings:
                     await _applicationView.CUE4Parse.InitMappings();
                     break;
-                case SettingsOut.CheckForUpdates:
-                    ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(UserSettings.Default.UpdateMode);
-                    break;
             }
         }
 

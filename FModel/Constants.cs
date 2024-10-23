@@ -1,12 +1,20 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Numerics;
 using System.Reflection;
 using CUE4Parse.UE4.Objects.Core.Misc;
+using FModel.Extensions;
 
 namespace FModel;
 
 public static class Constants
 {
-    public static readonly string APP_VERSION = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+    public static readonly string APP_PATH = Path.GetFullPath(Environment.GetCommandLineArgs()[0]);
+    public static readonly string APP_VERSION = FileVersionInfo.GetVersionInfo(APP_PATH).FileVersion;
+    public static readonly string APP_COMMIT_ID = FileVersionInfo.GetVersionInfo(APP_PATH).ProductVersion.SubstringAfter('+');
+    public static readonly string APP_SHORT_COMMIT_ID = APP_COMMIT_ID[..7];
+
     public const string ZERO_64_CHAR = "0000000000000000000000000000000000000000000000000000000000000000";
     public static readonly FGuid ZERO_GUID = new(0U);
 
@@ -21,6 +29,9 @@ public static class Constants
     public const string BLUE = "#528BCC";
 
     public const string ISSUE_LINK = "https://github.com/4sval/FModel/discussions/categories/q-a";
+    public const string GH_REPO = "https://api.github.com/repos/4sval/FModel";
+    public const string GH_COMMITS_HISTORY = GH_REPO + "/commits";
+    public const string GH_RELEASES = GH_REPO + "/releases";
     public const string DONATE_LINK = "https://fmodel.app/donate";
     public const string DISCORD_LINK = "https://fmodel.app/discord";
 

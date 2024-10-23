@@ -31,6 +31,7 @@ public class BaseMaterialInstance : BaseIcon
                 case "TextureA":
                 case "TextureB":
                 case "OfferImage":
+                case "CarTexture":
                     Preview = Utils.GetBitmap(texture);
                     break;
             }

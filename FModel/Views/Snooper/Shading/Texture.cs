@@ -92,7 +92,19 @@ public class Texture : IDisposable
         Height = bitmap.Height;
         Bind(TextureUnit.Texture0);
 
-        GL.TexImage2D(_target, 0, texture2D.SRGB ? PixelInternalFormat.Srgb : PixelInternalFormat.Rgb, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, bitmap.Bytes);
+        var internalFormat = Format switch
+        {
+            EPixelFormat.PF_G8 => PixelInternalFormat.R8,
+            _ => texture2D.SRGB ? PixelInternalFormat.Srgb : PixelInternalFormat.Rgb
+        };
+
+        var pixelFormat = Format switch
+        {
+            EPixelFormat.PF_G8 => PixelFormat.Red,
+            _ => PixelFormat.Rgba
+        };
+
+        GL.TexImage2D(_target, 0, internalFormat, Width, Height, 0, pixelFormat, PixelType.UnsignedByte, bitmap.Bytes);
         GL.TexParameter(_target, TextureParameterName.TextureMinFilter, (int) TextureMinFilter.LinearMipmapLinear);
         GL.TexParameter(_target, TextureParameterName.TextureMagFilter, (int) TextureMagFilter.Linear);
         GL.TexParameter(_target, TextureParameterName.TextureBaseLevel, 0);
