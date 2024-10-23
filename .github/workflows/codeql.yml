@@ -1,0 +1,73 @@
+name: "CodeQL"
+
+on:
+  push:	
+    branches: [ "master" ]	
+  pull_request:	
+    branches: [ "master" ]
+  workflow_dispatch:
+    inputs:
+      dotnetVersion:
+        description: 'Override .NET Version (Default: 6.0.x, 7.0.x, 8.0.x)'
+        required: false
+        default: ''
+      latestOnly:
+        description: 'Scan with only the latest Windows runner (true/false)'
+        required: false
+        default: 'false'
+
+jobs:
+  setup_matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.result }}
+    steps:
+      - uses: actions/github-script@v7
+        id: set-matrix
+        with:
+          result-encoding: string
+          script: |
+            const latestOnly = "${{ github.event.inputs.latestOnly }}" == 'true';
+            const dotnetVersions = ["6.0.x", "7.0.x", "8.0.x"];
+            const osVersions = latestOnly ? ['windows-latest'] : ['windows-2019', 'windows-latest'];
+            const matrix = { include: [] };
+            for (const osVersion of osVersions) {
+              for (const dotnetVersion of dotnetVersions) {
+                matrix.include.push({ os: osVersion, 'dotnet-version': dotnetVersion });
+              }
+            }
+            return JSON.stringify(matrix);
+
+
+
+            
+  analyze:
+    needs: setup_matrix
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.setup_matrix.outputs.matrix)}}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+  
+      - name: Fetch Submodules Recursively
+        run: git submodule update --init --recursive
+  
+      - name: .NET Setup
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+  
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: 'csharp'
+  
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+  
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
