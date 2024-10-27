@@ -21,6 +21,7 @@ using CUE4Parse.GameTypes.DeltaForce.Encryption.Aes;
 using CUE4Parse.GameTypes.DreamStar.Encryption.Aes;
 using CUE4Parse.GameTypes.FSR.Encryption.Aes;
 using CUE4Parse.GameTypes.FunkoFusion.Encryption.Aes;
+using CUE4Parse.GameTypes.KRD.Assets.Exports;
 using CUE4Parse.GameTypes.MJS.Encryption.Aes;
 using CUE4Parse.GameTypes.NetEase.MAR.Encryption.Aes;
 using CUE4Parse.GameTypes.PAXDEI.Encryption.Aes;
@@ -826,6 +827,55 @@ public class CUE4ParseViewModel : ViewModel
             case UTexture texture when isNone || saveTextures:
             {
                 TabControl.SelectedTab.AddImage(texture, saveTextures, updateUi);
+                return false;
+            }
+            case USvgAsset svgasset when isNone || saveTextures:
+            {
+                var data = svgasset.GetOrDefault<byte[]>("SvgData");
+                var sourceFile = svgasset.GetOrDefault<string>("SourceFile");
+                using var stream = new MemoryStream(data) { Position = 0 };
+                var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(512, 512));
+                svg.Load(stream);
+
+                var bitmap = new SKBitmap(512, 512);
+                using (var canvas = new SKCanvas(bitmap))
+                using (var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.Medium })
+                {
+                    canvas.DrawPicture(svg.Picture, paint);
+                }
+
+                if (saveTextures)
+                {
+                    var fileName = sourceFile.SubstringAfterLast('/');
+                    var t = new TabImage(fileName, false, bitmap);
+                    var path = Path.Combine(UserSettings.Default.TextureDirectory,
+                        UserSettings.Default.KeepDirectoryStructure ? TabControl.SelectedTab.Directory : "", fileName!).Replace('\\', '/');
+
+                    System.IO.Directory.CreateDirectory(path.SubstringBeforeLast('/'));
+
+                    using var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read);
+                    fs.Write(data, 0, data.Length);
+                    if (File.Exists(path))
+                    {
+                        Log.Information("{FileName} successfully saved", fileName);
+                        if (updateUi)
+                        {
+                            FLogger.Append(ELog.Information, () =>
+                            {
+                                FLogger.Text("Successfully saved ", Constants.WHITE);
+                                FLogger.Link(fileName, path, true);
+                            });
+                        }
+                    }
+                    else
+                    {
+                        Log.Error("{FileName} could not be saved", fileName);
+                        if (updateUi)
+                            FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{fileName}'", Constants.WHITE, true));
+                    }
+                }
+
+                TabControl.SelectedTab.AddImage(sourceFile.SubstringAfterLast('/'), false, bitmap, false, updateUi);
                 return false;
             }
             case UAkMediaAssetData when isNone:
