@@ -14,7 +14,7 @@ public class Typefaces
     private const string _EXT = ".ufont";
 
     // FortniteGame
-    private const string _FORTNITE_BASE_PATH = "/Game/UI/Foundation/Fonts/";
+    private const string _FORTNITE_BASE_PATH = "FortniteGame/Plugins/FortUILibrary/Content/Fonts/";
     private const string _ASIA_ERINM = "AsiaERINM"; // korean fortnite
     private const string _BURBANK_BIG_CONDENSED_BLACK = "BurbankBigCondensed-Black"; // russian
     private const string _BURBANK_BIG_REGULAR_BLACK = "BurbankBigRegular-Black";
