@@ -33,7 +33,6 @@ public class CreatorPackage : IDisposable
         switch (_object.ExportType)
         {
             // Fortnite
-            case "FortCreativeWeaponMeleeItemDefinition":
             case "AthenaConsumableEmoteItemDefinition":
             case "AthenaSkyDiveContrailItemDefinition":
             case "AthenaLoadingScreenItemDefinition":
@@ -100,7 +99,6 @@ public class CreatorPackage : IDisposable
             case "FortConsumableItemDefinition":
             case "StWFortAccoladeItemDefinition":
             case "FortAccountBuffItemDefinition":
-            case "FortWeaponMeleeItemDefinition":
             case "FortPlayerPerksItemDefinition":
             case "FortPlaysetPropItemDefinition":
             case "FortPrerollDataItemDefinition":
@@ -134,9 +132,7 @@ public class CreatorPackage : IDisposable
             case "FortCampaignHeroLoadoutItemDefinition":
             case "FortConditionalResourceItemDefinition":
             case "FortChallengeBundleScheduleDefinition":
-            case "FortWeaponMeleeDualWieldItemDefinition":
             case "FortDailyRewardScheduleTokenDefinition":
-            case "FortCreativeWeaponRangedItemDefinition":
             case "FortVehicleCosmeticsItemDefinition_Body":
             case "FortVehicleCosmeticsItemDefinition_Skin":
             case "FortVehicleCosmeticsItemDefinition_Wheel":
@@ -156,6 +152,9 @@ public class CreatorPackage : IDisposable
             case "JunoAthenaDanceItemOverrideDefinition":
                 creator = new BaseJuno(_object, _style);
                 return true;
+            case "AssembledMeshSchema":
+                creator = new BaseAssembledMesh(_object, _style);
+                return true;
             case "FortTandemCharacterData":
                 creator = new BaseTandem(_object, _style);
                 return true;
@@ -165,6 +164,10 @@ public class CreatorPackage : IDisposable
             case "FortContextTrapItemDefinition":
             case "FortWeaponRangedItemDefinition":
             case "Daybreak_LevelExitVehicle_PartItemDefinition_C":
+            case "FortWeaponMeleeItemDefinition":
+            case "FortWeaponMeleeDualWieldItemDefinition":
+            case "FortCreativeWeaponMeleeItemDefinition":
+            case "FortCreativeWeaponRangedItemDefinition":
                 creator = new BaseIconStats(_object, _style);
                 return true;
             case "FortItemSeriesDefinition":
