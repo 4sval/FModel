@@ -52,6 +52,7 @@ public class CreatorPackage : IDisposable
             case "AthenaEmojiItemDefinition":
             case "AthenaItemWrapDefinition":
             case "AthenaToyItemDefinition":
+            case "CosmeticShoesItemDefinition":
             case "FortHeroType":
             case "FortTokenType":
             case "FortAbilityKit":
