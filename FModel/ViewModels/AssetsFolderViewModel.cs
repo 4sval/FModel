@@ -152,16 +152,15 @@ public class AssetsFolderViewModel
                 item.Folders.SetSuppressionState(false);
                 item.AssetsList.Assets.SetSuppressionState(false);
 
-                if (item.Folders.Count != 0)
+                if (item.Folders.Any())
                 {
-                    item.Folders.SetSuppressionState(false);
                     item.Folders.InvokeOnCollectionChanged();
 
                     foreach (var folderItem in item.Folders)
                         InvokeOnCollectionChanged(folderItem);
                 }
 
-                if (item.AssetsList.Assets.Count != 0)
+                if (item.AssetsList.Assets.Any())
                     item.AssetsList.Assets.InvokeOnCollectionChanged();
             }
         });
