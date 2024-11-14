@@ -35,6 +35,14 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                         contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, true);
                     }
                     break;
+                case "Assets_Show_Metadata":
+                    foreach (var asset in assetItems)
+                    {
+                        Thread.Yield();
+                        cancellationToken.ThrowIfCancellationRequested();
+                        contextViewModel.CUE4Parse.ShowMetadata(asset.FullPath);
+                    }
+                    break;
                 case "Assets_Export_Data":
                     foreach (var asset in assetItems)
                     {

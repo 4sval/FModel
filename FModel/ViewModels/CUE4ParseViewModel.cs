@@ -53,6 +53,7 @@ using CUE4Parse.UE4.Wwise;
 
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
+using CUE4Parse.UE4.Assets;
 using EpicManifestParser;
 
 using FModel.Creator;
@@ -954,6 +955,20 @@ public class CUE4ParseViewModel : ViewModel
 
             }
         }
+    }
+
+    public void ShowMetadata(string fullPath)
+    {
+        var package = Provider.LoadPackage(fullPath);
+
+        var directory = fullPath.SubstringBeforeLast('/');
+        var fileName = $"{fullPath.SubstringAfterLast('/')} (Metadata)";
+
+        if (TabControl.CanAddTabs) TabControl.AddTab(fileName, directory);
+        else TabControl.SelectedTab.SoftReset(fileName, directory);
+        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("");
+
+        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(package, Formatting.Indented), false, false);
     }
 
     private void SaveAndPlaySound(string fullPath, string ext, byte[] data)

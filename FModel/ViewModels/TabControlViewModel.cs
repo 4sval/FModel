@@ -106,7 +106,7 @@ public class TabItem : ViewModel
         set => SetProperty(ref _directory, value);
     }
 
-    public string FullPath => this.Directory + "/" + this.Header;
+    public string FullPath => this.Directory + "/" + this.Header.SubstringBeforeLast(" (");
 
     private bool _hasSearchOpen;
     public bool HasSearchOpen

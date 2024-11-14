@@ -88,6 +88,8 @@ public class BaseIcon : UCreator
     {
         ParseForReward(UserSettings.Default.CosmeticDisplayAsset);
 
+        if (Object.TryGetValue(out FInstancedStruct[] dataList, "DataList"))
+            CheckGameplayTags(dataList);
         if (Object.TryGetValue(out FGameplayTagContainer gameplayTags, "GameplayTags"))
             CheckGameplayTags(gameplayTags);
         if (Object.TryGetValue(out FPackageIndex cosmeticItem, "cosmetic_item"))
@@ -262,6 +264,13 @@ public class BaseIcon : UCreator
         return Utils.RemoveHtmlTags(string.Format(introduced, d));
     }
 
+    private void CheckGameplayTags(FInstancedStruct[] dataList)
+    {
+        if (dataList.FirstOrDefault(d => d.NonConstStruct?.TryGetValue(out FGameplayTagContainer _, "Tags") ?? false) is { NonConstStruct: not null } tags)
+        {
+            CheckGameplayTags(tags.NonConstStruct.Get<FGameplayTagContainer>("Tags"));
+        }
+    }
     private void CheckGameplayTags(FGameplayTagContainer gameplayTags)
     {
         if (gameplayTags.TryGetGameplayTag("Cosmetics.Source.", out var source))

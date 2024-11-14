@@ -70,7 +70,10 @@ public class GamePathVisualLineText : VisualLineText
             var obj = gamePath.SubstringAfterLast('.');
             var package = gamePath.SubstringBeforeLast('.');
             var fullPath = _applicationView.CUE4Parse.Provider.FixPath(package, StringComparison.Ordinal);
-            if (a.ParentVisualLine.Document.FileName.Equals(fullPath.SubstringBeforeLast('.'), StringComparison.OrdinalIgnoreCase))
+
+            var firstLine = a.ParentVisualLine.Document.GetLineByNumber(2);
+            if (a.ParentVisualLine.Document.FileName.Equals(fullPath.SubstringBeforeLast('.'), StringComparison.OrdinalIgnoreCase) &&
+                !a.ParentVisualLine.Document.GetText(firstLine.Offset, firstLine.Length).Equals("  \"Summary\": {")) // Show Metadata case
             {
                 int lineNumber;
                 DocumentLine line;
