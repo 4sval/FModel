@@ -316,7 +316,7 @@ public class Skeleton : IDisposable
             var position = new Vector2(x + 5, y - size.Y / 2f);
 
             ImGui.SetCursorScreenPos(position);
-            if (ImGui.InvisibleButton($"breakfast_{boneName}", size, ImGuiButtonFlags.MouseButtonLeft))
+            if (ImGui.InvisibleButton($"breakfast_{boneName}", size, ImGuiButtonFlags.MouseButtonRight))
             {
                 SelectedBone = boneName;
                 _breadcrumb.RemoveRange(0, i);

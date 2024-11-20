@@ -344,7 +344,7 @@ public class Material : IDisposable
         ImGui.Image(texture.GetPointer(),
             new Vector2(ImGui.GetContentRegionAvail().X - ImGui.GetScrollX()),
             Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1.0f, 1.0f, 1.0f, 0.25f));
-        return ImGui.IsItemHovered() && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left);
+        return ImGui.IsItemHovered() && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right);
     }
 
     public Texture GetSelectedTexture()

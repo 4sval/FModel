@@ -285,11 +285,11 @@ public class SnimGui
     - Shift to move faster
     - XC to zoom
     - Z to animate the selected model
-    - Left Mouse Button pressed to look around
-    - Right Click to select a model in the world
+    - Right Mouse Button pressed to look around
+    - Left Click to select a model in the world
 
 3. Outliner
-    3.1. Right Click Model
+    3.1. Left Click Model
         - Show / Hide the model
         - Show a skeletal representation of the model
         - Save to save the model as .psk / .pskx
@@ -304,7 +304,7 @@ public class SnimGui
       (no it's not dying it's just freezing while saving them all)
 
 5. Details
-    5.1. Right Click Section
+    5.1. Left Click Section
         - Show / Hide the section
         - Swap to change the material used by this section
         - Copy Path to Clipboard
@@ -316,7 +316,7 @@ public class SnimGui
 6. Timeline
     - Press Space to play/pause
     - Control the time with your mouse
-    6.1 Right Click Section
+    6.1 Left Click Section
         - Animate another loaded model
         - Save
         - Copy Path to Clipboard
@@ -418,7 +418,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     if (ImGui.Selectable(model.Name, s.Renderer.Options.SelectedModel == guid, ImGuiSelectableFlags.SpanAllColumns | ImGuiSelectableFlags.AllowDoubleClick))
                     {
                         s.Renderer.Options.SelectModel(guid);
-                        doubleClick = ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left);
+                        doubleClick = ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right);
                     }
                     Popup(() =>
                     {
@@ -757,12 +757,12 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
             if (ImGui.IsItemHovered())
             {
                 // if left button down while mouse is hover viewport
-                if (ImGui.IsMouseDown(ImGuiMouseButton.Left) && !_viewportFocus)
+                if (ImGui.IsMouseDown(ImGuiMouseButton.Right) && !_viewportFocus)
                 {
                     _viewportFocus = true;
                     s.CursorState = CursorState.Grabbed;
                 }
-                if (ImGui.IsMouseClicked(ImGuiMouseButton.Right))
+                if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
                 {
                     var guid = s.Renderer.Picking.ReadPixel(ImGui.GetMousePos(), ImGui.GetCursorScreenPos(), size);
                     s.Renderer.Options.SelectModel(guid);
@@ -771,13 +771,13 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                 }
             }
 
-            if (ImGui.IsMouseDragging(ImGuiMouseButton.Left) && _viewportFocus)
+            if (ImGui.IsMouseDragging(ImGuiMouseButton.Right) && _viewportFocus)
             {
                 s.Renderer.CameraOp.Modify(ImGui.GetIO().MouseDelta);
             }
 
             // if left button up and mouse was in viewport
-            if (ImGui.IsMouseReleased(ImGuiMouseButton.Left) && _viewportFocus)
+            if (ImGui.IsMouseReleased(ImGuiMouseButton.Right) && _viewportFocus)
             {
                 _viewportFocus = false;
                 s.CursorState = CursorState.Normal;

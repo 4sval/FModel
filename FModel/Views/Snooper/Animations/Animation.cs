@@ -89,10 +89,10 @@ public class Animation : IDisposable
         var p2 = new Vector2(timelineP0.X + EndTime * timeRatio.X - t, y + timeStep.Y - t);
 
         ImGui.SetCursorScreenPos(p1);
-        ImGui.InvisibleButton($"timeline_sequencetracker_{name}", new Vector2(EndTime * timeRatio.X - t, timeStep.Y - t), ImGuiButtonFlags.MouseButtonLeft);
+        ImGui.InvisibleButton($"timeline_sequencetracker_{name}", new Vector2(EndTime * timeRatio.X - t, timeStep.Y - t), ImGuiButtonFlags.MouseButtonRight);
         IsActive = ImGui.IsItemActive();
         IsSelected = s.Renderer.Options.SelectedAnimation == i;
-        if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {
             s.Renderer.Options.SelectAnimation(i);
         }

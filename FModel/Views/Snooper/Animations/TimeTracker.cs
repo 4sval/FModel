@@ -120,9 +120,9 @@ public class TimeTracker : IDisposable
         drawList.AddText(treeP0 with { Y = treeP0.Y + thickness }, 0xA0FFFFFF, $"{ElapsedTime:F1}/{MaxElapsedTime:F1} seconds");
 
         ImGui.SetCursorScreenPos(timelineP0);
-        ImGui.InvisibleButton("timeline_timetracker_canvas", timelineSize with { Y = timeBarHeight }, ImGuiButtonFlags.MouseButtonLeft);
+        ImGui.InvisibleButton("timeline_timetracker_canvas", timelineSize with { Y = timeBarHeight }, ImGuiButtonFlags.MouseButtonRight);
         IsActive = ImGui.IsItemActive();
-        if (IsActive && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
+        if (IsActive && ImGui.IsMouseDragging(ImGuiMouseButton.Right))
         {
             var mousePosCanvas = ImGui.GetIO().MousePos - timelineP0;
             SafeSetElapsedTime(mousePosCanvas.X / timelineSize.X * MaxElapsedTime);
