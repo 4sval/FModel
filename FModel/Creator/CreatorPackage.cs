@@ -157,6 +157,9 @@ public class CreatorPackage : IDisposable
             case "JunoAthenaDanceItemOverrideDefinition":
                 creator = new BaseJuno(_object, _style);
                 return true;
+            case "AssembledMeshSchema":
+                creator = new BaseAssembledMesh(_object, _style);
+                return true;
             case "FortTandemCharacterData":
                 creator = new BaseTandem(_object, _style);
                 return true;
