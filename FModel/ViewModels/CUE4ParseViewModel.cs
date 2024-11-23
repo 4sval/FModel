@@ -55,7 +55,7 @@ using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
 using CUE4Parse.UE4.Assets;
 using EpicManifestParser;
-
+using EpicManifestParser.ZlibngDotNetDecompressor;
 using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;
@@ -241,7 +241,8 @@ public class CUE4ParseViewModel : ViewModel
                                 ChunkCacheDirectory = cacheDir,
                                 ManifestCacheDirectory = cacheDir,
                                 ChunkBaseUrl = "http://epicgames-download1.akamaized.net/Builds/Fortnite/CloudDir/",
-                                Zlibng = ZlibHelper.Instance,
+                                Decompressor = ManifestZlibngDotNetDecompressor.Decompress,
+                                DecompressorState = ZlibHelper.Instance,
                                 CacheChunksAsIs = false
                             };
 
@@ -252,7 +253,7 @@ public class CUE4ParseViewModel : ViewModel
                                 ).GetAwaiter().GetResult();
                             var parseTime = Stopwatch.GetElapsedTime(startTs);
 
-                            foreach (var fileManifest in manifest.FileManifestList)
+                            foreach (var fileManifest in manifest.Files)
                             {
                                 if (fileManifest.FileName.Equals("Cloud/IoStoreOnDemand.ini", StringComparison.OrdinalIgnoreCase))
                                 {
@@ -265,8 +266,8 @@ public class CUE4ParseViewModel : ViewModel
                                     continue;
                                 }
 
-                                p.RegisterVfs(fileManifest.FileName, [(IRandomAccessStream)fileManifest.GetStream()]
-                                    , it => new FRandomAccessStreamArchive(it, manifest.FileManifestList.First(x => x.FileName.Equals(it)).GetStream(), p.Versions));
+                                p.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream()]
+                                    , it => new FRandomAccessStreamArchive(it, manifest.Files.First(x => x.FileName.Equals(it)).GetStream(), p.Versions));
                             }
 
                             FLogger.Append(ELog.Information, () =>
@@ -283,7 +284,7 @@ public class CUE4ParseViewModel : ViewModel
 
                             for (var i = 0; i < manifestInfo.Paks.Length; i++)
                             {
-                                p.RegisterVfs(manifestInfo.Paks[i].GetFullName(), [(IRandomAccessStream)manifestInfo.GetPakStream(i)]);
+                                p.RegisterVfs(manifestInfo.Paks[i].GetFullName(), [manifestInfo.GetPakStream(i)]);
                             }
 
                             FLogger.Append(ELog.Information, () =>
