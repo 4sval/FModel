@@ -160,7 +160,7 @@ public class AssetsFolderViewModel
                         InvokeOnCollectionChanged(folderItem);
                 }
 
-                if (item.AssetsList.Assets.Any())
+                if (item.AssetsList.Assets.Count != 0)
                     item.AssetsList.Assets.InvokeOnCollectionChanged();
             }
         });
