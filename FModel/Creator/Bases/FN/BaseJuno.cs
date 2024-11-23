@@ -28,7 +28,7 @@ public class BaseJuno : BaseIcon
             {
                 foreach (var data in additionalData)
                 {
-                    if (data.NonConstStruct?.TryGetValue(out FSoftObjectPath largePreview, "LargePreviewImage", "SmallPreviewImage") ?? false)
+                    if (data.NonConstStruct?.TryGetValue(out FSoftObjectPath largePreview, "LargePreviewImage", "SmallPreviewImage") == true)
                     {
                         _character.Preview = Utils.GetBitmap(largePreview);
                         break;
