@@ -152,7 +152,7 @@ public class AssetsFolderViewModel
                 item.Folders.SetSuppressionState(false);
                 item.AssetsList.Assets.SetSuppressionState(false);
 
-                if (item.Folders.Any())
+                if (item.Folders.Count != 0)
                 {
                     item.Folders.InvokeOnCollectionChanged();
 
