@@ -16,6 +16,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse_Conversion.Textures;
+using FModel.ViewModels.Nodify;
 
 namespace FModel.ViewModels;
 
@@ -107,6 +108,13 @@ public class TabItem : ViewModel
     }
 
     public string FullPath => this.Directory + "/" + this.Header.SubstringBeforeLast(" (");
+
+    private NodifyEditorViewModel _nodifyEditor;
+    public NodifyEditorViewModel NodifyEditor
+    {
+        get => _nodifyEditor;
+        set => SetProperty(ref _nodifyEditor, value);
+    }
 
     private bool _hasSearchOpen;
     public bool HasSearchOpen

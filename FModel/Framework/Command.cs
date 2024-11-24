@@ -16,3 +16,18 @@ public abstract class Command : ICommand
 
     public event EventHandler CanExecuteChanged;
 }
+
+public class DelegateCommand : Command
+{
+    private readonly Action _action;
+    private readonly Func<bool>? _condition;
+
+    public DelegateCommand(Action action, Func<bool>? executeCondition = default)
+    {
+        _action = action ?? throw new ArgumentNullException(nameof(action));
+        _condition = executeCondition;
+    }
+
+    public override void Execute(object parameter) => _action();
+    public override bool CanExecute(object parameter) => _condition?.Invoke() ?? true;
+}

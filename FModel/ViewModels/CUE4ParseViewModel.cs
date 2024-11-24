@@ -8,9 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-
 using AdonisUI.Controls;
-
 using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
@@ -53,7 +51,6 @@ using CUE4Parse.UE4.Wwise;
 
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
-using CUE4Parse.UE4.Assets;
 using EpicManifestParser;
 
 using FModel.Creator;
@@ -61,6 +58,7 @@ using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
+using FModel.ViewModels.Nodify;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
 using FModel.Views.Snooper;
@@ -612,15 +610,18 @@ public class CUE4ParseViewModel : ViewModel
             case "uasset":
             case "umap":
             {
-                var exports = Provider.LoadAllObjects(fullPath);
-                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), saveProperties, updateUi);
-                if (HasFlag(bulk, EBulkType.Properties)) break; // do not search for viewable exports if we are dealing with jsons
+                var package = Provider.LoadPackage(fullPath);
+                TabControl.SelectedTab.NodifyEditor = new NodifyEditorViewModel(package);
 
-                foreach (var e in exports)
-                {
-                    if (CheckExport(cancellationToken, e, bulk))
-                        break;
-                }
+                // var exports = Provider.LoadAllObjects(fullPath);
+                // TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), saveProperties, updateUi);
+                // if (HasFlag(bulk, EBulkType.Properties)) break; // do not search for viewable exports if we are dealing with jsons
+                //
+                // foreach (var e in exports)
+                // {
+                //     if (CheckExport(cancellationToken, e, bulk))
+                //         break;
+                // }
 
                 break;
             }

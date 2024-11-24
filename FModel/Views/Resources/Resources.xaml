@@ -675,7 +675,7 @@
                             <ColumnDefinition Width="{Binding AvalonImageSize, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" />
                         </Grid.ColumnDefinitions>
 
-                        <controls:AvalonEditor x:Name="DynamicArea" Grid.Column="0" DataContext="{Binding SelectedItem, ElementName=TabControlName}" />
+                        <controls:NodifyEditor x:Name="DynamicArea" Grid.Column="0" DataContext="{Binding SelectedItem.NodifyEditor, ElementName=TabControlName}" />
                         <GridSplitter Grid.Column="1" Width="4" VerticalAlignment="Stretch" ResizeDirection="Columns" KeyboardIncrement="0"
                                       Visibility="{Binding SelectedItem.HasImage, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}"
                                       Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
