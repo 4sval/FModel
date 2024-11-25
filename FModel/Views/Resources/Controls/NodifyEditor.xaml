@@ -39,6 +39,66 @@
         <SolidColorBrush x:Key="SquareConnectorOutline" Color="MediumSlateBlue" Opacity="0.15" />
         <SolidColorBrush x:Key="TriangleConnectorOutline" Color="MediumVioletRed" Opacity="0.15" />
 
+        <UIElement x:Key="ConnectionAnimationPlaceholder" Opacity="1" />
+
+        <Storyboard x:Key="HighlightConnection">
+            <DoubleAnimation Storyboard.Target="{StaticResource ConnectionAnimationPlaceholder}"
+                             Storyboard.TargetProperty="(UIElement.Opacity)"
+                             Duration="0:0:0.1" From="1" To="0.3" />
+        </Storyboard>
+
+        <Style x:Key="ConnectionStyle"
+               TargetType="{x:Type nodify:BaseConnection}"
+               BasedOn="{StaticResource {x:Type nodify:BaseConnection}}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Target.Shape}" Value="{x:Static viewModels:ConnectorShape.Square}">
+                    <Setter Property="Stroke" Value="{StaticResource SquareConnectorColor}" />
+                    <Setter Property="Fill" Value="{StaticResource SquareConnectorColor}" />
+                    <Setter Property="OutlineBrush" Value="{StaticResource SquareConnectorOutline}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Target.Shape}" Value="{x:Static viewModels:ConnectorShape.Triangle}">
+                    <Setter Property="Stroke" Value="{StaticResource TriangleConnectorColor}" />
+                    <Setter Property="Fill" Value="{StaticResource TriangleConnectorColor}" />
+                    <Setter Property="OutlineBrush" Value="{StaticResource TriangleConnectorOutline}" />
+                </DataTrigger>
+                <Trigger Property="IsMouseDirectlyOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard Name="HighlightConnection" Storyboard="{StaticResource HighlightConnection}" />
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <RemoveStoryboard BeginStoryboardName="HighlightConnection" />
+                    </Trigger.ExitActions>
+                    <Setter Property="Opacity" Value="1" />
+                </Trigger>
+                <Trigger Property="IsSelectable" Value="True">
+                    <Setter Property="Cursor" Value="Hand" />
+                </Trigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsMouseDirectlyOver" Value="False" />
+                        <Condition Property="IsSelected" Value="False" />
+                    </MultiTrigger.Conditions>
+                    <MultiTrigger.Setters>
+                        <Setter Property="OutlineBrush" Value="Transparent" />
+                    </MultiTrigger.Setters>
+                </MultiTrigger>
+            </Style.Triggers>
+            <Setter Property="Opacity" Value="{Binding Source={StaticResource ConnectionAnimationPlaceholder}, Path=Opacity}" />
+            <Setter Property="Source" Value="{Binding Source.Anchor}" />
+            <Setter Property="Target" Value="{Binding Target.Anchor}" />
+            <Setter Property="SourceOrientation" Value="{Binding Source.Node.Orientation}" />
+            <Setter Property="TargetOrientation" Value="{Binding Target.Node.Orientation}" />
+            <Setter Property="IsSelected" Value="{Binding IsSelected}" />
+        </Style>
+
+        <DataTemplate x:Key="LineConnectionTemplate">
+            <nodify:LineConnection Style="{StaticResource ConnectionStyle}" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="ConnectionTemplate">
+            <nodify:Connection Style="{StaticResource ConnectionStyle}" />
+        </DataTemplate>
+
         <ControlTemplate x:Key="SquareConnector" TargetType="Control">
             <Rectangle Width="14"
                        Height="14"
@@ -78,6 +138,13 @@
                              ViewportZoom="{Binding ViewportZoom, Mode=OneWayToSource}"
                              Background="{StaticResource SmallGridLinesDrawingBrush}"
                              ItemTemplateSelector="{DynamicResource NodeTemplateSelector}">
+            <nodify:NodifyEditor.Style>
+                <Style TargetType="{x:Type nodify:NodifyEditor}"
+                       BasedOn="{StaticResource {x:Type nodify:NodifyEditor}}">
+                    <Setter Property="ConnectionTemplate" Value="{StaticResource LineConnectionTemplate}" />
+                </Style>
+            </nodify:NodifyEditor.Style>
+
             <nodify:NodifyEditor.Resources>
                 <Style TargetType="{x:Type nodify:Connector}"
                        BasedOn="{StaticResource {x:Type nodify:Connector}}">
@@ -190,13 +257,6 @@
                     </Style.Triggers>
                 </Style>
             </nodify:NodifyEditor.ItemContainerStyle>
-
-            <!-- <nodify:NodifyEditor.ConnectionTemplate> -->
-            <!--     <DataTemplate DataType="{x:Type viewModels:ConnectionViewModel}"> -->
-            <!--         <nodify:LineConnection Source="{Binding Input.Anchor}" -->
-            <!--                                Target="{Binding Output.Anchor}" /> -->
-            <!--     </DataTemplate> -->
-            <!-- </nodify:NodifyEditor.ConnectionTemplate> -->
         </nodify:NodifyEditor>
 
         <Grid Background="{StaticResource LargeGridLinesDrawingBrush}" Panel.ZIndex="-2" />

@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets.Objects.Properties;
 using FModel.Framework;
 
@@ -54,7 +55,40 @@ public class ConnectorViewModel : ViewModel
 
     public ConnectorViewModel()
     {
-        Connections.WhenAdded(c => c.Input = this);
+        void Remove(ConnectionViewModel connection)
+        {
+            if (Flow is not ConnectorFlow.Input) return;
+            Node.Graph.Connections.Remove(connection);
+        }
+
+        Connections.WhenAdded(c =>
+        {
+            switch (Flow)
+            {
+                case ConnectorFlow.Input when c.Target is null:
+                    c.Target = this;
+                    c.Source.Connections.Add(c);
+                    break;
+                case ConnectorFlow.Output when c.Source is null:
+                    c.Source = this;
+                    c.Target.Connections.Add(c);
+
+                    // only connect outputs to inputs
+                    Node.Graph.Connections.Add(c);
+                    break;
+            }
+
+            c.Source.IsConnected = true;
+            c.Target.IsConnected = true;
+        })
+        .WhenRemoved(Remove)
+        .WhenCleared(c =>
+        {
+            foreach (var connection in c)
+            {
+                Remove(connection);
+            }
+        });
     }
 
     public ConnectorViewModel(string title) : this()
@@ -62,8 +96,13 @@ public class ConnectorViewModel : ViewModel
         Title = title;
     }
 
-    public ConnectorViewModel(FPropertyTagType? tag) : this(tag?.ToString())
+    public ConnectorViewModel(FPropertyTagData? type) : this(type?.ToString())
     {
 
+    }
+
+    public override string ToString()
+    {
+        return $"{Title} ({Connections.Count} connection{(Connections.Count > 0 ? "s" : "")})";
     }
 }

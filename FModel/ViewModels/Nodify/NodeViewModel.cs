@@ -17,8 +17,23 @@ public abstract class NodeViewModel : ViewModel
 
     public Orientation Orientation { get; protected set; }
 
+    public NodifyObservableCollection<NodeViewModel> Children { get; } = new();
+
     protected NodeViewModel()
     {
+        void Remove(NodeViewModel node)
+        {
+            Graph.Nodes.Remove(node);
+        }
 
+        Children.WhenAdded(c => Graph.Nodes.Add(c));
+        Children.WhenRemoved(Remove);
+        Children.WhenCleared(c =>
+        {
+            foreach (var child in c)
+            {
+                Remove(child);
+            }
+        });
     }
 }

@@ -6,14 +6,17 @@ public class PackagedNodeViewModel(IPackage package) : BaseIndexedNodeViewModel(
 {
     protected override void OnArrayIndexChanged()
     {
+        Input.Clear();
+        Output.Clear();
+
         var export = package.ExportsLazy[ArrayIndex].Value;
         Title = export.Name;
 
         foreach (var property in export.Properties)
         {
             Input.Add(new ConnectorViewModel(property.Name.Text));
-            Output.Add(new ConnectorViewModel(property.TagData?.ToString()));
-            ConnectOutput(Output[^1], property.Tag);
+            Output.Add(new ConnectorViewModel(property.TagData));
+            ConnectOutput(property.Tag);
         }
     }
 }

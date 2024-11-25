@@ -11,6 +11,14 @@ public class NodifyEditorViewModel : ViewModel
     {
         Nodes
             .WhenAdded(n => n.Graph = this)
+            .WhenRemoved(n =>
+            {
+                if (n is not FlowNodeViewModel flowNode) return;
+                foreach (var input in flowNode.Input)
+                {
+                    input.Connections.Clear();
+                }
+            })
             .WhenCleared(_ => Connections.Clear());
     }
 
@@ -18,6 +26,7 @@ public class NodifyEditorViewModel : ViewModel
     {
         var root = new PackagedNodeViewModel(package);
         Nodes.Add(root);
+        root.Initialize();
     }
 
     // private void AddToCollection(NodeViewModel parent, NodeViewModel node)

@@ -1,16 +1,18 @@
 ﻿using System.Collections.Generic;
+using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets.Objects.Properties;
 using FModel.Framework;
 
 namespace FModel.ViewModels.Nodify;
 
-public class IndexedNodeViewModel : BaseIndexedNodeViewModel
+public class IndexedNodeViewModel(List<FPropertyTagType> properties, FlowNodeViewModel parent) : BaseIndexedNodeViewModel(properties.Count)
 {
-    public IndexedNodeViewModel(List<FPropertyTagType> properties) : base(properties.Count) { }
-
     protected override void OnArrayIndexChanged()
     {
+        for (int i = 1; i < Input.Count; i++) Input.RemoveAt(i);
+        for (int i = 1; i < Output.Count; i++) Output.RemoveAt(i);
 
+        ConnectOutput(properties[ArrayIndex]);
     }
 }
 
@@ -22,14 +24,14 @@ public abstract class BaseIndexedNodeViewModel : FlowNodeViewModel
         get => _arrayIndex;
         set
         {
-            if (!SetProperty(ref _arrayIndex, value)) return;
+            if (CanUpdateArrayIndex(value) && !SetProperty(ref _arrayIndex, value))
+                return;
 
             RaisePropertyChanged(nameof(DisplayIndex));
             NextCommand.RaiseCanExecuteChanged();
             PreviousCommand.RaiseCanExecuteChanged();
 
-            Input.Clear();
-            Output.Clear();
+            Children.Clear();
             OnArrayIndexChanged();
         }
     }
@@ -44,10 +46,25 @@ public abstract class BaseIndexedNodeViewModel : FlowNodeViewModel
         PreviousCommand = new DelegateCommand(() => ArrayIndex--, () => ArrayIndex > 0);
 
         ArrayMax = arrayMax;
+    }
+
+    public void Initialize()
+    {
         ArrayIndex = 0;
     }
 
     protected abstract void OnArrayIndexChanged();
+
+    protected override void PostConnectOutput(FlowNodeViewModel parent)
+    {
+        if (Output.Count <= 1)
+        {
+            base.PostConnectOutput(parent);
+            Initialize();
+        }
+    }
+
+    protected bool CanUpdateArrayIndex(int value) => value >= 0 && value < ArrayMax;
 
     public int DisplayIndex => ArrayIndex + 1;
 }

@@ -4,18 +4,18 @@ namespace FModel.ViewModels.Nodify;
 
 public class ConnectionViewModel : ViewModel
 {
-    private ConnectorViewModel _input;
-    public ConnectorViewModel Input
+    private ConnectorViewModel _source;
+    public ConnectorViewModel Source
     {
-        get => _input;
-        set => SetProperty(ref _input, value);
+        get => _source;
+        set => SetProperty(ref _source, value);
     }
 
-    private ConnectorViewModel _output;
-    public ConnectorViewModel Output
+    private ConnectorViewModel _target;
+    public ConnectorViewModel Target
     {
-        get => _output;
-        set => SetProperty(ref _output, value);
+        get => _target;
+        set => SetProperty(ref _target, value);
     }
 
     private bool _isSelected;
@@ -25,8 +25,27 @@ public class ConnectionViewModel : ViewModel
         set => SetProperty(ref _isSelected, value);
     }
 
-    public ConnectionViewModel()
+    public ConnectionViewModel(ConnectorViewModel connector)
     {
+        switch (connector.Flow)
+        {
+            case ConnectorFlow.Input:
+                Target = connector;
+                break;
+            case ConnectorFlow.Output:
+                Source = connector;
+                break;
+        }
+    }
 
+    public ConnectionViewModel(ConnectorViewModel source, ConnectorViewModel target)
+    {
+        Source = source;
+        Target = target;
+    }
+
+    public override string ToString()
+    {
+        return $"{Source.Title} -> {Target.Title}";
     }
 }
