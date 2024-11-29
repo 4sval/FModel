@@ -51,13 +51,20 @@ public partial class App
         if (!Directory.Exists(UserSettings.Default.OutputDirectory))
         {
             var currentDir = Directory.GetCurrentDirectory();
-            var dirInfo = new DirectoryInfo(currentDir);
-            if (dirInfo.Attributes.HasFlag(FileAttributes.Archive))
-                throw new Exception("FModel cannot be run from an archive file. Please extract it and try again.");
-            if (dirInfo.Attributes.HasFlag(FileAttributes.ReadOnly))
-                throw new Exception("FModel cannot be run from a read-only directory. Please move it to a writable location.");
+            try
+            {
+                var outputDir = Directory.CreateDirectory(Path.Combine(currentDir, "Output"));
+                using (File.Create(Path.Combine(outputDir.FullName, Path.GetRandomFileName()), 1, FileOptions.DeleteOnClose))
+                {
 
-            UserSettings.Default.OutputDirectory = Path.Combine(currentDir, "Output");
+                }
+
+                UserSettings.Default.OutputDirectory = outputDir.FullName;
+            }
+            catch (UnauthorizedAccessException exception)
+            {
+                throw new Exception("FModel cannot create the output directory where it is currently located. Please move FModel.exe to a different location.", exception);
+            }
         }
 
         if (!Directory.Exists(UserSettings.Default.RawDataDirectory))
@@ -126,15 +133,15 @@ public partial class App
 
         var messageBox = new MessageBoxModel
         {
-            Text = $"An unhandled exception occurred: {e.Exception.Message}",
+            Text = $"An unhandled {e.Exception.GetBaseException().GetType()} occurred: {e.Exception.Message}",
             Caption = "Fatal Error",
             Icon = MessageBoxImage.Error,
-            Buttons = new[]
-            {
+            Buttons =
+            [
                 MessageBoxButtons.Custom("Reset Settings", EErrorKind.ResetSettings),
                 MessageBoxButtons.Custom("Restart", EErrorKind.Restart),
                 MessageBoxButtons.Custom("OK", EErrorKind.Ignore)
-            },
+            ],
             IsSoundEnabled = false
         };
 
