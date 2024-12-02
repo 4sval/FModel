@@ -94,15 +94,7 @@ public class BaseCommunity : BaseIcon
         return new[] { ret };
     }
 
-    private void CheckGameplayTags(FInstancedStruct[] dataList)
-    {
-        if (dataList.FirstOrDefault(d => d.NonConstStruct?.TryGetValue(out FGameplayTagContainer _, "Tags") ?? false) is { NonConstStruct: not null } tags)
-        {
-            CheckGameplayTags(tags.NonConstStruct.Get<FGameplayTagContainer>("Tags"));
-        }
-    }
-
-    private void CheckGameplayTags(FGameplayTagContainer gameplayTags)
+    protected override void CheckGameplayTags(FGameplayTagContainer gameplayTags)
     {
         if (_design == null) return;
         if (_design.DrawSource)
