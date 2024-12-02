@@ -253,22 +253,22 @@ public class CUE4ParseViewModel : ViewModel
                                 ).GetAwaiter().GetResult();
                             var parseTime = Stopwatch.GetElapsedTime(startTs);
 
-                            foreach (var fileManifest in manifest.Files)
+                            Parallel.ForEach(manifest.Files, fileManifest =>
                             {
                                 if (fileManifest.FileName.Equals("Cloud/IoStoreOnDemand.ini", StringComparison.OrdinalIgnoreCase))
                                 {
                                     IoStoreOnDemand.Read(new StreamReader(fileManifest.GetStream()));
-                                    continue;
+                                    return;
                                 }
 
                                 if (!_fnLive.IsMatch(fileManifest.FileName))
                                 {
-                                    continue;
+                                    return;
                                 }
 
                                 p.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream()]
                                     , it => new FRandomAccessStreamArchive(it, manifest.Files.First(x => x.FileName.Equals(it)).GetStream(), p.Versions));
-                            }
+                            });
 
                             FLogger.Append(ELog.Information, () =>
                                 FLogger.Text($"Fortnite [LIVE] has been loaded successfully in {parseTime.TotalMilliseconds}ms", Constants.WHITE, true));
@@ -282,10 +282,10 @@ public class CUE4ParseViewModel : ViewModel
                                 throw new Exception("Could not load latest Valorant manifest, you may have to switch to your local installation.");
                             }
 
-                            for (var i = 0; i < manifestInfo.Paks.Length; i++)
+                            Parallel.For(0, manifestInfo.Paks.Length, i =>
                             {
                                 p.RegisterVfs(manifestInfo.Paks[i].GetFullName(), [manifestInfo.GetPakStream(i)]);
-                            }
+                            });
 
                             FLogger.Append(ELog.Information, () =>
                                 FLogger.Text($"Valorant '{manifestInfo.Header.GameVersion}' has been loaded successfully", Constants.WHITE, true));

@@ -58,6 +58,9 @@ public class BaseCommunity : BaseIcon
 
         if (Object.TryGetValue(out FGameplayTagContainer gameplayTags, "GameplayTags"))
             CheckGameplayTags(gameplayTags);
+        else if (Object.TryGetValue(out FInstancedStruct[] dataList, "DataList"))
+            CheckGameplayTags(dataList);
+
         if (Object.TryGetValue(out FPackageIndex cosmeticItem, "cosmetic_item"))
             CosmeticSource = cosmeticItem.Name.ToUpper();
 
@@ -89,6 +92,14 @@ public class BaseCommunity : BaseIcon
         }
 
         return new[] { ret };
+    }
+
+    private void CheckGameplayTags(FInstancedStruct[] dataList)
+    {
+        if (dataList.FirstOrDefault(d => d.NonConstStruct?.TryGetValue(out FGameplayTagContainer _, "Tags") ?? false) is { NonConstStruct: not null } tags)
+        {
+            CheckGameplayTags(tags.NonConstStruct.Get<FGameplayTagContainer>("Tags"));
+        }
     }
 
     private void CheckGameplayTags(FGameplayTagContainer gameplayTags)
