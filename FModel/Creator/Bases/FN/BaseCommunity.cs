@@ -58,6 +58,9 @@ public class BaseCommunity : BaseIcon
 
         if (Object.TryGetValue(out FGameplayTagContainer gameplayTags, "GameplayTags"))
             CheckGameplayTags(gameplayTags);
+        else if (Object.TryGetValue(out FInstancedStruct[] dataList, "DataList"))
+            CheckGameplayTags(dataList);
+
         if (Object.TryGetValue(out FPackageIndex cosmeticItem, "cosmetic_item"))
             CosmeticSource = cosmeticItem.Name.ToUpper();
 
@@ -91,7 +94,7 @@ public class BaseCommunity : BaseIcon
         return new[] { ret };
     }
 
-    private void CheckGameplayTags(FGameplayTagContainer gameplayTags)
+    protected override void CheckGameplayTags(FGameplayTagContainer gameplayTags)
     {
         if (_design == null) return;
         if (_design.DrawSource)
