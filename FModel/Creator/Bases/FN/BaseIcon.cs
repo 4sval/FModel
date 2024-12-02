@@ -229,7 +229,8 @@ public class BaseIcon : UCreator
             2 => 8,
             3 => 4,
             4 => 5,
-            _ => 10
+            5 => 5,
+            _ => 5
         };
 
         var chapterIdx = 0;
