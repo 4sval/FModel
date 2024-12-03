@@ -58,7 +58,7 @@ public class SearchViewModel : ViewModel
             return filters.All(x => assetItem.FullPath.Contains(x, HasMatchCaseEnabled ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase));
 
         var o = RegexOptions.None;
-        if (HasMatchCaseEnabled) o |= RegexOptions.IgnoreCase;
+        if (!HasMatchCaseEnabled) o |= RegexOptions.IgnoreCase;
         return new Regex(FilterText, o).Match(assetItem.FullPath).Success;
     }
 }
