@@ -265,14 +265,15 @@ public class BaseIcon : UCreator
         return Utils.RemoveHtmlTags(string.Format(introduced, d));
     }
 
-    private void CheckGameplayTags(FInstancedStruct[] dataList)
+    protected void CheckGameplayTags(FInstancedStruct[] dataList)
     {
         if (dataList.FirstOrDefault(d => d.NonConstStruct?.TryGetValue(out FGameplayTagContainer _, "Tags") ?? false) is { NonConstStruct: not null } tags)
         {
             CheckGameplayTags(tags.NonConstStruct.Get<FGameplayTagContainer>("Tags"));
         }
     }
-    private void CheckGameplayTags(FGameplayTagContainer gameplayTags)
+
+    protected virtual void CheckGameplayTags(FGameplayTagContainer gameplayTags)
     {
         if (gameplayTags.TryGetGameplayTag("Cosmetics.Source.", out var source))
             CosmeticSource = source.Text["Cosmetics.Source.".Length..];
