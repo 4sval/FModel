@@ -84,7 +84,7 @@ public class CUE4ParseViewModel : ViewModel
 {
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
     private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
-    private readonly Regex _fnLive = new(@"^FortniteGame[/\\]Content[/\\]Paks[/\\]",
+    private readonly Regex _fnLiveRegex = new(@"^FortniteGame[/\\]Content[/\\]Paks[/\\]",
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private string _internalGameName;
@@ -251,44 +251,38 @@ public class CUE4ParseViewModel : ViewModel
                                 cancellationToken: cancellationToken,
                                 elementManifestPredicate: x => x.Uri.Host is ("epicgames-download1.akamaized.net" or "download.epicgames.com")
                                 ).GetAwaiter().GetResult();
-                            var parseTime = Stopwatch.GetElapsedTime(startTs);
 
-                            Parallel.ForEach(manifest.Files, fileManifest =>
+                            if (manifest.TryFindFile("Cloud/IoStoreOnDemand.ini", out var ioStoreOnDemandFile))
                             {
-                                if (fileManifest.FileName.Equals("Cloud/IoStoreOnDemand.ini", StringComparison.OrdinalIgnoreCase))
-                                {
-                                    IoStoreOnDemand.Read(new StreamReader(fileManifest.GetStream()));
-                                    return;
-                                }
+                                IoStoreOnDemand.Read(new StreamReader(ioStoreOnDemandFile.GetStream()));
+                            }
 
-                                if (!_fnLive.IsMatch(fileManifest.FileName))
-                                {
-                                    return;
-                                }
-
-                                p.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream()]
-                                    , it => new FRandomAccessStreamArchive(it, manifest.Files.First(x => x.FileName.Equals(it)).GetStream(), p.Versions));
+                            Parallel.ForEach(manifest.Files.Where(x => _fnLiveRegex.IsMatch(x.FileName)), fileManifest =>
+                            {
+                                p.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream()],
+                                    it => new FRandomAccessStreamArchive(it, manifest.FindFile(it)!.GetStream(), p.Versions));
                             });
 
+                            var elapsedTime = Stopwatch.GetElapsedTime(startTs);
                             FLogger.Append(ELog.Information, () =>
-                                FLogger.Text($"Fortnite [LIVE] has been loaded successfully in {parseTime.TotalMilliseconds}ms", Constants.WHITE, true));
+                                FLogger.Text($"Fortnite [LIVE] has been loaded successfully in {elapsedTime.TotalMilliseconds:F1}ms", Constants.WHITE, true));
                             break;
                         }
                         case "ValorantLive":
                         {
-                            var manifestInfo = _apiEndpointView.ValorantApi.GetManifest(cancellationToken);
-                            if (manifestInfo == null)
+                            var manifest = _apiEndpointView.ValorantApi.GetManifest(cancellationToken);
+                            if (manifest == null)
                             {
                                 throw new Exception("Could not load latest Valorant manifest, you may have to switch to your local installation.");
                             }
 
-                            Parallel.For(0, manifestInfo.Paks.Length, i =>
+                            Parallel.ForEach(manifest.Paks, pak =>
                             {
-                                p.RegisterVfs(manifestInfo.Paks[i].GetFullName(), [manifestInfo.GetPakStream(i)]);
+                                p.RegisterVfs(pak.GetFullName(), [pak.GetStream(manifest)]);
                             });
 
                             FLogger.Append(ELog.Information, () =>
-                                FLogger.Text($"Valorant '{manifestInfo.Header.GameVersion}' has been loaded successfully", Constants.WHITE, true));
+                                FLogger.Text($"Valorant '{manifest.Header.GameVersion}' has been loaded successfully", Constants.WHITE, true));
                             break;
                         }
                     }

@@ -116,8 +116,6 @@ public class VManifest
 
         return chunkBytes;
     }
-
-    public VPakStream GetPakStream(int index) => new VPakStream(this, index);
 }
 
 public readonly struct VHeader
@@ -168,6 +166,7 @@ public readonly struct VPak
     }
 
     public string GetFullName() => $"ValorantLive/ShooterGame/Content/Paks/{Name}";
+    public VPakStream GetStream(VManifest manifest) => new(manifest, this);
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -182,16 +181,15 @@ public readonly struct VChunk
 public class VPakStream : RandomAccessStream, ICloneable
 {
     private readonly VManifest _manifest;
-    private readonly int _pakIndex;
+    private readonly VPak _pak;
     private readonly VChunk[] _chunks;
 
-    public VPakStream(VManifest manifest, int pakIndex, long position = 0L)
+    public VPakStream(VManifest manifest, in VPak pak, long position = 0L)
     {
         _manifest = manifest;
-        _pakIndex = pakIndex;
+        _pak = pak;
         _position = position;
 
-        var pak = manifest.Paks[pakIndex];
         _chunks = new VChunk[pak.ChunkIndices.Length];
         for (var i = 0; i < _chunks.Length; i++)
         {
@@ -201,7 +199,7 @@ public class VPakStream : RandomAccessStream, ICloneable
         Length = pak.Size;
     }
 
-    public object Clone() => new VPakStream(_manifest, _pakIndex, _position);
+    public object Clone() => new VPakStream(_manifest, _pak, _position);
 
     public override int Read(byte[] buffer, int offset, int count) =>
         ReadAsync(buffer, offset, count, CancellationToken.None).GetAwaiter().GetResult();
