@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -27,8 +28,8 @@ using CUE4Parse.GameTypes.NetEase.MAR.Encryption.Aes;
 using CUE4Parse.GameTypes.PAXDEI.Encryption.Aes;
 using CUE4Parse.GameTypes.Rennsport.Encryption.Aes;
 using CUE4Parse.GameTypes.Snowbreak.Encryption.Aes;
-using CUE4Parse.GameTypes.UDWN.Encryption.Aes;
 using CUE4Parse.GameTypes.THPS.Encryption.Aes;
+using CUE4Parse.GameTypes.UDWN.Encryption.Aes;
 using CUE4Parse.MappingsProvider;
 using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets.Exports;
@@ -42,7 +43,6 @@ using CUE4Parse.UE4.Assets.Exports.Verse;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Localization;
-using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Oodle.Objects;
@@ -53,9 +53,11 @@ using CUE4Parse.UE4.Wwise;
 
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
-using CUE4Parse.UE4.Assets;
+
 using EpicManifestParser;
+using EpicManifestParser.UE;
 using EpicManifestParser.ZlibngDotNetDecompressor;
+
 using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;
@@ -66,7 +68,7 @@ using FModel.Views.Resources.Controls;
 using FModel.Views.Snooper;
 
 using Newtonsoft.Json;
-using OffiUtils;
+
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 
@@ -77,6 +79,7 @@ using SkiaSharp;
 using UE4Config.Parsing;
 
 using Application = System.Windows.Application;
+using FGuid = CUE4Parse.UE4.Objects.Core.Misc.FGuid;
 
 namespace FModel.ViewModels;
 
@@ -247,10 +250,20 @@ public class CUE4ParseViewModel : ViewModel
                             };
 
                             var startTs = Stopwatch.GetTimestamp();
-                            var (manifest, _) = manifestInfo.DownloadAndParseAsync(manifestOptions,
-                                cancellationToken: cancellationToken,
-                                elementManifestPredicate: x => x.Uri.Host is ("epicgames-download1.akamaized.net" or "download.epicgames.com")
+                            FBuildPatchAppManifest manifest;
+
+                            try
+                            {
+                                (manifest, _) = manifestInfo.DownloadAndParseAsync(manifestOptions,
+                                    cancellationToken: cancellationToken,
+                                    elementManifestPredicate: static x => x.Uri.Host != "cloudflare.epicgamescdn.com"
                                 ).GetAwaiter().GetResult();
+                            }
+                            catch (HttpRequestException ex)
+                            {
+                                Log.Error("Failed to download manifest ({ManifestUri})", ex.Data["ManifestUri"]?.ToString() ?? "");
+                                throw;
+                            }
 
                             if (manifest.TryFindFile("Cloud/IoStoreOnDemand.ini", out var ioStoreOnDemandFile))
                             {
