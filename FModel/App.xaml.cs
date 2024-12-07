@@ -7,6 +7,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;
+using CUE4Parse;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -102,6 +103,8 @@ public partial class App
         if (createMe) Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Exports"));
         Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Logs"));
         Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"));
+
+        Globals.FModelDataFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
 
 #if DEBUG
         Log.Logger = new LoggerConfiguration().WriteTo.Console(theme: AnsiConsoleTheme.Literate).WriteTo.File(
