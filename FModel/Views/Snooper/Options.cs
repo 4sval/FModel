@@ -9,6 +9,7 @@ using FModel.Views.Snooper.Animations;
 using FModel.Views.Snooper.Lights;
 using FModel.Views.Snooper.Models;
 using FModel.Views.Snooper.Shading;
+using SkiaSharp;
 
 namespace FModel.Views.Snooper;
 
@@ -185,17 +186,26 @@ public class Options
         model.UpdateMorph(SelectedMorph);
     }
 
-    public bool TryGetTexture(UTexture2D o, bool fix, out Texture texture)
+    public bool TryGetTexture(UTexture o, bool fix, out Texture texture)
     {
         var guid = o.LightingGuid;
-        if (!Textures.TryGetValue(guid, out texture) &&
-            o.Decode(UserSettings.Default.PreviewMaxTextureSize, UserSettings.Default.CurrentDir.TexturePlatform) is { } bitmap)
+        if (Textures.TryGetValue(guid, out texture)) return texture != null;
+
+        SKBitmap bitmap = o switch
+        {
+            UTexture2D texture2D => texture2D.Decode(UserSettings.Default.PreviewMaxTextureSize, UserSettings.Default.CurrentDir.TexturePlatform),
+            UTexture2DArray texture2DArray => texture2DArray.DecodeTextureArray(UserSettings.Default.CurrentDir.TexturePlatform)?.FirstOrDefault(),
+            _ => o.Decode(UserSettings.Default.CurrentDir.TexturePlatform)
+        };
+
+        if (bitmap is not null)
         {
             texture = new Texture(bitmap, o);
             if (fix) TextureHelper.FixChannels(_game, texture);
             Textures[guid] = texture;
             bitmap.Dispose();
         }
+
         return texture != null;
     }
 

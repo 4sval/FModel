@@ -647,6 +647,7 @@ public class CUE4ParseViewModel : ViewModel
             case "bat":
             case "dat":
             case "cfg":
+            case "ddr":
             case "ide":
             case "ipl":
             case "zon":
