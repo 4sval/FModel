@@ -92,12 +92,14 @@ public class CreatorPackage : IDisposable
             case "FortCodeTokenItemDefinition":
             case "FortSchematicItemDefinition":
             case "FortAlterableItemDefinition":
+            case "SproutHousingItemDefinition":
             case "SparksKeyboardItemDefinition":
             case "FortWorldMultiItemDefinition":
             case "FortAlterationItemDefinition":
             case "FortExpeditionItemDefinition":
             case "FortIngredientItemDefinition":
             case "FortConsumableItemDefinition":
+            case "SproutBuildingItemDefinition":
             case "StWFortAccoladeItemDefinition":
             case "FortAccountBuffItemDefinition":
             case "FortPlayerPerksItemDefinition":
