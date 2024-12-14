@@ -16,7 +16,7 @@ namespace FModel.ViewModels.ApiEndpoints;
 public class EpicApiEndpoint : AbstractApiProvider
 {
     private const string _OAUTH_URL = "https://account-public-service-prod03.ol.epicgames.com/account/api/oauth/token";
-    private const string _BASIC_TOKEN = "basic MzQ0NmNkNzI2OTRjNGE0NDg1ZDgxYjc3YWRiYjIxNDE6OTIwOWQ0YTVlMjVhNDU3ZmI5YjA3NDg5ZDMxM2I0MWE=";
+    private const string _BASIC_TOKEN = "basic M2Y2OWU1NmM3NjQ5NDkyYzhjYzI5ZjFhZjA4YThhMTI6YjUxZWU5Y2IxMjIzNGY1MGE2OWVmYTY3ZWY1MzgxMmU=";
     private const string _APP_URL = "https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/public/assets/v2/platform/Windows/namespace/fn/catalogItem/4fe75bbc5a674f4f9b356b5c90567da5/app/Fortnite/label/Live";
 
     public EpicApiEndpoint(RestClient client) : base(client) { }
