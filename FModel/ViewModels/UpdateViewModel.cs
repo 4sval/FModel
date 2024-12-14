@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +10,7 @@ using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
 using FModel.ViewModels.Commands;
 using FModel.Views.Resources.Converters;
+using SharpGLTF.Schema2;
 
 namespace FModel.ViewModels;
 
@@ -40,10 +41,13 @@ public class UpdateViewModel : ViewModel
         Commits.AddRange(await _apiEndpointView.GitHubApi.GetCommitHistoryAsync());
 
         var qa = await _apiEndpointView.GitHubApi.GetReleaseAsync("qa");
-        qa.Assets.OrderByDescending(x => x.CreatedAt).First().IsLatest = true;
+        var assets = qa.Assets.OrderByDescending(x => x.CreatedAt).ToList();
 
-        foreach (var asset in qa.Assets)
+        for (var i = 0; i < assets.Count; i++)
         {
+            var asset = assets[i];
+            asset.IsLatest = i == 0;
+
             var commitSha = asset.Name.SubstringBeforeLast(".zip");
             var commit = Commits.FirstOrDefault(x => x.Sha == commitSha);
             if (commit != null)
@@ -69,6 +73,6 @@ public class UpdateViewModel : ViewModel
 
     public void DownloadLatest()
     {
-        Commits.FirstOrDefault(x => x.Asset.IsLatest)?.Download();
+        Commits.FirstOrDefault(x => x.IsDownloadable && x.Asset.IsLatest)?.Download();
     }
 }
