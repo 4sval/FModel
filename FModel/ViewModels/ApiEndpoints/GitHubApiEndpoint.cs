@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using FModel.Framework;
 using FModel.ViewModels.ApiEndpoints.Models;
 using RestSharp;
@@ -9,7 +9,7 @@ public class GitHubApiEndpoint : AbstractApiProvider
 {
     public GitHubApiEndpoint(RestClient client) : base(client) { }
 
-    public async Task<GitHubCommit[]> GetCommitHistoryAsync(string branch = "dev", int page = 1, int limit = 20)
+    public async Task<GitHubCommit[]> GetCommitHistoryAsync(string branch = "dev", int page = 1, int limit = 30)
     {
         var request = new FRestRequest(Constants.GH_COMMITS_HISTORY);
         request.AddParameter("sha", branch);
