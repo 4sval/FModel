@@ -10,7 +10,6 @@ using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
 using FModel.ViewModels.Commands;
 using FModel.Views.Resources.Converters;
-using SharpGLTF.Schema2;
 
 namespace FModel.ViewModels;
 
