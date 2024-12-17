@@ -88,6 +88,7 @@ public class CreatorPackage : IDisposable
             case "FortBackpackItemDefinition":
             case "FortEventQuestMapDataAsset":
             case "FortBuildingItemDefinition":
+            case "FortItemCacheItemDefinition":
             case "FortWeaponModItemDefinition":
             case "FortCodeTokenItemDefinition":
             case "FortSchematicItemDefinition":
@@ -109,6 +110,7 @@ public class CreatorPackage : IDisposable
             case "FortPlayerAugmentItemDefinition":
             case "FortSmartBuildingItemDefinition":
             case "FortGiftBoxUnlockItemDefinition":
+            case "FortCreativeGadgetItemDefinition":
             case "FortWeaponModItemDefinitionOptic":
             case "RadioContentSourceItemDefinition":
             case "FortPlaysetGrenadeItemDefinition":
@@ -196,6 +198,7 @@ public class CreatorPackage : IDisposable
                 creator = new Bases.FN.BaseQuest(_object, _style);
                 return true;
             case "FortCompendiumItemDefinition":
+            case "FortCompendiumBundleDefinition":
             case "FortChallengeBundleItemDefinition":
                 creator = new BaseBundle(_object, _style);
                 return true;
