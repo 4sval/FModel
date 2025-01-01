@@ -8,6 +8,7 @@ using CUE4Parse_Conversion.Animations;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
+using CUE4Parse.UE4.Assets.Exports.Component;
 using CUE4Parse.UE4.Assets.Exports.Component.SplineMesh;
 using CUE4Parse.UE4.Assets.Exports.Component.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
@@ -540,10 +541,9 @@ public class Renderer : IDisposable
                     !staticMeshComp.GetStaticMesh().TryLoad(out UStaticMesh m) || m.Materials.Length < 1)
                     continue;
 
+                var relation = CalculateTransform(staticMeshComp, transform);
                 if (staticMeshComp is UInstancedStaticMeshComponent { PerInstanceSMData.Length: > 0 } instancedStaticComp)
                 {
-
-                    var relation = CalculateTransform(staticMeshComp, transform);
                     foreach (var perInstanceData in instancedStaticComp.PerInstanceSMData)
                     {
                         ProcessMesh(actor, staticMeshComp, m, new Transform
@@ -555,29 +555,9 @@ public class Renderer : IDisposable
                         });
                     }
                 }
-                else if (staticMeshComp is USplineMeshComponent splineComp)
-                {
-                    var tangentDirection = splineComp.SplineParams.StartTangent.GetSafeNormal();
-
-                    var upVector = FVector.CrossProduct(tangentDirection, FVector.UpVector);
-                    if (upVector.IsNearlyZero())
-                        upVector = FVector.CrossProduct(tangentDirection, FVector.ForwardVector);
-
-                    upVector = upVector.GetSafeNormal(); // should this be normalized?
-
-                    var t = new Transform
-                    {
-                        Relation = transform.Matrix,
-                        Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO,
-                        Rotation = upVector.ToOrientationQuat(),
-                        Scale = staticMeshComp.GetOrDefault("RelativeScale3D", FVector.OneVector)
-                    };
-
-                    ProcessMesh(actor, staticMeshComp, m, t);
-                }
                 else
                 {
-                    ProcessMesh(actor, staticMeshComp, m, CalculateTransform(staticMeshComp, transform));
+                    ProcessMesh(actor, staticMeshComp, m, relation);
                 }
             }
         }
@@ -617,10 +597,21 @@ public class Renderer : IDisposable
         if (Options.TryGetModel(guid, out var model))
         {
             model.AddInstance(transform);
+            if (model is SplineModel splineModel && staticMeshComp is USplineMeshComponent { SplineParams: not null } splineComp)
+            {
+                splineModel.SplineParams.Add(splineComp.SplineParams);
+            }
         }
         else if (m.TryConvert(out var mesh))
         {
-            model = new StaticModel(m, mesh, transform);
+            if (staticMeshComp is USplineMeshComponent { SplineParams: not null } splineComp)
+            {
+                model = new SplineModel(m, mesh, splineComp.SplineParams, transform);
+            }
+            else
+            {
+                model = new StaticModel(m, mesh, transform);
+            }
             model.IsTwoSided = actor.GetOrDefault("bMirrored", staticMeshComp.GetOrDefault("bDisallowMeshPaintPerInstance", model.IsTwoSided));
 
             if (actor.TryGetAllValues(out FPackageIndex[] textureData, "TextureData"))
@@ -695,11 +686,28 @@ public class Renderer : IDisposable
 
     private Transform CalculateTransform(IPropertyHolder staticMeshComp, Transform relation)
     {
+        if (staticMeshComp.TryGetValue(out FPackageIndex ap, "AttachParent") && ap.TryLoad(out UObject component))
+        {
+            relation = CalculateTransform(component, relation);
+        }
+
+        var fallbackRotation = FRotator.ZeroRotator;
+        if (staticMeshComp is USplineMeshComponent { SplineParams: not null } splineComp)
+        {
+            var tangentDirection = splineComp.SplineParams.StartTangent.GetSafeNormal();
+
+            var upVector = FVector.CrossProduct(tangentDirection, FVector.UpVector);
+            if (upVector.IsNearlyZero())
+                upVector = FVector.CrossProduct(tangentDirection, FVector.ForwardVector);
+
+            fallbackRotation = upVector.GetSafeNormal().ToOrientationRotator(); // should this be normalized?
+        }
+
         return new Transform
         {
             Relation = relation.Matrix,
             Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO,
-            Rotation = staticMeshComp.GetOrDefault("RelativeRotation", FRotator.ZeroRotator).Quaternion(),
+            Rotation = staticMeshComp.GetOrDefault("RelativeRotation", fallbackRotation).Quaternion(),
             Scale = staticMeshComp.GetOrDefault("RelativeScale3D", FVector.OneVector)
         };
     }
