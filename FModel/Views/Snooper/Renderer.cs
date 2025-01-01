@@ -8,6 +8,7 @@ using CUE4Parse_Conversion.Animations;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
+using CUE4Parse.UE4.Assets.Exports.Component.SplineMesh;
 using CUE4Parse.UE4.Assets.Exports.Component.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
 using CUE4Parse.UE4.Assets.Exports.Material;
@@ -444,7 +445,7 @@ public class Renderer : IDisposable
             cancellationToken.ThrowIfCancellationRequested();
 
             if (persistentLevel.Actors[i].Load() is not { } actor ||
-                actor.ExportType is "LODActor" or "SplineMeshActor")
+                actor.ExportType is "LODActor")
                 continue;
 
             Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} ... {i}/{length}");
@@ -535,15 +536,15 @@ public class Renderer : IDisposable
         {
             foreach (var component in instanceComponents)
             {
-                if (!component.TryLoad(out UInstancedStaticMeshComponent staticMeshComp) ||
+                if (!component.TryLoad(out UStaticMeshComponent staticMeshComp) ||
                     !staticMeshComp.GetStaticMesh().TryLoad(out UStaticMesh m) || m.Materials.Length < 1)
                     continue;
 
-                if (staticMeshComp.PerInstanceSMData is { Length: > 0 })
+                if (staticMeshComp is UInstancedStaticMeshComponent { PerInstanceSMData.Length: > 0 } instancedStaticComp)
                 {
 
                     var relation = CalculateTransform(staticMeshComp, transform);
-                    foreach (var perInstanceData in staticMeshComp.PerInstanceSMData)
+                    foreach (var perInstanceData in instancedStaticComp.PerInstanceSMData)
                     {
                         ProcessMesh(actor, staticMeshComp, m, new Transform
                         {
@@ -554,7 +555,30 @@ public class Renderer : IDisposable
                         });
                     }
                 }
-                else ProcessMesh(actor, staticMeshComp, m, CalculateTransform(staticMeshComp, transform));
+                else if (staticMeshComp is USplineMeshComponent splineComp)
+                {
+                    var tangentDirection = splineComp.SplineParams.StartTangent.GetSafeNormal();
+
+                    var upVector = FVector.CrossProduct(tangentDirection, FVector.UpVector);
+                    if (upVector.IsNearlyZero())
+                        upVector = FVector.CrossProduct(tangentDirection, FVector.ForwardVector);
+
+                    upVector = upVector.GetSafeNormal(); // should this be normalized?
+
+                    var t = new Transform
+                    {
+                        Relation = transform.Matrix,
+                        Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO,
+                        Rotation = upVector.ToOrientationQuat(),
+                        Scale = staticMeshComp.GetOrDefault("RelativeScale3D", FVector.OneVector)
+                    };
+
+                    ProcessMesh(actor, staticMeshComp, m, t);
+                }
+                else
+                {
+                    ProcessMesh(actor, staticMeshComp, m, CalculateTransform(staticMeshComp, transform));
+                }
             }
         }
         else if (actor.TryGetValue(out FPackageIndex componentTemplate, "ComponentTemplate") &&
