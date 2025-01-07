@@ -354,7 +354,7 @@ public abstract class UModel : IRenderableModel
         {
             MatrixVbo.Update(instance, Transforms[instance].Matrix);
         }
-        Vao.BindInstancing(); // VertexAttributePointer
+        Vao.BindInstancing(9); // VertexAttributePointer
     }
 
     public Transform GetTransform() => Transforms[SelectedInstance];

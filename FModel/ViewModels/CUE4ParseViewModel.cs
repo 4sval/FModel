@@ -9,9 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-
 using AdonisUI.Controls;
-
 using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
@@ -50,14 +48,11 @@ using CUE4Parse.UE4.Readers;
 using CUE4Parse.UE4.Shaders;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
-
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
-
 using EpicManifestParser;
 using EpicManifestParser.UE;
 using EpicManifestParser.ZlibngDotNetDecompressor;
-
 using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;
@@ -66,18 +61,12 @@ using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
 using FModel.Views.Snooper;
-
 using Newtonsoft.Json;
-
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
-
 using Serilog;
-
 using SkiaSharp;
-
 using UE4Config.Parsing;
-
 using Application = System.Windows.Application;
 using FGuid = CUE4Parse.UE4.Objects.Core.Misc.FGuid;
 
@@ -857,11 +846,10 @@ public class CUE4ParseViewModel : ViewModel
                 if (saveTextures)
                 {
                     var fileName = sourceFile.SubstringAfterLast('/');
-                    var t = new TabImage(fileName, false, bitmap);
                     var path = Path.Combine(UserSettings.Default.TextureDirectory,
                         UserSettings.Default.KeepDirectoryStructure ? TabControl.SelectedTab.Directory : "", fileName!).Replace('\\', '/');
 
-                    System.IO.Directory.CreateDirectory(path.SubstringBeforeLast('/'));
+                    Directory.CreateDirectory(path.SubstringBeforeLast('/'));
 
                     using var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read);
                     fs.Write(data, 0, data.Length);

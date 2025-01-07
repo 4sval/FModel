@@ -20,11 +20,16 @@ layout(std430, binding = 2) buffer RestBoneMatrices
 {
     mat4 uRestBonesMatrix[];
 };
+layout(std430, binding = 3) buffer SplineParameters
+{
+    mat4 uSplineParameters[];
+};
 
 uniform mat4 uView;
 uniform mat4 uProjection;
 uniform float uMorphTime;
 uniform bool uIsAnimated;
+uniform bool uIsSpline;
 
 out vec3 fPos;
 out vec3 fNormal;
@@ -83,7 +88,24 @@ void main()
     }
     else
     {
-        finalPos = bindPos;
+        if (uIsSpline)
+        {
+            mat4 spline = uSplineParameters[gl_InstanceID];
+
+            vec3 startPos = spline[0].rgb;
+            vec3 startTangent = spline[1].rgb;
+            vec2 startOffset = vec2(spline[0].a, spline[1].a);
+
+            vec3 endPos = spline[2].rgb;
+            vec3 endTangent = spline[3].rgb;
+            vec2 endOffset = vec2(spline[2].a, spline[3].a);
+
+            finalPos = bindPos;
+        }
+        else
+        {
+            finalPos = bindPos;
+        }
         finalNormal = bindNormal;
         finalTangent = bindTangent;
     }
