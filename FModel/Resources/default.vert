@@ -20,11 +20,16 @@ layout(std430, binding = 2) buffer RestBoneMatrices
 {
     mat4 uRestBonesMatrix[];
 };
+layout(std430, binding = 3) buffer SplineParameters
+{
+    mat4 uSplineParameters[];
+};
 
 uniform mat4 uView;
 uniform mat4 uProjection;
 uniform float uMorphTime;
 uniform bool uIsAnimated;
+uniform bool uIsSpline;
 
 out vec3 fPos;
 out vec3 fNormal;
@@ -83,7 +88,14 @@ void main()
     }
     else
     {
-        finalPos = bindPos;
+        if (uIsSpline)
+        {
+            finalPos = bindPos;
+        }
+        else
+        {
+            finalPos = bindPos;
+        }
         finalNormal = bindNormal;
         finalTangent = bindTangent;
     }

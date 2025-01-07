@@ -73,7 +73,7 @@ public abstract class Light : IDisposable
     {
         var instanceMatrix = new [] {Transform.Matrix};
         _matrixVbo = new BufferObject<Matrix4x4>(instanceMatrix, BufferTarget.ArrayBuffer);
-        _vao.BindInstancing(); // VertexAttributePointer
+        _vao.BindInstancing(9); // VertexAttributePointer
     }
 
     public void UpdateMatrices()

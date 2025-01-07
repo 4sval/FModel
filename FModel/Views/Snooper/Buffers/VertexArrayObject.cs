@@ -46,24 +46,19 @@ public class VertexArrayObject<TVertexType, TIndexType> : IDisposable where TVer
         GL.BindVertexArray(0);
     }
 
-    public unsafe void BindInstancing()
+    public unsafe void BindInstancing(int startIndex)
     {
         Bind();
 
         var size = sizeof(Vector4);
-        GL.EnableVertexAttribArray(9);
-        GL.VertexAttribPointer(9, 4, VertexAttribPointerType.Float, false, 4 * size, 0);
-        GL.EnableVertexAttribArray(10);
-        GL.VertexAttribPointer(10, 4, VertexAttribPointerType.Float, false, 4 * size, 1 * size);
-        GL.EnableVertexAttribArray(11);
-        GL.VertexAttribPointer(11, 4, VertexAttribPointerType.Float, false, 4 * size, 2 * size);
-        GL.EnableVertexAttribArray(12);
-        GL.VertexAttribPointer(12, 4, VertexAttribPointerType.Float, false, 4 * size, 3 * size);
+        for (int i = 0; i < 4; i++)
+        {
+            var baseIndex = startIndex + i;
 
-        GL.VertexAttribDivisor(9, 1);
-        GL.VertexAttribDivisor(10, 1);
-        GL.VertexAttribDivisor(11, 1);
-        GL.VertexAttribDivisor(12, 1);
+            GL.EnableVertexAttribArray(baseIndex);
+            GL.VertexAttribPointer(baseIndex, 4, VertexAttribPointerType.Float, false, 4 * size, i * size);
+            GL.VertexAttribDivisor(baseIndex, 1);
+        }
 
         Unbind();
     }
