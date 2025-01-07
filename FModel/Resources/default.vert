@@ -90,6 +90,16 @@ void main()
     {
         if (uIsSpline)
         {
+            mat4 spline = uSplineParameters[gl_InstanceID];
+
+            vec3 startPos = spline[0].rgb;
+            vec3 startTangent = spline[1].rgb;
+            vec2 startOffset = vec2(spline[0].a, spline[1].a);
+
+            vec3 endPos = spline[2].rgb;
+            vec3 endTangent = spline[3].rgb;
+            vec2 endOffset = vec2(spline[2].a, spline[3].a);
+
             finalPos = bindPos;
         }
         else
