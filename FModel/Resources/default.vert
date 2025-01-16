@@ -20,9 +20,25 @@ layout(std430, binding = 2) buffer RestBoneMatrices
 {
     mat4 uRestBonesMatrix[];
 };
+
+struct FSplineMeshParams {
+    vec3 StartPos;
+    float StartRoll;
+    vec3 StartTangent;
+    float _padding0;
+    vec2 StartScale;
+    vec2 StartOffset;
+
+    vec3 EndPos;
+    float EndRoll;
+    vec3 EndTangent;
+    float _padding1;
+    vec2 EndScale;
+    vec2 EndOffset;
+};
 layout(std430, binding = 3) buffer SplineParameters
 {
-    mat4 uSplineParameters[];
+    FSplineMeshParams uSplineParameters[];
 };
 
 uniform mat4 uView;
@@ -50,6 +66,14 @@ vec4 unpackARGB(int color)
 vec2 unpackBoneIDsAndWeights(int packedData)
 {
     return vec2(float((packedData >> 16) & 0xFFFF), float(packedData & 0xFFFF));
+}
+
+mat3 calculateSplineRotation(vec3 tangent)
+{
+    vec3 up = vec3(0.0, 1.0, 0.0);
+    vec3 right = normalize(cross(up, tangent));
+    up = normalize(cross(tangent, right));
+    return mat3(right, up, tangent);
 }
 
 void main()
@@ -86,26 +110,24 @@ void main()
         finalNormal = normalize(finalNormal);
         finalTangent = normalize(finalTangent);
     }
+    else if (uIsSpline)
+    {
+        FSplineMeshParams spline = uSplineParameters[gl_InstanceID];
+
+        float t = distance(spline.EndPos, bindPos.xyz) / distance(spline.StartPos, spline.EndPos);
+
+        vec3 tangentDirection = normalize(mix(spline.StartTangent, spline.EndTangent, t));
+        mat3 rotationMatrix = calculateSplineRotation(tangentDirection);
+
+        vec3 rotatedPos = rotationMatrix * (bindPos.xyz - spline.StartPos) + spline.StartPos;
+
+        finalPos = vec4(rotatedPos, bindPos.w);
+        finalNormal = vec4(rotationMatrix * bindNormal.xyz, bindNormal.w);
+        finalTangent = vec4(rotationMatrix * bindTangent.xyz, bindTangent.w);
+    }
     else
     {
-        if (uIsSpline)
-        {
-            mat4 spline = uSplineParameters[gl_InstanceID];
-
-            vec3 startPos = spline[0].rgb;
-            vec3 startTangent = spline[1].rgb;
-            vec2 startOffset = vec2(spline[0].a, spline[1].a);
-
-            vec3 endPos = spline[2].rgb;
-            vec3 endTangent = spline[3].rgb;
-            vec2 endOffset = vec2(spline[2].a, spline[3].a);
-
-            finalPos = bindPos;
-        }
-        else
-        {
-            finalPos = bindPos;
-        }
+        finalPos = bindPos;
         finalNormal = bindNormal;
         finalTangent = bindTangent;
     }

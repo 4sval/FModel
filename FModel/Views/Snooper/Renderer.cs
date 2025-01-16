@@ -690,23 +690,11 @@ public class Renderer : IDisposable
             relation = CalculateTransform(component, relation);
         }
 
-        var fallbackRotation = FRotator.ZeroRotator;
-        if (staticMeshComp is USplineMeshComponent { SplineParams: not null } splineComp)
-        {
-            var tangentDirection = splineComp.SplineParams.StartTangent.GetSafeNormal();
-
-            var upVector = FVector.CrossProduct(tangentDirection, FVector.UpVector);
-            if (upVector.IsNearlyZero())
-                upVector = FVector.CrossProduct(tangentDirection, FVector.ForwardVector);
-
-            fallbackRotation = upVector.GetSafeNormal().ToOrientationRotator(); // should this be normalized?
-        }
-
         return new Transform
         {
             Relation = relation.Matrix,
             Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO,
-            Rotation = staticMeshComp.GetOrDefault("RelativeRotation", fallbackRotation).Quaternion(),
+            Rotation = staticMeshComp.GetOrDefault("RelativeRotation", FRotator.ZeroRotator).Quaternion(),
             Scale = staticMeshComp.GetOrDefault("RelativeScale3D", FVector.OneVector)
         };
     }
