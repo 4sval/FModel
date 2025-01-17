@@ -101,6 +101,7 @@ public class CreatorPackage : IDisposable
             case "FortConsumableItemDefinition":
             case "StWFortAccoladeItemDefinition":
             case "FortAccountBuffItemDefinition":
+            case "FortFOBCoreDecoItemDefinition":
             case "FortPlayerPerksItemDefinition":
             case "FortPlaysetPropItemDefinition":
             case "FortPrerollDataItemDefinition":
