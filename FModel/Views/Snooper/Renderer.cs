@@ -77,33 +77,33 @@ public class Renderer : IDisposable
         Color = VertexColor.Default;
     }
 
-    public void Load(CancellationToken cancellationToken, UObject export)
+    public void Load(CancellationToken cancellationToken, UObject dummy, Lazy<UObject> export)
     {
         ShowLights = false;
         Color = VertexColor.Default;
-        _saveCameraMode = export is not UWorld and not UBlueprintGeneratedClass;
-        switch (export)
+        _saveCameraMode = dummy is not UWorld and not UBlueprintGeneratedClass;
+        switch (dummy)
         {
-            case UStaticMesh st:
+            case UStaticMesh when export.Value is UStaticMesh st:
                 LoadStaticMesh(st);
                 break;
-            case USkeletalMesh sk:
+            case USkeletalMesh when export.Value is USkeletalMesh sk:
                 LoadSkeletalMesh(sk);
                 break;
-            case USkeleton skel:
+            case USkeleton when export.Value is USkeleton skel:
                 LoadSkeleton(skel);
                 break;
-            case UMaterialInstance mi:
+            case UMaterialInstance when export.Value is UMaterialInstance mi:
                 LoadMaterialInstance(mi);
                 break;
-            case UWorld wd:
+            case UWorld when export.Value is UWorld wd:
                 LoadWorld(cancellationToken, wd, Transform.Identity);
                 break;
-            case UBlueprintGeneratedClass bp:
+            case UBlueprintGeneratedClass when export.Value is UBlueprintGeneratedClass bp:
                 LoadJunoWorld(cancellationToken, bp, Transform.Identity);
                 Color = VertexColor.Colors;
                 break;
-            case UPaperSprite ps:
+            case UPaperSprite when export.Value is UPaperSprite ps:
                 LoadPaperSprite(ps);
                 break;
         }
@@ -119,7 +119,7 @@ public class Renderer : IDisposable
         Application.Current.Dispatcher.Invoke(() => model.Materials[section.MaterialIndex].Setup(Options, model.UvCount));
     }
 
-    public void Animate(UObject anim) => Animate(anim, Options.SelectedModel);
+    public void Animate(Lazy<UObject> anim) => Animate(anim.Value, Options.SelectedModel);
     private void Animate(UObject anim, FGuid guid)
     {
         if (!Options.TryGetModel(guid, out var m) || m is not SkeletalModel model)

@@ -53,7 +53,8 @@ using CUE4Parse.UE4.Wwise;
 
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
-
+using CUE4Parse.UE4.Assets;
+using CUE4Parse.UE4.Objects.UObject;
 using EpicManifestParser;
 using EpicManifestParser.UE;
 using EpicManifestParser.ZlibngDotNetDecompressor;
@@ -620,13 +621,16 @@ public class CUE4ParseViewModel : ViewModel
             case "uasset":
             case "umap":
             {
-                var exports = Provider.LoadAllObjects(fullPath);
-                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), saveProperties, updateUi);
-                if (HasFlag(bulk, EBulkType.Properties)) break; // do not search for viewable exports if we are dealing with jsons
-
-                foreach (var e in exports)
+                var pkg = Provider.LoadPackage(fullPath);
+                if (saveProperties || updateUi)
                 {
-                    if (CheckExport(cancellationToken, e, bulk))
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(pkg.GetExports(), Formatting.Indented), saveProperties, updateUi);
+                    if (saveProperties) break; // do not search for viewable exports if we are dealing with jsons
+                }
+
+                for (var i = 0; i < pkg.ExportMapLength; i++)
+                {
+                    if (CheckExport(cancellationToken, pkg, i, bulk))
                         break;
                 }
 
@@ -807,25 +811,30 @@ public class CUE4ParseViewModel : ViewModel
         TabControl.AddTab(fullPath.SubstringAfterLast('/'), fullPath.SubstringBeforeLast('/'), parentExportType);
         TabControl.SelectedTab.ScrollTrigger = objectName;
 
-        var exports = Provider.LoadAllObjects(fullPath);
+        var pkg = Provider.LoadPackage(fullPath);
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(""); // json
-        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), false, false);
+        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(pkg.GetExports(), Formatting.Indented), false, false);
 
-        foreach (var e in exports)
+        for (var i = 0; i < pkg.ExportMapLength; i++)
         {
-            if (CheckExport(cancellationToken, e))
+            if (CheckExport(cancellationToken, pkg, i))
                 break;
         }
     }
 
-    private bool CheckExport(CancellationToken cancellationToken, UObject export, EBulkType bulk = EBulkType.None) // return true once you wanna stop searching for exports
+    private bool CheckExport(CancellationToken cancellationToken, IPackage pkg, int index, EBulkType bulk = EBulkType.None) // return true once you wanna stop searching for exports
     {
         var isNone = bulk == EBulkType.None;
         var updateUi = !HasFlag(bulk, EBulkType.Auto);
         var saveTextures = HasFlag(bulk, EBulkType.Textures);
-        switch (export)
+
+        var pointer = new FPackageIndex(pkg, index + 1).ResolvedObject;
+        if (pointer?.Object is null) return false;
+
+        var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class?.Object?.Value as UStruct, pkg);
+        switch (dummy)
         {
-            case UVerseDigest verseDigest when isNone:
+            case UVerseDigest when isNone && pointer.Object.Value is UVerseDigest verseDigest:
             {
                 if (!TabControl.CanAddTabs) return false;
 
@@ -834,20 +843,21 @@ public class CUE4ParseViewModel : ViewModel
                 TabControl.SelectedTab.SetDocumentText(verseDigest.ReadableCode, false, false);
                 return true;
             }
-            case UTexture texture when isNone || saveTextures:
+            case UTexture when (isNone || saveTextures) && pointer.Object.Value is UTexture texture:
             {
                 TabControl.SelectedTab.AddImage(texture, saveTextures, updateUi);
                 return false;
             }
-            case USvgAsset svgasset when isNone || saveTextures:
+            case USvgAsset when (isNone || saveTextures) && pointer.Object.Value is USvgAsset svgasset:
             {
+                const int size = 512;
                 var data = svgasset.GetOrDefault<byte[]>("SvgData");
                 var sourceFile = svgasset.GetOrDefault<string>("SourceFile");
                 using var stream = new MemoryStream(data) { Position = 0 };
-                var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(512, 512));
+                var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(size, size));
                 svg.Load(stream);
 
-                var bitmap = new SKBitmap(512, 512);
+                var bitmap = new SKBitmap(size, size);
                 using (var canvas = new SKCanvas(bitmap))
                 using (var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.Medium })
                 {
@@ -857,11 +867,10 @@ public class CUE4ParseViewModel : ViewModel
                 if (saveTextures)
                 {
                     var fileName = sourceFile.SubstringAfterLast('/');
-                    var t = new TabImage(fileName, false, bitmap);
                     var path = Path.Combine(UserSettings.Default.TextureDirectory,
                         UserSettings.Default.KeepDirectoryStructure ? TabControl.SelectedTab.Directory : "", fileName!).Replace('\\', '/');
 
-                    System.IO.Directory.CreateDirectory(path.SubstringBeforeLast('/'));
+                    Directory.CreateDirectory(path.SubstringBeforeLast('/'));
 
                     using var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read);
                     fs.Write(data, 0, data.Length);
@@ -892,9 +901,9 @@ public class CUE4ParseViewModel : ViewModel
             case USoundWave when isNone:
             {
                 var shouldDecompress = UserSettings.Default.CompressedAudioMode == ECompressedAudio.PlayDecompressed;
-                export.Decode(shouldDecompress, out var audioFormat, out var data);
+                pointer.Object.Value.Decode(shouldDecompress, out var audioFormat, out var data);
                 var hasAf = !string.IsNullOrEmpty(audioFormat);
-                if (data == null || !hasAf || export.Owner == null)
+                if (data == null || !hasAf)
                 {
                     if (hasAf) FLogger.Append(ELog.Warning, () => FLogger.Text($"Unsupported audio format '{audioFormat}'", Constants.WHITE, true));
                     return false;
@@ -916,16 +925,16 @@ public class CUE4ParseViewModel : ViewModel
             case USkeletalMesh when isNone && UserSettings.Default.PreviewSkeletalMeshes:
             case USkeleton when isNone && UserSettings.Default.SaveSkeletonAsMesh:
             case UMaterialInstance when isNone && UserSettings.Default.PreviewMaterials && !ModelIsOverwritingMaterial &&
-                                        !(Provider.InternalGameName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase) && export.Owner != null &&
-                                          (export.Owner.Name.Contains("/MI_OfferImages/", StringComparison.OrdinalIgnoreCase) ||
-                                            export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
-                                            export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
+                                        !(Provider.InternalGameName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase) &&
+                                          (pkg.Name.Contains("/MI_OfferImages/", StringComparison.OrdinalIgnoreCase) ||
+                                           pkg.Name.Contains("/RenderSwitch_Materials/", StringComparison.OrdinalIgnoreCase) ||
+                                           pkg.Name.Contains("/MI_BPTile/", StringComparison.OrdinalIgnoreCase))):
             {
-                if (SnooperViewer.TryLoadExport(cancellationToken, export))
+                if (SnooperViewer.TryLoadExport(cancellationToken, dummy, pointer.Object))
                     SnooperViewer.Run();
                 return true;
             }
-            case UMaterialInstance m when isNone && ModelIsOverwritingMaterial:
+            case UMaterialInstance when isNone && ModelIsOverwritingMaterial && pointer.Object.Value is UMaterialInstance m:
             {
                 SnooperViewer.Renderer.Swap(m);
                 SnooperViewer.Run();
@@ -935,7 +944,7 @@ public class CUE4ParseViewModel : ViewModel
             case UAnimMontage when isNone && ModelIsWaitingAnimation:
             case UAnimComposite when isNone && ModelIsWaitingAnimation:
             {
-                SnooperViewer.Renderer.Animate(export);
+                SnooperViewer.Renderer.Animate(pointer.Object);
                 SnooperViewer.Run();
                 return true;
             }
@@ -947,19 +956,19 @@ public class CUE4ParseViewModel : ViewModel
             case UAnimMontage when HasFlag(bulk, EBulkType.Animations):
             case UAnimComposite when HasFlag(bulk, EBulkType.Animations):
             {
-                SaveExport(export, updateUi);
+                SaveExport(pointer.Object.Value, updateUi);
                 return true;
             }
             default:
             {
                 if (!isNone && !saveTextures) return false;
 
-                using var package = new CreatorPackage(export, UserSettings.Default.CosmeticStyle);
-                if (!package.TryConstructCreator(out var creator))
+                using var cPackage = new CreatorPackage(pkg.Name, dummy.ExportType, pointer.Object, UserSettings.Default.CosmeticStyle);
+                if (!cPackage.TryConstructCreator(out var creator))
                     return false;
 
                 creator.ParseForInfo();
-                TabControl.SelectedTab.AddImage(export.Name, false, creator.Draw(), saveTextures, updateUi);
+                TabControl.SelectedTab.AddImage(pointer.Object.Value.Name, false, creator.Draw(), saveTextures, updateUi);
                 return true;
 
             }

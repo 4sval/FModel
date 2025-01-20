@@ -34,9 +34,9 @@ public class Snooper : GameWindow
         _init = false;
     }
 
-    public bool TryLoadExport(CancellationToken cancellationToken, UObject export)
+    public bool TryLoadExport(CancellationToken cancellationToken, UObject dummy, Lazy<UObject> export)
     {
-        Renderer.Load(cancellationToken, export);
+        Renderer.Load(cancellationToken, dummy, export);
         return Renderer.Options.Models.Count > 0;
     }
 
