@@ -62,6 +62,7 @@ public class Camera
         mouseDelta *= lookSensitivity;
 
         var rotationX = Matrix4x4.CreateFromAxisAngle(-Up, mouseDelta.X);
+        var tolerance = 0.001f;
         switch (Mode)
         {
             case WorldMode.FlyCam:
@@ -69,7 +70,13 @@ public class Camera
                 Direction = Vector3.Transform(DirectionArc, rotationX) + Position;
 
                 var right = Vector3.Normalize(Vector3.Cross(Up, DirectionArc));
-                var rotationY = Matrix4x4.CreateFromAxisAngle(right, mouseDelta.Y);
+
+                var currentPitch = MathF.Acos(Vector3.Dot(DirectionArc, Up) / (DirectionArc.Length() * Up.Length()));
+                var newPitch = currentPitch + mouseDelta.Y;
+                var clampedPitch = Math.Clamp(newPitch, tolerance, MathF.PI - tolerance);
+                var pitchDelta = clampedPitch - currentPitch;
+
+                var rotationY = Matrix4x4.CreateFromAxisAngle(right, pitchDelta);
                 Direction = Vector3.Transform(DirectionArc, rotationY) + Position;
                 break;
             }
@@ -78,7 +85,13 @@ public class Camera
                 Position = Vector3.Transform(PositionArc, rotationX) + Direction;
 
                 var right = Vector3.Normalize(Vector3.Cross(-Up, PositionArc));
-                var rotationY = Matrix4x4.CreateFromAxisAngle(right, mouseDelta.Y);
+
+                var currentPitch = MathF.Acos(Vector3.Dot(PositionArc, -Up) / (PositionArc.Length() * Up.Length()));
+                var newPitch = currentPitch + mouseDelta.Y;
+                var clampedPitch = Math.Clamp(newPitch, tolerance, MathF.PI - tolerance);
+                var pitchDelta = clampedPitch - currentPitch;
+
+                var rotationY = Matrix4x4.CreateFromAxisAngle(right, pitchDelta);
                 Position = Vector3.Transform(PositionArc, rotationY) + Direction;
                 break;
             }
