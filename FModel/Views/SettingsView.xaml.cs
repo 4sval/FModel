@@ -55,6 +55,7 @@ public partial class SettingsView
         }
 
         _applicationView.CUE4Parse.Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
+        _applicationView.CUE4Parse.Provider.ReadShaderMaps = UserSettings.Default.ReadShaderMaps;
     }
 
     private void OnBrowseOutput(object sender, RoutedEventArgs e)

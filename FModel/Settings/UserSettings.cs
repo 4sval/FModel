@@ -256,6 +256,13 @@ namespace FModel.Settings
             set => SetProperty(ref _readScriptData, value);
         }
 
+        private bool _readShaderMaps;
+        public bool ReadShaderMaps
+        {
+            get => _readShaderMaps;
+            set => SetProperty(ref _readShaderMaps, value);
+        }
+
         private IDictionary<string, DirectorySettings> _perDirectory = new Dictionary<string, DirectorySettings>();
         public IDictionary<string, DirectorySettings> PerDirectory
         {

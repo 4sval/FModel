@@ -16,20 +16,7 @@ using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Vfs;
-using CUE4Parse.GameTypes.ApexMobile.Encryption.Aes;
-using CUE4Parse.GameTypes.DBD.Encryption.Aes;
-using CUE4Parse.GameTypes.DeltaForce.Encryption.Aes;
-using CUE4Parse.GameTypes.DreamStar.Encryption.Aes;
-using CUE4Parse.GameTypes.FSR.Encryption.Aes;
-using CUE4Parse.GameTypes.FunkoFusion.Encryption.Aes;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
-using CUE4Parse.GameTypes.MJS.Encryption.Aes;
-using CUE4Parse.GameTypes.NetEase.MAR.Encryption.Aes;
-using CUE4Parse.GameTypes.PAXDEI.Encryption.Aes;
-using CUE4Parse.GameTypes.Rennsport.Encryption.Aes;
-using CUE4Parse.GameTypes.Snowbreak.Encryption.Aes;
-using CUE4Parse.GameTypes.THPS.Encryption.Aes;
-using CUE4Parse.GameTypes.UDWN.Encryption.Aes;
 using CUE4Parse.MappingsProvider;
 using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets.Exports;
@@ -196,24 +183,9 @@ public class CUE4ParseViewModel : ViewModel
                 break;
             }
         }
+
         Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
-        Provider.CustomEncryption = Provider.Versions.Game switch
-        {
-            EGame.GAME_ApexLegendsMobile => ApexLegendsMobileAes.DecryptApexMobile,
-            EGame.GAME_Snowbreak => SnowbreakAes.SnowbreakDecrypt,
-            EGame.GAME_MarvelRivals => MarvelAes.MarvelDecrypt,
-            EGame.GAME_Undawn => ToaaAes.ToaaDecrypt,
-            EGame.GAME_DeadByDaylight => DBDAes.DbDDecrypt,
-            EGame.GAME_PaxDei => PaxDeiAes.PaxDeiDecrypt,
-            EGame.GAME_3on3FreeStyleRebound => FreeStyleReboundAes.FSRDecrypt,
-            EGame.GAME_DreamStar => DreamStarAes.DreamStarDecrypt,
-            EGame.GAME_DeltaForceHawkOps => DeltaForceAes.DeltaForceDecrypt,
-            EGame.GAME_MonsterJamShowdown => MonsterJamShowdownAes.MonsterJamShowdownDecrypt,
-            EGame.GAME_Rennsport => RennsportAes.RennsportDecrypt,
-            EGame.GAME_FunkoFusion => FunkoFusionAes.FunkoFusionDecrypt,
-            EGame.GAME_TonyHawkProSkater12 => THPS12Aes.THPS12Decrypt,
-            _ => Provider.CustomEncryption
-        };
+        Provider.ReadShaderMaps = UserSettings.Default.ReadShaderMaps;
 
         GameDirectory = new GameDirectoryViewModel();
         AssetsFolder = new AssetsFolderViewModel();

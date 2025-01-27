@@ -61,8 +61,8 @@ public class Camera
         };
         mouseDelta *= lookSensitivity;
 
+        const float tolerance = 0.001f;
         var rotationX = Matrix4x4.CreateFromAxisAngle(-Up, mouseDelta.X);
-        var tolerance = 0.001f;
         switch (Mode)
         {
             case WorldMode.FlyCam:
