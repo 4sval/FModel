@@ -104,15 +104,20 @@ public partial class App
         Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Logs"));
         Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"));
 
+        const string template = "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Enriched}: {Message:lj}{NewLine}{Exception}";
+        Log.Logger = new LoggerConfiguration()
 #if DEBUG
-        Log.Logger = new LoggerConfiguration().WriteTo.Console(theme: AnsiConsoleTheme.Literate).WriteTo.File(
-            Path.Combine(UserSettings.Default.OutputDirectory, "Logs", $"FModel-Debug-Log-{DateTime.Now:yyyy-MM-dd}.txt"),
-            outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [FModel] [{Level:u3}] {Message:lj}{NewLine}{Exception}").CreateLogger();
+            .Enrich.With<SourceEnricher>()
+            .MinimumLevel.Verbose()
+            .WriteTo.Console(outputTemplate: template, theme: AnsiConsoleTheme.Literate)
+            .WriteTo.File(outputTemplate: template,
+                path: Path.Combine(UserSettings.Default.OutputDirectory, "Logs", $"FModel-Debug-Log-{DateTime.Now:yyyy-MM-dd}.txt"))
 #else
-        Log.Logger = new LoggerConfiguration().WriteTo.Console(theme: AnsiConsoleTheme.Literate).WriteTo.File(
-            Path.Combine(UserSettings.Default.OutputDirectory, "Logs", $"FModel-Log-{DateTime.Now:yyyy-MM-dd}.txt"),
-            outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [FModel] [{Level:u3}] {Message:lj}{NewLine}{Exception}").CreateLogger();
+            .Enrich.With<CallerEnricher>()
+            .WriteTo.File(outputTemplate: template,
+                path: Path.Combine(UserSettings.Default.OutputDirectory, "Logs", $"FModel-Log-{DateTime.Now:yyyy-MM-dd}.txt"))
 #endif
+            .CreateLogger();
 
         Log.Information("Version {Version} ({CommitId})", Constants.APP_VERSION, Constants.APP_COMMIT_ID);
         Log.Information("{OS}", GetOperatingSystemProductName());

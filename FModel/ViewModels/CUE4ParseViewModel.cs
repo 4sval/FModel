@@ -912,9 +912,7 @@ public class CUE4ParseViewModel : ViewModel
                 SnooperViewer.Run();
                 return true;
             }
-            case UAnimSequence when isNone && ModelIsWaitingAnimation:
-            case UAnimMontage when isNone && ModelIsWaitingAnimation:
-            case UAnimComposite when isNone && ModelIsWaitingAnimation:
+            case UAnimSequenceBase when isNone && ModelIsWaitingAnimation:
             {
                 SnooperViewer.Renderer.Animate(pointer.Object);
                 SnooperViewer.Run();
@@ -924,9 +922,7 @@ public class CUE4ParseViewModel : ViewModel
             case USkeletalMesh when HasFlag(bulk, EBulkType.Meshes):
             case USkeleton when UserSettings.Default.SaveSkeletonAsMesh && HasFlag(bulk, EBulkType.Meshes):
             // case UMaterialInstance when HasFlag(bulk, EBulkType.Materials): // read the fucking json
-            case UAnimSequence when HasFlag(bulk, EBulkType.Animations):
-            case UAnimMontage when HasFlag(bulk, EBulkType.Animations):
-            case UAnimComposite when HasFlag(bulk, EBulkType.Animations):
+            case UAnimSequenceBase when HasFlag(bulk, EBulkType.Animations):
             {
                 SaveExport(pointer.Object.Value, updateUi);
                 return true;

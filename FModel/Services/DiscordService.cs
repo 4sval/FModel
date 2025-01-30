@@ -22,7 +22,7 @@ namespace FModel.Services
 
         private readonly Assets _staticAssets = new()
         {
-            LargeImageKey = "official_logo", SmallImageKey = "verified", SmallImageText = $"v{Constants.APP_VERSION}"
+            LargeImageKey = "official_logo", SmallImageKey = "verified", SmallImageText = $"v{Constants.APP_VERSION} ({Constants.APP_SHORT_COMMIT_ID})"
         };
 
         private readonly Button[] _buttons =

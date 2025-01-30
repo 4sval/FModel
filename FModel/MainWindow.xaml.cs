@@ -85,10 +85,10 @@ public partial class MainWindow
 #if DEBUG
         // await _threadWorkerView.Begin(cancellationToken =>
         //     _applicationView.CUE4Parse.Extract(cancellationToken,
-        //         "FortniteGame/Content/Athena/Apollo/Maps/UI/Apollo_Terrain_Minimap.uasset"));
+        //         "MyProject/Content/FirstPerson/Meshes/FirstPersonProjectileMesh.uasset"));
         // await _threadWorkerView.Begin(cancellationToken =>
         //     _applicationView.CUE4Parse.Extract(cancellationToken,
-        //         "FortniteGame/Content/Environments/Helios/Props/GlacierHotel/GlacierHotel_Globe_A/Meshes/SM_GlacierHotel_Globe_A.uasset"));
+        //         "RED/Content/Chara/ABA/Costume01/Animation/Charaselect/body/stand_body01.uasset"));
 #endif
     }
 
@@ -208,7 +208,7 @@ public partial class MainWindow
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.TextureFolder(cancellationToken, folder); });
             FLogger.Append(ELog.Information, () =>
             {
-                FLogger.Text("Successfully saved ", Constants.WHITE);
+                FLogger.Text("Successfully saved textures from ", Constants.WHITE);
                 FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.TextureDirectory, true);
             });
         }
@@ -219,6 +219,11 @@ public partial class MainWindow
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ModelFolder(cancellationToken, folder); });
+            FLogger.Append(ELog.Information, () =>
+            {
+                FLogger.Text("Successfully saved models from ", Constants.WHITE);
+                FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.ModelDirectory, true);
+            });
         }
     }
 
@@ -227,6 +232,11 @@ public partial class MainWindow
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.AnimationFolder(cancellationToken, folder); });
+            FLogger.Append(ELog.Information, () =>
+            {
+                FLogger.Text("Successfully saved animations from ", Constants.WHITE);
+                FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.ModelDirectory, true);
+            });
         }
     }
 
