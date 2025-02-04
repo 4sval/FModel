@@ -32,7 +32,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     {
                         Thread.Yield();
                         cancellationToken.ThrowIfCancellationRequested();
-                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, true);
+                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset, true);
                     }
                     break;
                 case "Assets_Show_Metadata":
@@ -40,7 +40,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     {
                         Thread.Yield();
                         cancellationToken.ThrowIfCancellationRequested();
-                        contextViewModel.CUE4Parse.ShowMetadata(asset.FullPath);
+                        contextViewModel.CUE4Parse.ShowMetadata(asset);
                     }
                     break;
                 case "Assets_Export_Data":
@@ -48,7 +48,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     {
                         Thread.Yield();
                         cancellationToken.ThrowIfCancellationRequested();
-                        contextViewModel.CUE4Parse.ExportData(asset.FullPath);
+                        contextViewModel.CUE4Parse.ExportData(asset);
                     }
                     break;
                 case "Assets_Save_Properties":
@@ -56,7 +56,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     {
                         Thread.Yield();
                         cancellationToken.ThrowIfCancellationRequested();
-                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Properties | updateUi);
+                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset, false, EBulkType.Properties | updateUi);
                     }
                     break;
                 case "Assets_Save_Textures":
@@ -64,7 +64,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     {
                         Thread.Yield();
                         cancellationToken.ThrowIfCancellationRequested();
-                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Textures | updateUi);
+                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset, false, EBulkType.Textures | updateUi);
                     }
                     break;
                 case "Assets_Save_Models":
@@ -72,7 +72,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     {
                         Thread.Yield();
                         cancellationToken.ThrowIfCancellationRequested();
-                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Meshes | updateUi);
+                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset, false, EBulkType.Meshes | updateUi);
                     }
                     break;
                 case "Assets_Save_Animations":
@@ -80,7 +80,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     {
                         Thread.Yield();
                         cancellationToken.ThrowIfCancellationRequested();
-                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Animations | updateUi);
+                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset, false, EBulkType.Animations | updateUi);
                     }
                     break;
             }

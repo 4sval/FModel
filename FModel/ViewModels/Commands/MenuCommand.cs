@@ -29,7 +29,7 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
                 Helper.OpenWindow<AdonisWindow>("AES Manager", () => new AesManager().Show());
                 break;
             case "Directory_Backup":
-                Helper.OpenWindow<AdonisWindow>("Backup Manager", () => new BackupManager(contextViewModel.CUE4Parse.Provider.InternalGameName).Show());
+                Helper.OpenWindow<AdonisWindow>("Backup Manager", () => new BackupManager(contextViewModel.CUE4Parse.Provider.ProjectName).Show());
                 break;
             case "Directory_ArchivesInfo":
                 contextViewModel.CUE4Parse.TabControl.AddTab("Archives Info");

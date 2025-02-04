@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using AdonisUI.Controls;
 using CUE4Parse.UE4.Readers;
 using CUE4Parse.UE4.VirtualFileSystem;
-using FModel.Creator;
+using CUE4Parse.Utils;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;

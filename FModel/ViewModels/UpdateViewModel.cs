@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
-using FModel.Extensions;
+using CUE4Parse.Utils;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;

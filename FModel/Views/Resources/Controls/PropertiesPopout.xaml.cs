@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using System.Windows.Input;
 using System.Windows.Media;
-using FModel.Extensions;
+using CUE4Parse.Utils;
 using FModel.ViewModels;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
@@ -24,7 +24,7 @@ public partial class PropertiesPopout
         MyAvalonEditor.Document = new TextDocument
         {
             Text = contextViewModel.Document.Text,
-            FileName = contextViewModel.Directory + '/' + contextViewModel.Header.SubstringBeforeLast('.')
+            FileName = contextViewModel.Asset.FullPath.SubstringBeforeLast('.')
         };
         MyAvalonEditor.FontSize = contextViewModel.FontSize;
         MyAvalonEditor.SyntaxHighlighting = contextViewModel.Highlighter;

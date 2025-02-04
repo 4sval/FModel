@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using AutoUpdaterDotNET;
+using CUE4Parse.Utils;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;

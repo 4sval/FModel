@@ -12,6 +12,7 @@ using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Textures;
 using CUE4Parse.UE4.Assets.Objects;
+using CUE4Parse.Utils;
 using FModel.Framework;
 using FModel.Extensions;
 using FModel.Services;
@@ -160,12 +161,7 @@ public static class Utils
     // fullpath must be either without any extension or with the export objectname
     public static bool TryLoadObject<T>(string fullPath, out T export) where T : UObject
     {
-        return _applicationView.CUE4Parse.Provider.TryLoadObject(fullPath, out export);
-    }
-
-    public static IEnumerable<UObject> LoadExports(string packagePath)
-    {
-        return _applicationView.CUE4Parse.Provider.LoadAllObjects(packagePath);
+        return _applicationView.CUE4Parse.Provider.TryLoadPackageObject(fullPath, out export);
     }
 
     public static float GetMaxFontSize(double sectorSize, SKTypeface typeface, string text, float degreeOfCertainty = 1f, float maxFont = 100f)

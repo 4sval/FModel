@@ -67,7 +67,7 @@ public class Typefaces
 
         Default = SKTypeface.FromStream(Application.GetResourceStream(_BURBANK_BIG_CONDENSED_BOLD)?.Stream);
 
-        switch (viewModel.Provider.InternalGameName.ToUpperInvariant())
+        switch (viewModel.Provider.ProjectName.ToUpperInvariant())
         {
             case "FORTNITEGAME":
             {

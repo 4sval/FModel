@@ -6,7 +6,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using AdonisUI.Controls;
-using FModel.Extensions;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels;
@@ -267,7 +266,7 @@ public partial class MainWindow
             return;
 
         var filters = textBox.Text.Trim().Split(' ');
-        folder.AssetsList.AssetsView.Filter = o => { return o is AssetItem assetItem && filters.All(x => assetItem.FullPath.SubstringAfterLast('/').Contains(x, StringComparison.OrdinalIgnoreCase)); };
+        folder.AssetsList.AssetsView.Filter = o => { return o is AssetItem assetItem && filters.All(x => assetItem.FileName.Contains(x, StringComparison.OrdinalIgnoreCase)); };
     }
 
     private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)

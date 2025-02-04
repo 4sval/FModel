@@ -64,7 +64,7 @@ public class Options
             ["tl_next"] = new ("tl_next"),
         };
 
-        _game = Services.ApplicationService.ApplicationView.CUE4Parse.Provider.InternalGameName.ToUpper();
+        _game = Services.ApplicationService.ApplicationView.CUE4Parse.Provider.ProjectName.ToUpper();
 
         SelectModel(Guid.Empty);
     }

@@ -2,9 +2,8 @@
 using System.Diagnostics;
 using System.IO;
 using System.Numerics;
-using System.Reflection;
 using CUE4Parse.UE4.Objects.Core.Misc;
-using FModel.Extensions;
+using CUE4Parse.Utils;
 
 namespace FModel;
 
@@ -12,7 +11,7 @@ public static class Constants
 {
     public static readonly string APP_PATH = Path.GetFullPath(Environment.GetCommandLineArgs()[0]);
     public static readonly string APP_VERSION = FileVersionInfo.GetVersionInfo(APP_PATH).FileVersion;
-    public static readonly string APP_COMMIT_ID = FileVersionInfo.GetVersionInfo(APP_PATH).ProductVersion.SubstringAfter('+');
+    public static readonly string APP_COMMIT_ID = FileVersionInfo.GetVersionInfo(APP_PATH).ProductVersion?.SubstringAfter('+');
     public static readonly string APP_SHORT_COMMIT_ID = APP_COMMIT_ID[..7];
 
     public const string ZERO_64_CHAR = "0000000000000000000000000000000000000000000000000000000000000000";

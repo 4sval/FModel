@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using CUE4Parse.FileProvider.Objects;
-using CUE4Parse.UE4.VirtualFileSystem;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;

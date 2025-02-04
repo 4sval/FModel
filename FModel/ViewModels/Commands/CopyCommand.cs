@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 using System.Windows;
-using FModel.Extensions;
+using CUE4Parse.Utils;
 using FModel.Framework;
 
 namespace FModel.ViewModels.Commands;

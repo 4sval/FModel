@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Windows.Data;
 using CUE4Parse.Compression;
+using CUE4Parse.Utils;
 using FModel.Framework;
 
 namespace FModel.ViewModels;
@@ -49,7 +50,33 @@ public class AssetItem : ViewModel
         private set => SetProperty(ref _compression, value);
     }
 
-    public AssetItem(string fullPath, bool isEncrypted, long offset, long size, string archive, CompressionMethod compression)
+    private string _directory;
+    public string Directory
+    {
+        get => _directory;
+        private set => SetProperty(ref _directory, value);
+    }
+
+    private string _fileName;
+    public string FileName
+    {
+        get => _fileName;
+        private set => SetProperty(ref _fileName, value);
+    }
+
+    private string _extension;
+    public string Extension
+    {
+        get => _extension;
+        private set => SetProperty(ref _extension, value);
+    }
+
+    public AssetItem(string titleExtra, AssetItem asset) : this(asset.FullPath, asset.IsEncrypted, asset.Offset, asset.Size, asset.Archive, asset.Compression)
+    {
+        FullPath += titleExtra;
+    }
+
+    public AssetItem(string fullPath, bool isEncrypted = false, long offset = 0, long size = 0, string archive = "", CompressionMethod compression = CompressionMethod.None)
     {
         FullPath = fullPath;
         IsEncrypted = isEncrypted;
@@ -57,6 +84,10 @@ public class AssetItem : ViewModel
         Size = size;
         Archive = archive;
         Compression = compression;
+
+        Directory = FullPath.SubstringBeforeLast('/');
+        FileName = FullPath.SubstringAfterLast('/');
+        Extension = FullPath.SubstringAfterLast('.').ToLowerInvariant();
     }
 
     public override string ToString() => FullPath;

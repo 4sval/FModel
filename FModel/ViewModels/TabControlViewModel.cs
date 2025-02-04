@@ -16,6 +16,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse_Conversion.Textures;
+using CUE4Parse.Utils;
 
 namespace FModel.ViewModels;
 
@@ -92,21 +93,12 @@ public class TabItem : ViewModel
 {
     public string ParentExportType { get; private set; }
 
-    private string _header;
-    public string Header
+    private AssetItem _asset;
+    public AssetItem Asset
     {
-        get => _header;
-        set => SetProperty(ref _header, value);
+        get => _asset;
+        set => SetProperty(ref _asset, value);
     }
-
-    private string _directory;
-    public string Directory
-    {
-        get => _directory;
-        set => SetProperty(ref _directory, value);
-    }
-
-    public string FullPath => this.Directory + "/" + this.Header.SubstringBeforeLast(" (");
 
     private bool _hasSearchOpen;
     public bool HasSearchOpen
@@ -217,18 +209,16 @@ public class TabItem : ViewModel
     private GoToCommand _goToCommand;
     public GoToCommand GoToCommand => _goToCommand ??= new GoToCommand(null);
 
-    public TabItem(string header, string directory, string parentExportType)
+    public TabItem(AssetItem asset, string parentExportType)
     {
-        Header = header;
-        Directory = directory;
+        Asset = asset;
         ParentExportType = parentExportType;
         _images = new ObservableCollection<TabImage>();
     }
 
-    public void SoftReset(string header, string directory)
+    public void SoftReset(AssetItem asset)
     {
-        Header = header;
-        Directory = directory;
+        Asset = asset;
         ParentExportType = string.Empty;
         ScrollTrigger = null;
         Application.Current.Dispatcher.Invoke(() =>
@@ -316,9 +306,9 @@ public class TabItem : ViewModel
 
         var fileName = image.ExportName + ext;
         var path = Path.Combine(UserSettings.Default.TextureDirectory,
-            UserSettings.Default.KeepDirectoryStructure ? Directory : "", fileName!).Replace('\\', '/');
+            UserSettings.Default.KeepDirectoryStructure ? Asset.Directory : "", fileName!).Replace('\\', '/');
 
-        System.IO.Directory.CreateDirectory(path.SubstringBeforeLast('/'));
+        Directory.CreateDirectory(path.SubstringBeforeLast('/'));
 
         SaveImage(image, path, fileName, updateUi);
     }
@@ -337,11 +327,11 @@ public class TabItem : ViewModel
 
     public void SaveProperty(bool updateUi)
     {
-        var fileName = Path.ChangeExtension(Header, ".json");
+        var fileName = Path.ChangeExtension(Asset.FileName, ".json");
         var directory = Path.Combine(UserSettings.Default.PropertiesDirectory,
-            UserSettings.Default.KeepDirectoryStructure ? Directory : "", fileName).Replace('\\', '/');
+            UserSettings.Default.KeepDirectoryStructure ? Asset.Directory : "", fileName).Replace('\\', '/');
 
-        System.IO.Directory.CreateDirectory(directory.SubstringBeforeLast('/'));
+        Directory.CreateDirectory(directory.SubstringBeforeLast('/'));
 
         Application.Current.Dispatcher.Invoke(() => File.WriteAllText(directory, Document.Text));
         SaveCheck(directory, fileName, updateUi);
@@ -390,28 +380,27 @@ public class TabControlViewModel : ViewModel
 
     public TabControlViewModel()
     {
-        _tabItems = new ObservableCollection<TabItem>(EnumerateTabs());
+        _tabItems = [];
         TabsItems = new ReadOnlyObservableCollection<TabItem>(_tabItems);
-        SelectedTab = TabsItems.FirstOrDefault();
+        AddTab();
     }
 
-    public void AddTab(string header = null, string directory = null, string parentExportType = null)
+    public void AddTab() => AddTab("New Tab");
+    public void AddTab(string title) => AddTab(new AssetItem(title));
+    public void AddTab(AssetItem asset, string parentExportType = null)
     {
         if (!CanAddTabs) return;
 
-        var h = header ?? "New Tab";
-        var d = directory ?? string.Empty;
         var p = parentExportType ?? string.Empty;
-        if (SelectedTab is { Header : "New Tab" })
+        if (SelectedTab?.Asset.FileName == "New Tab")
         {
-            SelectedTab.Header = h;
-            SelectedTab.Directory = d;
+            SelectedTab.Asset = asset;
             return;
         }
 
         Application.Current.Dispatcher.Invoke(() =>
         {
-            _tabItems.Add(new TabItem(h, d, p));
+            _tabItems.Add(new TabItem(asset, p));
             SelectedTab = _tabItems.Last();
         });
     }
@@ -469,10 +458,5 @@ public class TabControlViewModel : ViewModel
             SelectedTab = null;
             _tabItems.Clear();
         });
-    }
-
-    private static IEnumerable<TabItem> EnumerateTabs()
-    {
-        yield return new TabItem("New Tab", string.Empty, string.Empty);
     }
 }

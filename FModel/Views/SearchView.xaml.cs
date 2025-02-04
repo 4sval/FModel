@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using FModel.Extensions;
 using FModel.Services;
 using FModel.ViewModels;
 
@@ -36,7 +35,7 @@ public partial class SearchView
 
         WindowState = WindowState.Minimized;
         MainWindow.YesWeCats.AssetsListName.ItemsSource = null;
-        var folder = _applicationView.CustomDirectories.GoToCommand.JumpTo(assetItem.FullPath.SubstringBeforeLast('/'));
+        var folder = _applicationView.CustomDirectories.GoToCommand.JumpTo(assetItem.Directory);
         if (folder == null) return;
 
         MainWindow.YesWeCats.Activate();
@@ -58,7 +57,7 @@ public partial class SearchView
             return;
 
         WindowState = WindowState.Minimized;
-        await _threadWorkerView.Begin(cancellationToken => _applicationView.CUE4Parse.Extract(cancellationToken, assetItem.FullPath, true));
+        await _threadWorkerView.Begin(cancellationToken => _applicationView.CUE4Parse.Extract(cancellationToken, assetItem, true));
 
         MainWindow.YesWeCats.Activate();
     }

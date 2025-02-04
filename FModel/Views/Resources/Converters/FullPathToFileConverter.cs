@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
-using FModel.Extensions;
+using CUE4Parse.Utils;
 
 namespace FModel.Views.Resources.Converters;
 

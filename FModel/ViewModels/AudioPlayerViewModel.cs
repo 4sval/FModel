@@ -13,6 +13,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Data;
 using CSCore.CoreAudioAPI;
+using CUE4Parse.Utils;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;

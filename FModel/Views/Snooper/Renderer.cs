@@ -18,8 +18,8 @@ using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
+using CUE4Parse.Utils;
 using FModel.Creator;
-using FModel.Extensions;
 using FModel.Settings;
 using FModel.Views.Snooper.Animations;
 using FModel.Views.Snooper.Buffers;
@@ -430,7 +430,7 @@ public class Renderer : IDisposable
             return;
 
         if (persistentLevel.TryGetValue(out FSoftObjectPath runtimeCell, "WorldPartitionRuntimeCell") &&
-            Utils.TryLoadObject(runtimeCell.AssetPathName.Text.SubstringBeforeWithLast(".") + runtimeCell.SubPathString.SubstringAfterLast("."), out UObject worldPartition))
+            runtimeCell.TryLoad(out UObject worldPartition))
         {
             var position = worldPartition.GetOrDefault("Position", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO;
             var box = worldPartition.GetOrDefault("ContentBounds", new FBox(FVector.ZeroVector, FVector.OneVector));

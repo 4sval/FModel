@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using FModel.Extensions;
+using CUE4Parse.Utils;
 using FModel.Framework;
 using FModel.ViewModels.ApiEndpoints.Models;
 using Newtonsoft.Json.Linq;
