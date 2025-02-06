@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using CUE4Parse.FileProvider.Objects;
 using FModel.Services;
 using FModel.ViewModels;
 
@@ -30,12 +31,12 @@ public partial class SearchView
 
     private async void OnAssetDoubleClick(object sender, RoutedEventArgs e)
     {
-        if (SearchListView.SelectedItem is not AssetItem assetItem)
+        if (SearchListView.SelectedItem is not GameFile entry)
             return;
 
         WindowState = WindowState.Minimized;
         MainWindow.YesWeCats.AssetsListName.ItemsSource = null;
-        var folder = _applicationView.CustomDirectories.GoToCommand.JumpTo(assetItem.Directory);
+        var folder = _applicationView.CustomDirectories.GoToCommand.JumpTo(entry.Directory);
         if (folder == null) return;
 
         MainWindow.YesWeCats.Activate();
@@ -46,18 +47,18 @@ public partial class SearchView
         do
         {
             await Task.Delay(100);
-            MainWindow.YesWeCats.AssetsListName.SelectedItem = assetItem;
-            MainWindow.YesWeCats.AssetsListName.ScrollIntoView(assetItem);
+            MainWindow.YesWeCats.AssetsListName.SelectedItem = entry;
+            MainWindow.YesWeCats.AssetsListName.ScrollIntoView(entry);
         } while (MainWindow.YesWeCats.AssetsListName.SelectedItem == null);
     }
 
     private async void OnAssetExtract(object sender, RoutedEventArgs e)
     {
-        if (SearchListView.SelectedItem is not AssetItem assetItem)
+        if (SearchListView.SelectedItem is not GameFile entry)
             return;
 
         WindowState = WindowState.Minimized;
-        await _threadWorkerView.Begin(cancellationToken => _applicationView.CUE4Parse.Extract(cancellationToken, assetItem, true));
+        await _threadWorkerView.Begin(cancellationToken => _applicationView.CUE4Parse.Extract(cancellationToken, entry, true));
 
         MainWindow.YesWeCats.Activate();
     }

@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using AdonisUI.Controls;
+using CUE4Parse.FileProvider.Objects;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels;
@@ -84,7 +85,7 @@ public partial class MainWindow
 #if DEBUG
         // await _threadWorkerView.Begin(cancellationToken =>
         //     _applicationView.CUE4Parse.Extract(cancellationToken,
-        //         "MyProject/Content/FirstPerson/Meshes/FirstPersonProjectileMesh.uasset"));
+        //         "Marvel/Content/Marvel/Characters/1016/1016501/Meshes/SK_1016_1016501.uasset"));
         // await _threadWorkerView.Begin(cancellationToken =>
         //     _applicationView.CUE4Parse.Extract(cancellationToken,
         //         "RED/Content/Chara/ABA/Costume01/Animation/Charaselect/body/stand_body01.uasset"));
@@ -162,7 +163,7 @@ public partial class MainWindow
     {
         if (sender is not ListBox listBox) return;
 
-        var selectedItems = listBox.SelectedItems.Cast<AssetItem>().ToList();
+        var selectedItems = listBox.SelectedItems.Cast<GameFile>().ToList();
         await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
     }
 
@@ -266,7 +267,7 @@ public partial class MainWindow
             return;
 
         var filters = textBox.Text.Trim().Split(' ');
-        folder.AssetsList.AssetsView.Filter = o => { return o is AssetItem assetItem && filters.All(x => assetItem.FileName.Contains(x, StringComparison.OrdinalIgnoreCase)); };
+        folder.AssetsList.AssetsView.Filter = o => { return o is GameFile entry && filters.All(x => entry.Name.Contains(x, StringComparison.OrdinalIgnoreCase)); };
     }
 
     private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -283,7 +284,7 @@ public partial class MainWindow
         switch (e.Key)
         {
             case Key.Enter:
-                var selectedItems = listBox.SelectedItems.Cast<AssetItem>().ToList();
+                var selectedItems = listBox.SelectedItems.Cast<GameFile>().ToList();
                 await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
                 break;
         }

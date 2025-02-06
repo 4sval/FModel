@@ -24,7 +24,7 @@ public partial class PropertiesPopout
         MyAvalonEditor.Document = new TextDocument
         {
             Text = contextViewModel.Document.Text,
-            FileName = contextViewModel.Asset.FullPath.SubstringBeforeLast('.')
+            FileName = contextViewModel.Entry.PathWithoutExtension
         };
         MyAvalonEditor.FontSize = contextViewModel.FontSize;
         MyAvalonEditor.SyntaxHighlighting = contextViewModel.Highlighter;

@@ -96,14 +96,14 @@
                             <GridViewColumn Width="900" Header="Path" adonisExtensions:GridViewSortExtension.PropertyName="Path">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock HorizontalAlignment="Left" Text="{Binding FullPath}" />
+                                        <TextBlock HorizontalAlignment="Left" Text="{Binding Path}" />
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
                             <GridViewColumn Width="225" Header="Archive" adonisExtensions:GridViewSortExtension.PropertyName="Archive">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock HorizontalAlignment="Left" Text="{Binding Archive}" />
+                                        <TextBlock HorizontalAlignment="Left" Text="{Binding Vfs.Name}" />
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
@@ -155,7 +155,14 @@
                                 </MenuItem.Icon>
                             </MenuItem>
                             <Separator />
-                            <MenuItem Header="Export Raw Data (.uasset)" Command="{Binding DataContext.RightClickMenuCommand}">
+                            <MenuItem Command="{Binding DataContext.RightClickMenuCommand}">
+                                <MenuItem.Header>
+                                    <TextBlock
+                                        Text="{Binding DataContext.SelectedItem.Extension,
+                                                        FallbackValue='uasset',
+                                                        StringFormat='Export Raw Data (.{0})',
+                                                        RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                </MenuItem.Header>
                                 <MenuItem.CommandParameter>
                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                         <Binding Source="Assets_Export_Data" />

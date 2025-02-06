@@ -32,44 +32,44 @@ public class TabCommand : ViewModelCommand<TabItem>
                 _applicationView.CUE4Parse.TabControl.RemoveOtherTabs(contextViewModel);
                 break;
             case "Asset_Export_Data":
-                await _threadWorkerView.Begin(_ => _applicationView.CUE4Parse.ExportData(contextViewModel.Asset));
+                await _threadWorkerView.Begin(_ => _applicationView.CUE4Parse.ExportData(contextViewModel.Entry));
                 break;
             case "Asset_Save_Properties":
                 await _threadWorkerView.Begin(cancellationToken =>
                 {
-                    _applicationView.CUE4Parse.Extract(cancellationToken, contextViewModel.Asset, false, EBulkType.Properties);
+                    _applicationView.CUE4Parse.Extract(cancellationToken, contextViewModel.Entry, false, EBulkType.Properties);
                 });
                 break;
             case "Asset_Save_Textures":
                 await _threadWorkerView.Begin(cancellationToken =>
                 {
-                    _applicationView.CUE4Parse.Extract(cancellationToken, contextViewModel.Asset, false, EBulkType.Textures);
+                    _applicationView.CUE4Parse.Extract(cancellationToken, contextViewModel.Entry, false, EBulkType.Textures);
                 });
                 break;
             case "Asset_Save_Models":
                 await _threadWorkerView.Begin(cancellationToken =>
                 {
-                    _applicationView.CUE4Parse.Extract(cancellationToken, contextViewModel.Asset, false, EBulkType.Meshes);
+                    _applicationView.CUE4Parse.Extract(cancellationToken, contextViewModel.Entry, false, EBulkType.Meshes);
                 });
                 break;
             case "Asset_Save_Animations":
                 await _threadWorkerView.Begin(cancellationToken =>
                 {
-                    _applicationView.CUE4Parse.Extract(cancellationToken, contextViewModel.Asset, false, EBulkType.Animations);
+                    _applicationView.CUE4Parse.Extract(cancellationToken, contextViewModel.Entry, false, EBulkType.Animations);
                 });
                 break;
             case "Open_Properties":
-                if (contextViewModel.Asset.FileName == "New Tab" || contextViewModel.Document == null) return;
-                Helper.OpenWindow<AdonisWindow>(contextViewModel.Asset.FileName + " (Properties)", () =>
+                if (contextViewModel.Entry.Name == "New Tab" || contextViewModel.Document == null) return;
+                Helper.OpenWindow<AdonisWindow>(contextViewModel.Entry.Name + " (Properties)", () =>
                 {
                     new PropertiesPopout(contextViewModel)
                     {
-                        Title = contextViewModel.Asset.FileName + " (Properties)"
+                        Title = contextViewModel.Entry.Name + " (Properties)"
                     }.Show();
                 });
                 break;
             case "Copy_Asset_Path":
-                Clipboard.SetText(contextViewModel.Asset.FullPath);
+                Clipboard.SetText(contextViewModel.Entry.Path);
                 break;
         }
     }

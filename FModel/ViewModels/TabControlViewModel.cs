@@ -8,7 +8,6 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using Serilog;
 using SkiaSharp;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -16,6 +15,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse_Conversion.Textures;
+using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.Utils;
 
 namespace FModel.ViewModels;
@@ -93,11 +93,11 @@ public class TabItem : ViewModel
 {
     public string ParentExportType { get; private set; }
 
-    private AssetItem _asset;
-    public AssetItem Asset
+    private GameFile _entry;
+    public GameFile Entry
     {
-        get => _asset;
-        set => SetProperty(ref _asset, value);
+        get => _entry;
+        set => SetProperty(ref _entry, value);
     }
 
     private bool _hasSearchOpen;
@@ -209,16 +209,16 @@ public class TabItem : ViewModel
     private GoToCommand _goToCommand;
     public GoToCommand GoToCommand => _goToCommand ??= new GoToCommand(null);
 
-    public TabItem(AssetItem asset, string parentExportType)
+    public TabItem(GameFile entry, string parentExportType)
     {
-        Asset = asset;
+        Entry = entry;
         ParentExportType = parentExportType;
         _images = new ObservableCollection<TabImage>();
     }
 
-    public void SoftReset(AssetItem asset)
+    public void SoftReset(GameFile entry)
     {
-        Asset = asset;
+        Entry = entry;
         ParentExportType = string.Empty;
         ScrollTrigger = null;
         Application.Current.Dispatcher.Invoke(() =>
@@ -306,7 +306,7 @@ public class TabItem : ViewModel
 
         var fileName = image.ExportName + ext;
         var path = Path.Combine(UserSettings.Default.TextureDirectory,
-            UserSettings.Default.KeepDirectoryStructure ? Asset.Directory : "", fileName!).Replace('\\', '/');
+            UserSettings.Default.KeepDirectoryStructure ? Entry.Directory : "", fileName!).Replace('\\', '/');
 
         Directory.CreateDirectory(path.SubstringBeforeLast('/'));
 
@@ -327,9 +327,9 @@ public class TabItem : ViewModel
 
     public void SaveProperty(bool updateUi)
     {
-        var fileName = Path.ChangeExtension(Asset.FileName, ".json");
+        var fileName = Path.ChangeExtension(Entry.Name, ".json");
         var directory = Path.Combine(UserSettings.Default.PropertiesDirectory,
-            UserSettings.Default.KeepDirectoryStructure ? Asset.Directory : "", fileName).Replace('\\', '/');
+            UserSettings.Default.KeepDirectoryStructure ? Entry.Directory : "", fileName).Replace('\\', '/');
 
         Directory.CreateDirectory(directory.SubstringBeforeLast('/'));
 
@@ -386,21 +386,19 @@ public class TabControlViewModel : ViewModel
     }
 
     public void AddTab() => AddTab("New Tab");
-    public void AddTab(string title) => AddTab(new AssetItem(title));
-    public void AddTab(AssetItem asset, string parentExportType = null)
+    public void AddTab(string title) => AddTab(new FakeGameFile(title));
+    public void AddTab(GameFile entry, string parentExportType = null)
     {
-        if (!CanAddTabs) return;
-
-        var p = parentExportType ?? string.Empty;
-        if (SelectedTab?.Asset.FileName == "New Tab")
+        if (SelectedTab?.Entry.Name == "New Tab")
         {
-            SelectedTab.Asset = asset;
+            SelectedTab.Entry = entry;
             return;
         }
 
+        if (!CanAddTabs) return;
         Application.Current.Dispatcher.Invoke(() =>
         {
-            _tabItems.Add(new TabItem(asset, p));
+            _tabItems.Add(new TabItem(entry, parentExportType ?? string.Empty));
             SelectedTab = _tabItems.Last();
         });
     }

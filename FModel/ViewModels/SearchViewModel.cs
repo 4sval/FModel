@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
+using CUE4Parse.FileProvider.Objects;
 using FModel.Framework;
 
 namespace FModel.ViewModels;
@@ -32,12 +33,12 @@ public class SearchViewModel : ViewModel
     }
 
     public int ResultsCount => SearchResults?.Count ?? 0;
-    public RangeObservableCollection<AssetItem> SearchResults { get; }
+    public RangeObservableCollection<GameFile> SearchResults { get; }
     public ICollectionView SearchResultsView { get; }
 
     public SearchViewModel()
     {
-        SearchResults = new RangeObservableCollection<AssetItem>();
+        SearchResults = new RangeObservableCollection<GameFile>();
         SearchResultsView = new ListCollectionView(SearchResults);
     }
 
@@ -51,14 +52,14 @@ public class SearchViewModel : ViewModel
 
     private bool ItemFilter(object item, IEnumerable<string> filters)
     {
-        if (item is not AssetItem assetItem)
+        if (item is not GameFile entry)
             return true;
 
         if (!HasRegexEnabled)
-            return filters.All(x => assetItem.FullPath.Contains(x, HasMatchCaseEnabled ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase));
+            return filters.All(x => entry.Path.Contains(x, HasMatchCaseEnabled ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase));
 
         var o = RegexOptions.None;
         if (!HasMatchCaseEnabled) o |= RegexOptions.IgnoreCase;
-        return new Regex(FilterText, o).Match(assetItem.FullPath).Success;
+        return new Regex(FilterText, o).Match(entry.Path).Success;
     }
 }

@@ -119,7 +119,7 @@ public partial class AvalonEditor
         if (sender is not TextEditor avalonEditor || DataContext is not TabItem tabItem ||
             avalonEditor.Document == null || string.IsNullOrEmpty(avalonEditor.Document.Text))
             return;
-        avalonEditor.Document.FileName = tabItem.Asset.FullPath.SubstringBeforeLast('.');
+        avalonEditor.Document.FileName = tabItem.Entry.PathWithoutExtension;
 
         if (!_savedCarets.ContainsKey(avalonEditor.Document.FileName))
             _ignoreCaret = true;

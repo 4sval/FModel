@@ -37,6 +37,7 @@ using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
+using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.Utils;
@@ -499,25 +500,25 @@ public class CUE4ParseViewModel : ViewModel
         });
     }
 
-    public void ExtractSelected(CancellationToken cancellationToken, IEnumerable<AssetItem> assetItems)
+    public void ExtractSelected(CancellationToken cancellationToken, IEnumerable<GameFile> assetItems)
     {
-        foreach (var asset in assetItems)
+        foreach (var entry in assetItems)
         {
             Thread.Yield();
             cancellationToken.ThrowIfCancellationRequested();
-            Extract(cancellationToken, asset, TabControl.HasNoTabs);
+            Extract(cancellationToken, entry, TabControl.HasNoTabs);
         }
     }
 
-    private void BulkFolder(CancellationToken cancellationToken, TreeItem folder, Action<AssetItem> action)
+    private void BulkFolder(CancellationToken cancellationToken, TreeItem folder, Action<GameFile> action)
     {
-        foreach (var asset in folder.AssetsList.Assets)
+        foreach (var entry in folder.AssetsList.Assets)
         {
             Thread.Yield();
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
-                action(asset);
+                action(entry);
             }
             catch
             {
@@ -530,10 +531,10 @@ public class CUE4ParseViewModel : ViewModel
 
     public void ExportFolder(CancellationToken cancellationToken, TreeItem folder)
     {
-        Parallel.ForEach(folder.AssetsList.Assets, asset =>
+        Parallel.ForEach(folder.AssetsList.Assets, entry =>
         {
             cancellationToken.ThrowIfCancellationRequested();
-            ExportData(asset, false);
+            ExportData(entry, false);
         });
 
         foreach (var f in folder.Folders) ExportFolder(cancellationToken, f);
@@ -554,23 +555,23 @@ public class CUE4ParseViewModel : ViewModel
     public void AnimationFolder(CancellationToken cancellationToken, TreeItem folder)
         => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, EBulkType.Animations | EBulkType.Auto));
 
-    public void Extract(CancellationToken cancellationToken, AssetItem asset, bool addNewTab = false, EBulkType bulk = EBulkType.None)
+    public void Extract(CancellationToken cancellationToken, GameFile entry, bool addNewTab = false, EBulkType bulk = EBulkType.None)
     {
-        Log.Information("User DOUBLE-CLICKED to extract '{FullPath}'", asset.FullPath);
+        Log.Information("User DOUBLE-CLICKED to extract '{FullPath}'", entry.Path);
 
-        if (addNewTab && TabControl.CanAddTabs) TabControl.AddTab(asset);
-        else TabControl.SelectedTab.SoftReset(asset);
-        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(asset.Extension);
+        if (addNewTab && TabControl.CanAddTabs) TabControl.AddTab(entry);
+        else TabControl.SelectedTab.SoftReset(entry);
+        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(entry.Extension);
 
         var updateUi = !HasFlag(bulk, EBulkType.Auto);
         var saveProperties = HasFlag(bulk, EBulkType.Properties);
         var saveTextures = HasFlag(bulk, EBulkType.Textures);
-        switch (asset.Extension)
+        switch (entry.Extension)
         {
             case "uasset":
             case "umap":
             {
-                var pkg = Provider.LoadPackage(asset.FullPath, asset.Archive);
+                var pkg = Provider.LoadPackage(entry);
                 if (saveProperties || updateUi)
                 {
                     TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(pkg.GetExports(), Formatting.Indented), saveProperties, updateUi);
@@ -614,7 +615,7 @@ public class CUE4ParseViewModel : ViewModel
             case "po":
             case "h":
             {
-                var data = Provider.SaveAsset(asset.FullPath, asset.Archive);
+                var data = Provider.SaveAsset(entry);
                 using var stream = new MemoryStream(data) { Position = 0 };
                 using var reader = new StreamReader(stream);
 
@@ -624,7 +625,7 @@ public class CUE4ParseViewModel : ViewModel
             }
             case "locmeta":
             {
-                var archive = Provider.CreateReader(asset.FullPath, asset.Archive);
+                var archive = entry.CreateReader();
                 var metadata = new FTextLocalizationMetaDataResource(archive);
                 TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(metadata, Formatting.Indented), saveProperties, updateUi);
 
@@ -632,23 +633,23 @@ public class CUE4ParseViewModel : ViewModel
             }
             case "locres":
             {
-                var archive = Provider.CreateReader(asset.FullPath, asset.Archive);
+                var archive = entry.CreateReader();
                 var locres = new FTextLocalizationResource(archive);
                 TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(locres, Formatting.Indented), saveProperties, updateUi);
 
                 break;
             }
-            case "bin" when asset.FileName.Contains("AssetRegistry", StringComparison.OrdinalIgnoreCase):
+            case "bin" when entry.Name.Contains("AssetRegistry", StringComparison.OrdinalIgnoreCase):
             {
-                var archive = Provider.CreateReader(asset.FullPath, asset.Archive);
+                var archive = entry.CreateReader();
                 var registry = new FAssetRegistryState(archive);
                 TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), saveProperties, updateUi);
 
                 break;
             }
-            case "bin" when asset.FileName.Contains("GlobalShaderCache", StringComparison.OrdinalIgnoreCase):
+            case "bin" when entry.Name.Contains("GlobalShaderCache", StringComparison.OrdinalIgnoreCase):
             {
-                var archive = Provider.CreateReader(asset.FullPath, asset.Archive);
+                var archive = entry.CreateReader();
                 var registry = new FGlobalShaderCache(archive);
                 TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), saveProperties, updateUi);
 
@@ -657,26 +658,26 @@ public class CUE4ParseViewModel : ViewModel
             case "bnk":
             case "pck":
             {
-                var archive = Provider.CreateReader(asset.FullPath, asset.Archive);
+                var archive = entry.CreateReader();
                 var wwise = new WwiseReader(archive);
                 TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(wwise, Formatting.Indented), saveProperties, updateUi);
                 foreach (var (name, data) in wwise.WwiseEncodedMedias)
                 {
-                    SaveAndPlaySound(asset.FullPath.SubstringBeforeWithLast('/') + name, "WEM", data);
+                    SaveAndPlaySound(entry.Path.SubstringBeforeWithLast('/') + name, "WEM", data);
                 }
 
                 break;
             }
             case "wem":
             {
-                var data = Provider.SaveAsset(asset.FullPath, asset.Archive);
-                SaveAndPlaySound(asset.FullPath, "WEM", data);
+                var data = Provider.SaveAsset(entry);
+                SaveAndPlaySound(entry.Path, "WEM", data);
 
                 break;
             }
             case "udic":
             {
-                var archive = Provider.CreateReader(asset.FullPath, asset.Archive);
+                var archive = entry.CreateReader();
                 var header = new FOodleDictionaryArchive(archive).Header;
                 TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(header, Formatting.Indented), saveProperties, updateUi);
 
@@ -686,15 +687,15 @@ public class CUE4ParseViewModel : ViewModel
             case "jpg":
             case "bmp":
             {
-                var data = Provider.SaveAsset(asset.FullPath, asset.Archive);
+                var data = Provider.SaveAsset(entry);
                 using var stream = new MemoryStream(data) { Position = 0 };
-                TabControl.SelectedTab.AddImage(asset.FileName.SubstringBeforeLast("."), false, SKBitmap.Decode(stream), saveTextures, updateUi);
+                TabControl.SelectedTab.AddImage(entry.NameWithoutExtension, false, SKBitmap.Decode(stream), saveTextures, updateUi);
 
                 break;
             }
             case "svg":
             {
-                var data = Provider.SaveAsset(asset.FullPath, asset.Archive);
+                var data = Provider.SaveAsset(entry);
                 using var stream = new MemoryStream(data) { Position = 0 };
                 var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(512, 512));
                 svg.Load(stream);
@@ -706,7 +707,7 @@ public class CUE4ParseViewModel : ViewModel
                     canvas.DrawPicture(svg.Picture, paint);
                 }
 
-                TabControl.SelectedTab.AddImage(asset.FileName.SubstringBeforeLast("."), false, bitmap, saveTextures, updateUi);
+                TabControl.SelectedTab.AddImage(entry.NameWithoutExtension, false, bitmap, saveTextures, updateUi);
 
                 break;
             }
@@ -714,12 +715,12 @@ public class CUE4ParseViewModel : ViewModel
             case "otf":
             case "ttf":
                 FLogger.Append(ELog.Warning, () =>
-                    FLogger.Text($"Export '{asset.FileName}' raw data and change its extension if you want it to be an installable font file", Constants.WHITE, true));
+                    FLogger.Text($"Export '{entry.Name}' raw data and change its extension if you want it to be an installable font file", Constants.WHITE, true));
                 break;
             case "ushaderbytecode":
             case "ushadercode":
             {
-                var archive = Provider.CreateReader(asset.FullPath, asset.Archive);
+                var archive = entry.CreateReader();
                 var ar = new FShaderCodeArchive(archive);
                 TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), saveProperties, updateUi);
 
@@ -728,7 +729,7 @@ public class CUE4ParseViewModel : ViewModel
             default:
             {
                 FLogger.Append(ELog.Warning, () =>
-                    FLogger.Text($"The package '{asset.FileName}' is of an unknown type.", Constants.WHITE, true));
+                    FLogger.Text($"The package '{entry.Name}' is of an unknown type.", Constants.WHITE, true));
                 break;
             }
         }
@@ -737,10 +738,12 @@ public class CUE4ParseViewModel : ViewModel
     public void ExtractAndScroll(CancellationToken cancellationToken, string fullPath, string objectName, string parentExportType)
     {
         Log.Information("User CTRL-CLICKED to extract '{FullPath}'", fullPath);
-        TabControl.AddTab(new AssetItem(fullPath), parentExportType);
+
+        var entry = Provider[fullPath];
+        TabControl.AddTab(entry, parentExportType);
         TabControl.SelectedTab.ScrollTrigger = objectName;
 
-        var pkg = Provider.LoadPackage(fullPath);
+        var pkg = Provider.LoadPackage(entry);
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(""); // json
         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(pkg.GetExports(), Formatting.Indented), false, false);
 
@@ -797,7 +800,7 @@ public class CUE4ParseViewModel : ViewModel
                 {
                     var fileName = sourceFile.SubstringAfterLast('/');
                     var path = Path.Combine(UserSettings.Default.TextureDirectory,
-                        UserSettings.Default.KeepDirectoryStructure ? TabControl.SelectedTab.Asset.Directory : "", fileName!).Replace('\\', '/');
+                        UserSettings.Default.KeepDirectoryStructure ? TabControl.SelectedTab.Entry.Directory : "", fileName!).Replace('\\', '/');
 
                     Directory.CreateDirectory(path.SubstringBeforeLast('/'));
 
@@ -838,7 +841,7 @@ public class CUE4ParseViewModel : ViewModel
                     return false;
                 }
 
-                SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Asset.FullPath.SubstringBeforeLast('.')).Replace('\\', '/'), audioFormat, data);
+                SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Entry.PathWithoutExtension).Replace('\\', '/'), audioFormat, data);
                 return false;
             }
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:
@@ -900,13 +903,11 @@ public class CUE4ParseViewModel : ViewModel
         }
     }
 
-    public void ShowMetadata(AssetItem asset)
+    public void ShowMetadata(GameFile entry)
     {
-        var package = Provider.LoadPackage(asset.FullPath, asset.Archive);
+        var package = Provider.LoadPackage(entry);
 
-        var a = new AssetItem(" (Metadata)", asset);
-        if (TabControl.CanAddTabs) TabControl.AddTab(a);
-        else TabControl.SelectedTab.SoftReset(a);
+        TabControl.AddTab($"{entry.Name} (Metadata)");
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("");
 
         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(package, Formatting.Indented), false, false);
@@ -963,11 +964,9 @@ public class CUE4ParseViewModel : ViewModel
     }
 
     private readonly object _rawData = new ();
-    public void ExportData(AssetItem asset, bool updateUi = true)
+    public void ExportData(GameFile entry, bool updateUi = true)
     {
-        // TODO: export by archive
-        // is that even useful? if user doesn't rename manually it's gonna overwrite the file anyway
-        if (Provider.TrySavePackage(asset.FullPath, out var assets))
+        if (Provider.TrySavePackage(entry, out var assets))
         {
             string path = UserSettings.Default.RawDataDirectory;
             Parallel.ForEach(assets, kvp =>
@@ -980,21 +979,21 @@ public class CUE4ParseViewModel : ViewModel
                 }
             });
 
-            Log.Information("{FileName} successfully exported", asset.FileName);
+            Log.Information("{FileName} successfully exported", entry.Name);
             if (updateUi)
             {
                 FLogger.Append(ELog.Information, () =>
                 {
                     FLogger.Text("Successfully exported ", Constants.WHITE);
-                    FLogger.Link(asset.FileName, path, true);
+                    FLogger.Link(entry.Name, path, true);
                 });
             }
         }
         else
         {
-            Log.Error("{FileName} could not be exported", asset.FileName);
+            Log.Error("{FileName} could not be exported", entry.Name);
             if (updateUi)
-                FLogger.Append(ELog.Error, () => FLogger.Text($"Could not export '{asset.FileName}'", Constants.WHITE, true));
+                FLogger.Append(ELog.Error, () => FLogger.Text($"Could not export '{entry.Name}'", Constants.WHITE, true));
         }
     }
 

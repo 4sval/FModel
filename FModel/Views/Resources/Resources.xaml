@@ -203,7 +203,7 @@
                     <Setter.Value>
                         <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="No archives found in given directory yet" FontWeight="SemiBold" TextAlignment="Center"
+                                <TextBlock Text="No archives found in the specified directory" FontWeight="SemiBold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>
@@ -596,19 +596,19 @@
 
                         <Image x:Name="ListImage" Source="/FModel;component/Resources/unknown_asset.png"
                                Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3 0" />
-                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Text="{Binding FullPath, Converter={x:Static converters:FullPathToFileConverter.Instance}}" />
+                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Name}" />
                     </Grid>
                     <DataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding FullPath, Converter={x:Static converters:FileExtensionEqualsConverter.Instance}, ConverterParameter='.uasset'}" Value="True">
+                        <DataTrigger Binding="{Binding Extension}" Value="uasset">
                             <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding FullPath, Converter={x:Static converters:FileExtensionEqualsConverter.Instance}, ConverterParameter='.ini'}" Value="True">
+                        <DataTrigger Binding="{Binding Extension}" Value="ini">
                             <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset_ini.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding FullPath, Converter={x:Static converters:FileExtensionEqualsConverter.Instance}, ConverterParameter='.png'}" Value="True">
+                        <DataTrigger Binding="{Binding Extension}" Value="png">
                             <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset_png.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding FullPath, Converter={x:Static converters:FileExtensionEqualsConverter.Instance}, ConverterParameter='.psd'}" Value="True">
+                        <DataTrigger Binding="{Binding Extension}" Value="psd">
                             <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset_psd.png" />
                         </DataTrigger>
                     </DataTemplate.Triggers>
@@ -651,7 +651,7 @@
                             <MouseBinding MouseAction="MiddleClick" Command="{Binding SelectedItem.TabCommand, ElementName=TabControlName}" CommandParameter="{Binding}" />
                         </DockPanel.InputBindings>
 
-                        <TextBlock DockPanel.Dock="Left" Text="{Binding Asset.FileName}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Asset.FileName}">
+                        <TextBlock DockPanel.Dock="Left" Text="{Binding Entry.Name}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Entry.Name}">
                             <TextBlock.Width>
                                 <MultiBinding Converter="{x:Static converters:TabSizeConverter.Instance}" ConverterParameter="6">
                                     <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type TabControl}}" />
@@ -856,7 +856,10 @@
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <Separator />
-                                <MenuItem Header="Export Raw Data (.uasset)" Command="{Binding TabCommand}" CommandParameter="Asset_Export_Data">
+                                <MenuItem Command="{Binding TabCommand}" CommandParameter="Asset_Export_Data">
+                                    <MenuItem.Header>
+                                        <TextBlock Text="{Binding Entry.Extension, FallbackValue='uasset', StringFormat='Export Raw Data (.{0})'}" />
+                                    </MenuItem.Header>
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
                                             <Canvas Width="24" Height="24">
@@ -913,7 +916,7 @@
                                         </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Jump to Package Folder" Command="{Binding GoToCommand}" CommandParameter="{Binding Asset.Directory}">
+                                <MenuItem Header="Jump to Package Folder" Command="{Binding GoToCommand}" CommandParameter="{Binding Entry.Directory}">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
                                             <Canvas Width="24" Height="24">

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Data;
+using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.VirtualFileSystem;
 using FModel.Framework;
@@ -60,12 +61,15 @@ public class TreeItem : ViewModel
     public RangeObservableCollection<TreeItem> Folders { get; }
     public ICollectionView FoldersView { get; }
 
-    public TreeItem(string header, string archive, string mountPoint, FPackageFileVersion version, string pathHere)
+    public TreeItem(string header, GameFile entry, string pathHere)
     {
         Header = header;
-        Archive = archive;
-        MountPoint = mountPoint;
-        Version = version;
+        if (entry is VfsEntry vfsEntry)
+        {
+            Archive = vfsEntry.Vfs.Name;
+            MountPoint = vfsEntry.Vfs.MountPoint;
+            Version = vfsEntry.Vfs.Ver;
+        }
         PathAtThisPoint = pathHere;
         AssetsList = new AssetsListViewModel();
         Folders = new RangeObservableCollection<TreeItem>();
@@ -86,7 +90,7 @@ public class AssetsFolderViewModel
         FoldersView = new ListCollectionView(Folders) { SortDescriptions = { new SortDescription("Header", ListSortDirection.Ascending) } };
     }
 
-    public void BulkPopulate(IReadOnlyCollection<VfsEntry> entries)
+    public void BulkPopulate(IReadOnlyCollection<GameFile> entries)
     {
         if (entries == null || entries.Count == 0)
             return;
@@ -95,54 +99,48 @@ public class AssetsFolderViewModel
         {
             var treeItems = new RangeObservableCollection<TreeItem>();
             treeItems.SetSuppressionState(true);
-            var items = new List<AssetItem>(entries.Count);
 
             foreach (var entry in entries)
             {
-                var item = new AssetItem(entry.Path, entry.IsEncrypted, entry.Offset, entry.Size, entry.Vfs.Name, entry.CompressionMethod);
-                items.Add(item);
+                TreeItem lastNode = null;
+                var folders = entry.Path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+                var builder = new StringBuilder(64);
+                var parentNode = treeItems;
 
+                for (var i = 0; i < folders.Length - 1; i++)
                 {
-                    TreeItem lastNode = null;
-                    var folders = item.FullPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-                    var builder = new StringBuilder(64);
-                    var parentNode = treeItems;
+                    var folder = folders[i];
+                    builder.Append(folder).Append('/');
+                    lastNode = FindByHeaderOrNull(parentNode, folder);
 
-                    for (var i = 0; i < folders.Length - 1; i++)
+                    static TreeItem FindByHeaderOrNull(IReadOnlyList<TreeItem> list, string header)
                     {
-                        var folder = folders[i];
-                        builder.Append(folder).Append('/');
-                        lastNode = FindByHeaderOrNull(parentNode, folder);
-
-                        static TreeItem FindByHeaderOrNull(IReadOnlyList<TreeItem> list, string header)
+                        for (var i = 0; i < list.Count; i++)
                         {
-                            for (var i = 0; i < list.Count; i++)
-                            {
-                                if (list[i].Header == header)
-                                    return list[i];
-                            }
-
-                            return null;
+                            if (list[i].Header == header)
+                                return list[i];
                         }
 
-                        if (lastNode == null)
-                        {
-                            var nodePath = builder.ToString();
-                            lastNode = new TreeItem(folder, item.Archive, entry.Vfs.MountPoint, entry.Vfs.Ver, nodePath[..^1]);
-                            lastNode.Folders.SetSuppressionState(true);
-                            lastNode.AssetsList.Assets.SetSuppressionState(true);
-                            parentNode.Add(lastNode);
-                        }
-
-                        parentNode = lastNode.Folders;
+                        return null;
                     }
 
-                    lastNode?.AssetsList.Assets.Add(item);
+                    if (lastNode == null)
+                    {
+                        var nodePath = builder.ToString();
+                        lastNode = new TreeItem(folder, entry, nodePath[..^1]);
+                        lastNode.Folders.SetSuppressionState(true);
+                        lastNode.AssetsList.Assets.SetSuppressionState(true);
+                        parentNode.Add(lastNode);
+                    }
+
+                    parentNode = lastNode.Folders;
                 }
+
+                lastNode?.AssetsList.Assets.Add(entry);
             }
 
             Folders.AddRange(treeItems);
-            ApplicationService.ApplicationView.CUE4Parse.SearchVm.SearchResults.AddRange(items);
+            ApplicationService.ApplicationView.CUE4Parse.SearchVm.SearchResults.AddRange(entries);
 
             foreach (var folder in Folders)
                 InvokeOnCollectionChanged(folder);
