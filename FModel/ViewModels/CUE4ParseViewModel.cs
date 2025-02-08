@@ -907,7 +907,10 @@ public class CUE4ParseViewModel : ViewModel
     {
         var package = Provider.LoadPackage(entry);
 
-        TabControl.AddTab($"{entry.Name} (Metadata)");
+        if (TabControl.CanAddTabs) TabControl.AddTab(entry);
+        else TabControl.SelectedTab.SoftReset(entry);
+
+        TabControl.SelectedTab.TitleExtra = "Metadata";
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("");
 
         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(package, Formatting.Indented), false, false);

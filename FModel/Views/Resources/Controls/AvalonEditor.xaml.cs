@@ -127,6 +127,8 @@ public partial class AvalonEditor
         if (!tabItem.ShouldScroll) return;
 
         var lineNumber = avalonEditor.Document.Text.GetNameLineNumber(tabItem.ScrollTrigger);
+        if (lineNumber == -1) lineNumber = 1;
+
         var line = avalonEditor.Document.GetLineByNumber(lineNumber);
         avalonEditor.Select(line.Offset, line.Length);
         avalonEditor.ScrollToLine(lineNumber);
