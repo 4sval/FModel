@@ -83,9 +83,9 @@ public partial class MainWindow
         ).ConfigureAwait(false);
 
 #if DEBUG
-        // await _threadWorkerView.Begin(cancellationToken =>
-        //     _applicationView.CUE4Parse.Extract(cancellationToken,
-        //         "Marvel/Content/Marvel/Characters/1016/1016501/Meshes/SK_1016_1016501.uasset"));
+        await _threadWorkerView.Begin(cancellationToken =>
+            _applicationView.CUE4Parse.Extract(cancellationToken,
+                _applicationView.CUE4Parse.Provider["FortniteGame/Plugins/GameFeatures/BRMapCh6/Content/Maps/Hermes_Terrain.umap"]));
         // await _threadWorkerView.Begin(cancellationToken =>
         //     _applicationView.CUE4Parse.Extract(cancellationToken,
         //         "RED/Content/Chara/ABA/Costume01/Animation/Charaselect/body/stand_body01.uasset"));

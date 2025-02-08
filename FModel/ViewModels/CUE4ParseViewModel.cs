@@ -571,16 +571,18 @@ public class CUE4ParseViewModel : ViewModel
             case "uasset":
             case "umap":
             {
-                var pkg = Provider.LoadPackage(entry);
+                var result = Provider.GetLoadPackageResult(entry);
+                TabControl.SelectedTab.TitleExtra = result.TabTitleExtra;
+
                 if (saveProperties || updateUi)
                 {
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(pkg.GetExports(), Formatting.Indented), saveProperties, updateUi);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(saveProperties), Formatting.Indented), saveProperties, updateUi);
                     if (saveProperties) break; // do not search for viewable exports if we are dealing with jsons
                 }
 
-                for (var i = 0; i < pkg.ExportMapLength; i++)
+                for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
                 {
-                    if (CheckExport(cancellationToken, pkg, i, bulk))
+                    if (CheckExport(cancellationToken, result.Package, i, bulk))
                         break;
                 }
 
@@ -743,13 +745,15 @@ public class CUE4ParseViewModel : ViewModel
         TabControl.AddTab(entry, parentExportType);
         TabControl.SelectedTab.ScrollTrigger = objectName;
 
-        var pkg = Provider.LoadPackage(entry);
-        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(""); // json
-        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(pkg.GetExports(), Formatting.Indented), false, false);
+        var result = Provider.GetLoadPackageResult(entry, objectName);
 
-        for (var i = 0; i < pkg.ExportMapLength; i++)
+        TabControl.SelectedTab.TitleExtra = result.TabTitleExtra;
+        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(""); // json
+        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(), Formatting.Indented), false, false);
+
+        for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
         {
-            if (CheckExport(cancellationToken, pkg, i))
+            if (CheckExport(cancellationToken, result.Package, i))
                 break;
         }
     }
