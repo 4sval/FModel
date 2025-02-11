@@ -70,7 +70,7 @@ public class GamePathVisualLineText : VisualLineText
         {
             var obj = gamePath.SubstringAfterLast('.');
             var package = gamePath.SubstringBeforeLast('.');
-            var fullPath = _applicationView.CUE4Parse.Provider.FixPath(package, StringComparison.Ordinal);
+            var fullPath = _applicationView.CUE4Parse.Provider.FixPath(package);
 
             var firstLine = a.ParentVisualLine.Document.GetLineByNumber(2);
             if (a.ParentVisualLine.Document.FileName.Equals(fullPath.SubstringBeforeLast('.'), StringComparison.OrdinalIgnoreCase) &&

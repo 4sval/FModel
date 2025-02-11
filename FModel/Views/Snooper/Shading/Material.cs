@@ -80,7 +80,7 @@ public class Material : IDisposable
             Normals = [new Texture(new FLinearColor(0.5f, 0.5f, 1f, 1f))];
             SpecularMasks = [new Texture(new FLinearColor(1f, 0.5f, 0.5f, 1f))];
             Emissive = new Texture[1];
-            DiffuseColor = [Vector4.One];
+            DiffuseColor = FillColors(1, Diffuse, CMaterialParams2.DiffuseColors, Vector4.One);
             EmissiveColor = [Vector4.One];
         }
         else

@@ -138,12 +138,12 @@ public class CUE4ParseViewModel : ViewModel
         {
             case Constants._FN_LIVE_TRIGGER:
             {
-                Provider = new StreamedFileProvider("FortniteLive", true, versionContainer);
+                Provider = new StreamedFileProvider("FortniteLive", versionContainer);
                 break;
             }
             case Constants._VAL_LIVE_TRIGGER:
             {
-                Provider = new StreamedFileProvider("ValorantLive", true, versionContainer);
+                Provider = new StreamedFileProvider("ValorantLive", versionContainer);
                 break;
             }
             default:
@@ -155,12 +155,12 @@ public class CUE4ParseViewModel : ViewModel
                     [
                         new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
                         new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
-                    ], SearchOption.AllDirectories, true, versionContainer),
+                    ], SearchOption.AllDirectories, versionContainer),
                     "eFootball" => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
                     [
                         new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\KONAMI\\eFootball\\ST\\Download")
-                    ], SearchOption.AllDirectories, true, versionContainer),
-                    _ => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, true, versionContainer)
+                    ], SearchOption.AllDirectories, versionContainer),
+                    _ => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer)
                 };
 
                 break;
