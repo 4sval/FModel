@@ -858,7 +858,7 @@
                                 <Separator />
                                 <MenuItem Command="{Binding TabCommand}" CommandParameter="Asset_Export_Data">
                                     <MenuItem.Header>
-                                        <TextBlock Text="{Binding Entry.Extension, FallbackValue='uasset', StringFormat='Export Raw Data (.{0})'}" />
+                                        <TextBlock Text="{Binding Entry.Extension, FallbackValue='Export Raw Data', StringFormat='Export Raw Data (.{0})'}" />
                                     </MenuItem.Header>
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">

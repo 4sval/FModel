@@ -159,7 +159,7 @@
                                 <MenuItem.Header>
                                     <TextBlock
                                         Text="{Binding DataContext.SelectedItem.Extension,
-                                                        FallbackValue='uasset',
+                                                        FallbackValue='Export Raw Data',
                                                         StringFormat='Export Raw Data (.{0})',
                                                         RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
                                 </MenuItem.Header>
