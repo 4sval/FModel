@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using CUE4Parse.UE4.Assets.Exports;
 using FModel.Creator.Bases;
@@ -30,7 +31,7 @@ public class CreatorPackage : IDisposable
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool TryConstructCreator(out UCreator creator)
+    public bool TryConstructCreator([MaybeNullWhen(false)] out UCreator creator)
     {
         switch (_exportType)
         {

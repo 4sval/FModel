@@ -190,6 +190,7 @@ public class Options
     {
         var guid = o.LightingGuid;
         if (Textures.TryGetValue(guid, out texture)) return texture != null;
+        if (o.Format == EPixelFormat.PF_BC6H) return false; // BC6H is not supported by Decode thus randomly crashes the app
 
         SKBitmap bitmap = o switch
         {

@@ -14,34 +14,34 @@ public class ImageCommand : ViewModelCommand<TabItem>
     {
     }
 
-    public override void Execute(TabItem contextViewModel, object parameter)
+    public override void Execute(TabItem tabViewModel, object parameter)
     {
-        if (parameter == null || !contextViewModel.HasImage) return;
+        if (parameter == null || !tabViewModel.HasImage) return;
 
         switch (parameter)
         {
             case "Open":
             {
-                Helper.OpenWindow<AdonisWindow>(contextViewModel.SelectedImage.ExportName + " (Image)", () =>
+                Helper.OpenWindow<AdonisWindow>(tabViewModel.SelectedImage.ExportName + " (Image)", () =>
                 {
                     var popout = new ImagePopout
                     {
-                        Title = contextViewModel.SelectedImage.ExportName + " (Image)",
-                        Width = contextViewModel.SelectedImage.Image.Width,
-                        Height = contextViewModel.SelectedImage.Image.Height,
-                        WindowState = contextViewModel.SelectedImage.Image.Height > 1000 ? WindowState.Maximized : WindowState.Normal,
-                        ImageCtrl = { Source = contextViewModel.SelectedImage.Image }
+                        Title = tabViewModel.SelectedImage.ExportName + " (Image)",
+                        Width = tabViewModel.SelectedImage.Image.Width,
+                        Height = tabViewModel.SelectedImage.Image.Height,
+                        WindowState = tabViewModel.SelectedImage.Image.Height > 1000 ? WindowState.Maximized : WindowState.Normal,
+                        ImageCtrl = { Source = tabViewModel.SelectedImage.Image }
                     };
-                    RenderOptions.SetBitmapScalingMode(popout.ImageCtrl, BoolToRenderModeConverter.Instance.Convert(contextViewModel.SelectedImage.RenderNearestNeighbor));
+                    RenderOptions.SetBitmapScalingMode(popout.ImageCtrl, BoolToRenderModeConverter.Instance.Convert(tabViewModel.SelectedImage.RenderNearestNeighbor));
                     popout.Show();
                 });
                 break;
             }
             case "Copy":
-                ClipboardExtensions.SetImage(contextViewModel.SelectedImage.ImageBuffer, $"{contextViewModel.SelectedImage.ExportName}.png");
+                ClipboardExtensions.SetImage(tabViewModel.SelectedImage.ImageBuffer, $"{tabViewModel.SelectedImage.ExportName}.png");
                 break;
             case "Save":
-                contextViewModel.SaveImage();
+                tabViewModel.SaveImage();
                 break;
         }
     }

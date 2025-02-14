@@ -70,34 +70,24 @@ public class GamePathVisualLineText : VisualLineText
         {
             var obj = gamePath.SubstringAfterLast('.');
             var package = gamePath.SubstringBeforeLast('.');
-            var fullPath = _applicationView.CUE4Parse.Provider.FixPath(package, StringComparison.Ordinal);
+            var fullPath = _applicationView.CUE4Parse.Provider.FixPath(package);
 
             var firstLine = a.ParentVisualLine.Document.GetLineByNumber(2);
             if (a.ParentVisualLine.Document.FileName.Equals(fullPath.SubstringBeforeLast('.'), StringComparison.OrdinalIgnoreCase) &&
                 !a.ParentVisualLine.Document.GetText(firstLine.Offset, firstLine.Length).Equals("  \"Summary\": {")) // Show Metadata case
             {
-                int lineNumber;
-                DocumentLine line;
-
-                if (Regex.IsMatch(obj, @"^(.+)\[(\d+)\]$"))
+                var lineNumber = a.ParentVisualLine.Document.Text.GetNameLineNumber(obj);
+                if (lineNumber > -1)
                 {
-                    lineNumber = a.ParentVisualLine.Document.Text.GetKismetLineNumber(obj);
-                    line = a.ParentVisualLine.Document.GetLineByNumber(lineNumber);
+                    var line = a.ParentVisualLine.Document.GetLineByNumber(lineNumber);
+                    AvalonEditor.YesWeEditor.Select(line.Offset, line.Length);
+                    AvalonEditor.YesWeEditor.ScrollToLine(lineNumber);
+                    return;
                 }
-                else
-                {
-                    lineNumber = a.ParentVisualLine.Document.Text.GetNameLineNumber(obj);
-                    line = a.ParentVisualLine.Document.GetLineByNumber(lineNumber);
-                }
+            }
 
-                AvalonEditor.YesWeEditor.Select(line.Offset, line.Length);
-                AvalonEditor.YesWeEditor.ScrollToLine(lineNumber);
-            }
-            else
-            {
-                await _threadWorkerView.Begin(cancellationToken =>
-                    _applicationView.CUE4Parse.ExtractAndScroll(cancellationToken, fullPath, obj, parentExportType));
-            }
+            await _threadWorkerView.Begin(cancellationToken =>
+                _applicationView.CUE4Parse.ExtractAndScroll(cancellationToken, fullPath, obj, parentExportType));
         };
         return a;
     }

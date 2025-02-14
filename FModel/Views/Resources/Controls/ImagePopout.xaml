@@ -15,7 +15,9 @@
         <controls:MagnifierManager.Magnifier>
             <controls:Magnifier Radius="150" ZoomFactor=".7" />
         </controls:MagnifierManager.Magnifier>
-        
-        <Image x:Name="ImageCtrl" UseLayoutRounding="True" />
+
+        <Border BorderBrush="#3b3d4a" BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Image x:Name="ImageCtrl" UseLayoutRounding="True" />
+        </Border>
     </DockPanel>
 </adonisControls:AdonisWindow>

@@ -97,7 +97,22 @@ public class TabItem : ViewModel
     public GameFile Entry
     {
         get => _entry;
-        set => SetProperty(ref _entry, value);
+        set
+        {
+            SetProperty(ref _entry, value);
+            RaisePropertyChanged(nameof(Header));
+        }
+    }
+
+    private string _titleExtra;
+    public string TitleExtra
+    {
+        get => _titleExtra;
+        set
+        {
+            SetProperty(ref _titleExtra, value);
+            RaisePropertyChanged(nameof(Header));
+        }
     }
 
     private bool _hasSearchOpen;
@@ -194,6 +209,8 @@ public class TabItem : ViewModel
         }
     }
 
+    public string Header => $"{Entry.Name}{(string.IsNullOrEmpty(TitleExtra) ? "" : $" ({TitleExtra})")}";
+
     public bool HasImage => SelectedImage != null;
     public bool HasMultipleImages => _images.Count > 1;
     public string Page => $"{_images.IndexOf(_selectedImage) + 1} / {_images.Count}";
@@ -219,6 +236,7 @@ public class TabItem : ViewModel
     public void SoftReset(GameFile entry)
     {
         Entry = entry;
+        TitleExtra = string.Empty;
         ParentExportType = string.Empty;
         ScrollTrigger = null;
         Application.Current.Dispatcher.Invoke(() =>
@@ -389,7 +407,7 @@ public class TabControlViewModel : ViewModel
     public void AddTab(string title) => AddTab(new FakeGameFile(title));
     public void AddTab(GameFile entry, string parentExportType = null)
     {
-        if (SelectedTab?.Entry.Name == "New Tab")
+        if (SelectedTab?.Header == "New Tab")
         {
             SelectedTab.Entry = entry;
             return;

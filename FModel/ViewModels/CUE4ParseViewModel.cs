@@ -133,17 +133,18 @@ public class CUE4ParseViewModel : ViewModel
             customVersions: new FCustomVersionContainer(currentDir.Versioning.CustomVersions),
             optionOverrides: currentDir.Versioning.Options,
             mapStructTypesOverrides: currentDir.Versioning.MapStructTypes);
+        var pathComparer = StringComparer.OrdinalIgnoreCase;
 
         switch (gameDirectory)
         {
             case Constants._FN_LIVE_TRIGGER:
             {
-                Provider = new StreamedFileProvider("FortniteLive", true, versionContainer);
+                Provider = new StreamedFileProvider("FortniteLive", versionContainer, pathComparer);
                 break;
             }
             case Constants._VAL_LIVE_TRIGGER:
             {
-                Provider = new StreamedFileProvider("ValorantLive", true, versionContainer);
+                Provider = new StreamedFileProvider("ValorantLive", versionContainer, pathComparer);
                 break;
             }
             default:
@@ -155,12 +156,12 @@ public class CUE4ParseViewModel : ViewModel
                     [
                         new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
                         new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
-                    ], SearchOption.AllDirectories, true, versionContainer),
+                    ], SearchOption.AllDirectories, versionContainer, pathComparer),
                     "eFootball" => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
                     [
                         new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\KONAMI\\eFootball\\ST\\Download")
-                    ], SearchOption.AllDirectories, true, versionContainer),
-                    _ => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, true, versionContainer)
+                    ], SearchOption.AllDirectories, versionContainer, pathComparer),
+                    _ => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer)
                 };
 
                 break;
@@ -571,16 +572,18 @@ public class CUE4ParseViewModel : ViewModel
             case "uasset":
             case "umap":
             {
-                var pkg = Provider.LoadPackage(entry);
+                var result = Provider.GetLoadPackageResult(entry);
+                TabControl.SelectedTab.TitleExtra = result.TabTitleExtra;
+
                 if (saveProperties || updateUi)
                 {
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(pkg.GetExports(), Formatting.Indented), saveProperties, updateUi);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(saveProperties), Formatting.Indented), saveProperties, updateUi);
                     if (saveProperties) break; // do not search for viewable exports if we are dealing with jsons
                 }
 
-                for (var i = 0; i < pkg.ExportMapLength; i++)
+                for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
                 {
-                    if (CheckExport(cancellationToken, pkg, i, bulk))
+                    if (CheckExport(cancellationToken, result.Package, i, bulk))
                         break;
                 }
 
@@ -743,13 +746,15 @@ public class CUE4ParseViewModel : ViewModel
         TabControl.AddTab(entry, parentExportType);
         TabControl.SelectedTab.ScrollTrigger = objectName;
 
-        var pkg = Provider.LoadPackage(entry);
-        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(""); // json
-        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(pkg.GetExports(), Formatting.Indented), false, false);
+        var result = Provider.GetLoadPackageResult(entry, objectName);
 
-        for (var i = 0; i < pkg.ExportMapLength; i++)
+        TabControl.SelectedTab.TitleExtra = result.TabTitleExtra;
+        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(""); // json
+        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(), Formatting.Indented), false, false);
+
+        for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
         {
-            if (CheckExport(cancellationToken, pkg, i))
+            if (CheckExport(cancellationToken, result.Package, i))
                 break;
         }
     }
@@ -907,7 +912,10 @@ public class CUE4ParseViewModel : ViewModel
     {
         var package = Provider.LoadPackage(entry);
 
-        TabControl.AddTab($"{entry.Name} (Metadata)");
+        if (TabControl.CanAddTabs) TabControl.AddTab(entry);
+        else TabControl.SelectedTab.SoftReset(entry);
+
+        TabControl.SelectedTab.TitleExtra = "Metadata";
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("");
 
         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(package, Formatting.Indented), false, false);

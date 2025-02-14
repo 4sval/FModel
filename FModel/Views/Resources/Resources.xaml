@@ -651,7 +651,7 @@
                             <MouseBinding MouseAction="MiddleClick" Command="{Binding SelectedItem.TabCommand, ElementName=TabControlName}" CommandParameter="{Binding}" />
                         </DockPanel.InputBindings>
 
-                        <TextBlock DockPanel.Dock="Left" Text="{Binding Entry.Name}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Entry.Name}">
+                        <TextBlock DockPanel.Dock="Left" Text="{Binding Header}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}">
                             <TextBlock.Width>
                                 <MultiBinding Converter="{x:Static converters:TabSizeConverter.Instance}" ConverterParameter="6">
                                     <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type TabControl}}" />
@@ -858,7 +858,7 @@
                                 <Separator />
                                 <MenuItem Command="{Binding TabCommand}" CommandParameter="Asset_Export_Data">
                                     <MenuItem.Header>
-                                        <TextBlock Text="{Binding Entry.Extension, FallbackValue='uasset', StringFormat='Export Raw Data (.{0})'}" />
+                                        <TextBlock Text="{Binding Entry.Extension, FallbackValue='Export Raw Data', StringFormat='Export Raw Data (.{0})'}" />
                                     </MenuItem.Header>
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
