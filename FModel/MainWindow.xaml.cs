@@ -85,7 +85,7 @@ public partial class MainWindow
 #if DEBUG
         // await _threadWorkerView.Begin(cancellationToken =>
         //     _applicationView.CUE4Parse.Extract(cancellationToken,
-        //         _applicationView.CUE4Parse.Provider["FortniteGame/Plugins/GameFeatures/Juno/JunoGame/Content/Environments/Landscape/GrassType/M_Juno_LS_Grass.uasset"]));
+        //         _applicationView.CUE4Parse.Provider["Marvel/Content/Marvel/Characters/1050/1050300/Meshes/SK_1050_1050300_Lobby.uasset"]));
         // await _threadWorkerView.Begin(cancellationToken =>
         //     _applicationView.CUE4Parse.Extract(cancellationToken,
         //         "RED/Content/Chara/ABA/Costume01/Animation/Charaselect/body/stand_body01.uasset"));

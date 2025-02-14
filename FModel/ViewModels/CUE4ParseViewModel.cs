@@ -133,17 +133,18 @@ public class CUE4ParseViewModel : ViewModel
             customVersions: new FCustomVersionContainer(currentDir.Versioning.CustomVersions),
             optionOverrides: currentDir.Versioning.Options,
             mapStructTypesOverrides: currentDir.Versioning.MapStructTypes);
+        var pathComparer = StringComparer.OrdinalIgnoreCase;
 
         switch (gameDirectory)
         {
             case Constants._FN_LIVE_TRIGGER:
             {
-                Provider = new StreamedFileProvider("FortniteLive", versionContainer);
+                Provider = new StreamedFileProvider("FortniteLive", versionContainer, pathComparer);
                 break;
             }
             case Constants._VAL_LIVE_TRIGGER:
             {
-                Provider = new StreamedFileProvider("ValorantLive", versionContainer);
+                Provider = new StreamedFileProvider("ValorantLive", versionContainer, pathComparer);
                 break;
             }
             default:
@@ -155,12 +156,12 @@ public class CUE4ParseViewModel : ViewModel
                     [
                         new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
                         new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
-                    ], SearchOption.AllDirectories, versionContainer),
+                    ], SearchOption.AllDirectories, versionContainer, pathComparer),
                     "eFootball" => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
                     [
                         new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\KONAMI\\eFootball\\ST\\Download")
-                    ], SearchOption.AllDirectories, versionContainer),
-                    _ => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer)
+                    ], SearchOption.AllDirectories, versionContainer, pathComparer),
+                    _ => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer)
                 };
 
                 break;
