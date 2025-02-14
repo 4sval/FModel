@@ -122,111 +122,89 @@ public class Renderer : IDisposable
     public void Animate(Lazy<UObject> anim) => Animate(anim.Value, Options.SelectedModel);
     private void Animate(UObject anim, FGuid guid)
     {
-        if (!Options.TryGetModel(guid, out var m) || m is not SkeletalModel model)
+        if (anim is not UAnimSequenceBase animBase || !Options.TryGetModel(guid, out var m) || m is not SkeletalModel model)
             return;
 
-        float maxElapsedTime;
-        switch (anim)
+        var animSet = animBase switch
         {
-            case UAnimSequence animSequence when animSequence.Skeleton.TryLoad(out USkeleton skeleton):
-            {
-                var animSet = skeleton.ConvertAnims(animSequence);
-                var animation = new Animation(animSequence, animSet, guid);
-                maxElapsedTime = animation.TotalElapsedTime;
-                model.Skeleton.Animate(animSet);
-                Options.AddAnimation(animation);
-                break;
-            }
-            case UAnimMontage animMontage when animMontage.Skeleton.TryLoad(out USkeleton skeleton):
-            {
-                var animSet = skeleton.ConvertAnims(animMontage);
-                var animation = new Animation(animMontage, animSet, guid);
-                maxElapsedTime = animation.TotalElapsedTime;
-                model.Skeleton.Animate(animSet);
-                Options.AddAnimation(animation);
+            UAnimSequence animSequence when animSequence.Skeleton.TryLoad(out USkeleton skeleton) => skeleton.ConvertAnims(animSequence),
+            UAnimMontage animMontage when animMontage.Skeleton.TryLoad(out USkeleton skeleton) => skeleton.ConvertAnims(animMontage),
+            UAnimComposite animComposite when animComposite.Skeleton.TryLoad(out USkeleton skeleton) => skeleton.ConvertAnims(animComposite),
+            _ => throw new ArgumentException("Unknown animation type")
+        };
 
-                foreach (var notifyEvent in animMontage.Notifies)
+        var animation = new Animation(anim, animSet, guid);
+        model.Skeleton.Animate(animSet);
+        Options.AddAnimation(animation);
+
+        foreach (var notifyEvent in animBase.Notifies)
+        {
+            if (!notifyEvent.NotifyStateClass.TryLoad(out UObject notifyClass) ||
+                !notifyClass.TryGetValue(out UObject export, "SkeletalMeshProp", "StaticMeshProp", "Mesh", "SkeletalMeshTemplate"))
+                continue;
+
+            var t = Transform.Identity;
+            if (notifyClass.TryGetValue(out FTransform offset, "Offset"))
+            {
+                t.Rotation = offset.Rotation;
+                t.Position = offset.Translation * Constants.SCALE_DOWN_RATIO;
+                t.Scale = offset.Scale3D;
+            }
+
+            UModel addedModel = null;
+            switch (export)
+            {
+                case UStaticMesh st:
                 {
-                    if (!notifyEvent.NotifyStateClass.TryLoad(out UObject notifyClass) ||
-                        !notifyClass.TryGetValue(out FPackageIndex meshProp, "SkeletalMeshProp", "StaticMeshProp", "Mesh") ||
-                        !meshProp.TryLoad(out UObject export)) continue;
-
-                    var t = Transform.Identity;
-                    if (notifyClass.TryGetValue(out FTransform offset, "Offset"))
+                    guid = st.LightingGuid;
+                    if (Options.TryGetModel(guid, out addedModel))
                     {
-                        t.Rotation = offset.Rotation;
-                        t.Position = offset.Translation * Constants.SCALE_DOWN_RATIO;
-                        t.Scale = offset.Scale3D;
+                        addedModel.AddInstance(t);
                     }
-
-                    UModel addedModel = null;
-                    switch (export)
+                    else if (st.TryConvert(out var mesh))
                     {
-                        case UStaticMesh st:
-                        {
-                            guid = st.LightingGuid;
-                            if (Options.TryGetModel(guid, out addedModel))
-                            {
-                                addedModel.AddInstance(t);
-                            }
-                            else if (st.TryConvert(out var mesh))
-                            {
-                                addedModel = new StaticModel(st, mesh, t);
-                                Options.Models[guid] = addedModel;
-                            }
-                            break;
-                        }
-                        case USkeletalMesh sk:
-                        {
-                            guid = Guid.NewGuid();
-                            if (!Options.Models.ContainsKey(guid) && sk.TryConvert(out var mesh))
-                            {
-                                addedModel = new SkeletalModel(sk, mesh, t);
-                                Options.Models[guid] = addedModel;
-                            }
-                            break;
-                        }
+                        addedModel = new StaticModel(st, mesh, t);
+                        Options.Models[guid] = addedModel;
                     }
-
-                    if (addedModel == null)
-                        throw new ArgumentException("Unknown model type");
-
-                    addedModel.IsProp = true;
-                    if (notifyClass.TryGetValue(out UObject skeletalMeshPropAnimation, "SkeletalMeshPropAnimation", "Animation"))
-                        Animate(skeletalMeshPropAnimation, guid);
-                    if (notifyClass.TryGetValue(out FName socketName, "SocketName"))
-                    {
-                        t = Transform.Identity;
-                        if (notifyClass.TryGetValue(out FVector location, "LocationOffset", "Location"))
-                            t.Position = location * Constants.SCALE_DOWN_RATIO;
-                        if (notifyClass.TryGetValue(out FRotator rotation, "RotationOffset", "Rotation"))
-                            t.Rotation = rotation.Quaternion();
-                        if (notifyClass.TryGetValue(out FVector scale, "Scale"))
-                            t.Scale = scale;
-
-                        var s = new Socket($"ANIM_{addedModel.Name}", socketName, t, true);
-                        model.Sockets.Add(s);
-                        addedModel.Attachments.Attach(model, addedModel.GetTransform(), s,
-                            new SocketAttachementInfo { Guid = guid, Instance = addedModel.SelectedInstance });
-                    }
+                    break;
                 }
-                break;
+                case USkeletalMesh sk:
+                {
+                    guid = Guid.NewGuid();
+                    if (!Options.Models.ContainsKey(guid) && sk.TryConvert(out var mesh))
+                    {
+                        addedModel = new SkeletalModel(sk, mesh, t);
+                        Options.Models[guid] = addedModel;
+                    }
+                    break;
+                }
             }
-            case UAnimComposite animComposite when animComposite.Skeleton.TryLoad(out USkeleton skeleton):
+
+            if (addedModel == null)
+                throw new ArgumentException("Unknown model type");
+
+            addedModel.IsProp = true;
+            if (notifyClass.TryGetValue(out UObject skeletalMeshPropAnimation, "SkeletalMeshPropAnimation", "Animation", "AnimToPlay"))
+                Animate(skeletalMeshPropAnimation, guid);
+            if (notifyClass.TryGetValue(out FName socketName, "SocketName"))
             {
-                var animSet = skeleton.ConvertAnims(animComposite);
-                var animation = new Animation(animComposite, animSet, guid);
-                maxElapsedTime = animation.TotalElapsedTime;
-                model.Skeleton.Animate(animSet);
-                Options.AddAnimation(animation);
-                break;
+                t = Transform.Identity;
+                if (notifyClass.TryGetValue(out FVector location, "LocationOffset", "Location"))
+                    t.Position = location * Constants.SCALE_DOWN_RATIO;
+                if (notifyClass.TryGetValue(out FRotator rotation, "RotationOffset", "Rotation"))
+                    t.Rotation = rotation.Quaternion();
+                if (notifyClass.TryGetValue(out FVector scale, "Scale"))
+                    t.Scale = scale;
+
+                var s = new Socket($"ANIM_{addedModel.Name}", socketName, t, true);
+                model.Sockets.Add(s);
+                addedModel.Attachments.Attach(model, addedModel.GetTransform(), s,
+                    new SocketAttachementInfo { Guid = guid, Instance = addedModel.SelectedInstance });
             }
-            default:
-                throw new ArgumentException();
         }
 
         Options.Tracker.IsPaused = false;
-        Options.Tracker.SafeSetMaxElapsedTime(maxElapsedTime);
+        Options.Tracker.SafeSetMaxElapsedTime(animation.TotalElapsedTime);
     }
 
     public void Setup()
