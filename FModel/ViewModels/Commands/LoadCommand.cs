@@ -182,7 +182,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
         {
             case ELoadingMode.AllButNew:
             {
-                var paths = new HashSet<string>();
+                var paths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 var magic = archive.Read<uint>();
                 if (magic != BackupManagerViewModel.FBKP_MAGIC)
                 {
@@ -192,7 +192,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
                         cancellationToken.ThrowIfCancellationRequested();
 
                         archive.Position += 29;
-                        paths.Add(archive.ReadString().ToLower()[1..]);
+                        paths.Add(archive.ReadString()[1..]);
                         archive.Position += 4;
                     }
                 }
@@ -205,7 +205,10 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
                         cancellationToken.ThrowIfCancellationRequested();
 
                         archive.Position += sizeof(long) + sizeof(byte);
-                        paths.Add(archive.ReadString().ToLower()[1..]);
+                        var fullPath = archive.ReadString();
+                        if (version < EBackupVersion.PerfectPath) fullPath = fullPath[1..];
+
+                        paths.Add(fullPath);
                     }
                 }
 
@@ -233,7 +236,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
                         var uncompressedSize = archive.Read<long>();
                         var isEncrypted = archive.ReadFlag();
                         archive.Position += 4;
-                        var fullPath = archive.ReadString().ToLower()[1..];
+                        var fullPath = archive.ReadString()[1..];
                         archive.Position += 4;
 
                         AddEntry(fullPath, uncompressedSize, isEncrypted, entries);
@@ -249,7 +252,8 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
 
                         var uncompressedSize = archive.Read<long>();
                         var isEncrypted = archive.ReadFlag();
-                        var fullPath = archive.ReadString().ToLower()[1..];
+                        var fullPath = archive.ReadString();
+                        if (version < EBackupVersion.PerfectPath) fullPath = fullPath[1..];
 
                         AddEntry(fullPath, uncompressedSize, isEncrypted, entries);
                     }

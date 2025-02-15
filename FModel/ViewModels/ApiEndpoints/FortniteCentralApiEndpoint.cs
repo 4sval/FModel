@@ -15,7 +15,7 @@ public class FortniteCentralApiEndpoint : AbstractApiProvider
     {
         var request = new FRestRequest("https://fortnitecentral.genxgames.gg/api/v1/hotfixes")
         {
-            OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
+            Interceptors = [_interceptor]
         };
         request.AddParameter("lang", language);
         var response = await _client.ExecuteAsync<Dictionary<string, Dictionary<string, string>>>(request, token).ConfigureAwait(false);

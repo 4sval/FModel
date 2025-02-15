@@ -35,9 +35,9 @@ public class Animation : IDisposable
         _export = export;
         Path = _export.GetPathName();
         Name = _export.Name;
-        Sequences = Array.Empty<Sequence>();
+        Sequences = [];
         Framing = new Dictionary<int, float>();
-        AttachedModels = new List<FGuid>();
+        AttachedModels = [];
     }
 
     public Animation(UObject export, CAnimSet animSet) : this(export)

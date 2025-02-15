@@ -153,7 +153,7 @@ public class SkeletalModel : UModel
 
         GL.Disable(EnableCap.DepthTest);
         GL.Disable(EnableCap.CullFace);
-        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+        GL.PolygonMode(TriangleFace.FrontAndBack, PolygonMode.Line);
         foreach (var collision in Collisions)
         {
             var boneMatrix = Matrix4x4.Identity;
@@ -162,7 +162,7 @@ public class SkeletalModel : UModel
 
             collision.Render(shader, boneMatrix);
         }
-        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+        GL.PolygonMode(TriangleFace.FrontAndBack, PolygonMode.Fill);
         GL.Enable(EnableCap.CullFace);
         GL.Enable(EnableCap.DepthTest);
     }

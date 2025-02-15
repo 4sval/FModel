@@ -66,7 +66,7 @@ public class BackupManagerViewModel : ViewModel
             var backupFolder = Path.Combine(UserSettings.Default.OutputDirectory, "Backups");
             var fileName = $"{_gameName}_{DateTime.Now:MM'_'dd'_'yyyy}.fbkp";
             var fullPath = Path.Combine(backupFolder, fileName);
-            var func = new Func<GameFile, bool>(x => !x.Path.EndsWith(".uexp") && !x.Path.EndsWith(".ubulk") && !x.Path.EndsWith(".uptnl"));
+            var func = new Func<GameFile, bool>(x => !x.IsUePackagePayload);
 
             using var fileStream = new FileStream(fullPath, FileMode.Create);
             using var compressedStream = LZ4Stream.Encode(fileStream, LZ4Level.L00_FAST);
@@ -80,7 +80,7 @@ public class BackupManagerViewModel : ViewModel
                 if (!func(asset)) continue;
                 writer.Write(asset.Size);
                 writer.Write(asset.IsEncrypted);
-                writer.Write($"/{asset.Path.ToLower()}");
+                writer.Write(asset.Path);
             }
 
             SaveCheck(fullPath, fileName, "created", "create");
@@ -121,6 +121,7 @@ public enum EBackupVersion : byte
 {
     BeforeVersionWasAdded = 0,
     Initial,
+    PerfectPath, // no more leading slash and ToLower
 
     LatestPlusOne,
     Latest = LatestPlusOne - 1

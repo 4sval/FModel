@@ -148,12 +148,12 @@ public class StaticModel : UModel
         base.RenderCollision(shader);
 
         GL.Disable(EnableCap.CullFace);
-        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+        GL.PolygonMode(TriangleFace.FrontAndBack, PolygonMode.Line);
         foreach (var collision in Collisions)
         {
             collision.Render(shader, Matrix4x4.Identity);
         }
-        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+        GL.PolygonMode(TriangleFace.FrontAndBack, PolygonMode.Fill);
         GL.Enable(EnableCap.CullFace);
     }
 }
