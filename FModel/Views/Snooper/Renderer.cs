@@ -122,14 +122,15 @@ public class Renderer : IDisposable
     public void Animate(Lazy<UObject> anim) => Animate(anim.Value, Options.SelectedModel);
     private void Animate(UObject anim, FGuid guid)
     {
-        if (anim is not UAnimSequenceBase animBase || !Options.TryGetModel(guid, out var m) || m is not SkeletalModel model)
+        if (anim is not UAnimSequenceBase animBase || !animBase.Skeleton.TryLoad(out USkeleton skeleton) ||
+            !Options.TryGetModel(guid, out var m) || m is not SkeletalModel model)
             return;
 
         var animSet = animBase switch
         {
-            UAnimSequence animSequence when animSequence.Skeleton.TryLoad(out USkeleton skeleton) => skeleton.ConvertAnims(animSequence),
-            UAnimMontage animMontage when animMontage.Skeleton.TryLoad(out USkeleton skeleton) => skeleton.ConvertAnims(animMontage),
-            UAnimComposite animComposite when animComposite.Skeleton.TryLoad(out USkeleton skeleton) => skeleton.ConvertAnims(animComposite),
+            UAnimSequence animSequence => skeleton.ConvertAnims(animSequence),
+            UAnimMontage animMontage => skeleton.ConvertAnims(animMontage),
+            UAnimComposite animComposite => skeleton.ConvertAnims(animComposite),
             _ => throw new ArgumentException("Unknown animation type")
         };
 
