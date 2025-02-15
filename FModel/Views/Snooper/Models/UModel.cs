@@ -255,7 +255,7 @@ public abstract class UModel : IRenderableModel
         }
 
         Vao.Bind();
-        GL.PolygonMode(MaterialFace.FrontAndBack, ShowWireframe ? PolygonMode.Line : PolygonMode.Fill);
+        GL.PolygonMode(TriangleFace.FrontAndBack, ShowWireframe ? PolygonMode.Line : PolygonMode.Fill);
         foreach (var section in Sections)
         {
             if (!section.Show) continue;
@@ -275,7 +275,7 @@ public abstract class UModel : IRenderableModel
 
             GL.DrawElementsInstanced(PrimitiveType.Triangles, section.FacesCount, DrawElementsType.UnsignedInt, section.FirstFaceIndexPtr, TransformsCount);
         }
-        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+        GL.PolygonMode(TriangleFace.FrontAndBack, PolygonMode.Fill);
         Vao.Unbind();
 
         if (IsSelected)
