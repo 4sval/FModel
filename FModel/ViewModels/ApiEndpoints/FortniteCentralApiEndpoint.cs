@@ -11,19 +11,19 @@ public class FortniteCentralApiEndpoint : AbstractApiProvider
 {
     public FortniteCentralApiEndpoint(RestClient client) : base(client) { }
 
-    public async Task<Dictionary<string, Dictionary<string, string>>> GetHotfixesAsync(CancellationToken token, string language = "en")
+    public async Task<IDictionary<string, IDictionary<string, string>>> GetHotfixesAsync(CancellationToken token, string language = "en")
     {
         var request = new FRestRequest("https://fortnitecentral.genxgames.gg/api/v1/hotfixes")
         {
             Interceptors = [_interceptor]
         };
         request.AddParameter("lang", language);
-        var response = await _client.ExecuteAsync<Dictionary<string, Dictionary<string, string>>>(request, token).ConfigureAwait(false);
+        var response = await _client.ExecuteAsync<IDictionary<string, IDictionary<string, string>>>(request, token).ConfigureAwait(false);
         Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
         return response.Data;
     }
 
-    public Dictionary<string, Dictionary<string, string>> GetHotfixes(CancellationToken token, string language = "en")
+    public IDictionary<string, IDictionary<string, string>> GetHotfixes(CancellationToken token, string language = "en")
     {
         return GetHotfixesAsync(token, language).GetAwaiter().GetResult();
     }

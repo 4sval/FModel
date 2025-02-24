@@ -564,9 +564,10 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
                 return false;
             }
+            case "rada":
             case "binka":
             {
-                if (TryDecode(out var rawFilePath))
+                if (TryDecode(SelectedAudioFile.Extension, out var rawFilePath))
                 {
                     var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(rawFilePath));
                     Replace(newAudio);
@@ -608,11 +609,11 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         return vgmProcess?.ExitCode == 0 && File.Exists(wavFilePath);
     }
 
-    private bool TryDecode(out string rawFilePath)
+    private bool TryDecode(string extension, out string rawFilePath)
     {
         rawFilePath = string.Empty;
-        var binkadecPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "binkadec.exe");
-        if (!File.Exists(binkadecPath))
+        var decoderPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", $"{extension}dec.exe");
+        if (!File.Exists(decoderPath))
         {
             return false;
         }
@@ -621,16 +622,16 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         File.WriteAllBytes(SelectedAudioFile.FilePath, SelectedAudioFile.Data);
 
         rawFilePath = Path.ChangeExtension(SelectedAudioFile.FilePath, ".wav");
-        var binkadecProcess = Process.Start(new ProcessStartInfo
+        var decoderProcess = Process.Start(new ProcessStartInfo
         {
-            FileName = binkadecPath,
+            FileName = decoderPath,
             Arguments = $"-i \"{SelectedAudioFile.FilePath}\" -o \"{rawFilePath}\"",
             UseShellExecute = false,
             CreateNoWindow = true
         });
-        binkadecProcess?.WaitForExit(5000);
+        decoderProcess?.WaitForExit(5000);
 
         File.Delete(SelectedAudioFile.FilePath);
-        return binkadecProcess?.ExitCode == 0 && File.Exists(rawFilePath);
+        return decoderProcess?.ExitCode == 0 && File.Exists(rawFilePath);
     }
 }

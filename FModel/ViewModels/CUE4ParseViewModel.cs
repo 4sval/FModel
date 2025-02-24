@@ -271,7 +271,7 @@ public class CUE4ParseViewModel : ViewModel
             }
 
             Provider.Initialize();
-            Log.Information($"{Provider.Versions.Game} ({Provider.Versions.Platform}) | Archives: x{Provider.UnloadedVfs.Count} | AES: x{Provider.RequiredKeys.Count}");
+            Log.Information($"{Provider.Versions.Game} ({Provider.Versions.Platform}) | Archives: x{Provider.UnloadedVfs.Count} | AES: x{Provider.RequiredKeys.Count} | Loose Files: x{Provider.Files.Count}");
         });
     }
 
@@ -286,7 +286,7 @@ public class CUE4ParseViewModel : ViewModel
 
         var aesMax = Provider.RequiredKeys.Count + Provider.Keys.Count;
         var archiveMax = Provider.UnloadedVfs.Count + Provider.MountedVfs.Count;
-        Log.Information($"Project: {Provider.ProjectName} | Mounted: {Provider.MountedVfs.Count}/{archiveMax} | AES: {Provider.Keys.Count}/{aesMax}");
+        Log.Information($"Project: {Provider.ProjectName} | Mounted: {Provider.MountedVfs.Count}/{archiveMax} | AES: {Provider.Keys.Count}/{aesMax} | Files: x{Provider.Files.Count}");
     }
 
     public void ClearProvider()
@@ -442,6 +442,8 @@ public class CUE4ParseViewModel : ViewModel
     {
         var snapshot = LocalizedResourcesCount;
         await Task.WhenAll(LoadGameLocalizedResources(), LoadHotfixedLocalizedResources()).ConfigureAwait(false);
+
+        LocalizedResourcesCount = Provider.Internationalization.Count;
         if (snapshot != LocalizedResourcesCount)
         {
             FLogger.Append(ELog.Information, () =>
@@ -454,8 +456,7 @@ public class CUE4ParseViewModel : ViewModel
         if (LocalResourcesDone) return Task.CompletedTask;
         return Task.Run(() =>
         {
-            LocalizedResourcesCount += Provider.LoadLocalization(UserSettings.Default.AssetLanguage);
-            LocalResourcesDone = true;
+            LocalResourcesDone = Provider.TryChangeCulture(Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
         });
     }
     private Task LoadHotfixedLocalizedResources()
@@ -466,18 +467,8 @@ public class CUE4ParseViewModel : ViewModel
             var hotfixes = ApplicationService.ApiEndpointView.CentralApi.GetHotfixes(default, Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
             if (hotfixes == null) return;
 
+            Provider.Internationalization.Override(hotfixes);
             HotfixedResourcesDone = true;
-            foreach (var entries in hotfixes)
-            {
-                if (!Provider.LocalizedResources.ContainsKey(entries.Key))
-                    Provider.LocalizedResources[entries.Key] = new Dictionary<string, string>();
-
-                foreach (var keyValue in entries.Value)
-                {
-                    Provider.LocalizedResources[entries.Key][keyValue.Key] = keyValue.Value;
-                    LocalizedResourcesCount++;
-                }
-            }
         });
     }
 

@@ -111,11 +111,11 @@ public partial class App
             .MinimumLevel.Verbose()
             .WriteTo.Console(outputTemplate: template, theme: AnsiConsoleTheme.Literate)
             .WriteTo.File(outputTemplate: template,
-                path: Path.Combine(UserSettings.Default.OutputDirectory, "Logs", $"FModel-Debug-Log-{DateTime.Now:yyyy-MM-dd}.txt"))
+                path: Path.Combine(UserSettings.Default.OutputDirectory, "Logs", $"FModel-Debug-Log-{DateTime.Now:yyyy-MM-dd}.log"))
 #else
             .Enrich.With<CallerEnricher>()
             .WriteTo.File(outputTemplate: template,
-                path: Path.Combine(UserSettings.Default.OutputDirectory, "Logs", $"FModel-Log-{DateTime.Now:yyyy-MM-dd}.txt"))
+                path: Path.Combine(UserSettings.Default.OutputDirectory, "Logs", $"FModel-Log-{DateTime.Now:yyyy-MM-dd}.log"))
 #endif
             .CreateLogger();
 

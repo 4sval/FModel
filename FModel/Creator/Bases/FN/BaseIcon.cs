@@ -217,8 +217,8 @@ public class BaseIcon : UCreator
         if (uObject.TryGetValue(out FText displayName, "DisplayName"))
             name = displayName.Text;
 
-        var format = Utils.GetLocalizedResource("Fort.Cosmetics", "CosmeticItemDescription_SetMembership_NotRich", "\nPart of the {0} set.");
-        return string.Format(format, name);
+        var format = Utils.GetLocalizedResource("Fort.Cosmetics", "CosmeticItemDescription_SetMembership", "\nPart of the <SetName>{0}</> set.");
+        return Utils.RemoveHtmlTags(string.Format(format, name));
     }
 
     protected (int, int) GetInternalSID(int number)
