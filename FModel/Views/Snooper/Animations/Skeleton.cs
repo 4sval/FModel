@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using CUE4Parse_Conversion.Animations.PSA;
 using CUE4Parse.UE4.Assets.Exports.Animation;
+using CUE4Parse.UE4.Objects.Core.Misc;
 using FModel.Views.Snooper.Buffers;
 using FModel.Views.Snooper.Shading;
 using ImGuiNET;
@@ -21,6 +22,7 @@ public class Skeleton : IDisposable
     private readonly List<string> _breadcrumb;
 
     public string Name;
+    public FGuid Guid;
     public readonly Dictionary<string, Bone> BonesByLoweredName;
 
     public readonly int BoneCount;

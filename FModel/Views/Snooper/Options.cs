@@ -16,6 +16,7 @@ namespace FModel.Views.Snooper;
 public class Options
 {
     public FGuid SelectedModel { get; private set; }
+    public bool ModelIsWaitingAnimation { get; private set; }
     public int SelectedSection { get; private set; }
     public int SelectedMorph { get; private set; }
     public int SelectedAnimation{ get; private set; }
@@ -238,7 +239,7 @@ public class Options
 
     public void AnimateMesh(bool value)
     {
-        Services.ApplicationService.ApplicationView.CUE4Parse.ModelIsWaitingAnimation = value;
+        ModelIsWaitingAnimation = value;
     }
 
     public void ResetModelsLightsAnimations()

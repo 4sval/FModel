@@ -360,7 +360,7 @@ namespace FModel.Settings
             set => SetProperty(ref _nextAudio, value);
         }
 
-        private EMeshFormat _meshExportFormat = EMeshFormat.ActorX;
+        private EMeshFormat _meshExportFormat = EMeshFormat.UEFormat;
         public EMeshFormat MeshExportFormat
         {
             get => _meshExportFormat;
@@ -449,6 +449,13 @@ namespace FModel.Settings
         {
             get => _previewSkeletalMeshes;
             set => SetProperty(ref _previewSkeletalMeshes, value);
+        }
+
+        private bool _previewAnimations = true;
+        public bool PreviewAnimations
+        {
+            get => _previewAnimations;
+            set => SetProperty(ref _previewAnimations, value);
         }
 
         private bool _previewMaterials = true;

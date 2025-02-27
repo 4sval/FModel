@@ -44,7 +44,7 @@ public class Snooper : GameWindow
     {
         if (clear)
         {
-            Renderer.CameraOp.Speed = 0;
+            Renderer.CameraOp.Speed = 1f;
             Renderer.Save();
         }
 

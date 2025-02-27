@@ -119,7 +119,28 @@ public class Renderer : IDisposable
         Application.Current.Dispatcher.Invoke(() => model.Materials[section.MaterialIndex].Setup(Options, model.UvCount));
     }
 
-    public void Animate(Lazy<UObject> anim) => Animate(anim.Value, Options.SelectedModel);
+    public void Animate(UObject anim)
+    {
+        if (!Options.ModelIsWaitingAnimation)
+        {
+            if (anim is UAnimSequenceBase animBase)
+            {
+                /*if (Options.TryGetModel(out var selected) &&
+                    selected is SkeletalModel { IsVisible: true } skeletalModel &&
+                    skeletalModel.Skeleton.Guid == animBase.SkeletonGuid)
+                {
+                    // do nothing, selected model has the correct skeleton for this animation
+                }
+                else */if (animBase.Skeleton.TryLoad(out USkeleton skeleton))
+                {
+                    LoadSkeleton(skeleton);
+                }
+            }
+            else return; // should never end here
+        }
+
+        Animate(anim, Options.SelectedModel);
+    }
     private void Animate(UObject anim, FGuid guid)
     {
         if (anim is not UAnimSequenceBase animBase || !animBase.Skeleton.TryLoad(out USkeleton skeleton) ||
@@ -285,7 +306,7 @@ public class Renderer : IDisposable
             animation.TimeCalculation(Options.Tracker.ElapsedTime);
             foreach (var guid in animation.AttachedModels)
             {
-                if (Options.Models[guid] is not SkeletalModel skeletalModel) continue;
+                if (!Options.TryGetModel(guid, out var m) || m is not SkeletalModel skeletalModel) continue;
                 skeletalModel.Skeleton.UpdateAnimationMatrices(animation, AnimateWithRotationOnly);
             }
         }

@@ -77,13 +77,6 @@ public class CUE4ParseViewModel : ViewModel
         set => SetProperty(ref _modelIsOverwritingMaterial, value);
     }
 
-    private bool _modelIsWaitingAnimation;
-    public bool ModelIsWaitingAnimation
-    {
-        get => _modelIsWaitingAnimation;
-        set => SetProperty(ref _modelIsWaitingAnimation, value);
-    }
-
     public bool IsSnooperOpen => _snooper is { Exists: true, IsVisible: true };
     private Snooper _snooper;
     public Snooper SnooperViewer
@@ -868,9 +861,10 @@ public class CUE4ParseViewModel : ViewModel
                 SnooperViewer.Run();
                 return true;
             }
-            case UAnimSequenceBase when isNone && ModelIsWaitingAnimation:
+            case UAnimSequenceBase when isNone && UserSettings.Default.PreviewAnimations || SnooperViewer.Renderer.Options.ModelIsWaitingAnimation:
             {
-                SnooperViewer.Renderer.Animate(pointer.Object);
+                // animate all animations using their specified skeleton or when we explicitly asked for a loaded model to be animated (ignoring whether we wanted to preview animations)
+                SnooperViewer.Renderer.Animate(pointer.Object.Value);
                 SnooperViewer.Run();
                 return true;
             }

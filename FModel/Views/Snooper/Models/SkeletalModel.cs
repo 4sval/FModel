@@ -36,6 +36,7 @@ public class SkeletalModel : UModel
         if (export.Skeleton.TryLoad(out USkeleton skeleton))
         {
             Skeleton.Name = skeleton.Name;
+            Skeleton.Guid = skeleton.Guid;
             // Skeleton.Merge(skeleton.ReferenceSkeleton);
             sockets.AddRange(skeleton.Sockets);
         }
@@ -116,15 +117,18 @@ public class SkeletalModel : UModel
         AddInstance(Transform.Identity);
 
         Box = box * Constants.SCALE_DOWN_RATIO;
-        Morphs = new List<Morph>();
+        Morphs = [];
         Skeleton = new Skeleton(export.ReferenceSkeleton);
         Skeleton.Name = export.Name;
+        Skeleton.Guid = export.Guid;
 
         for (int i = 0; i < export.Sockets.Length; i++)
         {
             if (export.Sockets[i].Load<USkeletalMeshSocket>() is not { } socket) continue;
             Sockets.Add(new Socket(socket));
         }
+
+        IsVisible = true;
     }
 
     public override void Setup(Options options)
