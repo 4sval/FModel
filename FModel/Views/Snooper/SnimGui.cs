@@ -648,6 +648,8 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     else CenteredTextColored(_errorColor, "Selected Mesh Has No Morph Targets");
                     ImGui.EndTabItem();
                 }
+
+                ImGui.EndTabBar();
             }
         });
         ImGui.PopStyleVar();
@@ -711,13 +713,14 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
     private void DrawTextureInspector(Snooper s)
     {
         if (!_tiOpen) return;
-        if (ImGui.Begin("Texture Inspector", ref _tiOpen, ImGuiWindowFlags.NoScrollbar) &&
-            s.Renderer.Options.TryGetModel(out var model) &&
-            s.Renderer.Options.TryGetSection(model, out var section))
+        if (ImGui.Begin("Texture Inspector", ref _tiOpen, ImGuiWindowFlags.NoScrollbar))
         {
-            (model.Materials[section.MaterialIndex].GetSelectedTexture() ?? s.Renderer.Options.Icons["noimage"]).ImGuiTextureInspector();
+            if (s.Renderer.Options.TryGetModel(out var model) && s.Renderer.Options.TryGetSection(model, out var section))
+            {
+                (model.Materials[section.MaterialIndex].GetSelectedTexture() ?? s.Renderer.Options.Icons["noimage"]).ImGuiTextureInspector();
+            }
+            ImGui.End(); // if window is collapsed
         }
-        ImGui.End(); // if window is collapsed
     }
 
     private void DrawSkeletonTree(Snooper s)
@@ -725,19 +728,21 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         if (!s.Renderer.IsSkeletonTreeOpen) return;
 
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
-        if (ImGui.Begin("Skeleton Tree", ref s.Renderer.IsSkeletonTreeOpen, ImGuiWindowFlags.NoScrollbar) &&
-            s.Renderer.Options.TryGetModel(out var model) && model is SkeletalModel skeletalModel)
+        if (ImGui.Begin("Skeleton Tree", ref s.Renderer.IsSkeletonTreeOpen, ImGuiWindowFlags.NoScrollbar))
         {
-            skeletalModel.Skeleton.ImGuiBoneBreadcrumb();
-            if (ImGui.BeginTable("skeleton_tree", 2, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.RowBg, ImGui.GetContentRegionAvail(), ImGui.GetWindowWidth()))
+            if (s.Renderer.Options.TryGetModel(out var model) && model is SkeletalModel skeletalModel)
             {
-                ImGui.TableSetupColumn("Bone", ImGuiTableColumnFlags.WidthStretch);
-                ImGui.TableSetupColumn("", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed, _tableWidth);
-                skeletalModel.Skeleton.ImGuiBoneHierarchy();
-                ImGui.EndTable();
+                skeletalModel.Skeleton.ImGuiBoneBreadcrumb();
+                if (ImGui.BeginTable("skeleton_tree", 2, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.RowBg, ImGui.GetContentRegionAvail(), ImGui.GetWindowWidth()))
+                {
+                    ImGui.TableSetupColumn("Bone", ImGuiTableColumnFlags.WidthStretch);
+                    ImGui.TableSetupColumn("", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed, _tableWidth);
+                    skeletalModel.Skeleton.ImGuiBoneHierarchy();
+                    ImGui.EndTable();
+                }
             }
+            ImGui.End(); // if window is collapsed
         }
-        ImGui.End(); // if window is collapsed
         ImGui.PopStyleVar();
     }
 
@@ -802,8 +807,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
             ImGui.ImageButton("lights_btn", s.Renderer.Options.Icons[s.Renderer.ShowLights ? "light" : "light_off"].GetPointer(), new Vector2(buttonWidth));
             TooltipCheckbox("Lights", ref s.Renderer.ShowLights);
 
-            ImGui.PopStyleColor();
-
+            ImGui.PopStyleColor(2);
 
             float framerate = ImGui.GetIO().Framerate;
             ImGui.SetCursorPos(size with { X = margin });
@@ -943,12 +947,6 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
     private void Theme()
     {
         var style = ImGui.GetStyle();
-        var io = ImGui.GetIO();
-        io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
-        io.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
-        io.ConfigWindowsMoveFromTitleBarOnly = true;
-        // io.ConfigDockingWithShift = true; doesn't work anymore??
-
         style.WindowPadding = new Vector2(4f);
         style.FramePadding = new Vector2(3f);
         style.CellPadding = new Vector2(3f, 2f);
