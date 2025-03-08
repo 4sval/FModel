@@ -579,6 +579,7 @@ public class CUE4ParseViewModel : ViewModel
             case "uplugin":
             case "archive":
             case "vmodule":
+            case "uparam": // Steel Hunters
             case "verse":
             case "html":
             case "json":
@@ -713,6 +714,16 @@ public class CUE4ParseViewModel : ViewModel
 
                 break;
             }
+            case "upipelinecache":
+            {
+                var archive = entry.CreateReader();
+                var ar = new FPipelineCacheFile(archive);
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), saveProperties, updateUi);
+
+                break;
+            }
+            case "res": // just skip
+                break;
             default:
             {
                 FLogger.Append(ELog.Warning, () =>
