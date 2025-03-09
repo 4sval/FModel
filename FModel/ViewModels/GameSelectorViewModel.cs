@@ -85,7 +85,7 @@ public class GameSelectorViewModel : ViewModel
             .GroupBy(value => (int)value)
             .Select(group => group.First())
             .OrderBy(value => (int)value == ((int)value & ~0xF));
-    private IEnumerable<DirectorySettings> EnumerateDetectedGames()
+    private IEnumerable<DirectorySettings> EnumerateDetectedGames() //Note for 4sval - Automatic mappings pulled from github raw OutInTheShade's Mapping archive might prove useful, I might work that into a seperate PR
     {
         yield return GetUnrealEngineGame("Fortnite", "\\FortniteGame\\Content\\Paks", EGame.GAME_UE5_6);
         yield return DirectorySettings.Default("Fortnite [LIVE]", Constants._FN_LIVE_TRIGGER, ue: EGame.GAME_UE5_6);
@@ -102,9 +102,15 @@ public class GameSelectorViewModel : ViewModel
         yield return GetSteamGame(381210, "\\DeadByDaylight\\Content\\Paks", EGame.GAME_UE4_27); // Dead By Daylight
         yield return GetSteamGame(578080, "\\TslGame\\Content\\Paks", EGame.GAME_PlayerUnknownsBattlegrounds); // PUBG
         yield return GetSteamGame(1172380, "\\SwGame\\Content\\Paks", EGame.GAME_StarWarsJediFallenOrder); // STAR WARS Jedi: Fallen Order™
+        yield return GetSteamGame(1774580, "\\SwGame\\Content\\Paks", EGame.GAME_UE4_26); // STAR WARS Jedi: Survivor™ //Can't remember what engine fallen order runs on so using this to be safe
         yield return GetSteamGame(677620, "\\PortalWars\\Content\\Paks", EGame.GAME_Splitgate); // Splitgate
         yield return GetSteamGame(1172620, "\\Athena\\Content\\Paks", EGame.GAME_SeaOfThieves); // Sea of Thieves
         yield return GetSteamGame(1665460, "\\pak", EGame.GAME_UE4_26); // eFootball 2023
+        yield return GetSteamGame(1869590, "\\OmegaStrikers\\Content\\Paks", EGame.GAME_UE5_1); // Omega Strikers
+        yield return GetSteamGame(1869590, "\\Pavlov\\Content\\Paks", EGame.GAME_UE5_1); // Pavlov VR
+        yield return GetSteamGame(361420, "\\Astro\\Content\\Paks", EGame.GAME_UE4_23); // Astroneer - Should work
+        yield return GetSteamGame(686810, "\\HLL\\Content\\Paks", EGame.GAME_UE4_25); //Hell let loose
+        yield return GetSteamGame(581320, "\\Insurgency\\Content\\Paks", EGame.GAME_UE4_25);//Insurgency: Sandstorm //4.25 was latest version I could find on google.
         yield return GetRockstarGamesGame("GTA III - Definitive Edition", "\\Gameface\\Content\\Paks", EGame.GAME_GTATheTrilogyDefinitiveEdition);
         yield return GetRockstarGamesGame("GTA San Andreas - Definitive Edition", "\\Gameface\\Content\\Paks", EGame.GAME_GTATheTrilogyDefinitiveEdition);
         yield return GetRockstarGamesGame("GTA Vice City - Definitive Edition", "\\Gameface\\Content\\Paks", EGame.GAME_GTATheTrilogyDefinitiveEdition);
