@@ -373,6 +373,7 @@ public abstract class UModel : IRenderableModel
         MatrixVbo = new BufferObject<Matrix4x4>(TransformsCount, BufferTarget.ArrayBuffer);
         for (int instance = 0; instance < TransformsCount; instance++)
         {
+            Transforms[instance].Save();
             MatrixVbo.Update(instance, Transforms[instance].Matrix);
         }
         Vao.BindInstancing(); // VertexAttributePointer

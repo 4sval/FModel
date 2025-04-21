@@ -174,6 +174,7 @@ public class SkeletalModel : UModel
     public void Render(Shader shader)
     {
         shader.SetUniform("uMorphTime", MorphTime);
+        shader.SetUniform("uIsSpline", false);
         Skeleton.Render(shader);
     }
 

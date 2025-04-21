@@ -343,7 +343,7 @@ public class Material : IDisposable
         var texture = GetSelectedTexture() ?? icons["noimage"];
         ImGui.Image(texture.GetPointer(),
             new Vector2(ImGui.GetContentRegionAvail().X - ImGui.GetScrollX()),
-            Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1.0f, 1.0f, 1.0f, 0.25f));
+            Vector2.Zero, Vector2.One);
         return ImGui.IsItemHovered() && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left);
     }
 

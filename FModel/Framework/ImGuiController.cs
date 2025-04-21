@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
 using FModel.Settings;
 using ImGuiNET;
+using ImGuizmoNET;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -54,11 +54,11 @@ public class ImGuiController : IDisposable
 
         int major = GL.GetInteger(GetPName.MajorVersion);
         int minor = GL.GetInteger(GetPName.MinorVersion);
-
         KHRDebugAvailable = (major == 4 && minor >= 3) || IsExtensionSupported("KHR_debug");
 
         IntPtr context = ImGui.CreateContext();
         ImGui.SetCurrentContext(context);
+        ImGuizmo.SetImGuiContext(context);
 
         var io = ImGui.GetIO();
         unsafe
@@ -69,31 +69,23 @@ public class ImGuiController : IDisposable
         FontNormal = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 16 * DpiScale);
         FontBold = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeuib.ttf", 16 * DpiScale);
         FontSemiBold = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\seguisb.ttf", 16 * DpiScale);
+        io.Fonts.AddFontDefault();
+        io.Fonts.Build();          // Build font atlas
 
         io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
         io.ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard;
         io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
-        io.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
         io.Fonts.Flags |= ImFontAtlasFlags.NoBakedLines;
-        // io.ConfigDockingWithShift = true;
+        io.ConfigDockingWithShift = true;
         io.ConfigWindowsMoveFromTitleBarOnly = true;
+        io.BackendRendererUserData = 0;
 
         CreateDeviceResources();
-
-        SetPerFrameImGuiData(1f / 60f);
-
-        ImGui.NewFrame();
-        _frameBegun = true;
     }
 
+    public void Normal() => PushFont(FontNormal);
     public void Bold() => PushFont(FontBold);
     public void SemiBold() => PushFont(FontSemiBold);
-
-    public void PopFont()
-    {
-        ImGui.PopFont();
-        PushFont(FontNormal);
-    }
 
     private void PushFont(ImFontPtr ptr) => ImGui.PushFont(ptr);
 
@@ -132,34 +124,42 @@ public class ImGuiController : IDisposable
 
         RecreateFontDeviceTexture();
 
-        string VertexSource = @"#version 460 core
+        string VertexSource = @"#version 330 core
+
 uniform mat4 projection_matrix;
+
 layout(location = 0) in vec2 in_position;
 layout(location = 1) in vec2 in_texCoord;
 layout(location = 2) in vec4 in_color;
+
 out vec4 color;
 out vec2 texCoord;
+
 void main()
 {
-gl_Position = projection_matrix * vec4(in_position, 0, 1);
-color = in_color;
-texCoord = in_texCoord;
+    gl_Position = projection_matrix * vec4(in_position, 0, 1);
+    color = in_color;
+    texCoord = in_texCoord;
 }";
-        string FragmentSource = @"#version 460 core
+        string FragmentSource = @"#version 330 core
+
 uniform sampler2D in_fontTexture;
+
 in vec4 color;
 in vec2 texCoord;
+
 out vec4 outputColor;
+
 void main()
 {
-outputColor = color * texture(in_fontTexture, texCoord);
+    outputColor = color * texture(in_fontTexture, texCoord);
 }";
 
         _shader = CreateProgram("ImGui", VertexSource, FragmentSource);
         _shaderProjectionMatrixLocation = GL.GetUniformLocation(_shader, "projection_matrix");
         _shaderFontTextureLocation = GL.GetUniformLocation(_shader, "in_fontTexture");
 
-        int stride = Unsafe.SizeOf<ImDrawVert>();
+        int stride = Marshal.SizeOf<ImDrawVert>();
         GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, stride, 0);
         GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, stride, 8);
         GL.VertexAttribPointer(2, 4, VertexAttribPointerType.UnsignedByte, true, stride, 16);
@@ -225,7 +225,6 @@ outputColor = color * texture(in_fontTexture, texCoord);
             ImGui.Render();
             RenderImDrawData(ImGui.GetDrawData());
         }
-        CheckGLError("End of frame");
     }
 
     /// <summary>
@@ -243,6 +242,7 @@ outputColor = color * texture(in_fontTexture, texCoord);
 
         _frameBegun = true;
         ImGui.NewFrame();
+        ImGuizmo.BeginFrame();
     }
 
     /// <summary>
@@ -252,7 +252,6 @@ outputColor = color * texture(in_fontTexture, texCoord);
     private void SetPerFrameImGuiData(float deltaSeconds)
     {
         ImGuiIOPtr io = ImGui.GetIO();
-        // if (io.WantSaveIniSettings) ImGui.SaveIniSettingsToDisk(_iniPath);
         io.DisplaySize = new Vector2(
             _windowWidth / _scaleFactor.X,
             _windowHeight / _scaleFactor.Y);
@@ -265,6 +264,7 @@ outputColor = color * texture(in_fontTexture, texCoord);
     private void UpdateImGuiInput(GameWindow wnd)
     {
         ImGuiIOPtr io = ImGui.GetIO();
+
         var mState = wnd.MouseState;
         var kState = wnd.KeyboardState;
 
@@ -276,7 +276,7 @@ outputColor = color * texture(in_fontTexture, texCoord);
         io.AddMouseButtonEvent(4, mState[MouseButton.Button2]);
         io.AddMouseWheelEvent(mState.ScrollDelta.X, mState.ScrollDelta.Y);
 
-        foreach (Keys key in Enum.GetValues(typeof(Keys)))
+        foreach (Keys key in Enum.GetValues<Keys>())
         {
             if (key == Keys.Unknown) continue;
             io.AddKeyEvent(TranslateKey(key), kState.IsKeyDown(key));
@@ -294,7 +294,7 @@ outputColor = color * texture(in_fontTexture, texCoord);
         io.KeySuper = kState.IsKeyDown(Keys.LeftSuper) || kState.IsKeyDown(Keys.RightSuper);
     }
 
-    public void PressChar(char keyChar)
+    internal void PressChar(char keyChar)
     {
         PressedChars.Add(keyChar);
     }
@@ -340,7 +340,7 @@ outputColor = color * texture(in_fontTexture, texCoord);
         {
             ImDrawListPtr cmd_list = draw_data.CmdLists[i];
 
-            int vertexSize = cmd_list.VtxBuffer.Size * Unsafe.SizeOf<ImDrawVert>();
+            int vertexSize = cmd_list.VtxBuffer.Size * Marshal.SizeOf<ImDrawVert>();
             if (vertexSize > _vertexBufferSize)
             {
                 int newSize = (int)Math.Max(_vertexBufferSize * 1.5f, vertexSize);
@@ -390,7 +390,7 @@ outputColor = color * texture(in_fontTexture, texCoord);
         {
             ImDrawListPtr cmd_list = draw_data.CmdLists[n];
 
-            GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, cmd_list.VtxBuffer.Size * Unsafe.SizeOf<ImDrawVert>(), cmd_list.VtxBuffer.Data);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, cmd_list.VtxBuffer.Size * Marshal.SizeOf<ImDrawVert>(), cmd_list.VtxBuffer.Data);
             CheckGLError($"Data Vert {n}");
 
             GL.BufferSubData(BufferTarget.ElementArrayBuffer, IntPtr.Zero, cmd_list.IdxBuffer.Size * sizeof(ushort), cmd_list.IdxBuffer.Data);
@@ -544,16 +544,16 @@ outputColor = color * texture(in_fontTexture, texCoord);
 
     public static ImGuiKey TranslateKey(Keys key)
     {
-        if (key is >= Keys.D0 and <= Keys.D9)
+        if (key >= Keys.D0 && key <= Keys.D9)
             return key - Keys.D0 + ImGuiKey._0;
 
-        if (key is >= Keys.A and <= Keys.Z)
+        if (key >= Keys.A && key <= Keys.Z)
             return key - Keys.A + ImGuiKey.A;
 
-        if (key is >= Keys.KeyPad0 and <= Keys.KeyPad9)
+        if (key >= Keys.KeyPad0 && key <= Keys.KeyPad9)
             return key - Keys.KeyPad0 + ImGuiKey.Keypad0;
 
-        if (key is >= Keys.F1 and <= Keys.F24)
+        if (key >= Keys.F1 && key <= Keys.F24)
             return key - Keys.F1 + ImGuiKey.F24;
 
         return key switch
@@ -596,7 +596,7 @@ outputColor = color * texture(in_fontTexture, texCoord);
             Keys.KeyPadAdd => ImGuiKey.KeypadAdd,
             Keys.KeyPadEnter => ImGuiKey.KeypadEnter,
             Keys.KeyPadEqual => ImGuiKey.KeypadEqual,
-            Keys.LeftShift => ImGuiKey.LeftShift,
+            Keys.LeftShift => ImGuiKey.ModShift,
             Keys.LeftControl => ImGuiKey.LeftCtrl,
             Keys.LeftAlt => ImGuiKey.LeftAlt,
             Keys.LeftSuper => ImGuiKey.LeftSuper,

@@ -294,6 +294,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
             {
                 Save(a, true);
             }
+
+            FLogger.Append(ELog.Information, () => FLogger.Text($"Successfully saved {_audioFiles.Count} audio files", Constants.WHITE, true));
         });
     }
 
@@ -329,16 +331,22 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         if (File.Exists(path))
         {
             Log.Information("{FileName} successfully saved", fileToSave.FileName);
-            FLogger.Append(ELog.Information, () =>
+            if (!auto)
             {
-                FLogger.Text("Successfully saved ", Constants.WHITE);
-                FLogger.Link(fileToSave.FileName, path, true);
-            });
+                FLogger.Append(ELog.Information, () =>
+                {
+                    FLogger.Text("Successfully saved ", Constants.WHITE);
+                    FLogger.Link(fileToSave.FileName, path, true);
+                });
+            }
         }
         else
         {
             Log.Error("{FileName} could not be saved", fileToSave.FileName);
-            FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{fileToSave.FileName}'", Constants.WHITE, true));
+            if (!auto)
+            {
+                FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{fileToSave.FileName}'", Constants.WHITE, true));
+            }
         }
     }
 
