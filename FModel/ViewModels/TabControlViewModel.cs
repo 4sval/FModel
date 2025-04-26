@@ -79,6 +79,7 @@ public class TabImage : ViewModel
         }
 
         _bmp = bitmap;
+        ExportName += "." + (NoAlpha ? "jpg" : "png");
         using var data = _bmp.Encode(NoAlpha ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
         using var stream = new MemoryStream(ImageBuffer = data.ToArray(), false);
         var image = new BitmapImage();
