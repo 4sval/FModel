@@ -4,7 +4,7 @@ FModel - An Unreal Engine Archives Explorer in C#
 [![CI Status](https://img.shields.io/github/actions/workflow/status/4sval/FModel/qa.yml?label=CI)](https://github.com/4sval/FModel/actions)
 [![Latest](https://img.shields.io/github/v/release/4sval/FModel?color=yellow)](https://fmodel.app/download)
 [![Donate](https://img.shields.io/badge/sponsor-DB61A2?logo=GitHub-Sponsors&logoColor=white)](https://fmodel.app/donate)
-[![Discord](https://discordapp.com/api/guilds/637265123144237061/widget.png?style=shield)](https://fmodel.app/discord)
+[![Discord](https://discord.com/api/guilds/637265123144237061/widget.png?style=shield)](https://fmodel.app/discord)
 ***
 
 ### Description:

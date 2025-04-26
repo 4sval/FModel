@@ -263,7 +263,11 @@ public class ApplicationViewModel : ViewModel
     public static async ValueTask InitDetex()
     {
         var detexPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", DetexHelper.DLL_NAME);
-        if (!File.Exists(detexPath))
+        if (File.Exists(DetexHelper.DLL_NAME))
+        {
+            File.Move(DetexHelper.DLL_NAME, detexPath, true);
+        }
+        else if (!File.Exists(detexPath))
         {
             await DetexHelper.LoadDllAsync(detexPath);
         }

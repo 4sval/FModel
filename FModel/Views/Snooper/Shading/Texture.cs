@@ -1,6 +1,7 @@
 using System;
 using System.Numerics;
 using System.Windows;
+using CUE4Parse_Conversion.Textures;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Core.Misc;
@@ -90,15 +91,16 @@ public class Texture : IDisposable
         Height = bitmap.Height;
         Bind(TextureUnit.Texture0);
 
-        var internalFormat = Format switch
+        var internalFormat = bitmap.ColorType switch
         {
-            EPixelFormat.PF_G8 => PixelInternalFormat.R8,
+            SKColorType.Gray8 => PixelInternalFormat.R8,
             _ => texture2D.SRGB ? PixelInternalFormat.Srgb : PixelInternalFormat.Rgb
         };
 
-        var pixelFormat = Format switch
+        var pixelFormat = bitmap.ColorType switch
         {
-            EPixelFormat.PF_G8 => PixelFormat.Red,
+            SKColorType.Gray8 => PixelFormat.Red,
+            SKColorType.Bgra8888 => PixelFormat.Bgra,
             _ => PixelFormat.Rgba
         };
 
@@ -109,6 +111,7 @@ public class Texture : IDisposable
         GL.TexParameter(_target, TextureParameterName.TextureMaxLevel, 8);
 
         GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+        bitmap.Dispose();
     }
 
     public Texture(FLinearColor color) : this(TextureType.Normal)
