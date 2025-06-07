@@ -1,0 +1,74 @@
+<UserControl x:Class="FModel.Views.Resources.Controls.JsonDiffViewer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
+             MinHeight="200" MinWidth="400"
+             Background="{DynamicResource Brush.Layer1Background}">
+    <Border Margin="0"
+            Padding="0"
+            BorderBrush="{DynamicResource Brush.Layer3BorderBrush}"
+            BorderThickness="1"
+            CornerRadius="6"
+            Background="{DynamicResource Brush.Layer1Background}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="6" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                    Background="{DynamicResource Brush.Layer2Background}"
+                    Padding="10,8" CornerRadius="6,6,0,0"
+                    BorderThickness="0 0 0 1"
+                    BorderBrush="{DynamicResource Brush.Layer3BorderBrush}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" >
+                        <TextBlock Text="Older"
+                                   Foreground="#ea8566" FontWeight="Bold"
+                                   Margin="8,0,0,0"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding LeftAssetTimestamp, StringFormat=' – {0:yyyy-MM-dd HH:mm}', FallbackValue=''}"
+                                   Foreground="{DynamicResource Brush.Foreground}" Margin="8,0,0,0"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                        <TextBlock Text="Newer"
+                                   Foreground="#b6d786" FontWeight="Bold"
+                                   Margin="8,0,0,0"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding RightAssetTimestamp, StringFormat=' – {0:yyyy-MM-dd HH:mm}', FallbackValue=''}"
+                                   Foreground="{DynamicResource Brush.Foreground}" Margin="8,0,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <avalonedit:TextEditor x:Name="AvalonLeft"
+                                   Grid.Row="1" Grid.Column="0"
+                                   IsReadOnly="True"
+                                   FontSize="11"
+                                   Padding="0"
+                                   ShowLineNumbers="True"
+                                   BorderThickness="0"
+                                   Background="{DynamicResource Brush.Layer2Background}"
+                                   Foreground="{DynamicResource Brush.Foreground}"/>
+            <Border Grid.Row="1" Grid.Column="1"
+                    Background="{DynamicResource Brush.Layer3BackgroundBrush}"
+                    Width="6" Margin="0,0,0,0"/>
+            <avalonedit:TextEditor x:Name="AvalonRight"
+                                   Grid.Row="1" Grid.Column="2"
+                                   IsReadOnly="True"
+                                   FontSize="11"
+                                   Padding="4"
+                                   ShowLineNumbers="True"
+                                   BorderThickness="0"
+                                   Background="{DynamicResource Brush.Layer2Background}"
+                                   Foreground="{DynamicResource Brush.Foreground}"/>
+        </Grid>
+    </Border>
+</UserControl>

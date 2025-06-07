@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Windows;
 using FModel.Services;
 using FModel.ViewModels;
@@ -22,7 +22,7 @@ public partial class AesManager
 
     private async void OnRefreshAes(object sender, RoutedEventArgs e)
     {
-        await _applicationView.CUE4Parse.RefreshAes();
+        await _applicationView.CUE4Parse.RefreshAesForAllAsync();
         await _applicationView.AesManager.InitAes();
         _applicationView.AesManager.HasChange = true; // yes even if nothing actually changed
     }

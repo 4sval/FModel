@@ -248,6 +248,13 @@ public class TabItem : ViewModel
         }
     }
 
+    private object _diffContent;
+    public object DiffContent
+    {
+        get => _diffContent;
+        set => SetProperty(ref _diffContent, value);
+    }
+
     public string Header => $"{Entry.Name}{(string.IsNullOrEmpty(TitleExtra) ? "" : $" ({TitleExtra})")}";
 
     public bool HasImage => SelectedImage != null;
@@ -471,6 +478,17 @@ public class TabControlViewModel : ViewModel
         {
             _tabItems.Add(new TabItem(entry, parentExportType ?? string.Empty));
             SelectedTab = _tabItems.Last();
+        });
+    }
+
+    public void AddTab(TabItem tab)
+    {
+        if (!CanAddTabs)
+            return;
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            _tabItems.Add(tab);
+            SelectedTab = tab;
         });
     }
 

@@ -56,7 +56,7 @@ public class ApplicationViewModel : ViewModel
 
     public LoadingModesViewModel LoadingModes { get; }
     public CustomDirectoriesViewModel CustomDirectories { get; }
-    public CUE4ParseViewModel CUE4Parse { get; }
+    public CUE4Parse.CUE4ParseViewModel CUE4Parse { get; }
     public SettingsViewModel SettingsView { get; }
     public AesManagerViewModel AesManager { get; }
     public AudioPlayerViewModel AudioPlayer { get; }
@@ -81,7 +81,13 @@ public class ApplicationViewModel : ViewModel
             Environment.Exit(0);
         }
 
-        CUE4Parse = new CUE4ParseViewModel();
+        if (!string.IsNullOrEmpty(UserSettings.Default.DiffGameDirectory) &&
+            UserSettings.Default.PerDirectory.TryGetValue(UserSettings.Default.DiffGameDirectory, out var diffDir))
+            UserSettings.Default.DiffDir = diffDir;
+        else
+            UserSettings.Default.DiffDir = null;
+
+        CUE4Parse = new CUE4Parse.CUE4ParseViewModel();
         CUE4Parse.Provider.VfsRegistered += (sender, count) =>
         {
             if (sender is not IAesVfsReader reader) return;

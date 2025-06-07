@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Linq;
 using System.Threading;
 using CUE4Parse.FileProvider.Objects;
@@ -82,6 +82,14 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                         Thread.Yield();
                         cancellationToken.ThrowIfCancellationRequested();
                         contextViewModel.CUE4Parse.Extract(cancellationToken, entry, false, EBulkType.Animations | updateUi);
+                    }
+                    break;
+                case "Assets_View_Diff":
+                    var entry1 = entries.FirstOrDefault();
+                    if (entry1 != null)
+                    {
+                        // No need for cancellation; it's fast/UI only
+                        contextViewModel.CUE4Parse.ShowAssetDiff(entry1.Path);
                     }
                     break;
             }

@@ -53,11 +53,11 @@ public partial class MainWindow
         switch (UserSettings.Default.AesReload)
         {
             case EAesReload.Always:
-                await _applicationView.CUE4Parse.RefreshAes();
+                await _applicationView.CUE4Parse.RefreshAesForAllAsync();
                 break;
             case EAesReload.OncePerDay when UserSettings.Default.CurrentDir.LastAesReload != DateTime.Today:
                 UserSettings.Default.CurrentDir.LastAesReload = DateTime.Today;
-                await _applicationView.CUE4Parse.RefreshAes();
+                await _applicationView.CUE4Parse.RefreshAesForAllAsync();
                 break;
         }
 

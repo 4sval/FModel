@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using DiscordRPC;
 using FModel.Extensions;
 using FModel.Settings;
-using FModel.ViewModels;
 using Serilog;
+using CUE4ParseViewModel = FModel.ViewModels.CUE4Parse.CUE4ParseViewModel;
 
 namespace FModel.Services
 {

@@ -40,6 +40,13 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedUeGame, value);
     }
 
+    private EGame _selectedDiffUeGame;
+    public EGame SelectedDiffUeGame
+    {
+        get => _selectedDiffUeGame;
+        set => SetProperty(ref _selectedDiffUeGame, value);
+    }
+
     private IList<FCustomVersion> _selectedCustomVersions;
     public IList<FCustomVersion> SelectedCustomVersions
     {
@@ -181,8 +188,10 @@ public class SettingsViewModel : ViewModel
     private string _audioSnapshot;
     private string _modelSnapshot;
     private string _gameSnapshot;
+    private string _diffGameSnapshot;
     private ETexturePlatform _uePlatformSnapshot;
     private EGame _ueGameSnapshot;
+    private EGame _diffUeGameSnapshot;
     private IList<FCustomVersion> _customVersionsSnapshot;
     private IDictionary<string, bool> _optionsSnapshot;
     private IDictionary<string, KeyValuePair<string, string>> _mapStructTypesSnapshot;
@@ -212,8 +221,10 @@ public class SettingsViewModel : ViewModel
         _audioSnapshot = UserSettings.Default.AudioDirectory;
         _modelSnapshot = UserSettings.Default.ModelDirectory;
         _gameSnapshot = UserSettings.Default.GameDirectory;
+        _diffGameSnapshot = UserSettings.Default.DiffGameDirectory;
         _uePlatformSnapshot = UserSettings.Default.CurrentDir.TexturePlatform;
         _ueGameSnapshot = UserSettings.Default.CurrentDir.UeVersion;
+        _diffUeGameSnapshot = UserSettings.Default.DiffDir.UeVersion;
         _customVersionsSnapshot = UserSettings.Default.CurrentDir.Versioning.CustomVersions;
         _optionsSnapshot = UserSettings.Default.CurrentDir.Versioning.Options;
         _mapStructTypesSnapshot = UserSettings.Default.CurrentDir.Versioning.MapStructTypes;
@@ -238,6 +249,7 @@ public class SettingsViewModel : ViewModel
 
         SelectedUePlatform = _uePlatformSnapshot;
         SelectedUeGame = _ueGameSnapshot;
+        SelectedDiffUeGame = _diffUeGameSnapshot;
         SelectedCustomVersions = _customVersionsSnapshot;
         SelectedOptions = _optionsSnapshot;
         SelectedMapStructTypes = _mapStructTypesSnapshot;
@@ -278,7 +290,7 @@ public class SettingsViewModel : ViewModel
         if (_mappingsUpdate)
             whatShouldIDo.Add(SettingsOut.ReloadMappings);
 
-        if (_ueGameSnapshot != SelectedUeGame || _customVersionsSnapshot != SelectedCustomVersions ||
+        if (_ueGameSnapshot != SelectedUeGame || _diffUeGameSnapshot != SelectedDiffUeGame || _customVersionsSnapshot != SelectedCustomVersions ||
             _uePlatformSnapshot != SelectedUePlatform || _optionsSnapshot != SelectedOptions || // combobox
             _mapStructTypesSnapshot != SelectedMapStructTypes ||
             _outputSnapshot != UserSettings.Default.OutputDirectory || // textbox
@@ -287,8 +299,18 @@ public class SettingsViewModel : ViewModel
             _textureSnapshot != UserSettings.Default.TextureDirectory || // textbox
             _audioSnapshot != UserSettings.Default.AudioDirectory || // textbox
             _modelSnapshot != UserSettings.Default.ModelDirectory || // textbox
-            _gameSnapshot != UserSettings.Default.GameDirectory) // textbox
+            _gameSnapshot != UserSettings.Default.GameDirectory ||
+            _diffGameSnapshot != UserSettings.Default.DiffGameDirectory) // textbox
             restart = true;
+
+        if (UserSettings.Default.DiffDir != null)
+        {
+            UserSettings.Default.DiffDir.UeVersion = SelectedDiffUeGame;
+            UserSettings.Default.DiffDir.TexturePlatform = SelectedUePlatform;
+            UserSettings.Default.DiffDir.Versioning.CustomVersions = SelectedCustomVersions;
+            UserSettings.Default.DiffDir.Versioning.Options = SelectedOptions;
+            UserSettings.Default.DiffDir.Versioning.MapStructTypes = SelectedMapStructTypes;
+        }
 
         UserSettings.Default.CurrentDir.UeVersion = SelectedUeGame;
         UserSettings.Default.CurrentDir.TexturePlatform = SelectedUePlatform;

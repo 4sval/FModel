@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,10 +21,10 @@ public class AesManagerViewModel : ViewModel
 
     private AesResponse _keysFromSettings;
     private HashSet<FGuid> _uniqueGuids;
-    private readonly CUE4ParseViewModel _cue4Parse;
+    private readonly CUE4Parse.CUE4ParseViewModel _cue4Parse;
     private readonly FileItem _mainKey = new("Main Static Key", 0) { Guid = Constants.ZERO_GUID }; // just so main key gets refreshed in the ui
 
-    public AesManagerViewModel(CUE4ParseViewModel cue4Parse)
+    public AesManagerViewModel(CUE4Parse.CUE4ParseViewModel cue4Parse)
     {
         _cue4Parse = cue4Parse;
         HasChange = false;

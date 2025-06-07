@@ -3,8 +3,8 @@ using System.IO;
 using System.Windows;
 using CUE4Parse.UE4.Versions;
 using FModel.Settings;
-using FModel.ViewModels;
 using SkiaSharp;
+using CUE4ParseViewModel = FModel.ViewModels.CUE4Parse.CUE4ParseViewModel;
 
 namespace FModel.Creator;
 

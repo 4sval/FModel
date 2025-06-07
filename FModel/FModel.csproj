@@ -153,6 +153,7 @@
     <PackageReference Include="Autoupdater.NET.Official" Version="1.9.2" />
     <PackageReference Include="AvalonEdit" Version="6.3.0.90" />
     <PackageReference Include="CSCore" Version="1.2.1.2" />
+    <PackageReference Include="DiffPlex" Version="1.8.0" />
     <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
     <PackageReference Include="EpicManifestParser" Version="2.4.1" />
     <PackageReference Include="EpicManifestParser.ZlibngDotNetDecompressor" Version="1.0.1" />

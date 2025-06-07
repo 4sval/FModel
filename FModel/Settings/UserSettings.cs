@@ -37,6 +37,7 @@ namespace FModel.Settings
         {
             if (!_bSave || Default == null) return;
             Default.PerDirectory[Default.CurrentDir.GameDirectory] = Default.CurrentDir;
+            Default.PerDirectory[Default.DiffDir.GameDirectory] = Default.DiffDir;
             File.WriteAllText(FilePath, JsonConvert.SerializeObject(Default, Formatting.Indented));
         }
 
@@ -128,6 +129,13 @@ namespace FModel.Settings
         {
             get => _gameDirectory;
             set => SetProperty(ref _gameDirectory, value);
+        }
+
+        private string _diffGameDirectory;
+        public string DiffGameDirectory
+        {
+            get => _diffGameDirectory;
+            set => SetProperty(ref _diffGameDirectory, value);
         }
 
         private int _lastOpenedSettingTab;
@@ -272,6 +280,9 @@ namespace FModel.Settings
 
         [JsonIgnore]
         public DirectorySettings CurrentDir { get; set; }
+        [JsonIgnore]
+        public DirectorySettings DiffDir { get; set; }
+
 
         /// <summary>
         /// TO DELETEEEEEEEEEEEEE

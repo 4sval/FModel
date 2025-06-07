@@ -44,8 +44,7 @@ public partial class SettingsView
             {
                 case SettingsOut.ReloadLocres:
                     _applicationView.CUE4Parse.LocalizedResourcesCount = 0;
-                    _applicationView.CUE4Parse.LocalResourcesDone = false;
-                    _applicationView.CUE4Parse.HotfixedResourcesDone = false;
+                    _applicationView.CUE4Parse.ResetLocalizationState();
                     await _applicationView.CUE4Parse.LoadLocalizedResources();
                     break;
                 case SettingsOut.ReloadMappings:
@@ -74,6 +73,11 @@ public partial class SettingsView
     private void OnBrowseDirectories(object sender, RoutedEventArgs e)
     {
         if (TryBrowse(out var path)) UserSettings.Default.GameDirectory = path;
+    }
+
+    private void OnBrowseDiffDirectory(object sender, RoutedEventArgs e)
+    {
+        if (TryBrowse(out var path)) UserSettings.Default.DiffGameDirectory = path;
     }
 
     private void OnBrowseRawData(object sender, RoutedEventArgs e)
