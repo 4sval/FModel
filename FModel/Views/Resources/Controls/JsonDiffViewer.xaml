@@ -2,7 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
-             MinHeight="200" MinWidth="400"
+             MinHeight="200"
+             MinWidth="400"
              Background="{DynamicResource Brush.Layer1Background}">
     <Border Margin="0"
             Padding="0"
@@ -12,7 +13,7 @@
             Background="{DynamicResource Brush.Layer1Background}">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -20,9 +21,12 @@
                 <ColumnDefinition Width="6" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+            <Border Grid.Row="0"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="3"
                     Background="{DynamicResource Brush.Layer2Background}"
-                    Padding="10,8" CornerRadius="6,6,0,0"
+                    Padding="10,8"
+                    CornerRadius="6,6,0,0"
                     BorderThickness="0 0 0 1"
                     BorderBrush="{DynamicResource Brush.Layer3BorderBrush}">
                 <Grid>
@@ -30,45 +34,93 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" >
-                        <TextBlock Text="Older"
-                                   Foreground="#ea8566" FontWeight="Bold"
-                                   Margin="8,0,0,0"
-                                   VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding LeftAssetTimestamp, StringFormat=' – {0:yyyy-MM-dd HH:mm}', FallbackValue=''}"
-                                   Foreground="{DynamicResource Brush.Foreground}" Margin="8,0,0,0"/>
-                    </StackPanel>
-                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
-                        <TextBlock Text="Newer"
-                                   Foreground="#b6d786" FontWeight="Bold"
-                                   Margin="8,0,0,0"
-                                   VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding RightAssetTimestamp, StringFormat=' – {0:yyyy-MM-dd HH:mm}', FallbackValue=''}"
-                                   Foreground="{DynamicResource Brush.Foreground}" Margin="8,0,0,0"/>
-                    </StackPanel>
+                    <Border Grid.Column="0"
+                            Background="#22ea8566"
+                            CornerRadius="4"
+                            Padding="8,4"
+                            Margin="4,0"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Center">
+                        <Grid>
+                            <Grid HorizontalAlignment="Center"
+                                  VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Path Grid.Column="0"
+                                      Data="M6 2a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6H6zm7 1.5L18.5 9H13V3.5zM8 14h8v2H8v-2z"
+                                      Fill="#ea8566"
+                                      Width="16"
+                                      Height="16"
+                                      VerticalAlignment="Center"
+                                      Stretch="Uniform" />
+                                <TextBlock Grid.Column="1"
+                                           Text="Older"
+                                           Foreground="#ea8566"
+                                           FontWeight="Bold"
+                                           Margin="6,0,0,0"
+                                           VerticalAlignment="Center" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+                    <Border Grid.Column="1"
+                            Background="#22b6d786"
+                            CornerRadius="4"
+                            Padding="8,4"
+                            Margin="4,0"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Center">
+                        <Grid>
+                            <Grid HorizontalAlignment="Center"
+                                  VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0"
+                                           Text="Newer"
+                                           Foreground="#b6d786"
+                                           FontWeight="Bold"
+                                           Margin="0,0,6,0"
+                                           VerticalAlignment="Center" />
+                                <Path Grid.Column="1"
+                                      Data="M6 2a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6H6zm7 1.5L18.5 9H13V3.5zM12 12v2H9v2h3v2h2v-2h3v-2h-3v-2h-2z"
+                                      Fill="#b6d786"
+                                      Width="16"
+                                      Height="16"
+                                      VerticalAlignment="Center"
+                                      Stretch="Uniform" />
+                            </Grid>
+                        </Grid>
+                    </Border>
                 </Grid>
             </Border>
             <avalonedit:TextEditor x:Name="AvalonLeft"
-                                   Grid.Row="1" Grid.Column="0"
+                                   Grid.Row="1"
+                                   Grid.Column="0"
                                    IsReadOnly="True"
                                    FontSize="11"
                                    Padding="0"
                                    ShowLineNumbers="True"
                                    BorderThickness="0"
                                    Background="{DynamicResource Brush.Layer2Background}"
-                                   Foreground="{DynamicResource Brush.Foreground}"/>
-            <Border Grid.Row="1" Grid.Column="1"
+                                   Foreground="{DynamicResource Brush.Foreground}" />
+            <Border Grid.Row="1"
+                    Grid.Column="1"
                     Background="{DynamicResource Brush.Layer3BackgroundBrush}"
-                    Width="6" Margin="0,0,0,0"/>
+                    Width="6"
+                    Margin="0,0,0,0" />
             <avalonedit:TextEditor x:Name="AvalonRight"
-                                   Grid.Row="1" Grid.Column="2"
+                                   Grid.Row="1"
+                                   Grid.Column="2"
                                    IsReadOnly="True"
                                    FontSize="11"
                                    Padding="4"
                                    ShowLineNumbers="True"
                                    BorderThickness="0"
                                    Background="{DynamicResource Brush.Layer2Background}"
-                                   Foreground="{DynamicResource Brush.Foreground}"/>
+                                   Foreground="{DynamicResource Brush.Foreground}" />
         </Grid>
     </Border>
 </UserControl>
