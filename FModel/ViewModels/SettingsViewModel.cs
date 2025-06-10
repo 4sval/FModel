@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Input;
+using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
 using CUE4Parse_Conversion.UEFormat.Enums;
-using CUE4Parse.UE4.Assets.Exports.Material;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -80,6 +81,20 @@ public class SettingsViewModel : ViewModel
     {
         get => _mappingEndpoint;
         set => SetProperty(ref _mappingEndpoint, value);
+    }
+
+    private EndpointSettings _diffAesEndpoint;
+    public EndpointSettings DiffAesEndpoint
+    {
+        get => _diffAesEndpoint;
+        set => SetProperty(ref _diffAesEndpoint, value);
+    }
+
+    private EndpointSettings _diffMappingEndpoint;
+    public EndpointSettings DiffMappingEndpoint
+    {
+        get => _diffMappingEndpoint;
+        set => SetProperty(ref _diffMappingEndpoint, value);
     }
 
     private ELanguage _selectedAssetLanguage;
@@ -168,6 +183,7 @@ public class SettingsViewModel : ViewModel
     public bool CompressionSettingsEnabled => SelectedMeshExportFormat == EMeshFormat.UEFormat;
 
     public ReadOnlyObservableCollection<EGame> UeGames { get; private set; }
+    public ReadOnlyObservableCollection<EGame> DiffUeGames { get; private set; }
     public ReadOnlyObservableCollection<ELanguage> AssetLanguages { get; private set; }
     public ReadOnlyObservableCollection<EAesReload> AesReloads { get; private set; }
     public ReadOnlyObservableCollection<EDiscordRpc> DiscordRpcs { get; private set; }
@@ -205,12 +221,7 @@ public class SettingsViewModel : ViewModel
     private EMaterialFormat _materialExportFormatSnapshot;
     private ETextureFormat _textureExportFormatSnapshot;
 
-    private bool _mappingsUpdate = false;
-
-    public SettingsViewModel()
-    {
-
-    }
+    private bool _mappingsUpdate;
 
     public void Initialize()
     {
@@ -221,13 +232,14 @@ public class SettingsViewModel : ViewModel
         _audioSnapshot = UserSettings.Default.AudioDirectory;
         _modelSnapshot = UserSettings.Default.ModelDirectory;
         _gameSnapshot = UserSettings.Default.GameDirectory;
-        _diffGameSnapshot = UserSettings.Default.DiffGameDirectory;
         _uePlatformSnapshot = UserSettings.Default.CurrentDir.TexturePlatform;
         _ueGameSnapshot = UserSettings.Default.CurrentDir.UeVersion;
-        _diffUeGameSnapshot = UserSettings.Default.DiffDir.UeVersion;
         _customVersionsSnapshot = UserSettings.Default.CurrentDir.Versioning.CustomVersions;
         _optionsSnapshot = UserSettings.Default.CurrentDir.Versioning.Options;
         _mapStructTypesSnapshot = UserSettings.Default.CurrentDir.Versioning.MapStructTypes;
+
+        _diffGameSnapshot = UserSettings.Default.DiffGameDirectory;
+        if (UserSettings.Default.DiffDir != null) _diffUeGameSnapshot = UserSettings.Default.DiffDir.UeVersion;
 
         AesEndpoint = UserSettings.Default.CurrentDir.Endpoints[0];
         MappingEndpoint = UserSettings.Default.CurrentDir.Endpoints[1];
@@ -236,6 +248,17 @@ public class SettingsViewModel : ViewModel
             if (!_mappingsUpdate)
                 _mappingsUpdate = args.PropertyName is "Overwrite" or "FilePath";
         };
+
+        if (UserSettings.Default.DiffDir != null)
+        {
+            DiffAesEndpoint = UserSettings.Default.DiffDir.Endpoints[0];
+            DiffMappingEndpoint = UserSettings.Default.DiffDir.Endpoints[1];
+            DiffMappingEndpoint.PropertyChanged += (_, args) =>
+            {
+                if (!_mappingsUpdate)
+                    _mappingsUpdate = args.PropertyName is "Overwrite" or "FilePath";
+            };
+        }
 
         _assetLanguageSnapshot = UserSettings.Default.AssetLanguage;
         _compressedAudioSnapshot = UserSettings.Default.CompressedAudioMode;
@@ -265,7 +288,9 @@ public class SettingsViewModel : ViewModel
         SelectedAesReload = UserSettings.Default.AesReload;
         SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
 
-        UeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(EnumerateUeGames()));
+        var ueGames = new ObservableCollection<EGame>(EnumerateUeGames());
+        UeGames = new ReadOnlyObservableCollection<EGame>(ueGames);
+        DiffUeGames = new ReadOnlyObservableCollection<EGame>(ueGames); // Can't reuse UeGames because FilterableComboBox would share the same ItemsSource
         AssetLanguages = new ReadOnlyObservableCollection<ELanguage>(new ObservableCollection<ELanguage>(EnumerateAssetLanguages()));
         AesReloads = new ReadOnlyObservableCollection<EAesReload>(new ObservableCollection<EAesReload>(EnumerateAesReloads()));
         DiscordRpcs = new ReadOnlyObservableCollection<EDiscordRpc>(new ObservableCollection<EDiscordRpc>(EnumerateDiscordRpcs()));
@@ -283,7 +308,7 @@ public class SettingsViewModel : ViewModel
     public bool Save(out List<SettingsOut> whatShouldIDo)
     {
         var restart = false;
-        whatShouldIDo = new List<SettingsOut>();
+        whatShouldIDo = [];
 
         if (_assetLanguageSnapshot != SelectedAssetLanguage)
             whatShouldIDo.Add(SettingsOut.ReloadLocres);

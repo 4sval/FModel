@@ -37,7 +37,8 @@ namespace FModel.Settings
         {
             if (!_bSave || Default == null) return;
             Default.PerDirectory[Default.CurrentDir.GameDirectory] = Default.CurrentDir;
-            Default.PerDirectory[Default.DiffDir.GameDirectory] = Default.DiffDir;
+            if (Default.DiffDir != null)
+                Default.PerDirectory[Default.DiffDir.GameDirectory] = Default.DiffDir;
             File.WriteAllText(FilePath, JsonConvert.SerializeObject(Default, Formatting.Indented));
         }
 
@@ -50,9 +51,9 @@ namespace FModel.Settings
             }
         }
 
-        public static bool IsEndpointValid(EEndpointType type, out EndpointSettings endpoint)
+        public static bool IsEndpointValid(DirectorySettings dir, EEndpointType type, out EndpointSettings endpoint)
         {
-            endpoint = Default.CurrentDir.Endpoints[(int) type];
+            endpoint = dir.Endpoints[(int) type];
             return endpoint.Overwrite || endpoint.IsValid;
         }
 

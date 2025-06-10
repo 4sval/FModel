@@ -48,7 +48,7 @@ public partial class SettingsView
                     await _applicationView.CUE4Parse.LoadLocalizedResources();
                     break;
                 case SettingsOut.ReloadMappings:
-                    await _applicationView.CUE4Parse.InitMappings();
+                    await _applicationView.CUE4Parse.InitAllMappings();
                     break;
             }
         }
@@ -118,6 +118,21 @@ public partial class SettingsView
             return;
 
         _applicationView.SettingsView.MappingEndpoint.FilePath = openFileDialog.FileName;
+    }
+
+    private void OnBrowseDiffMappings(object sender, RoutedEventArgs e)
+    {
+        var openFileDialog = new OpenFileDialog
+        {
+            Title = "Select a compare mapping file",
+            InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, ".data"),
+            Filter = "USMAP Files (*.usmap)|*.usmap|All Files (*.*)|*.*"
+        };
+
+        if (!openFileDialog.ShowDialog().GetValueOrDefault())
+            return;
+
+        _applicationView.SettingsView.DiffMappingEndpoint.FilePath = openFileDialog.FileName;
     }
 
     private bool TryBrowse(out string path)

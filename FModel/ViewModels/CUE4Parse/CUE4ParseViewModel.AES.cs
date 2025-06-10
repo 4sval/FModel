@@ -18,7 +18,7 @@ public partial class CUE4ParseViewModel
 
     private async Task RefreshAes(DirectorySettings dir)
     {
-        if (!UserSettings.IsEndpointValid(EEndpointType.Aes, out var endpoint))
+        if (!UserSettings.IsEndpointValid(dir, EEndpointType.Aes, out var endpoint))
             return;
 
         await _threadWorkerView.Begin(cancellationToken =>

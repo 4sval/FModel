@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
@@ -14,7 +14,7 @@ public class EndpointToTypeConverter : IValueConverter
     {
         if (parameter is not EEndpointType type) throw new NotImplementedException();
 
-        var isValid = UserSettings.IsEndpointValid(type, out _);
+        var isValid = UserSettings.IsEndpointValid(UserSettings.Default.CurrentDir, type, out _);
         return targetType switch
         {
             not null when targetType == typeof(Visibility) => isValid ? Visibility.Visible : Visibility.Collapsed,

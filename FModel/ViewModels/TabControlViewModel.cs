@@ -485,8 +485,13 @@ public class TabControlViewModel : ViewModel
     {
         if (!CanAddTabs)
             return;
+
         Application.Current.Dispatcher.Invoke(() =>
         {
+            if (_tabItems.Count == 1 && _tabItems[0].Header == "New Tab")
+            {
+                _tabItems.Clear();
+            }
             _tabItems.Add(tab);
             SelectedTab = tab;
         });

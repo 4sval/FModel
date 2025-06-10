@@ -504,6 +504,26 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
+                                            <MenuItem Header="View Diff"
+                                                      IsEnabled="{Binding DiffGameDirectory, Source={x:Static settings:UserSettings.Default}, Converter={x:Static converters:StringNotEmptyToBoolConverter.Instance}}"
+                                                      Command="{Binding DataContext.RightClickMenuCommand}">
+                                                <MenuItem.CommandParameter>
+                                                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                        <Binding Source="Assets_View_Diff" />
+                                                        <Binding Path="SelectedItems" />
+                                                    </MultiBinding>
+                                                </MenuItem.CommandParameter>
+                                                <MenuItem.Icon>
+                                                    <Viewbox Width="16"
+                                                             Height="16">
+                                                        <Canvas Width="24"
+                                                                Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                                  Data="{StaticResource DiffIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
                                             <Separator />
                                             <MenuItem Command="{Binding DataContext.RightClickMenuCommand}">
                                                 <MenuItem.Header>
@@ -583,25 +603,6 @@
                                                     <Viewbox Width="16" Height="16">
                                                         <Canvas Width="24" Height="24">
                                                             <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource AnimationIcon}" />
-                                                        </Canvas>
-                                                    </Viewbox>
-                                                </MenuItem.Icon>
-                                            </MenuItem>
-                                            <MenuItem Header="View Diff"
-                                                      Command="{Binding DataContext.RightClickMenuCommand}">
-                                                <MenuItem.CommandParameter>
-                                                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                        <Binding Source="Assets_View_Diff" />
-                                                        <Binding Path="SelectedItems" />
-                                                    </MultiBinding>
-                                                </MenuItem.CommandParameter>
-                                                <MenuItem.Icon>
-                                                    <Viewbox Width="16"
-                                                             Height="16">
-                                                        <Canvas Width="24"
-                                                                Height="24">
-                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                                  Data="{StaticResource DiffIcon}" />
                                                         </Canvas>
                                                     </Viewbox>
                                                 </MenuItem.Icon>

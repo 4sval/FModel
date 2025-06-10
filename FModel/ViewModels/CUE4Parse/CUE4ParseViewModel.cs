@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
+using CUE4Parse_Conversion.Textures;
 using CUE4Parse.Compression;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Objects;
@@ -49,6 +50,7 @@ using FModel.Services;
 using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
+using FModel.Views.Resources.Controls.Diff;
 using FModel.Views.Snooper;
 using Newtonsoft.Json;
 using OpenTK.Windowing.Common;
@@ -80,7 +82,8 @@ public partial class CUE4ParseViewModel : ViewModel
     {
         get
         {
-            if (_snooper != null) return _snooper;
+            if (_snooper != null)
+                return _snooper;
 
             return Application.Current.Dispatcher.Invoke(delegate
             {
@@ -337,7 +340,8 @@ public partial class CUE4ParseViewModel : ViewModel
         await _threadWorkerView.Begin(cancellationToken =>
         {
             var info = _apiEndpointView.FModelApi.GetNews(cancellationToken, Provider.ProjectName);
-            if (info == null) return;
+            if (info == null)
+                return;
 
             FLogger.Append(ELog.None, () =>
             {
@@ -349,64 +353,64 @@ public partial class CUE4ParseViewModel : ViewModel
         });
     }
 
-    public Task InitMappings(bool force = false)
-    {
-        if (!UserSettings.IsEndpointValid(EEndpointType.Mapping, out var endpoint))
-        {
-            Provider.MappingsContainer = null;
-            return Task.CompletedTask;
-        }
+    //public Task InitMappings(bool force = false)
+    //{
+    //    if (!UserSettings.IsEndpointValid(EEndpointType.Mapping, out var endpoint))
+    //    {
+    //        Provider.MappingsContainer = null;
+    //        return Task.CompletedTask;
+    //    }
 
-        return Task.Run(() =>
-        {
-            var l = ELog.Information;
-            if (endpoint.Overwrite && File.Exists(endpoint.FilePath))
-            {
-                Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(endpoint.FilePath);
-            }
-            else if (endpoint.IsValid)
-            {
-                var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
-                if (endpoint.Path == "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']")
-                    endpoint.Path = "$.[0].['url','fileName']";
-                var mappings = _apiEndpointView.DynamicApi.GetMappings(default, endpoint.Url, endpoint.Path);
-                if (mappings is { Length: > 0 })
-                {
-                    foreach (var mapping in mappings)
-                    {
-                        if (!mapping.IsValid)
-                            continue;
+    //    return Task.Run(() =>
+    //    {
+    //        var l = ELog.Information;
+    //        if (endpoint.Overwrite && File.Exists(endpoint.FilePath))
+    //        {
+    //            Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(endpoint.FilePath);
+    //        }
+    //        else if (endpoint.IsValid)
+    //        {
+    //            var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
+    //            if (endpoint.Path == "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']")
+    //                endpoint.Path = "$.[0].['url','fileName']";
+    //            var mappings = _apiEndpointView.DynamicApi.GetMappings(default, endpoint.Url, endpoint.Path);
+    //            if (mappings is { Length: > 0 })
+    //            {
+    //                foreach (var mapping in mappings)
+    //                {
+    //                    if (!mapping.IsValid)
+    //                        continue;
 
-                        var mappingPath = Path.Combine(mappingsFolder, mapping.FileName);
-                        if (force || !File.Exists(mappingPath))
-                        {
-                            _apiEndpointView.DownloadFile(mapping.Url, mappingPath);
-                        }
+    //                    var mappingPath = Path.Combine(mappingsFolder, mapping.FileName);
+    //                    if (force || !File.Exists(mappingPath))
+    //                    {
+    //                        _apiEndpointView.DownloadFile(mapping.Url, mappingPath);
+    //                    }
 
-                        Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(mappingPath);
-                        break;
-                    }
-                }
+    //                    Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(mappingPath);
+    //                    break;
+    //                }
+    //            }
 
-                if (Provider.MappingsContainer == null)
-                {
-                    var latestUsmaps = new DirectoryInfo(mappingsFolder).GetFiles("*_oo.usmap");
-                    if (latestUsmaps.Length <= 0)
-                        return;
+    //            if (Provider.MappingsContainer == null)
+    //            {
+    //                var latestUsmaps = new DirectoryInfo(mappingsFolder).GetFiles("*_oo.usmap");
+    //                if (latestUsmaps.Length <= 0)
+    //                    return;
 
-                    var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
-                    Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
-                    l = ELog.Warning;
-                }
-            }
+    //                var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
+    //                Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
+    //                l = ELog.Warning;
+    //            }
+    //        }
 
-            if (Provider.MappingsContainer is FileUsmapTypeMappingsProvider m)
-            {
-                Log.Information($"Mappings pulled from '{m.FileName}'");
-                FLogger.Append(l, () => FLogger.Text($"Mappings pulled from '{m.FileName}'", Constants.WHITE, true));
-            }
-        });
-    }
+    //        if (Provider.MappingsContainer is FileUsmapTypeMappingsProvider m)
+    //        {
+    //            Log.Information($"Mappings pulled from '{m.FileName}'");
+    //            FLogger.Append(l, () => FLogger.Text($"Mappings pulled from '{m.FileName}'", Constants.WHITE, true));
+    //        }
+    //    });
+    //}
 
     public Task VerifyConsoleVariables()
     {
@@ -441,10 +445,12 @@ public partial class CUE4ParseViewModel : ViewModel
         {
             var inst = new List<InstructionToken>();
             IoStoreOnDemand.FindPropertyInstructions("Endpoint", "TocPath", inst);
-            if (inst.Count <= 0) return;
+            if (inst.Count <= 0)
+                return;
 
             var ioStoreOnDemandPath = Path.Combine(UserSettings.Default.GameDirectory, "..\\..\\..\\Cloud", inst[0].Value.SubstringAfterLast("/").SubstringBefore("\""));
-            if (!File.Exists(ioStoreOnDemandPath)) return;
+            if (!File.Exists(ioStoreOnDemandPath))
+                return;
 
             await _apiEndpointView.EpicApi.VerifyAuth(default);
             await Provider.RegisterVfs(new IoChunkToc(ioStoreOnDemandPath), new IoStoreOnDemandOptions
@@ -544,7 +550,8 @@ public partial class CUE4ParseViewModel : ViewModel
             }
         }
 
-        foreach (var f in folder.Folders) BulkFolder(cancellationToken, f, action);
+        foreach (var f in folder.Folders)
+            BulkFolder(cancellationToken, f, action);
     }
 
     public void ExportFolder(CancellationToken cancellationToken, TreeItem folder)
@@ -555,7 +562,8 @@ public partial class CUE4ParseViewModel : ViewModel
             ExportData(entry, false);
         });
 
-        foreach (var f in folder.Folders) ExportFolder(cancellationToken, f);
+        foreach (var f in folder.Folders)
+            ExportFolder(cancellationToken, f);
     }
 
     public void ExtractFolder(CancellationToken cancellationToken, TreeItem folder)
@@ -577,8 +585,10 @@ public partial class CUE4ParseViewModel : ViewModel
     {
         Log.Information("User DOUBLE-CLICKED to extract '{FullPath}'", entry.Path);
 
-        if (addNewTab && TabControl.CanAddTabs) TabControl.AddTab(entry);
-        else TabControl.SelectedTab.SoftReset(entry);
+        if (addNewTab && TabControl.CanAddTabs)
+            TabControl.AddTab(entry);
+        else
+            TabControl.SelectedTab.SoftReset(entry);
         TabControl.SelectedTab.DiffContent = null;
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(entry.Extension);
 
@@ -589,24 +599,25 @@ public partial class CUE4ParseViewModel : ViewModel
         {
             case "uasset":
             case "umap":
-            {
-                var result = Provider.GetLoadPackageResult(entry);
-                TabControl.SelectedTab.TitleExtra = result.TabTitleExtra;
-
-                if (saveProperties || updateUi)
                 {
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(saveProperties), Formatting.Indented), saveProperties, updateUi);
-                    if (saveProperties) break; // do not search for viewable exports if we are dealing with jsons
-                }
+                    var result = Provider.GetLoadPackageResult(entry);
+                    TabControl.SelectedTab.TitleExtra = result.TabTitleExtra;
 
-                for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
-                {
-                    if (CheckExport(cancellationToken, result.Package, i, bulk))
-                        break;
-                }
+                    if (saveProperties || updateUi)
+                    {
+                        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(saveProperties), Formatting.Indented), saveProperties, updateUi);
+                        if (saveProperties)
+                            break; // do not search for viewable exports if we are dealing with jsons
+                    }
 
-                break;
-            }
+                    for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
+                    {
+                        if (CheckExport(cancellationToken, result.Package, i, bulk))
+                            break;
+                    }
+
+                    break;
+                }
             case "upluginmanifest":
             case "uproject":
             case "manifest":
@@ -639,105 +650,105 @@ public partial class CUE4ParseViewModel : ViewModel
             case "js":
             case "po":
             case "h":
-            {
-                var data = Provider.SaveAsset(entry);
-                using var stream = new MemoryStream(data) { Position = 0 };
-                using var reader = new StreamReader(stream);
+                {
+                    var data = Provider.SaveAsset(entry);
+                    using var stream = new MemoryStream(data) { Position = 0 };
+                    using var reader = new StreamReader(stream);
 
-                TabControl.SelectedTab.SetDocumentText(reader.ReadToEnd(), saveProperties, updateUi);
+                    TabControl.SelectedTab.SetDocumentText(reader.ReadToEnd(), saveProperties, updateUi);
 
-                break;
-            }
+                    break;
+                }
             case "locmeta":
-            {
-                var archive = entry.CreateReader();
-                var metadata = new FTextLocalizationMetaDataResource(archive);
-                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(metadata, Formatting.Indented), saveProperties, updateUi);
+                {
+                    var archive = entry.CreateReader();
+                    var metadata = new FTextLocalizationMetaDataResource(archive);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(metadata, Formatting.Indented), saveProperties, updateUi);
 
-                break;
-            }
+                    break;
+                }
             case "locres":
-            {
-                var archive = entry.CreateReader();
-                var locres = new FTextLocalizationResource(archive);
-                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(locres, Formatting.Indented), saveProperties, updateUi);
+                {
+                    var archive = entry.CreateReader();
+                    var locres = new FTextLocalizationResource(archive);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(locres, Formatting.Indented), saveProperties, updateUi);
 
-                break;
-            }
+                    break;
+                }
             case "bin" when entry.Name.Contains("AssetRegistry", StringComparison.OrdinalIgnoreCase):
-            {
-                var archive = entry.CreateReader();
-                var registry = new FAssetRegistryState(archive);
-                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), saveProperties, updateUi);
+                {
+                    var archive = entry.CreateReader();
+                    var registry = new FAssetRegistryState(archive);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), saveProperties, updateUi);
 
-                break;
-            }
+                    break;
+                }
             case "bin" when entry.Name.Contains("GlobalShaderCache", StringComparison.OrdinalIgnoreCase):
-            {
-                var archive = entry.CreateReader();
-                var registry = new FGlobalShaderCache(archive);
-                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), saveProperties, updateUi);
+                {
+                    var archive = entry.CreateReader();
+                    var registry = new FGlobalShaderCache(archive);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), saveProperties, updateUi);
 
-                break;
-            }
+                    break;
+                }
             case "bnk":
             case "pck":
-            {
-                var archive = entry.CreateReader();
-                var wwise = new WwiseReader(archive);
-                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(wwise, Formatting.Indented), saveProperties, updateUi);
-                foreach (var (name, data) in wwise.WwiseEncodedMedias)
                 {
-                    SaveAndPlaySound(entry.Path.SubstringBeforeWithLast('/') + name, "WEM", data);
-                }
+                    var archive = entry.CreateReader();
+                    var wwise = new WwiseReader(archive);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(wwise, Formatting.Indented), saveProperties, updateUi);
+                    foreach (var (name, data) in wwise.WwiseEncodedMedias)
+                    {
+                        SaveAndPlaySound(entry.Path.SubstringBeforeWithLast('/') + name, "WEM", data);
+                    }
 
-                break;
-            }
+                    break;
+                }
             case "xvag":
             case "at9":
             case "wem":
-            {
-                var data = Provider.SaveAsset(entry);
-                SaveAndPlaySound(entry.PathWithoutExtension, entry.Extension, data);
+                {
+                    var data = Provider.SaveAsset(entry);
+                    SaveAndPlaySound(entry.PathWithoutExtension, entry.Extension, data);
 
-                break;
-            }
+                    break;
+                }
             case "udic":
-            {
-                var archive = entry.CreateReader();
-                var header = new FOodleDictionaryArchive(archive).Header;
-                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(header, Formatting.Indented), saveProperties, updateUi);
+                {
+                    var archive = entry.CreateReader();
+                    var header = new FOodleDictionaryArchive(archive).Header;
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(header, Formatting.Indented), saveProperties, updateUi);
 
-                break;
-            }
+                    break;
+                }
             case "png":
             case "jpg":
             case "bmp":
-            {
-                var data = Provider.SaveAsset(entry);
-                using var stream = new MemoryStream(data) { Position = 0 };
-                TabControl.SelectedTab.AddImage(entry.NameWithoutExtension, false, SKBitmap.Decode(stream), saveTextures, updateUi);
-
-                break;
-            }
-            case "svg":
-            {
-                var data = Provider.SaveAsset(entry);
-                using var stream = new MemoryStream(data) { Position = 0 };
-                var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(512, 512));
-                svg.Load(stream);
-
-                var bitmap = new SKBitmap(512, 512);
-                using (var canvas = new SKCanvas(bitmap))
-                using (var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.Medium })
                 {
-                    canvas.DrawPicture(svg.Picture, paint);
+                    var data = Provider.SaveAsset(entry);
+                    using var stream = new MemoryStream(data) { Position = 0 };
+                    TabControl.SelectedTab.AddImage(entry.NameWithoutExtension, false, SKBitmap.Decode(stream), saveTextures, updateUi);
+
+                    break;
                 }
+            case "svg":
+                {
+                    var data = Provider.SaveAsset(entry);
+                    using var stream = new MemoryStream(data) { Position = 0 };
+                    var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(512, 512));
+                    svg.Load(stream);
 
-                TabControl.SelectedTab.AddImage(entry.NameWithoutExtension, false, bitmap, saveTextures, updateUi);
+                    var bitmap = new SKBitmap(512, 512);
+                    using (var canvas = new SKCanvas(bitmap))
+                    using (var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.Medium })
+                    {
+                        canvas.DrawPicture(svg.Picture, paint);
+                    }
 
-                break;
-            }
+                    TabControl.SelectedTab.AddImage(entry.NameWithoutExtension, false, bitmap, saveTextures, updateUi);
+
+                    break;
+                }
             case "ufont":
             case "otf":
             case "ttf":
@@ -746,29 +757,29 @@ public partial class CUE4ParseViewModel : ViewModel
                 break;
             case "ushaderbytecode":
             case "ushadercode":
-            {
-                var archive = entry.CreateReader();
-                var ar = new FShaderCodeArchive(archive);
-                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), saveProperties, updateUi);
+                {
+                    var archive = entry.CreateReader();
+                    var ar = new FShaderCodeArchive(archive);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), saveProperties, updateUi);
 
-                break;
-            }
+                    break;
+                }
             case "upipelinecache":
-            {
-                var archive = entry.CreateReader();
-                var ar = new FPipelineCacheFile(archive);
-                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), saveProperties, updateUi);
+                {
+                    var archive = entry.CreateReader();
+                    var ar = new FPipelineCacheFile(archive);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), saveProperties, updateUi);
 
-                break;
-            }
+                    break;
+                }
             case "res": // just skip
                 break;
             default:
-            {
-                FLogger.Append(ELog.Warning, () =>
-                    FLogger.Text($"The package '{entry.Name}' is of an unknown type.", Constants.WHITE, true));
-                break;
-            }
+                {
+                    FLogger.Append(ELog.Warning, () =>
+                        FLogger.Text($"The package '{entry.Name}' is of an unknown type.", Constants.WHITE, true));
+                    break;
+                }
         }
     }
 
@@ -800,108 +811,113 @@ public partial class CUE4ParseViewModel : ViewModel
         var saveTextures = HasFlag(bulk, EBulkType.Textures);
 
         var pointer = new FPackageIndex(pkg, index + 1).ResolvedObject;
-        if (pointer?.Object is null) return false;
+        if (pointer?.Object is null)
+            return false;
 
         var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class?.Object?.Value as UStruct, pkg);
         switch (dummy)
         {
             case UVerseDigest when isNone && pointer.Object.Value is UVerseDigest verseDigest:
-            {
-                if (!TabControl.CanAddTabs) return false;
+                {
+                    if (!TabControl.CanAddTabs)
+                        return false;
 
-                TabControl.AddTab($"{verseDigest.ProjectName}.verse");
-                TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("verse");
-                TabControl.SelectedTab.SetDocumentText(verseDigest.ReadableCode, false, false);
-                return true;
-            }
+                    TabControl.AddTab($"{verseDigest.ProjectName}.verse");
+                    TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("verse");
+                    TabControl.SelectedTab.SetDocumentText(verseDigest.ReadableCode, false, false);
+                    return true;
+                }
             case UTexture when (isNone || saveTextures) && pointer.Object.Value is UTexture texture:
-            {
-                TabControl.SelectedTab.AddImage(texture, saveTextures, updateUi);
-                return false;
-            }
-            case USvgAsset when (isNone || saveTextures) && pointer.Object.Value is USvgAsset svgasset:
-            {
-                const int size = 512;
-                var data = svgasset.GetOrDefault<byte[]>("SvgData");
-                var sourceFile = svgasset.GetOrDefault<string>("SourceFile");
-                using var stream = new MemoryStream(data) { Position = 0 };
-                var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(size, size));
-                svg.Load(stream);
-
-                var bitmap = new SKBitmap(size, size);
-                using (var canvas = new SKCanvas(bitmap))
-                using (var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.Medium })
                 {
-                    canvas.DrawPicture(svg.Picture, paint);
-                }
-
-                if (saveTextures)
-                {
-                    var fileName = sourceFile.SubstringAfterLast('/');
-                    var path = Path.Combine(UserSettings.Default.TextureDirectory,
-                        UserSettings.Default.KeepDirectoryStructure ? TabControl.SelectedTab.Entry.Directory : "", fileName!).Replace('\\', '/');
-
-                    Directory.CreateDirectory(path.SubstringBeforeLast('/'));
-
-                    using var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read);
-                    fs.Write(data, 0, data.Length);
-                    if (File.Exists(path))
-                    {
-                        Log.Information("{FileName} successfully saved", fileName);
-                        if (updateUi)
-                        {
-                            FLogger.Append(ELog.Information, () =>
-                            {
-                                FLogger.Text("Successfully saved ", Constants.WHITE);
-                                FLogger.Link(fileName, path, true);
-                            });
-                        }
-                    }
-                    else
-                    {
-                        Log.Error("{FileName} could not be saved", fileName);
-                        if (updateUi)
-                            FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{fileName}'", Constants.WHITE, true));
-                    }
-                }
-
-                TabControl.SelectedTab.AddImage(sourceFile.SubstringAfterLast('/'), false, bitmap, false, updateUi);
-                return false;
-            }
-            case UAkAudioEvent when isNone && pointer.Object.Value is UAkAudioEvent { EventCookedData: { } wwiseData }:
-            {
-                foreach (var kvp in wwiseData.EventLanguageMap)
-                {
-                    if (!kvp.Value.HasValue) continue;
-
-                    foreach (var media in kvp.Value.Value.Media)
-                    {
-                        if (!Provider.TrySaveAsset(Path.Combine("Game/WwiseAudio/", media.MediaPathName.Text), out var data)) continue;
-
-                        var namedPath = string.Concat(
-                            Provider.ProjectName, "/Content/WwiseAudio/",
-                            media.DebugName.Text.SubstringBeforeLast('.').Replace('\\', '/'),
-                            " (", kvp.Key.LanguageName.Text, ")");
-                        SaveAndPlaySound(namedPath, media.MediaPathName.Text.SubstringAfterLast('.'), data);
-                    }
-                }
-                return false;
-            }
-            case UAkMediaAssetData when isNone:
-            case USoundWave when isNone:
-            {
-                var shouldDecompress = UserSettings.Default.CompressedAudioMode == ECompressedAudio.PlayDecompressed;
-                pointer.Object.Value.Decode(shouldDecompress, out var audioFormat, out var data);
-                var hasAf = !string.IsNullOrEmpty(audioFormat);
-                if (data == null || !hasAf)
-                {
-                    if (hasAf) FLogger.Append(ELog.Warning, () => FLogger.Text($"Unsupported audio format '{audioFormat}'", Constants.WHITE, true));
+                    TabControl.SelectedTab.AddImage(texture, saveTextures, updateUi);
                     return false;
                 }
+            case USvgAsset when (isNone || saveTextures) && pointer.Object.Value is USvgAsset svgasset:
+                {
+                    const int size = 512;
+                    var data = svgasset.GetOrDefault<byte[]>("SvgData");
+                    var sourceFile = svgasset.GetOrDefault<string>("SourceFile");
+                    using var stream = new MemoryStream(data) { Position = 0 };
+                    var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(size, size));
+                    svg.Load(stream);
 
-                SaveAndPlaySound(TabControl.SelectedTab.Entry.PathWithoutExtension.Replace('\\', '/'), audioFormat, data);
-                return false;
-            }
+                    var bitmap = new SKBitmap(size, size);
+                    using (var canvas = new SKCanvas(bitmap))
+                    using (var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.Medium })
+                    {
+                        canvas.DrawPicture(svg.Picture, paint);
+                    }
+
+                    if (saveTextures)
+                    {
+                        var fileName = sourceFile.SubstringAfterLast('/');
+                        var path = Path.Combine(UserSettings.Default.TextureDirectory,
+                            UserSettings.Default.KeepDirectoryStructure ? TabControl.SelectedTab.Entry.Directory : "", fileName!).Replace('\\', '/');
+
+                        Directory.CreateDirectory(path.SubstringBeforeLast('/'));
+
+                        using var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read);
+                        fs.Write(data, 0, data.Length);
+                        if (File.Exists(path))
+                        {
+                            Log.Information("{FileName} successfully saved", fileName);
+                            if (updateUi)
+                            {
+                                FLogger.Append(ELog.Information, () =>
+                                {
+                                    FLogger.Text("Successfully saved ", Constants.WHITE);
+                                    FLogger.Link(fileName, path, true);
+                                });
+                            }
+                        }
+                        else
+                        {
+                            Log.Error("{FileName} could not be saved", fileName);
+                            if (updateUi)
+                                FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{fileName}'", Constants.WHITE, true));
+                        }
+                    }
+
+                    TabControl.SelectedTab.AddImage(sourceFile.SubstringAfterLast('/'), false, bitmap, false, updateUi);
+                    return false;
+                }
+            case UAkAudioEvent when isNone && pointer.Object.Value is UAkAudioEvent { EventCookedData: { } wwiseData }:
+                {
+                    foreach (var kvp in wwiseData.EventLanguageMap)
+                    {
+                        if (!kvp.Value.HasValue)
+                            continue;
+
+                        foreach (var media in kvp.Value.Value.Media)
+                        {
+                            if (!Provider.TrySaveAsset(Path.Combine("Game/WwiseAudio/", media.MediaPathName.Text), out var data))
+                                continue;
+
+                            var namedPath = string.Concat(
+                                Provider.ProjectName, "/Content/WwiseAudio/",
+                                media.DebugName.Text.SubstringBeforeLast('.').Replace('\\', '/'),
+                                " (", kvp.Key.LanguageName.Text, ")");
+                            SaveAndPlaySound(namedPath, media.MediaPathName.Text.SubstringAfterLast('.'), data);
+                        }
+                    }
+                    return false;
+                }
+            case UAkMediaAssetData when isNone:
+            case USoundWave when isNone:
+                {
+                    var shouldDecompress = UserSettings.Default.CompressedAudioMode == ECompressedAudio.PlayDecompressed;
+                    pointer.Object.Value.Decode(shouldDecompress, out var audioFormat, out var data);
+                    var hasAf = !string.IsNullOrEmpty(audioFormat);
+                    if (data == null || !hasAf)
+                    {
+                        if (hasAf)
+                            FLogger.Append(ELog.Warning, () => FLogger.Text($"Unsupported audio format '{audioFormat}'", Constants.WHITE, true));
+                        return false;
+                    }
+
+                    SaveAndPlaySound(TabControl.SelectedTab.Entry.PathWithoutExtension.Replace('\\', '/'), audioFormat, data);
+                    return false;
+                }
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:
             case UBlueprintGeneratedClass when isNone && UserSettings.Default.PreviewWorlds && TabControl.SelectedTab.ParentExportType switch
             {
@@ -919,46 +935,47 @@ public partial class CUE4ParseViewModel : ViewModel
                                           (pkg.Name.Contains("/MI_OfferImages/", StringComparison.OrdinalIgnoreCase) ||
                                            pkg.Name.Contains("/RenderSwitch_Materials/", StringComparison.OrdinalIgnoreCase) ||
                                            pkg.Name.Contains("/MI_BPTile/", StringComparison.OrdinalIgnoreCase))):
-            {
-                if (SnooperViewer.TryLoadExport(cancellationToken, dummy, pointer.Object))
-                    SnooperViewer.Run();
-                return true;
-            }
+                {
+                    if (SnooperViewer.TryLoadExport(cancellationToken, dummy, pointer.Object))
+                        SnooperViewer.Run();
+                    return true;
+                }
             case UMaterialInstance when isNone && ModelIsOverwritingMaterial && pointer.Object.Value is UMaterialInstance m:
-            {
-                SnooperViewer.Renderer.Swap(m);
-                SnooperViewer.Run();
-                return true;
-            }
+                {
+                    SnooperViewer.Renderer.Swap(m);
+                    SnooperViewer.Run();
+                    return true;
+                }
             case UAnimSequenceBase when isNone && UserSettings.Default.PreviewAnimations || SnooperViewer.Renderer.Options.ModelIsWaitingAnimation:
-            {
-                // animate all animations using their specified skeleton or when we explicitly asked for a loaded model to be animated (ignoring whether we wanted to preview animations)
-                SnooperViewer.Renderer.Animate(pointer.Object.Value);
-                SnooperViewer.Run();
-                return true;
-            }
+                {
+                    // animate all animations using their specified skeleton or when we explicitly asked for a loaded model to be animated (ignoring whether we wanted to preview animations)
+                    SnooperViewer.Renderer.Animate(pointer.Object.Value);
+                    SnooperViewer.Run();
+                    return true;
+                }
             case UStaticMesh when HasFlag(bulk, EBulkType.Meshes):
             case USkeletalMesh when HasFlag(bulk, EBulkType.Meshes):
             case USkeleton when UserSettings.Default.SaveSkeletonAsMesh && HasFlag(bulk, EBulkType.Meshes):
             // case UMaterialInstance when HasFlag(bulk, EBulkType.Materials): // read the fucking json
             case UAnimSequenceBase when HasFlag(bulk, EBulkType.Animations):
-            {
-                SaveExport(pointer.Object.Value, updateUi);
-                return true;
-            }
+                {
+                    SaveExport(pointer.Object.Value, updateUi);
+                    return true;
+                }
             default:
-            {
-                if (!isNone && !saveTextures) return false;
+                {
+                    if (!isNone && !saveTextures)
+                        return false;
 
-                using var cPackage = new CreatorPackage(pkg.Name, dummy.ExportType, pointer.Object, UserSettings.Default.CosmeticStyle);
-                if (!cPackage.TryConstructCreator(out var creator))
-                    return false;
+                    using var cPackage = new CreatorPackage(pkg.Name, dummy.ExportType, pointer.Object, UserSettings.Default.CosmeticStyle);
+                    if (!cPackage.TryConstructCreator(out var creator))
+                        return false;
 
-                creator.ParseForInfo();
-                TabControl.SelectedTab.AddImage(pointer.Object.Value.Name, false, creator.Draw(), saveTextures, updateUi);
-                return true;
+                    creator.ParseForInfo();
+                    TabControl.SelectedTab.AddImage(pointer.Object.Value.Name, false, creator.Draw(), saveTextures, updateUi);
+                    return true;
 
-            }
+                }
         }
     }
 
@@ -966,8 +983,10 @@ public partial class CUE4ParseViewModel : ViewModel
     {
         var package = Provider.LoadPackage(entry);
 
-        if (TabControl.CanAddTabs) TabControl.AddTab(entry);
-        else TabControl.SelectedTab.SoftReset(entry);
+        if (TabControl.CanAddTabs)
+            TabControl.AddTab(entry);
+        else
+            TabControl.SelectedTab.SoftReset(entry);
 
         TabControl.SelectedTab.TitleExtra = "Metadata";
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("");
@@ -977,7 +996,8 @@ public partial class CUE4ParseViewModel : ViewModel
 
     private void SaveAndPlaySound(string fullPath, string ext, byte[] data)
     {
-        if (fullPath.StartsWith("/")) fullPath = fullPath[1..];
+        if (fullPath.StartsWith("/"))
+            fullPath = fullPath[1..];
         var savedAudioPath = Path.Combine(UserSettings.Default.AudioDirectory,
             UserSettings.Default.KeepDirectoryStructure ? fullPath : fullPath.SubstringAfterLast('/')).Replace('\\', '/') + $".{ext.ToLowerInvariant()}";
 
@@ -1025,7 +1045,7 @@ public partial class CUE4ParseViewModel : ViewModel
         }
     }
 
-    private readonly object _rawData = new ();
+    private readonly object _rawData = new();
     public void ExportData(GameFile entry, bool updateUi = true)
     {
         if (Provider.TrySavePackage(entry, out var assets))
@@ -1224,21 +1244,141 @@ public partial class CUE4ParseViewModel : ViewModel
         return (left, right);
     }
 
+    private TabImage LoadTabImageForDiff(AbstractVfsFileProvider provider, GameFile entry)
+    {
+        if (entry == null)
+            return null;
+
+        var ext = entry.Extension.ToLowerInvariant();
+        var name = entry.NameWithoutExtension;
+        var rnn = false;
+
+        switch (ext)
+        {
+            case "png":
+            case "jpg":
+            case "jpeg":
+            case "bmp":
+                {
+                    var data = provider.SaveAsset(entry);
+                    using var ms = new MemoryStream(data);
+                    var bmp = SKBitmap.Decode(ms);
+                    return bmp != null
+                        ? new TabImage(name, rnn, bmp)
+                        : null;
+                }
+
+            case "svg":
+                {
+                    var data = provider.SaveAsset(entry);
+                    using var ms = new MemoryStream(data);
+                    var bmp = RenderSvg(ms);
+                    return bmp != null
+                        ? new TabImage(name, rnn, bmp)
+                        : null;
+                }
+            case "uasset":
+                {
+                    try
+                    {
+                        var pkg = provider.LoadPackage(entry);
+
+                        var pointer = new FPackageIndex(pkg, 1).ResolvedObject;
+
+                        if (pointer?.Object?.Value is not UTexture texture)
+                            return null;
+
+                        CTexture[] textures;
+                        if (texture is UTexture2DArray arr)
+                            textures = arr.DecodeTextureArray(UserSettings.Default.CurrentDir.TexturePlatform);
+                        else
+                        {
+                            var single = texture.Decode(UserSettings.Default.CurrentDir.TexturePlatform);
+                            if (texture is UTextureCube)
+                                single = single.ToPanorama();
+                            textures = new[] { single };
+                        }
+
+                        var ct = textures.FirstOrDefault();
+                        return ct != null
+                            ? new TabImage(name, texture.RenderNearestNeighbor, ct)
+                            : null;
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Warning($"Failed to decode UTexture for diff: {entry.Path} – {e.Message}");
+                        return null;
+                    }
+                }
+
+            default:
+                return null;
+        }
+    }
+
+    private SKBitmap RenderSvg(Stream stream)
+    {
+        const int size = 512;
+        var svg = new SkiaSharp.Extended.Svg.SKSvg();
+        svg.Load(stream);
+        var bmp = new SKBitmap(size, size);
+        using var canvas = new SKCanvas(bmp);
+        using var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.Medium };
+        canvas.Clear(SKColors.Transparent);
+        canvas.DrawPicture(svg.Picture, paint);
+        return bmp;
+    }
+
     public void ShowAssetDiff(string assetPath)
     {
-        var (left, right) = GetExtractedTextsForDiff(assetPath);
+        GameFile entry1 = null, entry2 = null;
+        _ = DiffProvider?.Files?.TryGetValue(assetPath, out entry1);
+        _ = Provider?.Files?.TryGetValue(assetPath, out entry2);
+
+        var leftImage = LoadTabImageForDiff(DiffProvider, entry1);
+        var rightImage = LoadTabImageForDiff(Provider, entry2);
+
+        var titleExtra = Path.GetFileNameWithoutExtension(assetPath);
         string extension = Path.GetExtension(assetPath).TrimStart('.');
+
+        var existingTab = TabControl.TabsItems.FirstOrDefault(tab => tab.ParentExportType == "Diff");
 
         Application.Current.Dispatcher.Invoke(() =>
         {
-            var diffViewer = new JsonDiffViewer(left, right, extension);
-            var diffTab = new TabItem(new FakeGameFile("Diff Viewer"), "Diff")
-            {
-                TitleExtra = Path.GetFileNameWithoutExtension(assetPath),
-                DiffContent = diffViewer
-            };
+            var diffContent = CreateDiffViewer(leftImage, rightImage, assetPath, extension);
 
-            TabControl.AddTab(diffTab);
+            if (existingTab != null)
+            {
+                existingTab.TitleExtra = titleExtra;
+                existingTab.DiffContent = diffContent;
+                if (TabControl.SelectedTab != existingTab)
+                    TabControl.SelectedTab = existingTab;
+            }
+            else
+            {
+                var tab = new TabItem(new FakeGameFile("Diff Viewer"), "Diff")
+                {
+                    TitleExtra = titleExtra,
+                    DiffContent = diffContent
+                };
+                TabControl.AddTab(tab);
+                TabControl.SelectedTab = tab;
+            }
         });
+    }
+
+    private object CreateDiffViewer(TabImage leftImage, TabImage rightImage, string assetPath, string extension)
+    {
+        if (leftImage != null || rightImage != null)
+        {
+            var viewer = new ImageDiffViewer();
+            viewer.SetImages(leftImage, rightImage);
+            return viewer;
+        }
+        else
+        {
+            var (l, r) = GetExtractedTextsForDiff(assetPath);
+            return new DataDiffViewer(l, r, extension);
+        }
     }
 }

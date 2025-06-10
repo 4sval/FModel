@@ -46,12 +46,14 @@ public partial class CUE4ParseViewModel
 
     private IEnumerable<(AbstractVfsFileProvider Provider, EndpointSettings Endpoint)> ProvidersWithEndpoints(EEndpointType type)
     {
-        if (UserSettings.IsEndpointValid(type, out var mainEndpoint))
+        if (UserSettings.IsEndpointValid(UserSettings.Default.CurrentDir, type, out var mainEndpoint))
             yield return (Provider, mainEndpoint);
 
-        if (DiffProvider != null && UserSettings.Default.DiffDir != null &&
-            UserSettings.IsEndpointValid(type, out var diffEndpoint))
+        if (DiffProvider != null && UserSettings.Default.DiffDir != null
+                                 && UserSettings.IsEndpointValid(UserSettings.Default.DiffDir, type, out var diffEndpoint))
+        {
             yield return (DiffProvider, diffEndpoint);
+        }
     }
 
     public IEnumerable<(AbstractVfsFileProvider Provider, DirectorySettings Dir)> ProvidersWithDirectories()

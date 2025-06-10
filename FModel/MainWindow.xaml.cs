@@ -72,7 +72,7 @@ public partial class MainWindow
         await Task.WhenAll(
             _applicationView.CUE4Parse.VerifyConsoleVariables(),
             _applicationView.CUE4Parse.VerifyOnDemandArchives(),
-            _applicationView.CUE4Parse.InitMappings(),
+            _applicationView.CUE4Parse.InitAllMappings(),
             ApplicationViewModel.InitDetex(),
             ApplicationViewModel.InitVgmStream(),
             ApplicationViewModel.InitImGuiSettings(newOrUpdated),
@@ -140,7 +140,7 @@ public partial class MainWindow
 
     private async void OnMappingsReload(object sender, ExecutedRoutedEventArgs e)
     {
-        await _applicationView.CUE4Parse.InitMappings(true);
+        await _applicationView.CUE4Parse.InitAllMappings(true);
     }
 
     private void OnOpenAvalonFinder()

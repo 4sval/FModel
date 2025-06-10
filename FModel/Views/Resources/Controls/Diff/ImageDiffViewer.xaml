@@ -1,0 +1,27 @@
+<UserControl x:Class="FModel.Views.Resources.Controls.Diff.ImageDiffViewer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Height="Auto" Width="Auto">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Image x:Name="LeftImage"
+               Grid.Column="0"
+               Stretch="Uniform"
+               RenderOptions.BitmapScalingMode="HighQuality"/>
+
+        <GridSplitter Grid.Column="1"
+                      Width="5"
+                      HorizontalAlignment="Stretch"
+                      Background="{DynamicResource Brush.Layer3BackgroundBrush}" />
+
+        <Image x:Name="RightImage"
+               Grid.Column="2"
+               Stretch="Uniform"
+               RenderOptions.BitmapScalingMode="HighQuality"/>
+    </Grid>
+</UserControl>

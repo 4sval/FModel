@@ -11,9 +11,9 @@ using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 
-namespace FModel.Views.Resources.Controls;
+namespace FModel.Views.Resources.Controls.Diff;
 
-public partial class JsonDiffViewer
+public partial class DataDiffViewer
 {
     private const string GapPrefix = "⎯ GAP ⎯ ";
     private static string MakeGapString(int width)
@@ -23,7 +23,7 @@ public partial class JsonDiffViewer
         return GapPrefix + new string(' ', width);
     }
 
-    public JsonDiffViewer(string leftText, string rightText, string extension)
+    public DataDiffViewer(string leftText, string rightText, string extension)
     {
         InitializeComponent();
 

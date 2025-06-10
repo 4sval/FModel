@@ -77,15 +77,11 @@ public class ApplicationViewModel : ViewModel
         if (UserSettings.Default.CurrentDir is null)
         {
             //If no game is selected, many things will break before a shutdown request is processed in the normal way.
-            //A hard exit is preferable to an unhandled expection in this case
+            //A hard exit is preferable to an unhandled exception in this case
             Environment.Exit(0);
         }
 
-        if (!string.IsNullOrEmpty(UserSettings.Default.DiffGameDirectory) &&
-            UserSettings.Default.PerDirectory.TryGetValue(UserSettings.Default.DiffGameDirectory, out var diffDir))
-            UserSettings.Default.DiffDir = diffDir;
-        else
-            UserSettings.Default.DiffDir = null;
+        UserSettings.Default.DiffDir = ResolveDiffDirectory();
 
         CUE4Parse = new CUE4Parse.CUE4ParseViewModel();
         CUE4Parse.Provider.VfsRegistered += (sender, count) =>
@@ -112,6 +108,28 @@ public class ApplicationViewModel : ViewModel
         AudioPlayer = new AudioPlayerViewModel();
 
         Status.SetStatus(EStatusKind.Ready);
+    }
+
+    private static DirectorySettings ResolveDiffDirectory()
+    {
+        var diffPath = UserSettings.Default.DiffGameDirectory;
+        if (string.IsNullOrEmpty(diffPath))
+            return null;
+
+        if (UserSettings.Default.PerDirectory.TryGetValue(diffPath, out var existing))
+            return existing;
+
+        var vm = new GameSelectorViewModel(diffPath);
+        bool? ok = new DirectorySelector(vm).ShowDialog();
+        if (ok != true)
+        {
+            UserSettings.Default.DiffGameDirectory = null;
+            return null;
+        }
+
+        UserSettings.Default.DiffGameDirectory = vm.SelectedDirectory.GameDirectory;
+        UserSettings.Default.PerDirectory[vm.SelectedDirectory.GameDirectory] = vm.SelectedDirectory;
+        return vm.SelectedDirectory;
     }
 
     public DirectorySettings AvoidEmptyGameDirectory(bool bAlreadyLaunched)
