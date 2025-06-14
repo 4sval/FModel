@@ -88,9 +88,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     var entry1 = entries.FirstOrDefault();
                     if (entry1 != null)
                     {
-                        // No need for cancellation; it's fast/UI only
-                        // (I lied about fast part)
-                        contextViewModel.CUE4Parse.ShowAssetDiff(entry1.Path);
+                        contextViewModel.CUE4Parse.ShowAssetDiff(entry1.Path).GetAwaiter().GetResult();
                     }
                     break;
             }
