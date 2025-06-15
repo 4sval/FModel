@@ -1,6 +1,7 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using CUE4Parse.UE4.Versions;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels;
@@ -77,7 +78,10 @@ public partial class SettingsView
 
     private void OnBrowseDiffDirectory(object sender, RoutedEventArgs e)
     {
-        if (TryBrowse(out var path)) UserSettings.Default.DiffGameDirectory = path;
+        if (!TryBrowse(out var path)) return;
+
+        UserSettings.Default.DiffGameDirectory = path;
+        UserSettings.Default.DiffDir = ApplicationViewModel.ResolveDiffDirectory();
     }
 
     private void OnBrowseRawData(object sender, RoutedEventArgs e)
@@ -208,5 +212,18 @@ public partial class SettingsView
         var editor = new EndpointEditor(
             _applicationView.SettingsView.MappingEndpoint, "Endpoint Configuration (Mapping)", EEndpointType.Mapping);
         editor.ShowDialog();
+    }
+
+    private void OnResetCompareSettings(object sender, RoutedEventArgs e)
+    {
+        UserSettings.Default.DiffGameDirectory = string.Empty;
+
+        if (UserSettings.Default.DiffDir == null) return;
+
+        UserSettings.Default.DiffDir.UeVersion = default;
+
+        _applicationView.SettingsView.SelectedDiffUeGame = default;
+        _applicationView.SettingsView.DiffMappingEndpoint.FilePath = string.Empty;
+        _applicationView.SettingsView.DiffMappingEndpoint.Overwrite = false;
     }
 }

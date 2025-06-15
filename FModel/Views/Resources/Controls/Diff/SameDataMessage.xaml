@@ -1,0 +1,44 @@
+<UserControl x:Class="FModel.Views.Resources.Controls.Diff.SameDataMessage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+             Background="{DynamicResource Brush.Layer3BackgroundBrush}"
+             HorizontalAlignment="Center"
+             VerticalAlignment="Center">
+    <Grid VerticalAlignment="Center"
+          HorizontalAlignment="Center">
+
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Margin="0">
+                <Viewbox Width="64" Height="64" Margin="0,0,0,16">
+                    <Canvas Width="64" Height="64">
+                        <Ellipse Width="64"
+                                 Height="64"
+                                 Fill="{DynamicResource {x:Static adonisUi:Brushes.SuccessBrush}}"
+                                 StrokeThickness="0" />
+                        <Path Data="M18,34 L28,46 L46,22"
+                              Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                              StrokeThickness="6"
+                              StrokeStartLineCap="Round"
+                              StrokeEndLineCap="Round" />
+                    </Canvas>
+                </Viewbox>
+                <TextBlock Text="The data is identical"
+                           FontWeight="SemiBold"
+                           FontSize="18"
+                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.SuccessBrush}}"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,4" />
+                <TextBlock Text="No differences were found between the compared assets."
+                           FontSize="13"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"
+                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                           MaxWidth="280" />
+            </StackPanel>
+
+    </Grid>
+</UserControl>

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using CUE4Parse.FileProvider.Objects;
@@ -23,9 +25,8 @@ public partial class CUE4ParseViewModel
 {
     public async Task ShowAssetDiff(string assetPath)
     {
-        GameFile entry1 = null, entry2 = null;
-        _ = DiffProvider?.Files?.TryGetValue(assetPath, out entry1);
-        _ = Provider?.Files?.TryGetValue(assetPath, out entry2);
+        GameFile entry1 = TryGetFileByPathOrName(DiffProvider?.Files, assetPath);
+        GameFile entry2 = TryGetFileByPathOrName(Provider?.Files, assetPath);
 
         var leftImage = LoadTabImageForDiff(DiffProvider, entry1);
         var rightImage = LoadTabImageForDiff(Provider, entry2);
@@ -69,6 +70,11 @@ public partial class CUE4ParseViewModel
         }
 
         var (l, r) = GetExtractedTextsForDiff(assetPath);
+        if (AreTextsEqual(l, r))
+        {
+            return new SameDataMessage();
+        }
+
         var dataDiffViewer = new DataDiffViewer(l, r, extension);
         await dataDiffViewer.Initialize();
 
@@ -90,14 +96,32 @@ public partial class CUE4ParseViewModel
 
     private (List<string> left, List<string> right) GetExtractedTextsForDiff(string assetPath)
     {
-        GameFile entry1 = null, entry2 = null;
-        DiffProvider?.Files?.TryGetValue(assetPath, out entry1);
-        Provider.Files?.TryGetValue(assetPath, out entry2);
+        GameFile entry1 = TryGetFileByPathOrName(DiffProvider?.Files, assetPath);
+        GameFile entry2 = TryGetFileByPathOrName(Provider?.Files, assetPath);
 
         List<string> left = entry1 != null ? SplitIntoChunks(ExtractTextForDiff(DiffProvider, entry1)) : [];
         List<string> right = entry2 != null ? SplitIntoChunks(ExtractTextForDiff(Provider, entry2)) : [];
 
         return (left, right);
+    }
+
+    private static GameFile TryGetFileByPathOrName(FileProviderDictionary files, string assetPath)
+    {
+        if (files.TryGetValue(assetPath, out var file))
+            return file;
+
+        var fileName = Path.GetFileName(assetPath);
+        var matches = files.Where(kvp => Path.GetFileName(kvp.Key)!.Equals(fileName, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        if (matches.Count == 1)
+            return matches[0].Value;
+        if (matches.Count > 1)
+        {
+            // TODO: show a dialog for user selection
+            return matches[0].Value;
+        }
+
+        return null;
     }
 
     private static string ExtractTextForDiff(AbstractVfsFileProvider provider, GameFile entry)
@@ -246,5 +270,29 @@ public partial class CUE4ParseViewModel
         {
             return $"[Failed to extract: {ex.Message}]";
         }
+    }
+
+    private bool AreTextsEqual(List<string> leftChunks, List<string> rightChunks)
+    {
+        if ((leftChunks == null || leftChunks.Count == 0) && (rightChunks == null || rightChunks.Count == 0))
+            return true;
+
+        if (leftChunks == null || rightChunks == null)
+            return false;
+
+        if (leftChunks.Count != rightChunks.Count)
+            return false;
+
+        var leftHash = ComputeHashForChunks(leftChunks);
+        var rightHash = ComputeHashForChunks(rightChunks);
+
+        return leftHash.SequenceEqual(rightHash);
+    }
+
+    private static byte[] ComputeHashForChunks(List<string> chunks)
+    {
+        using var sha256 = SHA256.Create();
+        var combined = string.Concat(chunks);
+        return sha256.ComputeHash(Encoding.UTF8.GetBytes(combined));
     }
 }

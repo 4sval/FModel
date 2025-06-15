@@ -1,0 +1,42 @@
+<UserControl x:Class="FModel.Views.Resources.Controls.Diff.DiffHeader"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Border Grid.Column="0"
+                Background="#22ea8566"
+                CornerRadius="4"
+                Padding="8,4"
+                Margin="4,0"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center">
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Path Data="{Binding LeftIcon, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                      Fill="#ea8566"
+                      Width="16"
+                      Height="16"
+                      VerticalAlignment="Center"
+                      Stretch="Uniform"/>
+            </Grid>
+        </Border>
+        <Border Grid.Column="1"
+                Background="#22b6d786"
+                CornerRadius="4"
+                Padding="8,4"
+                Margin="4,0"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center">
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Path Data="{Binding RightIcon, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                      Fill="#b6d786"
+                      Width="16"
+                      Height="16"
+                      VerticalAlignment="Center"
+                      Stretch="Uniform"/>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

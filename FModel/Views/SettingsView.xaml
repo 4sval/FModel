@@ -351,51 +351,49 @@
 
                             <TextBlock Grid.Row="4"
                                        Grid.Column="0"
-                                       Text="Compare AES Key"
-                                       VerticalAlignment="Center"
-                                       Margin="0 0 0 5" />
-                            <TextBox Grid.Row="4"
-                                     Grid.Column="2"
-                                     Grid.ColumnSpan="3"
-                                     Text="{Binding SettingsView.DiffAesKey, Mode=TwoWay}"
-                                     DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
-                                     Margin="0 0 0 5" />
-
-                            <TextBlock Grid.Row="5"
-                                       Grid.Column="0"
                                        Text="Compare Mapping File"
                                        VerticalAlignment="Center"
                                        Margin="0 0 0 5" />
-                            <CheckBox Grid.Row="5"
+                            <CheckBox Grid.Row="4"
                                       Grid.Column="2"
                                       Margin="0 5 0 10"
                                       DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                                       Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                                       IsChecked="{Binding SettingsView.DiffMappingEndpoint.Overwrite, Mode=TwoWay}" />
 
-                            <TextBlock Grid.Row="6"
+                            <TextBlock Grid.Row="5"
                                        Grid.Column="0"
                                        Text="Compare Mapping File Path"
                                        VerticalAlignment="Center"
                                        Margin="0 0 0 5"
                                        DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
-                                       Visibility="{Binding SettingsView.DiffMappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
-                            <TextBox Grid.Row="6"
+                                       Visibility="{Binding SettingsView.DiffMappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed, TargetNullValue=Collapsed}" />
+                            <TextBox Grid.Row="5"
                                      Grid.Column="2"
                                      Grid.ColumnSpan="3"
                                      Margin="0 0 0 5"
                                      Text="{Binding SettingsView.DiffMappingEndpoint.FilePath, Mode=TwoWay}"
                                      DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
-                                     Visibility="{Binding SettingsView.DiffMappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
-                            <Button Grid.Row="6"
+                                     Visibility="{Binding SettingsView.DiffMappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed, TargetNullValue=Collapsed}" />
+                            <Button Grid.Row="5"
                                     Grid.Column="6"
                                     Content="..."
                                     HorizontalAlignment="Right"
                                     Click="OnBrowseDiffMappings"
                                     Margin="0 0 0 5"
                                     DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
-                                    Visibility="{Binding SettingsView.DiffMappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
-
+                                    Visibility="{Binding SettingsView.DiffMappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed, TargetNullValue=Collapsed}" />
+                            <Button Grid.Row="6"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="7"
+                                    Content="Reset Compare Game Settings"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Padding="12,6"
+                                    MinWidth="200"
+                                    Cursor="Hand"
+                                    Margin="0,5"
+                                    Click="OnResetCompareSettings" />
                         </Grid>
                     </Expander>
 

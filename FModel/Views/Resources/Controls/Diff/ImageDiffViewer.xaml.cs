@@ -1,9 +1,10 @@
+using System.Windows;
 using System.Windows.Controls;
 using FModel.ViewModels;
 
 namespace FModel.Views.Resources.Controls.Diff;
 
-public partial class ImageDiffViewer : UserControl
+public partial class ImageDiffViewer
 {
     public ImageDiffViewer()
     {
@@ -12,7 +13,26 @@ public partial class ImageDiffViewer : UserControl
 
     public void SetImages(TabImage left, TabImage right)
     {
-        LeftImage.Source = left?.Image;
-        RightImage.Source = right?.Image;
+        if (left?.Image != null)
+        {
+            LeftImage.Source = left.Image;
+            LeftImageNotFound.Visibility = Visibility.Collapsed;
+        }
+        else
+        {
+            LeftImage.Source = null;
+            LeftImageNotFound.Visibility = Visibility.Visible;
+        }
+
+        if (right?.Image != null)
+        {
+            RightImage.Source = right.Image;
+            RightImageNotFound.Visibility = Visibility.Collapsed;
+        }
+        else
+        {
+            RightImage.Source = null;
+            RightImageNotFound.Visibility = Visibility.Visible;
+        }
     }
 }

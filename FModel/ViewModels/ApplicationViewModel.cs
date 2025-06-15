@@ -110,7 +110,7 @@ public class ApplicationViewModel : ViewModel
         Status.SetStatus(EStatusKind.Ready);
     }
 
-    private static DirectorySettings ResolveDiffDirectory()
+    public static DirectorySettings ResolveDiffDirectory()
     {
         var diffPath = UserSettings.Default.DiffGameDirectory;
         if (string.IsNullOrEmpty(diffPath))
@@ -211,7 +211,21 @@ public class ApplicationViewModel : ViewModel
                 return new KeyValuePair<FGuid, FAesKey>(x.Guid, new FAesKey(k));
             });
 
-            CUE4Parse.LoadVfs(aes);
+            IEnumerable<KeyValuePair<FGuid, FAesKey>> secondAes = [];
+            if (AesManager.DiffAesKeys != null)
+            {
+                secondAes = AesManager.DiffAesKeys.Select(x =>
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    var k = x.Key.Trim();
+                    if (k.Length != 66)
+                        k = Constants.ZERO_64_CHAR;
+                    return new KeyValuePair<FGuid, FAesKey>(x.Guid, new FAesKey(k));
+                });
+            }
+
+            CUE4Parse.LoadVfs(aes, secondAes);
             AesManager.SetAesKeys();
         });
         RaisePropertyChanged(nameof(GameDisplayName));

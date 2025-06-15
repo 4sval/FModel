@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -167,5 +168,37 @@ public partial class CUE4ParseViewModel
                     };
                 }
         }
+    }
+
+    public IEnumerable<AbstractVfsFileProvider> AllProviders()
+    {
+        yield return Provider;
+        if (DiffProvider != null)
+            yield return DiffProvider;
+    }
+
+    public void ForEachProvider(Action<AbstractVfsFileProvider> action)
+    {
+        foreach (var provider in AllProviders())
+            action(provider);
+    }
+
+    private IEnumerable<(AbstractVfsFileProvider Provider, EndpointSettings Endpoint)> ProvidersWithEndpoints(EEndpointType type)
+    {
+        if (UserSettings.IsEndpointValid(UserSettings.Default.CurrentDir, type, out var mainEndpoint))
+            yield return (Provider, mainEndpoint);
+
+        if (DiffProvider != null && UserSettings.Default.DiffDir != null
+                                 && UserSettings.IsEndpointValid(UserSettings.Default.DiffDir, type, out var diffEndpoint))
+        {
+            yield return (DiffProvider, diffEndpoint);
+        }
+    }
+
+    public IEnumerable<(AbstractVfsFileProvider Provider, DirectorySettings Dir)> ProvidersWithDirectories()
+    {
+        yield return (Provider, UserSettings.Default.CurrentDir);
+        if (DiffProvider != null && UserSettings.Default.DiffDir != null)
+            yield return (DiffProvider, UserSettings.Default.DiffDir);
     }
 }
