@@ -25,11 +25,11 @@ public partial class CUE4ParseViewModel
 {
     public async Task ShowAssetDiff(string assetPath)
     {
-        GameFile entry1 = TryGetFileByPathOrName(DiffProvider?.Files, assetPath);
-        GameFile entry2 = TryGetFileByPathOrName(Provider?.Files, assetPath);
+        GameFile leftFile = TryGetFileByPathOrName(DiffProvider?.Files, assetPath);
+        GameFile rightFile = TryGetFileByPathOrName(Provider?.Files, assetPath);
 
-        var leftImage = LoadTabImageForDiff(DiffProvider, entry1);
-        var rightImage = LoadTabImageForDiff(Provider, entry2);
+        var leftImage = LoadTabImageForDiff(DiffProvider, leftFile);
+        var rightImage = LoadTabImageForDiff(Provider, rightFile);
 
         var titleExtra = Path.GetFileNameWithoutExtension(assetPath);
         string extension = Path.GetExtension(assetPath).TrimStart('.');
@@ -38,7 +38,7 @@ public partial class CUE4ParseViewModel
 
         await Application.Current.Dispatcher.Invoke(async () =>
         {
-            var diffContent = await CreateDiffViewer(leftImage, rightImage, assetPath, extension);
+            var diffContent = await CreateDiffViewer(leftFile, rightFile, leftImage, rightImage, assetPath, extension);
 
             if (existingTab != null)
             {
@@ -60,7 +60,7 @@ public partial class CUE4ParseViewModel
         });
     }
 
-    private async Task<object> CreateDiffViewer(TabImage leftImage, TabImage rightImage, string assetPath, string extension)
+    private async Task<object> CreateDiffViewer(GameFile leftFile, GameFile rightFile, TabImage leftImage, TabImage rightImage, string assetPath, string extension)
     {
         if (leftImage != null || rightImage != null)
         {
@@ -69,7 +69,7 @@ public partial class CUE4ParseViewModel
             return viewer;
         }
 
-        var (l, r) = GetExtractedTextsForDiff(assetPath);
+        var (l, r) = GetExtractedTextsForDiff(leftFile, rightFile);
         if (AreTextsEqual(l, r))
         {
             return new SameDataMessage();
@@ -94,13 +94,10 @@ public partial class CUE4ParseViewModel
         return chunks;
     }
 
-    private (List<string> left, List<string> right) GetExtractedTextsForDiff(string assetPath)
+    private (List<string> left, List<string> right) GetExtractedTextsForDiff(GameFile leftFile, GameFile rightFile)
     {
-        GameFile entry1 = TryGetFileByPathOrName(DiffProvider?.Files, assetPath);
-        GameFile entry2 = TryGetFileByPathOrName(Provider?.Files, assetPath);
-
-        List<string> left = entry1 != null ? SplitIntoChunks(ExtractTextForDiff(DiffProvider, entry1)) : [];
-        List<string> right = entry2 != null ? SplitIntoChunks(ExtractTextForDiff(Provider, entry2)) : [];
+        List<string> left = leftFile != null ? SplitIntoChunks(ExtractTextForDiff(DiffProvider, leftFile)) : [];
+        List<string> right = rightFile != null ? SplitIntoChunks(ExtractTextForDiff(Provider, rightFile)) : [];
 
         return (left, right);
     }
@@ -113,22 +110,23 @@ public partial class CUE4ParseViewModel
         var fileName = Path.GetFileName(assetPath);
         var matches = files.Where(kvp => Path.GetFileName(kvp.Key)!.Equals(fileName, StringComparison.OrdinalIgnoreCase)).ToList();
 
-        if (matches.Count == 1)
-            return matches[0].Value;
-        if (matches.Count > 1)
+        switch (matches.Count)
         {
-             Application.Current.Dispatcher.Invoke(() =>
-             {
-                 var dialog = new DiffFileSelectionDialog(matches.Select(m => m.Value).ToList());
-                 if (dialog.ShowDialog() == true)
-                 {
-                     file = dialog.SelectedFile;
-                 }
-             });
-            return file;
+            case 1:
+                return matches[0].Value;
+            case > 1:
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    var dialog = new DiffFileSelectionDialog(matches.Select(m => m.Value).ToList());
+                    if (dialog.ShowDialog() == true)
+                    {
+                        file = dialog.SelectedFile;
+                    }
+                });
+                return file;
+            default:
+                return null;
         }
-
-        return null;
     }
 
     private static string ExtractTextForDiff(AbstractVfsFileProvider provider, GameFile entry)
