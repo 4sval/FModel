@@ -81,7 +81,7 @@ public partial class CUE4ParseViewModel
         return dataDiffViewer;
     }
 
-    private static List<string> SplitIntoChunks(string text, int maxLinesPerChunk = 20000)
+    private static List<string> SplitIntoChunks(string text, int maxLinesPerChunk = 50000)
     {
         var lines = text.Split('\n');
         var chunks = new List<string>();
@@ -117,8 +117,15 @@ public partial class CUE4ParseViewModel
             return matches[0].Value;
         if (matches.Count > 1)
         {
-            // TODO: show a dialog for user selection
-            return matches[0].Value;
+             Application.Current.Dispatcher.Invoke(() =>
+             {
+                 var dialog = new DiffFileSelectionDialog(matches.Select(m => m.Value).ToList());
+                 if (dialog.ShowDialog() == true)
+                 {
+                     file = dialog.SelectedFile;
+                 }
+             });
+            return file;
         }
 
         return null;

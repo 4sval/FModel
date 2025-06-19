@@ -3,9 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
              xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
+             xmlns:diff="clr-namespace:FModel.Views.Resources.Controls.Diff"
              MinHeight="200"
              MinWidth="400"
              Background="{DynamicResource Brush.Layer1Background}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Views/Resources/Resources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Border Margin="0"
             Padding="0"
             BorderBrush="{DynamicResource Brush.Layer3BorderBrush}"
@@ -14,114 +22,62 @@
             Background="{DynamicResource Brush.Layer1Background}">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="3.75" />
+                <RowDefinition Height="28.25" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="37*" />
+                <ColumnDefinition Width="157*" />
                 <ColumnDefinition Width="6" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="194*" />
             </Grid.ColumnDefinitions>
-            <Border Grid.Row="0"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="3"
-                    Background="{DynamicResource Brush.Layer2Background}"
-                    Padding="10,8"
-                    CornerRadius="6,6,0,0"
-                    BorderThickness="0 0 0 1"
-                    BorderBrush="{DynamicResource Brush.Layer3BorderBrush}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Border Grid.Column="0"
-                            Background="#22ea8566"
-                            CornerRadius="4"
-                            Padding="8,4"
-                            Margin="4,0"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center">
-                        <Grid>
-                            <Grid HorizontalAlignment="Center"
-                                  VerticalAlignment="Center">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Path Grid.Column="0"
-                                      Data="M6 2a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6H6zm7 1.5L18.5 9H13V3.5zM8 14h8v2H8v-2z"
-                                      Fill="#ea8566"
-                                      Width="16"
-                                      Height="16"
-                                      VerticalAlignment="Center"
-                                      Stretch="Uniform" />
-                            </Grid>
-                        </Grid>
-                    </Border>
-                    <Border Grid.Column="1"
-                            Background="#22b6d786"
-                            CornerRadius="4"
-                            Padding="8,4"
-                            Margin="4,0"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center">
-                        <Grid>
-                            <Grid HorizontalAlignment="Center"
-                                  VerticalAlignment="Center">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Path Grid.Column="1"
-                                      Data="M6 2a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6H6zm7 1.5L18.5 9H13V3.5zM12 12v2H9v2h3v2h2v-2h3v-2h-3v-2h-2z"
-                                      Fill="#b6d786"
-                                      Width="16"
-                                      Height="16"
-                                      VerticalAlignment="Center"
-                                      Stretch="Uniform" />
-                            </Grid>
-                        </Grid>
-                    </Border>
-                </Grid>
-            </Border>
-            <Grid Grid.Row="1"
-                  Grid.Column="0">
+            <diff:DiffHeader Grid.Row="0"
+                             Grid.Column="0"
+                             Grid.ColumnSpan="4"
+                             Height="32"
+                             Padding="8,4"
+                             LeftIcon="{StaticResource DataDiffMinusIcon}"
+                             RightIcon="{StaticResource DataDiffPlusIcon}"
+                             Grid.RowSpan="2" />
+            <Grid Grid.Row="2"
+                  Grid.Column="0"
+                  Grid.ColumnSpan="2">
                 <avalonedit:TextEditor x:Name="AvalonLeft"
-                                   Grid.Row="0"
-                                   Grid.Column="0"
-                                   IsReadOnly="True"
-                                   FontSize="11"
-                                   FontFamily="Consolas"
+                                       Grid.Row="0"
+                                       Grid.Column="0"
+                                       IsReadOnly="True"
+                                       FontSize="11"
+                                       FontFamily="Consolas"
                                        Padding="0"
-                                   ShowLineNumbers="True"
-                                   BorderThickness="0"
-                                   Background="{DynamicResource Brush.Layer2Background}"
-                                   Foreground="#DAE5F2" />
+                                       ShowLineNumbers="True"
+                                       BorderThickness="0"
+                                       Background="{DynamicResource Brush.Layer2Background}"
+                                       Foreground="#DAE5F2" />
                 <controls:AvalonSearchbar HorizontalAlignment="Right"
                                           VerticalAlignment="Top"
                                           Margin="8"
                                           Panel.ZIndex="100"
-                                          TargetEditor="{Binding ElementName=AvalonLeft}"/>
+                                          TargetEditor="{Binding ElementName=AvalonLeft}" />
             </Grid>
-            <Border Grid.Row="1"
-                    Grid.Column="1"
+            <Border Grid.Row="2"
+                    Grid.Column="2"
                     Background="{DynamicResource Brush.Layer3BackgroundBrush}"
                     Width="6"
-                    Margin="0,0,0,0" />
-            <Grid Grid.Row="1"
-                  Grid.Column="2">
+                    Margin="2,0,2,0" />
+            <Grid Grid.Row="2"
+                  Grid.Column="3">
                 <avalonedit:TextEditor x:Name="AvalonRight"
-                                   Grid.Row="0"
-                                   Grid.Column="0"
-                                   IsReadOnly="True"
-                                   FontSize="11"
-                                   FontFamily="Consolas"
-                                   Padding="4"
-                                   ShowLineNumbers="True"
-                                   BorderThickness="0"
-                                   Background="{DynamicResource Brush.Layer2Background}"
-                                   Foreground="#DAE5F2" />
+                                       Grid.Row="0"
+                                       Grid.Column="0"
+                                       IsReadOnly="True"
+                                       FontSize="11"
+                                       FontFamily="Consolas"
+                                       Padding="4"
+                                       ShowLineNumbers="True"
+                                       BorderThickness="0"
+                                       Background="{DynamicResource Brush.Layer2Background}"
+                                       Foreground="#DAE5F2" />
                 <controls:AvalonSearchbar HorizontalAlignment="Right"
                                           VerticalAlignment="Top"
                                           Margin="8"

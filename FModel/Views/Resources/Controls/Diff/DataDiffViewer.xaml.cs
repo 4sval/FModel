@@ -37,6 +37,9 @@ public partial class DataDiffViewer
         InitializeComponent();
 
         var highlighter = AvalonExtensions.HighlighterSelector(extension);
+        var linkBrush = Brushes.Cornsilk;
+        AvalonLeft.TextArea.TextView.LinkTextForegroundBrush = linkBrush;
+        AvalonRight.TextArea.TextView.LinkTextForegroundBrush = linkBrush;
         AvalonLeft.SyntaxHighlighting = highlighter;
         AvalonRight.SyntaxHighlighting = highlighter;
 
@@ -289,7 +292,7 @@ public partial class DataDiffViewer
         : DocumentColorizingTransformer
     {
         private static readonly Brush _insertBrush = new SolidColorBrush(Color.FromRgb(50, 90, 30));
-        private static readonly Brush _deleteBrush = new SolidColorBrush(Color.FromArgb(140, 140, 50, 50));
+        private static readonly Brush _deleteBrush = new SolidColorBrush(Color.FromRgb(140, 50, 50));
         private static readonly Brush _modifyBrush = new SolidColorBrush(Color.FromRgb(110, 100, 70));
         private static readonly Brush _moveBrush = new SolidColorBrush(Color.FromRgb(70, 100, 155));
         private static readonly Brush _transparentBrush = Brushes.Transparent;

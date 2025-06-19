@@ -1,0 +1,28 @@
+<controls:AdonisWindow x:Class="FModel.Views.Resources.Controls.Diff.DiffFileSelectionDialog"
+                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                       xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+                       Title="Select file for comparison"
+                       SizeToContent="WidthAndHeight"
+                       WindowStartupLocation="CenterScreen">
+    <StackPanel Margin="16">
+        <TextBlock Margin="0,0,0,8"
+                   Text="Multiple potential files for comparison were found. Please select one:" />
+        <ListBox x:Name="FilesListBox"
+                 DisplayMemberPath="Key"
+                 Height="300"
+                 Width="600" />
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,8,0,0">
+            <Button Content="OK"
+                    Width="75"
+                    Margin="0,0,8,0"
+                    IsDefault="True"
+                    Click="Ok_Click" />
+            <Button Content="Cancel"
+                    Width="75"
+                    IsCancel="True" />
+        </StackPanel>
+    </StackPanel>
+</controls:AdonisWindow>
