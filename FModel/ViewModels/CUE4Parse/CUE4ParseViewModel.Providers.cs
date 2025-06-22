@@ -170,7 +170,7 @@ public partial class CUE4ParseViewModel
         }
     }
 
-    public void InitializeReadSettings()
+    public void RefreshReadSettings()
     {
         Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
         Provider.ReadShaderMaps = UserSettings.Default.ReadShaderMaps;

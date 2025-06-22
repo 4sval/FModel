@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using FModel.ViewModels;
 
 namespace FModel.Views;
@@ -26,5 +26,10 @@ public partial class BackupManager
     private async void OnCreateBackupClick(object sender, RoutedEventArgs e)
     {
         await _viewModel.CreateBackup();
+    }
+
+    private async void OnCreateBackupHeavyClick(object sender, RoutedEventArgs e)
+    {
+        await _viewModel.CreateBackupHeavy();
     }
 }
