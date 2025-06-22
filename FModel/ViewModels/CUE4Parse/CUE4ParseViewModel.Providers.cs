@@ -170,6 +170,17 @@ public partial class CUE4ParseViewModel
         }
     }
 
+    public void InitializeReadSettings()
+    {
+        Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
+        Provider.ReadShaderMaps = UserSettings.Default.ReadShaderMaps;
+
+        if (UserSettings.Default.DiffDir == null) return;
+
+        DiffProvider.ReadScriptData = UserSettings.Default.ReadScriptData;
+        DiffProvider.ReadShaderMaps = UserSettings.Default.ReadShaderMaps;
+    }
+
     public IEnumerable<AbstractVfsFileProvider> AllProviders()
     {
         yield return Provider;

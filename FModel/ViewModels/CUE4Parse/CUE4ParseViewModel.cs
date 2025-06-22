@@ -129,8 +129,7 @@ public partial class CUE4ParseViewModel : ViewModel
             DiffGameDirectory = new GameDirectoryViewModel();
         }
 
-        Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
-        Provider.ReadShaderMaps = UserSettings.Default.ReadShaderMaps;
+        RefreshReadSettings();
 
         GameDirectory = new GameDirectoryViewModel();
         AssetsFolder = new AssetsFolderViewModel();

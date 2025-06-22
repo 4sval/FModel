@@ -81,7 +81,7 @@ public partial class CUE4ParseViewModel
         return dataDiffViewer;
     }
 
-    private static List<string> SplitIntoChunks(string text, int maxLinesPerChunk = 50000)
+    private static List<string> SplitIntoChunks(string text, int maxLinesPerChunk = 400000)
     {
         var lines = text.Split('\n');
         var chunks = new List<string>();
