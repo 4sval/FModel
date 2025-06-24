@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Data;
 using AdonisUI.Controls;
 using CUE4Parse.FileProvider.Objects;
+using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -19,6 +20,7 @@ using Ookii.Dialogs.Wpf;
 using Serilog;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
+using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 
 namespace FModel.ViewModels;
@@ -37,6 +39,13 @@ public class BackupManagerViewModel : ViewModel
     {
         get => _selectedBackup;
         set => SetProperty(ref _selectedBackup, value);
+    }
+
+    private bool _isCreatingBackup;
+    public bool IsCreatingBackup
+    {
+        get => _isCreatingBackup;
+        set => SetProperty(ref _isCreatingBackup, value);
     }
 
     public ObservableCollection<Backup> Backups { get; }
@@ -125,7 +134,7 @@ public class BackupManagerViewModel : ViewModel
     {
         var dialog = new VistaFolderBrowserDialog
         {
-            Description = "Choose the parent folder for the heavy backup",
+            Description = @"Choose the parent folder for the heavy backup",
             ShowNewFolderButton = true
         };
 
@@ -134,17 +143,22 @@ public class BackupManagerViewModel : ViewModel
 
         var selectedFolder = dialog.SelectedPath;
         var defaultFolderName = _applicationView.CUE4Parse.Provider.GameDisplayName ?? _gameName;
-        var targetPath = Path.Combine(selectedFolder, defaultFolderName);
+        var sanitizedDefaultFolderName = StringExtensions.RemoveInvalidFileNameChars(defaultFolderName);
+        var targetPath = Path.Combine(selectedFolder, sanitizedDefaultFolderName);
+
+        long totalSize = _applicationView.CUE4Parse.GameDirectory.DirectoryFiles.Sum(file => file.Length);
+
+        string sizeInfo = $"This backup will use approximately {StringExtensions.GetReadableSize(totalSize)} of disk space.\n";
 
         bool? dialogResult = false;
         Application.Current.Dispatcher.Invoke(() =>
         {
-            var inputDialog = new InputDialog("Backup Folder Name", defaultFolderName);
+            var inputDialog = new InputDialog("Backup Folder Name", sanitizedDefaultFolderName, sizeInfo);
             dialogResult = inputDialog.ShowDialog();
             if (dialogResult != true)
                 return;
 
-            targetPath = Path.Combine(selectedFolder, inputDialog.InputText);
+            targetPath = Path.Combine(selectedFolder, StringExtensions.RemoveInvalidFileNameChars(inputDialog.InputText));
         });
 
         if (dialogResult != true)
@@ -152,28 +166,38 @@ public class BackupManagerViewModel : ViewModel
 
         Directory.CreateDirectory(targetPath);
 
-        long totalSize = _applicationView.CUE4Parse.GameDirectory.DirectoryFiles.Sum(file => file.Length);
+        var drive = new DriveInfo(Path.GetPathRoot(targetPath)!);
+        long availableFreeSpace = drive.AvailableFreeSpace;
 
-        var sizeInGB = totalSize / (1024.0 * 1024 * 1024);
-        var confirm = MessageBox.Show($"This will use approximately {sizeInGB:F2} GB. Continue?", "Confirm Backup", MessageBoxButton.YesNo);
-        if (confirm != MessageBoxResult.Yes)
+        if (availableFreeSpace < totalSize)
+        {
+            MessageBox.Show(
+                $"Not enough disk space to create backup.\n" +
+                $"Required: {StringExtensions.GetReadableSize(totalSize)}\n" +
+                $"Available: {StringExtensions.GetReadableSize(availableFreeSpace)}",
+                "Insufficient Disk Space",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
             return;
+        }
 
         await _threadWorkerView.Begin(_ =>
         {
-            foreach (var directoryFile in _applicationView.CUE4Parse.GameDirectory.DirectoryFiles)
+            var files = _applicationView.CUE4Parse.GameDirectory.DirectoryFiles;
+
+            Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, directoryFile =>
             {
                 try
                 {
                     var inputFilePath = Path.Combine(UserSettings.Default.GameDirectory, directoryFile.Name);
                     var outputFilePath = Path.Combine(targetPath, directoryFile.Name);
-                    File.Copy(inputFilePath, outputFilePath);
+                    File.Copy(inputFilePath, outputFilePath, overwrite: true);
                 }
                 catch (Exception ex)
                 {
                     Log.Error(ex, "Error copying file {FileName}", directoryFile.Name);
                 }
-            }
+            });
         });
 
         FLogger.Append(ELog.Information, () =>

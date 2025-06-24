@@ -5,11 +5,21 @@
                        xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
                        Title="{Binding Title}"
                        ResizeMode="NoResize"
-                       Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.125'}"
+                       Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.175'}"
                        Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.225'}"
                        WindowStartupLocation="CenterScreen">
     <Border Padding="10" CornerRadius="6" MinWidth="300">
         <StackPanel>
+
+            <TextBlock Text="{Binding DescriptionText}"
+                       TextWrapping="Wrap"
+                       Margin="10,0,10,10"
+                       FontSize="13" />
+
+            <TextBlock Text="Please enter a folder name for the backup:"
+                       Margin="10,0,10,2"
+                       FontWeight="Bold"
+                       FontSize="12"/>
 
             <TextBox Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
                      MinWidth="250"

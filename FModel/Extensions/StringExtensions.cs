@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using ICSharpCode.AvalonEdit.Document;
@@ -110,6 +111,13 @@ public static partial class StringExtensions
         }
 
         return -1;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string RemoveInvalidFileNameChars(string input)
+    {
+        var invalidChars = Path.GetInvalidFileNameChars();
+        return new string(input.Where(c => !invalidChars.Contains(c)).ToArray());
     }
 
     [GeneratedRegex(@"^(.+)\[(\d+)\]$", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
