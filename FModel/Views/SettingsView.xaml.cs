@@ -221,7 +221,10 @@ public partial class SettingsView
 
         UserSettings.Default.DiffDir.UeVersion = default;
 
-        _applicationView.SettingsView.SelectedDiffUeGame = default;
+        _applicationView.SettingsView.SelectedDiffUeGame = null;
+
+        if (_applicationView.SettingsView.DiffMappingEndpoint == null) return;
+
         _applicationView.SettingsView.DiffMappingEndpoint.FilePath = string.Empty;
         _applicationView.SettingsView.DiffMappingEndpoint.Overwrite = false;
     }

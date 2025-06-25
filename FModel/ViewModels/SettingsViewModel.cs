@@ -41,8 +41,8 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedUeGame, value);
     }
 
-    private EGame _selectedDiffUeGame;
-    public EGame SelectedDiffUeGame
+    private EGame? _selectedDiffUeGame;
+    public EGame? SelectedDiffUeGame
     {
         get => _selectedDiffUeGame;
         set => SetProperty(ref _selectedDiffUeGame, value);
@@ -330,7 +330,7 @@ public class SettingsViewModel : ViewModel
 
         if (UserSettings.Default.DiffDir != null)
         {
-            UserSettings.Default.DiffDir.UeVersion = SelectedDiffUeGame;
+            UserSettings.Default.DiffDir.UeVersion = SelectedDiffUeGame ?? default;
             UserSettings.Default.DiffDir.TexturePlatform = SelectedUePlatform;
             UserSettings.Default.DiffDir.Versioning.CustomVersions = SelectedCustomVersions;
             UserSettings.Default.DiffDir.Versioning.Options = SelectedOptions;

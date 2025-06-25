@@ -75,6 +75,7 @@
     <Geometry x:Key="DataDiffPlusIcon">M6 2a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6H6zm7 1.5L18.5 9H13V3.5zM12 12v2H9v2h3v2h2v-2h3v-2h-3v-2h-2z</Geometry>
     <Geometry x:Key="ImageDiffMinusIcon">M15 18V20H23V18H15M13.3 21H5C3.9 21 3 20.1 3 19V5C3 3.9 3.9 3 5 3H19C20.1 3 21 3.9 21 5V13.3C20.4 13.1 19.7 13 19 13C17.9 13 16.8 13.3 15.9 13.9L14.5 12L11 16.5L8.5 13.5L5 18H13.1C13 18.3 13 18.7 13 19C13 19.7 13.1 20.4 13.3 21Z</Geometry>
     <Geometry x:Key="ImageDiffPlusIcon">M18 15V18H15V20H18V23H20V20H23V18H20V15H18M13.3 21H5C3.9 21 3 20.1 3 19V5C3 3.9 3.9 3 5 3H19C20.1 3 21 3.9 21 5V13.3C20.4 13.1 19.7 13 19 13C17.9 13 16.8 13.3 15.9 13.9L14.5 12L11 16.5L8.5 13.5L5 18H13.1C13 18.3 13 18.7 13 19C13 19.7 13.1 20.4 13.3 21Z</Geometry>
+    <Geometry x:Key="ChevronDown">M0,0 L10,10 L20,0</Geometry>
 
     <Style x:Key="TabItemFillSpace" TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
         <Setter Property="Width">
@@ -2082,9 +2083,33 @@
                         <ToggleButton x:Name="ExpanderToggle"
                                       Style="{StaticResource ButtonLikeToggleButton}"
                                       IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                      Content="{TemplateBinding Header}"
                                       Cursor="Hand"
-                                      Focusable="False" />
+                                      Focusable="False"
+                                      Padding="8,4">
+                            <Grid VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Viewbox Width="8"
+                                         Height="8"
+                                         VerticalAlignment="Center"
+                                         HorizontalAlignment="Center">
+                                    <Path x:Name="Arrow"
+                                          Data="{StaticResource ChevronDown}"
+                                          Fill="White"
+                                          RenderTransformOrigin="0.5,0.5">
+                                        <Path.RenderTransform>
+                                            <RotateTransform Angle="0" />
+                                        </Path.RenderTransform>
+                                    </Path>
+                                </Viewbox>
+                                <ContentPresenter Grid.Column="1"
+                                                  ContentSource="Header"
+                                                  VerticalAlignment="Center"
+                                                  Margin="8,0,0,0" />
+                            </Grid>
+                        </ToggleButton>
                         <ContentPresenter x:Name="ExpandSite"
                                           ContentSource="Content"
                                           Visibility="Collapsed"
@@ -2096,6 +2121,26 @@
                             <Setter TargetName="ExpandSite"
                                     Property="Visibility"
                                     Value="Visible" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Arrow"
+                                                         Storyboard.TargetProperty="(Path.RenderTransform).(RotateTransform.Angle)"
+                                                         To="180"
+                                                         Duration="0:0:0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Arrow"
+                                                         Storyboard.TargetProperty="(Path.RenderTransform).(RotateTransform.Angle)"
+                                                         To="0"
+                                                         Duration="0:0:0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

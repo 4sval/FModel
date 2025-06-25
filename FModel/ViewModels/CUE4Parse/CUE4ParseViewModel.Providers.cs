@@ -175,7 +175,7 @@ public partial class CUE4ParseViewModel
         Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
         Provider.ReadShaderMaps = UserSettings.Default.ReadShaderMaps;
 
-        if (UserSettings.Default.DiffDir == null) return;
+        if (UserSettings.Default.DiffDir == null || DiffProvider == null) return;
 
         DiffProvider.ReadScriptData = UserSettings.Default.ReadScriptData;
         DiffProvider.ReadShaderMaps = UserSettings.Default.ReadShaderMaps;

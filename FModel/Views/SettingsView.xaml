@@ -359,7 +359,17 @@
                                       Margin="0 5 0 10"
                                       DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                                       Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                                      IsChecked="{Binding SettingsView.DiffMappingEndpoint.Overwrite, Mode=TwoWay}" />
+                                      IsChecked="{Binding SettingsView.DiffMappingEndpoint.Overwrite, Mode=TwoWay}">
+                                <CheckBox.IsEnabled>
+                                    <MultiBinding Converter="{x:Static converters:BooleanAndConverter.Instance}">
+                                        <Binding Source="{x:Static settings:UserSettings.Default}"
+                                                 Path="DiffGameDirectory"
+                                                 Converter="{x:Static converters:StringNotEmptyToBoolConverter.Instance}" />
+                                        <Binding Path="SettingsView.DiffMappingEndpoint"
+                                                 Converter="{x:Static converters:IsNullToBoolReversedConverter.Instance}" />
+                                    </MultiBinding>
+                                </CheckBox.IsEnabled>
+                            </CheckBox>
 
                             <TextBlock Grid.Row="5"
                                        Grid.Column="0"
@@ -389,7 +399,7 @@
                                     Content="Reset Compare Game Settings"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Padding="12,6"
+                                    Padding="8,4"
                                     MinWidth="200"
                                     Cursor="Hand"
                                     Margin="0,5"

@@ -120,12 +120,6 @@ public class ApplicationViewModel : ViewModel
             return existing;
 
         var vm = new GameSelectorViewModel(diffPath);
-        bool? ok = new DirectorySelector(vm).ShowDialog();
-        if (ok != true)
-        {
-            UserSettings.Default.DiffGameDirectory = null;
-            return null;
-        }
 
         UserSettings.Default.DiffGameDirectory = vm.SelectedDirectory.GameDirectory;
         UserSettings.Default.PerDirectory[vm.SelectedDirectory.GameDirectory] = vm.SelectedDirectory;
