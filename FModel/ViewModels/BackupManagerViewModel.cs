@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -63,11 +64,13 @@ public class BackupManagerViewModel : ViewModel
         await _threadWorkerView.Begin(cancellationToken =>
         {
             var backups = _apiEndpointView.FModelApi.GetBackups(cancellationToken, _gameName);
-            if (backups == null) return;
+            if (backups == null)
+                return;
 
             Application.Current.Dispatcher.Invoke(() =>
             {
-                foreach (var backup in backups) Backups.Add(backup);
+                foreach (var backup in backups)
+                    Backups.Add(backup);
                 SelectedBackup = Backups.LastOrDefault();
             });
         });
@@ -91,7 +94,8 @@ public class BackupManagerViewModel : ViewModel
 
             foreach (var asset in _applicationView.CUE4Parse.Provider.Files.Values)
             {
-                if (!func(asset)) continue;
+                if (!func(asset))
+                    continue;
                 writer.Write(asset.Size);
                 writer.Write(asset.IsEncrypted);
                 writer.Write(asset.Path);
@@ -103,7 +107,8 @@ public class BackupManagerViewModel : ViewModel
 
     public async Task Download()
     {
-        if (SelectedBackup == null) return;
+        if (SelectedBackup == null)
+            return;
         await _threadWorkerView.Begin(_ =>
         {
             var fullPath = Path.Combine(Path.Combine(UserSettings.Default.OutputDirectory, "Backups"), SelectedBackup.FileName);
@@ -146,7 +151,12 @@ public class BackupManagerViewModel : ViewModel
         var sanitizedDefaultFolderName = StringExtensions.RemoveInvalidFileNameChars(defaultFolderName);
         var targetPath = Path.Combine(selectedFolder, sanitizedDefaultFolderName);
 
-        long totalSize = _applicationView.CUE4Parse.GameDirectory.DirectoryFiles.Sum(file => file.Length);
+        var gameDirectory = UserSettings.Default.GameDirectory;
+        var allFiles = Directory
+            .EnumerateFiles(gameDirectory, "*", SearchOption.AllDirectories)
+            .ToList();
+
+        long totalSize = allFiles.Sum(f => new FileInfo(f).Length);
 
         string sizeInfo = $"This backup will use approximately {StringExtensions.GetReadableSize(totalSize)} of disk space.\n";
 
@@ -181,29 +191,41 @@ public class BackupManagerViewModel : ViewModel
             return;
         }
 
-        await _threadWorkerView.Begin(_ =>
+        FLogger.Append(ELog.Information, () =>
         {
-            var files = _applicationView.CUE4Parse.GameDirectory.DirectoryFiles;
+            FLogger.Text("Creating heavy backup… this may take a while.", Constants.WHITE, true);
+        });
 
-            Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, directoryFile =>
+        await _threadWorkerView.Begin(cancellationToken =>
+        {
+            var options = new ParallelOptions
             {
+                MaxDegreeOfParallelism = Environment.ProcessorCount,
+                CancellationToken = cancellationToken
+            };
+
+            Parallel.ForEach(allFiles, options, file =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 try
                 {
-                    var inputFilePath = Path.Combine(UserSettings.Default.GameDirectory, directoryFile.Name);
-                    var outputFilePath = Path.Combine(targetPath, directoryFile.Name);
-                    File.Copy(inputFilePath, outputFilePath, overwrite: true);
+                    var relative = Path.GetRelativePath(gameDirectory, file);
+                    var dest = Path.Combine(targetPath, relative);
+                    Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
+                    File.Copy(file, dest, overwrite: true);
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "Error copying file {FileName}", directoryFile.Name);
+                    Log.Error(ex, "Error copying file: {File}", file);
                 }
             });
-        });
 
-        FLogger.Append(ELog.Information, () =>
-        {
-            FLogger.Text("Heavy backup completed at ", Constants.WHITE);
-            FLogger.Link(targetPath, targetPath, true);
+            FLogger.Append(ELog.Information, () =>
+            {
+                FLogger.Text("Heavy backup completed at ", Constants.WHITE);
+                FLogger.Link(targetPath, targetPath, true);
+            });
         });
     }
 }
