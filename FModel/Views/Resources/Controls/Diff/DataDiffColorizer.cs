@@ -11,6 +11,16 @@ namespace FModel.Views.Resources.Controls.Diff;
 
 public partial class DataDiffViewer
 {
+    public static class DiffColors
+    {
+        public static readonly Brush Insert = new SolidColorBrush(Color.FromRgb(50, 90, 30));
+        public static readonly Brush Delete = new SolidColorBrush(Color.FromRgb(140, 50, 50));
+        public static readonly Brush Modify = new SolidColorBrush(Color.FromRgb(110, 100, 70));
+        public static readonly Brush Move = new SolidColorBrush(Color.FromRgb(70, 100, 155));
+        public static readonly Brush CharDiff = new SolidColorBrush(Color.FromRgb(160, 140, 90));
+        public static readonly Brush Transparent = Brushes.Transparent;
+    }
+
     public class DiffAlignment(List<string> l, List<string> r, List<LineMeta> m)
     {
         public List<string> LeftLines { get; } = l;
@@ -31,13 +41,6 @@ public partial class DataDiffViewer
         int lineOffset = 0)
         : DocumentColorizingTransformer
     {
-        private static readonly Brush _insertBrush = new SolidColorBrush(Color.FromRgb(50, 90, 30));
-        private static readonly Brush _deleteBrush = new SolidColorBrush(Color.FromRgb(140, 50, 50));
-        private static readonly Brush _modifyBrush = new SolidColorBrush(Color.FromRgb(110, 100, 70));
-        private static readonly Brush _charDiffBrush = new SolidColorBrush(Color.FromRgb(160, 140, 90));
-        private static readonly Brush _moveBrush = new SolidColorBrush(Color.FromRgb(70, 100, 155));
-        private static readonly Brush _transparentBrush = Brushes.Transparent;
-
         protected override void ColorizeLine(DocumentLine line)
         {
             int row = line.LineNumber - 1 - lineOffset;
@@ -52,15 +55,15 @@ public partial class DataDiffViewer
 
             Brush baseBrush = piece.Type switch
             {
-                ChangeType.Inserted => _insertBrush,
-                ChangeType.Deleted => _deleteBrush,
-                ChangeType.Modified => _modifyBrush,
-                _ => _transparentBrush
+                ChangeType.Inserted => DiffColors.Insert,
+                ChangeType.Deleted => DiffColors.Delete,
+                ChangeType.Modified => DiffColors.Modify,
+                _ => DiffColors.Transparent
             };
 
             if (piece.Type == ChangeType.Inserted && movedStrings.Contains(piece.Text))
             {
-                baseBrush = _moveBrush;
+                baseBrush = DiffColors.Move;
             }
 
             ChangeLinePart(line.Offset, line.EndOffset, e =>
@@ -86,14 +89,14 @@ public partial class DataDiffViewer
                         {
                             var word = oldWords[i];
                             int index = lineText.IndexOf(word, charIndex, StringComparison.Ordinal);
-                            if (index >= 0)
-                            {
-                                ChangeLinePart(
-                                    lineStart + index,
-                                    lineStart + index + word.Length,
-                                    e => e.TextRunProperties.SetBackgroundBrush(_charDiffBrush));
-                                charIndex = index + word.Length;
-                            }
+
+                            if (index < 0) continue;
+
+                            ChangeLinePart(
+                                lineStart + index,
+                                lineStart + index + word.Length,
+                                e => e.TextRunProperties.SetBackgroundBrush(DiffColors.CharDiff));
+                            charIndex = index + word.Length;
                         }
                     }
                 }
@@ -108,14 +111,14 @@ public partial class DataDiffViewer
                         {
                             var word = newWords[i];
                             int index = lineText.IndexOf(word, charIndex, StringComparison.Ordinal);
-                            if (index >= 0)
-                            {
-                                ChangeLinePart(
-                                    lineStart + index,
-                                    lineStart + index + word.Length,
-                                    e => e.TextRunProperties.SetBackgroundBrush(_charDiffBrush));
-                                charIndex = index + word.Length;
-                            }
+
+                            if (index < 0) continue;
+
+                            ChangeLinePart(
+                                lineStart + index,
+                                lineStart + index + word.Length,
+                                e => e.TextRunProperties.SetBackgroundBrush(DiffColors.CharDiff));
+                            charIndex = index + word.Length;
                         }
                     }
                 }

@@ -31,6 +31,17 @@
                         Height="200"
                         VerticalAlignment="Center"
                         Click="ToggleButton_Click">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="8,0,0,8">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center" />
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
                     <Path x:Name="ArrowPath"
                           Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                           Stretch="Uniform"
@@ -52,19 +63,18 @@
                         IsHitTestVisible="False"
                         Background="Transparent"
                         Width="16" />
-                <StackPanel x:Name="NavItems"
-                            Grid.Column="2"
-                            Background="#6FF0F8FF"
-                            Orientation="Vertical"
-                            VerticalAlignment="Stretch"
-                            Visibility="Visible">
-                    <TextBlock Text="Nav item 1"
-                               Margin="0,8" />
-                    <TextBlock Text="Nav item 2"
-                               Margin="0,8" />
-                    <TextBlock Text="Nav item 3"
-                               Margin="0,8" />
-                </StackPanel>
+                <Canvas x:Name="MarkerCanvas"
+                        Cursor="Hand"
+                        Grid.Column="2"
+                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
+                    <Rectangle x:Name="ScrollIndicator"
+                               Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Canvas}}"
+                               Height="20"
+                               RadiusX="3"
+                               RadiusY="3"
+                               Fill="#66FFFFFF"
+                               Visibility="Collapsed" />
+                </Canvas>
             </Grid>
         </Border>
     </Grid>

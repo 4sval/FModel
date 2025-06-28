@@ -156,8 +156,16 @@ public partial class DataDiffViewer
     private void DataDiffViewer_Loaded(object sender, RoutedEventArgs e)
     {
         _scroll = FindScrollViewer(AvalonLeft);
-        if (_scroll != null)
-            _scroll.ScrollChanged += Scroll_ScrollChanged;
+
+        if (_scroll == null) return;
+
+        _scroll.ScrollChanged += Scroll_ScrollChanged;
+
+        DiffNavbar.Attach(_scroll, _globalAlignment.Meta, _globalMovedStrings);
+        DiffNavbar.LineClicked += line =>
+        {
+            _scroll.ScrollToVerticalOffset(line * _scroll.ExtentHeight / DiffNavbar.TotalLines);
+        };
     }
 
     private void Scroll_ScrollChanged(object sender, ScrollChangedEventArgs e)
