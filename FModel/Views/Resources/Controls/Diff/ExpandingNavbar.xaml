@@ -1,0 +1,71 @@
+<UserControl x:Class="FModel.Views.Resources.Controls.Diff.ExpandingNavbar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+             MinWidth="32"
+             HorizontalAlignment="Right"
+             VerticalAlignment="Stretch">
+    <Grid Background="{DynamicResource Brush.Layer3BackgroundBrush}"
+          HorizontalAlignment="Right"
+          VerticalAlignment="Stretch"
+          Height="Auto"
+          ClipToBounds="True">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Border x:Name="NavContent"
+                Background="{DynamicResource Brush.Layer2Background}"
+                VerticalAlignment="Stretch"
+                HorizontalAlignment="Right"
+                Width="36">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Button x:Name="ToggleButton"
+                        Grid.Column="0"
+                        Width="20"
+                        Cursor="Hand"
+                        Height="200"
+                        VerticalAlignment="Center"
+                        Click="ToggleButton_Click">
+                    <Path x:Name="ArrowPath"
+                          Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                          Stretch="Uniform"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          Width="12"
+                          Height="12"
+                          Data="M8,0 L2,6 L8,12">
+                        <Path.RenderTransform>
+                            <RotateTransform x:Name="ArrowRotateTransform"
+                                             Angle="0"
+                                             CenterX="3"
+                                             CenterY="6" />
+                        </Path.RenderTransform>
+                    </Path>
+                </Button>
+                <Border x:Name="Spacer"
+                        Grid.Column="1"
+                        IsHitTestVisible="False"
+                        Background="Transparent"
+                        Width="16" />
+                <StackPanel x:Name="NavItems"
+                            Grid.Column="2"
+                            Background="#6FF0F8FF"
+                            Orientation="Vertical"
+                            VerticalAlignment="Stretch"
+                            Visibility="Visible">
+                    <TextBlock Text="Nav item 1"
+                               Margin="0,8" />
+                    <TextBlock Text="Nav item 2"
+                               Margin="0,8" />
+                    <TextBlock Text="Nav item 3"
+                               Margin="0,8" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

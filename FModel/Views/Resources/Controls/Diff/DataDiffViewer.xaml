@@ -84,6 +84,9 @@
                                           Panel.ZIndex="100"
                                           TargetEditor="{Binding ElementName=AvalonRight}" />
             </Grid>
+            <!--<diff:ExpandingNavbar Grid.Row="2" Grid.Column="3" HorizontalAlignment="Right"
+                                        VerticalAlignment="Stretch"
+                                        Panel.ZIndex="10" />-->
         </Grid>
     </Border>
 </UserControl>

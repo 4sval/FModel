@@ -120,8 +120,6 @@ public partial class DataDiffViewer
                     }
                 }
             }
-
-
         }
 
         public static DrawingBrush CreateGapBrush()
