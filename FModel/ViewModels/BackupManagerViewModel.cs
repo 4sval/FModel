@@ -3,11 +3,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using AdonisUI.Controls;
 using CUE4Parse.FileProvider.Objects;
 using FModel.Extensions;
 using FModel.Framework;
@@ -22,7 +20,6 @@ using Serilog;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
-using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 
 namespace FModel.ViewModels;
 
