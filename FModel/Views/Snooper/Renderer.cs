@@ -12,6 +12,7 @@ using CUE4Parse.UE4.Assets.Exports.Component.SplineMesh;
 using CUE4Parse.UE4.Assets.Exports.Component.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
 using CUE4Parse.UE4.Assets.Exports.Material;
+using CUE4Parse.UE4.Assets.Exports.Nanite;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
@@ -86,7 +87,7 @@ public class Renderer : IDisposable
         switch (dummy)
         {
             case UStaticMesh when export.Value is UStaticMesh st:
-                LoadStaticMesh(st);
+                LoadStaticMesh(st, UserSettings.Default.NaniteMeshExportFormat);
                 break;
             case USkeletalMesh when export.Value is USkeletalMesh sk:
                 LoadSkeletalMesh(sk);
@@ -343,7 +344,7 @@ public class Renderer : IDisposable
             wnd.WindowShouldClose(true, true);
     }
 
-    private void LoadStaticMesh(UStaticMesh original)
+    private void LoadStaticMesh(UStaticMesh original, ENaniteMeshFormat naniteFormat = ENaniteMeshFormat.OnlyNormalLODs)
     {
         var guid = original.LightingGuid;
         if (Options.TryGetModel(guid, out var model))
@@ -353,7 +354,7 @@ public class Renderer : IDisposable
             return;
         }
 
-        if (!original.TryConvert(out var mesh))
+        if (!original.TryConvert(out var mesh, naniteFormat))
             return;
 
         Options.Models[guid] = new StaticModel(original, mesh);

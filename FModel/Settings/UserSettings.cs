@@ -10,6 +10,7 @@ using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
 using CUE4Parse_Conversion.UEFormat.Enums;
 using CUE4Parse.UE4.Assets.Exports.Material;
+using CUE4Parse.UE4.Assets.Exports.Nanite;
 using FModel.Framework;
 using FModel.ViewModels;
 using FModel.ViewModels.ApiEndpoints.Models;
@@ -62,6 +63,7 @@ namespace FModel.Settings
         {
             LodFormat = Default.LodExportFormat,
             MeshFormat = Default.MeshExportFormat,
+            NaniteMeshFormat = Default.NaniteMeshExportFormat,
             AnimFormat = Default.MeshExportFormat switch
             {
                 EMeshFormat.UEFormat => EAnimFormat.UEFormat,
@@ -377,6 +379,13 @@ namespace FModel.Settings
         {
             get => _meshExportFormat;
             set => SetProperty(ref _meshExportFormat, value);
+        }
+
+        private ENaniteMeshFormat _naniteMeshExportFormat = ENaniteMeshFormat.OnlyNaniteLOD;
+        public ENaniteMeshFormat NaniteMeshExportFormat
+        {
+            get => _naniteMeshExportFormat;
+            set => SetProperty(ref _naniteMeshExportFormat, value);
         }
 
         private EMaterialFormat _materialExportFormat = EMaterialFormat.FirstLayer;

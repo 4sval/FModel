@@ -9,6 +9,7 @@ using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
 using CUE4Parse_Conversion.UEFormat.Enums;
+using CUE4Parse.UE4.Assets.Exports.Nanite;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -164,6 +165,13 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedLodExportFormat, value);
     }
 
+    private ENaniteMeshFormat _selectedNaniteMeshExportFormat;
+    public ENaniteMeshFormat SelectedNaniteMeshExportFormat
+    {
+        get => _selectedNaniteMeshExportFormat;
+        set => SetProperty(ref _selectedNaniteMeshExportFormat, value);
+    }
+
     private EMaterialFormat _selectedMaterialExportFormat;
     public EMaterialFormat SelectedMaterialExportFormat
     {
@@ -192,6 +200,7 @@ public class SettingsViewModel : ViewModel
     public ReadOnlyObservableCollection<ESocketFormat> SocketExportFormats { get; private set; }
     public ReadOnlyObservableCollection<EFileCompressionFormat> CompressionFormats { get; private set; }
     public ReadOnlyObservableCollection<ELodFormat> LodExportFormats { get; private set; }
+    public ReadOnlyObservableCollection<ENaniteMeshFormat> NaniteMeshExportFormats { get; private set; }
     public ReadOnlyObservableCollection<EMaterialFormat> MaterialExportFormats { get; private set; }
     public ReadOnlyObservableCollection<ETextureFormat> TextureExportFormats { get; private set; }
     public ReadOnlyObservableCollection<ETexturePlatform> Platforms { get; private set; }
@@ -217,6 +226,7 @@ public class SettingsViewModel : ViewModel
     private ESocketFormat _socketExportFormatSnapshot;
     private EFileCompressionFormat _compressionFormatSnapshot;
     private ELodFormat _lodExportFormatSnapshot;
+    private ENaniteMeshFormat _naniteMeshExportFormatSnapshot;
     private EMaterialFormat _materialExportFormatSnapshot;
     private ETextureFormat _textureExportFormatSnapshot;
 
@@ -266,6 +276,7 @@ public class SettingsViewModel : ViewModel
         _socketExportFormatSnapshot = UserSettings.Default.SocketExportFormat;
         _compressionFormatSnapshot = UserSettings.Default.CompressionFormat;
         _lodExportFormatSnapshot = UserSettings.Default.LodExportFormat;
+        _naniteMeshExportFormatSnapshot = UserSettings.Default.NaniteMeshExportFormat;
         _materialExportFormatSnapshot = UserSettings.Default.MaterialExportFormat;
         _textureExportFormatSnapshot = UserSettings.Default.TextureExportFormat;
 
@@ -282,6 +293,7 @@ public class SettingsViewModel : ViewModel
         SelectedSocketExportFormat = _socketExportFormatSnapshot;
         SelectedCompressionFormat = _selectedCompressionFormat;
         SelectedLodExportFormat = _lodExportFormatSnapshot;
+        SelectedNaniteMeshExportFormat = _naniteMeshExportFormatSnapshot;
         SelectedMaterialExportFormat = _materialExportFormatSnapshot;
         SelectedTextureExportFormat = _textureExportFormatSnapshot;
         SelectedAesReload = UserSettings.Default.AesReload;
@@ -299,6 +311,7 @@ public class SettingsViewModel : ViewModel
         SocketExportFormats = new ReadOnlyObservableCollection<ESocketFormat>(new ObservableCollection<ESocketFormat>(EnumerateSocketExportFormat()));
         CompressionFormats = new ReadOnlyObservableCollection<EFileCompressionFormat>(new ObservableCollection<EFileCompressionFormat>(EnumerateCompressionFormat()));
         LodExportFormats = new ReadOnlyObservableCollection<ELodFormat>(new ObservableCollection<ELodFormat>(EnumerateLodExportFormat()));
+        NaniteMeshExportFormats = new ReadOnlyObservableCollection<ENaniteMeshFormat>(new ObservableCollection<ENaniteMeshFormat>(EnumerateNaniteMeshExportFormat()));
         MaterialExportFormats = new ReadOnlyObservableCollection<EMaterialFormat>(new ObservableCollection<EMaterialFormat>(EnumerateMaterialExportFormat()));
         TextureExportFormats = new ReadOnlyObservableCollection<ETextureFormat>(new ObservableCollection<ETextureFormat>(EnumerateTextureExportFormat()));
         Platforms = new ReadOnlyObservableCollection<ETexturePlatform>(new ObservableCollection<ETexturePlatform>(EnumerateUePlatforms()));
@@ -349,6 +362,7 @@ public class SettingsViewModel : ViewModel
         UserSettings.Default.SocketExportFormat = SelectedSocketExportFormat;
         UserSettings.Default.CompressionFormat = SelectedCompressionFormat;
         UserSettings.Default.LodExportFormat = SelectedLodExportFormat;
+        UserSettings.Default.NaniteMeshExportFormat = SelectedNaniteMeshExportFormat;
         UserSettings.Default.MaterialExportFormat = SelectedMaterialExportFormat;
         UserSettings.Default.TextureExportFormat = SelectedTextureExportFormat;
         UserSettings.Default.AesReload = SelectedAesReload;
@@ -374,6 +388,7 @@ public class SettingsViewModel : ViewModel
     private IEnumerable<ESocketFormat> EnumerateSocketExportFormat() => Enum.GetValues<ESocketFormat>();
     private IEnumerable<EFileCompressionFormat> EnumerateCompressionFormat() => Enum.GetValues<EFileCompressionFormat>();
     private IEnumerable<ELodFormat> EnumerateLodExportFormat() => Enum.GetValues<ELodFormat>();
+    private IEnumerable<ENaniteMeshFormat> EnumerateNaniteMeshExportFormat() => Enum.GetValues<ENaniteMeshFormat>();
     private IEnumerable<EMaterialFormat> EnumerateMaterialExportFormat() => Enum.GetValues<EMaterialFormat>();
     private IEnumerable<ETextureFormat> EnumerateTextureExportFormat() => Enum.GetValues<ETextureFormat>();
     private IEnumerable<ETexturePlatform> EnumerateUePlatforms() => Enum.GetValues<ETexturePlatform>();
