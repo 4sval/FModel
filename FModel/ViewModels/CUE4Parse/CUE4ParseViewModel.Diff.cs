@@ -38,7 +38,7 @@ public partial class CUE4ParseViewModel
 
         await Application.Current.Dispatcher.Invoke(async () =>
         {
-            var diffContent = await CreateDiffViewer(leftFile, rightFile, leftImage, rightImage, assetPath, extension);
+            var diffContent = await CreateDiffViewer(leftFile, rightFile, leftImage, rightImage, extension);
 
             if (existingTab != null)
             {
@@ -60,7 +60,7 @@ public partial class CUE4ParseViewModel
         });
     }
 
-    private async Task<object> CreateDiffViewer(GameFile leftFile, GameFile rightFile, TabImage leftImage, TabImage rightImage, string assetPath, string extension)
+    private async Task<object> CreateDiffViewer(GameFile leftFile, GameFile rightFile, TabImage leftImage, TabImage rightImage, string extension)
     {
         if (leftImage != null || rightImage != null)
         {

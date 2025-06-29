@@ -33,6 +33,7 @@ public partial class ExpandingNavbar
         MarkerCanvas.PreviewMouseMove += MarkerCanvas_MouseMove;
         MarkerCanvas.PreviewMouseLeftButtonUp += MarkerCanvas_MouseUp;
         MarkerCanvas.PreviewMouseWheel += MarkerCanvas_MouseWheel;
+        MarkerCanvas.SizeChanged += MarkerCanvas_SizeChanged;
     }
 
     public void Attach(ScrollViewer editorScroll, List<LineMeta> meta, HashSet<string> movedString)
@@ -73,7 +74,15 @@ public partial class ExpandingNavbar
         if (_editorScroll == null)
             return;
 
-        _editorScroll.ScrollToVerticalOffset(_editorScroll.VerticalOffset - e.Delta);
+        const double scrollPercent = 0.01;
+
+        double scrollableHeight = _editorScroll.ExtentHeight - _editorScroll.ViewportHeight;
+        if (scrollableHeight <= 0)
+            return;
+
+        double deltaFactor = Math.Sign(e.Delta);
+        double scrollAmount = scrollableHeight * scrollPercent * deltaFactor;
+        _editorScroll.ScrollToVerticalOffset(_editorScroll.VerticalOffset - scrollAmount);
         e.Handled = true;
     }
 
@@ -93,16 +102,10 @@ public partial class ExpandingNavbar
         e.Handled = true;
     }
 
-    private void UpdateEditorScrollFromIndicator()
+    private void MarkerCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
     {
-        if (_editorScroll == null || !(_editorScroll.ExtentHeight > _editorScroll.ViewportHeight))
-            return;
-
-        double indicatorTop = Canvas.GetTop(ScrollIndicator);
-        double maxTop = MarkerCanvas.ActualHeight - ScrollIndicator.ActualHeight;
-        double ratio = indicatorTop / maxTop;
-        double newOffset = ratio * (_editorScroll.ExtentHeight - _editorScroll.ViewportHeight);
-        _editorScroll.ScrollToVerticalOffset(newOffset);
+        BuildMarkers();
+        UpdateScrollIndicator();
     }
 
     private void MarkerCanvas_MouseUp(object sender, MouseButtonEventArgs e)
@@ -117,13 +120,18 @@ public partial class ExpandingNavbar
 
     private void EditorScrollChanged(object s, ScrollChangedEventArgs e)
     {
-        if (TotalLines == 0 || MarkerCanvas.ActualHeight <= 0)
+        UpdateScrollIndicator();
+    }
+
+    private void UpdateScrollIndicator()
+    {
+        if (TotalLines == 0 || MarkerCanvas.ActualHeight <= 0 || _editorScroll == null)
             return;
 
         double canvasHeight = MarkerCanvas.ActualHeight;
-        double extentHeight = e.ExtentHeight;
-        double viewportHeight = e.ViewportHeight;
-        double verticalOffset = e.VerticalOffset;
+        double extentHeight = _editorScroll.ExtentHeight;
+        double viewportHeight = _editorScroll.ViewportHeight;
+        double verticalOffset = _editorScroll.VerticalOffset;
 
         double visibleRatio = viewportHeight / extentHeight;
         double offsetRatio = verticalOffset / extentHeight;
@@ -134,6 +142,18 @@ public partial class ExpandingNavbar
         ScrollIndicator.Height = Math.Max(10, indicatorHeight);
         Canvas.SetTop(ScrollIndicator, indicatorTop);
         ScrollIndicator.Visibility = Visibility.Visible;
+    }
+
+    private void UpdateEditorScrollFromIndicator()
+    {
+        if (_editorScroll == null || !(_editorScroll.ExtentHeight > _editorScroll.ViewportHeight))
+            return;
+
+        double indicatorTop = Canvas.GetTop(ScrollIndicator);
+        double maxTop = MarkerCanvas.ActualHeight - ScrollIndicator.ActualHeight;
+        double ratio = indicatorTop / maxTop;
+        double newOffset = ratio * (_editorScroll.ExtentHeight - _editorScroll.ViewportHeight);
+        _editorScroll.ScrollToVerticalOffset(newOffset);
     }
 
     private void BuildMarkers()

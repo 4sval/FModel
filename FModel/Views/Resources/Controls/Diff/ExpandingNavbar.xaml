@@ -73,6 +73,8 @@
                                RadiusX="3"
                                RadiusY="3"
                                Fill="#66FFFFFF"
+                               Stroke="#CCFFFFFF"
+                               StrokeThickness="1"
                                Visibility="Collapsed" />
                 </Canvas>
             </Grid>

@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using AdonisUI.Controls;
 using CUE4Parse.Compression;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Vfs;
@@ -211,5 +212,16 @@ public partial class CUE4ParseViewModel
         yield return (Provider, UserSettings.Default.CurrentDir);
         if (DiffProvider != null && UserSettings.Default.DiffDir != null)
             yield return (DiffProvider, UserSettings.Default.DiffDir);
+    }
+
+    public void ClearProvider()
+    {
+        AssetsFolder.Folders.Clear();
+        SearchVm.SearchResults.Clear();
+        Helper.CloseWindow<AdonisWindow>("Search View");
+
+        ForEachProvider(provider => provider.UnloadNonStreamedVfs());
+
+        GC.Collect();
     }
 }
