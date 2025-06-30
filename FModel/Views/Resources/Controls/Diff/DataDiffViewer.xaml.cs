@@ -168,15 +168,15 @@ public partial class DataDiffViewer
         };
     }
 
-    private void Scroll_ScrollChanged(object sender, ScrollChangedEventArgs e)
+    private async void Scroll_ScrollChanged(object sender, ScrollChangedEventArgs e)
     {
         if (_isLoading)
             return;
 
-        if (sender is ScrollViewer sv && IsNearBottom(sv))
-        {
-            _ = LoadMoreChunksAsync();
-        }
+        if (sender is not ScrollViewer sv || !IsNearBottom(sv)) return;
+
+        await LoadMoreChunksAsync();
+        DiffNavbar.UpdateNavbar(_globalAlignment.Meta, _globalMovedStrings, true);
     }
 
     private static bool IsNearBottom(ScrollViewer sv)

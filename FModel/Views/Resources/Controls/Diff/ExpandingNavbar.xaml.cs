@@ -36,16 +36,22 @@ public partial class ExpandingNavbar
         MarkerCanvas.SizeChanged += MarkerCanvas_SizeChanged;
     }
 
-    public void Attach(ScrollViewer editorScroll, List<LineMeta> meta, HashSet<string> movedString)
+    public void Attach(ScrollViewer editorScroll, List<LineMeta> meta, HashSet<string> movedStrings)
     {
         _editorScroll = editorScroll;
         _editorScroll.ScrollChanged += EditorScrollChanged;
+        UpdateNavbar(meta, movedStrings);
+    }
+
+    public void UpdateNavbar(List<LineMeta> meta, HashSet<string> movedStrings, bool updateScrollIndicator = false)
+    {
         _meta.Clear();
         _meta.AddRange(meta);
-        _movedStrings.Clear();
-        _movedStrings = movedString;
+        _movedStrings = movedStrings;
         TotalLines = meta.Count;
         BuildMarkers();
+        if (updateScrollIndicator)
+            UpdateScrollIndicator();
     }
 
     private void MarkerCanvas_MouseDown(object sender, MouseButtonEventArgs e)
@@ -120,6 +126,9 @@ public partial class ExpandingNavbar
 
     private void EditorScrollChanged(object s, ScrollChangedEventArgs e)
     {
+        if (_isDraggingIndicator)
+            return;
+
         UpdateScrollIndicator();
     }
 

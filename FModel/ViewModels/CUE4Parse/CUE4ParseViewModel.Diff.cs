@@ -81,8 +81,9 @@ public partial class CUE4ParseViewModel
         return dataDiffViewer;
     }
 
-    private static List<string> SplitIntoChunks(string text, int maxLinesPerChunk = 400000)
+    private static List<string> SplitIntoChunks(string text)
     {
+        const int maxLinesPerChunk = 150_000;
         var lines = text.Split('\n');
         var chunks = new List<string>();
 
@@ -277,7 +278,7 @@ public partial class CUE4ParseViewModel
         }
     }
 
-    private bool AreTextsEqual(List<string> leftChunks, List<string> rightChunks)
+    private static bool AreTextsEqual(List<string> leftChunks, List<string> rightChunks)
     {
         if ((leftChunks == null || leftChunks.Count == 0) && (rightChunks == null || rightChunks.Count == 0))
             return true;
