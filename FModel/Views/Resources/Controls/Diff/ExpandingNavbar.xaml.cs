@@ -110,6 +110,9 @@ public partial class ExpandingNavbar
 
     private void MarkerCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
     {
+        const double tolerance = 0.5;
+        if (Math.Abs(e.PreviousSize.Height - e.NewSize.Height) < tolerance) return;
+
         BuildMarkers();
         UpdateScrollIndicator();
     }
