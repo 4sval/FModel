@@ -177,10 +177,12 @@ public partial class DataDiffViewer
                 if (!gapLineToWidth.TryGetValue(lineNumber, out double width) || !(width > 0))
                     continue;
 
-                var rect = new Rect(
-                    new Point(0, visualLine.VisualTop - textView.VerticalOffset),
-                    new Size(width, visualLine.Height)
-                );
+                var textLine = visualLine.GetTextLine(0);
+                double x = textLine.WidthIncludingTrailingWhitespace - textView.HorizontalOffset;
+                double y = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.TextTop)
+                           - textView.VerticalOffset;
+
+                var rect = new Rect(new Point(x, y), new Size(width, textLine.Height));
                 drawingContext.DrawRectangle(_gapBrush, null, rect);
             }
         }
