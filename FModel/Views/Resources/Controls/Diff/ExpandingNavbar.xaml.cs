@@ -111,7 +111,8 @@ public partial class ExpandingNavbar
     private void MarkerCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         const double tolerance = 0.5;
-        if (Math.Abs(e.PreviousSize.Height - e.NewSize.Height) < tolerance) return;
+        if (Math.Abs(e.PreviousSize.Height - e.NewSize.Height) < tolerance)
+            return;
 
         BuildMarkers();
         UpdateScrollIndicator();
@@ -146,10 +147,12 @@ public partial class ExpandingNavbar
         double verticalOffset = _editorScroll.VerticalOffset;
 
         double visibleRatio = viewportHeight / extentHeight;
-        double offsetRatio = verticalOffset / extentHeight;
+        double centerOffset = verticalOffset + viewportHeight / 2;
+        double centerRatio = centerOffset / extentHeight;
 
         double indicatorHeight = canvasHeight * visibleRatio;
-        double indicatorTop = canvasHeight * offsetRatio;
+        double indicatorTop = canvasHeight * centerRatio - indicatorHeight / 2;
+        indicatorTop = Math.Max(0, Math.Min(indicatorTop, canvasHeight - indicatorHeight));
 
         ScrollIndicator.Height = Math.Max(10, indicatorHeight);
         Canvas.SetTop(ScrollIndicator, indicatorTop);
@@ -199,7 +202,8 @@ public partial class ExpandingNavbar
                 }
             };
 
-            if (piece.Type == ChangeType.Inserted && _movedStrings.Contains(piece.Text) && !string.IsNullOrEmpty(piece.Text)) rect.Fill = DiffColors.Move;
+            if (piece.Type == ChangeType.Inserted && _movedStrings.Contains(piece.Text) && !string.IsNullOrEmpty(piece.Text))
+                rect.Fill = DiffColors.Move;
 
             Canvas.SetTop(rect, i * h / TotalLines);
             MarkerCanvas.Children.Add(rect);
