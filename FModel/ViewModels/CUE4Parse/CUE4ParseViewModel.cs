@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -9,7 +8,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
-using CUE4Parse_Conversion.Textures;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
@@ -412,14 +410,7 @@ public partial class CUE4ParseViewModel : ViewModel
                     var data = Provider.SaveAsset(entry);
                     using var stream = new MemoryStream(data) { Position = 0 };
                     var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(512, 512));
-                    svg.Load(stream);
-
-                    var bitmap = new SKBitmap(512, 512);
-                    using (var canvas = new SKCanvas(bitmap))
-                    using (var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.Medium })
-                    {
-                        canvas.DrawPicture(svg.Picture, paint);
-                    }
+                    var bitmap = RenderSvg(stream);
 
                     TabControl.SelectedTab.AddImage(entry.NameWithoutExtension, false, bitmap, saveTextures, updateUi);
 
@@ -510,19 +501,11 @@ public partial class CUE4ParseViewModel : ViewModel
                 }
             case USvgAsset when (isNone || saveTextures) && pointer.Object.Value is USvgAsset svgasset:
                 {
-                    const int size = 512;
                     var data = svgasset.GetOrDefault<byte[]>("SvgData");
                     var sourceFile = svgasset.GetOrDefault<string>("SourceFile");
-                    using var stream = new MemoryStream(data) { Position = 0 };
-                    var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(size, size));
-                    svg.Load(stream);
-
-                    var bitmap = new SKBitmap(size, size);
-                    using (var canvas = new SKCanvas(bitmap))
-                    using (var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.Medium })
-                    {
-                        canvas.DrawPicture(svg.Picture, paint);
-                    }
+                    using var stream = new MemoryStream(data);
+                    stream.Position = 0;
+                    var bitmap = RenderSvg(stream);
 
                     if (saveTextures)
                     {
@@ -760,86 +743,16 @@ public partial class CUE4ParseViewModel : ViewModel
         return (a & b) == b;
     }
 
-    private TabImage LoadTabImageForDiff(AbstractVfsFileProvider provider, GameFile entry)
-    {
-        if (entry == null)
-            return null;
-
-        var ext = entry.Extension.ToLowerInvariant();
-        var name = entry.NameWithoutExtension;
-        var rnn = false;
-
-        switch (ext)
-        {
-            case "png":
-            case "jpg":
-            case "jpeg":
-            case "bmp":
-                {
-                    var data = provider.SaveAsset(entry);
-                    using var ms = new MemoryStream(data);
-                    var bmp = SKBitmap.Decode(ms);
-                    return bmp != null
-                        ? new TabImage(name, rnn, bmp)
-                        : null;
-                }
-
-            case "svg":
-                {
-                    var data = provider.SaveAsset(entry);
-                    using var ms = new MemoryStream(data);
-                    var bmp = RenderSvg(ms);
-                    return bmp != null
-                        ? new TabImage(name, rnn, bmp)
-                        : null;
-                }
-            case "uasset":
-                {
-                    try
-                    {
-                        var pkg = provider.LoadPackage(entry);
-
-                        var pointer = new FPackageIndex(pkg, 1).ResolvedObject;
-
-                        if (pointer?.Object?.Value is not UTexture texture)
-                            return null;
-
-                        CTexture[] textures;
-                        if (texture is UTexture2DArray arr)
-                            textures = arr.DecodeTextureArray(UserSettings.Default.CurrentDir.TexturePlatform);
-                        else
-                        {
-                            var single = texture.Decode(UserSettings.Default.CurrentDir.TexturePlatform);
-                            if (texture is UTextureCube)
-                                single = single.ToPanorama();
-                            textures = new[] { single };
-                        }
-
-                        var ct = textures.FirstOrDefault();
-                        return ct != null
-                            ? new TabImage(name, texture.RenderNearestNeighbor, ct)
-                            : null;
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Warning($"Failed to decode UTexture for diff: {entry.Path} – {e.Message}");
-                        return null;
-                    }
-                }
-
-            default:
-                return null;
-        }
-    }
-
-    private SKBitmap RenderSvg(Stream stream)
+    private static SKBitmap RenderSvg(Stream stream)
     {
         const int size = 512;
         var svg = new SkiaSharp.Extended.Svg.SKSvg();
         svg.Load(stream);
         var bmp = new SKBitmap(size, size);
         using var canvas = new SKCanvas(bmp);
-        using var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.Medium };
+        using var paint = new SKPaint();
+        paint.IsAntialias = true;
+        paint.FilterQuality = SKFilterQuality.Medium;
         canvas.Clear(SKColors.Transparent);
         canvas.DrawPicture(svg.Picture, paint);
         return bmp;

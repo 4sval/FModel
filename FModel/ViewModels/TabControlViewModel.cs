@@ -26,6 +26,8 @@ public class TabImage : ViewModel
 
     public byte[] ImageBuffer { get; set; }
 
+    public ulong ImageHash { get; set; }
+
     public TabImage(string name, bool rnn, SKBitmap img)
     {
         ExportName = name;
@@ -69,6 +71,49 @@ public class TabImage : ViewModel
         }
     }
 
+    public bool VisuallyEquals(TabImage other, int tolerance = 3)
+    {
+        if (other == null)
+            return false;
+        ulong x = ImageHash ^ other.ImageHash;
+        int setBits = 0;
+        while (x > 0)
+        {
+            setBits += (int) (x & 1);
+            x >>= 1;
+        }
+        return setBits <= tolerance;
+    }
+
+    private static ulong GetVisualHash(SKBitmap bmp, int size = 8)
+    {
+        using var smallBmp = bmp?.Resize(new SKImageInfo(size, size), SKFilterQuality.Medium);
+        if (smallBmp == null)
+            return 0;
+
+        byte[] gray = new byte[size * size];
+        int i = 0;
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                var pixel = smallBmp.GetPixel(x, y);
+                gray[i++] = (byte) ((pixel.Red * 299 + pixel.Green * 587 + pixel.Blue * 114) / 1000); // Values for grayscale
+            }
+        }
+
+        int avg = gray.Sum(c => c) / gray.Length;
+
+        ulong hash = 0;
+        for (int j = 0; j < gray.Length; j++)
+        {
+            if (gray[j] > avg)
+                hash |= 1UL << j;
+        }
+
+        return hash;
+    }
+
     private void SetImage(SKBitmap bitmap)
     {
         if (bitmap is null)
@@ -79,6 +124,7 @@ public class TabImage : ViewModel
         }
 
         _bmp = bitmap;
+        ImageHash = GetVisualHash(_bmp);
         ExportName += "." + (NoAlpha ? "jpg" : "png");
         using var data = _bmp.Encode(NoAlpha ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
         using var stream = new MemoryStream(ImageBuffer = data.ToArray(), false);
@@ -101,6 +147,7 @@ public class TabImage : ViewModel
         }
 
         _bmp = bitmap.ToSkBitmap();
+        ImageHash = GetVisualHash(_bmp);
         byte[] imageData = _bmp.Encode(NoAlpha ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100).ToArray();
 
         if (PixelFormatUtils.IsHDR(bitmap.PixelFormat) || (UserSettings.Default.TextureExportFormat != ETextureFormat.Jpeg && UserSettings.Default.TextureExportFormat != ETextureFormat.Png))

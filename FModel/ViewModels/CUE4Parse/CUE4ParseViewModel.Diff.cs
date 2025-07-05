@@ -10,14 +10,20 @@ using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets.Exports.Material;
+using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Localization;
+using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Shaders;
 using CUE4Parse.UE4.Wwise;
+using CUE4Parse_Conversion.Textures;
 using FModel.Extensions;
 using FModel.Framework;
+using FModel.Settings;
 using FModel.Views.Resources.Controls.Diff;
 using Newtonsoft.Json;
+using Serilog;
+using SkiaSharp;
 
 namespace FModel.ViewModels.CUE4Parse;
 
@@ -31,7 +37,7 @@ public partial class CUE4ParseViewModel
         var leftImage = LoadTabImageForDiff(DiffProvider, leftFile);
         var rightImage = LoadTabImageForDiff(Provider, rightFile);
 
-        var titleExtra = Path.GetFileNameWithoutExtension(assetPath);
+        var titleExtra = Path.GetFileName(assetPath);
         string extension = Path.GetExtension(assetPath).TrimStart('.');
 
         var existingTab = TabControl.TabsItems.FirstOrDefault(tab => tab.ParentExportType == "Diff");
@@ -64,6 +70,11 @@ public partial class CUE4ParseViewModel
     {
         if (leftImage != null || rightImage != null)
         {
+            if (leftImage != null && leftImage.VisuallyEquals(rightImage))
+            {
+                return new SameDataMessage();
+            }
+
             var viewer = new ImageDiffViewer();
             viewer.SetImages(leftImage, rightImage);
             return viewer;
@@ -278,6 +289,86 @@ public partial class CUE4ParseViewModel
         }
     }
 
+    private static TabImage LoadTabImageForDiff(AbstractVfsFileProvider provider, GameFile entry)
+    {
+        if (entry == null)
+            return null;
+
+        var ext = entry.Extension.ToLowerInvariant();
+        var name = entry.NameWithoutExtension;
+        const bool rnn = false;
+
+        switch (ext)
+        {
+            case "png":
+            case "jpg":
+            case "jpeg":
+            case "bmp":
+                {
+                    var data = provider.SaveAsset(entry);
+                    using var ms = new MemoryStream(data);
+                    var bmp = SKBitmap.Decode(ms);
+                    return bmp != null
+                        ? new TabImage(name, rnn, bmp)
+                        : null;
+                }
+
+            case "svg":
+                {
+                    var data = provider.SaveAsset(entry);
+                    using var ms = new MemoryStream(data);
+                    var bmp = RenderSvg(ms);
+                    return bmp != null
+                        ? new TabImage(name, rnn, bmp)
+                        : null;
+                }
+            case "uasset":
+                {
+                    try
+                    {
+                        var pkg = provider.LoadPackage(entry);
+
+                        var pointer = new FPackageIndex(pkg, 1).ResolvedObject;
+
+                        if (pointer?.Object?.Value is not UTexture texture)
+                            return null;
+
+                        CTexture[] textures;
+                        if (texture is UTexture2DArray arr)
+                            textures = arr.DecodeTextureArray(UserSettings.Default.CurrentDir.TexturePlatform);
+                        else
+                        {
+                            var single = texture.Decode(UserSettings.Default.CurrentDir.TexturePlatform);
+                            if (texture is UTextureCube)
+                            {
+                                single = single?.ToPanorama();
+                            }
+
+                            textures = [single];
+                        }
+
+                        if (textures != null)
+                        {
+                            var ct = textures.FirstOrDefault();
+                            return ct != null
+                                ? new TabImage(name, texture.RenderNearestNeighbor, ct)
+                                : null;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Warning("Failed to decode UTexture for diff: {EntryPath} – {Message}", entry.Path, e.Message);
+                        return null;
+                    }
+
+                    return null;
+                }
+
+            default:
+                return null;
+        }
+    }
+
     private static bool AreTextsEqual(List<string> leftChunks, List<string> rightChunks)
     {
         if ((leftChunks == null || leftChunks.Count == 0) && (rightChunks == null || rightChunks.Count == 0))
@@ -297,8 +388,7 @@ public partial class CUE4ParseViewModel
 
     private static byte[] ComputeHashForChunks(List<string> chunks)
     {
-        using var sha256 = SHA256.Create();
         var combined = string.Concat(chunks);
-        return sha256.ComputeHash(Encoding.UTF8.GetBytes(combined));
+        return SHA256.HashData(Encoding.UTF8.GetBytes(combined));
     }
 }

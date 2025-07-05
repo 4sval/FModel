@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using CUE4Parse.Utils;
@@ -20,7 +19,6 @@ namespace FModel.Views.Resources.Controls;
 public partial class AvalonEditor
 {
     public static TextEditor YesWeEditor;
-    public static System.Windows.Controls.TextBox YesWeSearch;
     private readonly Regex _hexColorRegex = new("\"Hex\": \"(?'target'[0-9A-Fa-f]{3,8})\"$",
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
     private readonly System.Windows.Controls.ToolTip _toolTip = new();
@@ -35,52 +33,15 @@ public partial class AvalonEditor
 
     public AvalonEditor()
     {
-        CommandBindings.Add(new CommandBinding(NavigationCommands.Search, (_, e) => FindNext(e.Parameter != null)));
         InitializeComponent();
 
         YesWeEditor = MyAvalonEditor;
-        YesWeSearch = WpfSuckMyDick;
         MyAvalonEditor.TextArea.TextView.LinkTextBackgroundBrush = null;
         MyAvalonEditor.TextArea.TextView.LinkTextForegroundBrush = Brushes.Cornsilk;
         MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new GamePathElementGenerator());
         MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new HexColorElementGenerator());
 
         ApplicationService.ApplicationView.CUE4Parse.TabControl.OnTabRemove += OnTabClose;
-    }
-
-    private void OnPreviewKeyDown(object sender, KeyEventArgs e)
-    {
-        switch (e.Key)
-        {
-            case Key.Escape:
-                ((TabItem) DataContext).HasSearchOpen = false;
-                break;
-            case Key.Enter when !Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) && ((TabItem) DataContext).HasSearchOpen:
-                FindNext();
-                break;
-            case Key.Enter when Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) && ((TabItem) DataContext).HasSearchOpen:
-                var dc = (TabItem) DataContext;
-                var old = dc.SearchUp;
-                dc.SearchUp = true;
-                FindNext();
-                dc.SearchUp = old;
-                break;
-            case Key.System: // Alt
-                if (Keyboard.IsKeyDown(Key.Left))
-                {
-                    if (_caretsOffsets.Count == 0) return;
-                    MyAvalonEditor.CaretOffset = _caretsOffsets.MovePrevious;
-                    MyAvalonEditor.TextArea.Caret.BringCaretToView();
-                }
-                else if (Keyboard.IsKeyDown(Key.Right))
-                {
-                    if (_caretsOffsets.Count == 0) return;
-                    MyAvalonEditor.CaretOffset = _caretsOffsets.MoveNext;
-                    MyAvalonEditor.TextArea.Caret.BringCaretToView();
-                }
-
-                break;
-        }
     }
 
     private void OnMouseHover(object sender, MouseEventArgs e)
@@ -106,7 +67,7 @@ public partial class AvalonEditor
         _toolTip.IsOpen = false;
     }
 
-    private int PerceivedBrightness(SKColor c)
+    private static int PerceivedBrightness(SKColor c)
     {
         return (int) Math.Sqrt(
             c.Red * c.Red * .299 +
@@ -146,81 +107,6 @@ public partial class AvalonEditor
             > 200 => 200,
             _ => fontSize
         };
-    }
-
-    private void OnDeleteSearchClick(object sender, RoutedEventArgs e)
-    {
-        ((TabItem) DataContext).TextToFind = string.Empty;
-    }
-
-    private void FindNext(bool invertLeftRight = false)
-    {
-        var viewModel = (TabItem) DataContext;
-        if (viewModel.Document == null || string.IsNullOrEmpty(viewModel.TextToFind))
-            return;
-
-        Regex r;
-        if (invertLeftRight)
-        {
-            viewModel.SearchUp = !viewModel.SearchUp;
-            r = GetRegEx();
-            viewModel.SearchUp = !viewModel.SearchUp;
-        }
-        else r = GetRegEx();
-
-        var rightToLeft = r.Options.HasFlag(RegexOptions.RightToLeft);
-        var m = r.Match(MyAvalonEditor.Text, rightToLeft ? MyAvalonEditor.SelectionStart : MyAvalonEditor.SelectionStart + MyAvalonEditor.SelectionLength);
-        if (m.Success)
-        {
-            MyAvalonEditor.Select(m.Index, m.Length);
-            MyAvalonEditor.TextArea.Caret.BringCaretToView();
-        }
-        else
-        {
-            // we have reached the end of the document
-            // start again from the beginning/end,
-            var oldEditor = MyAvalonEditor;
-            do
-            {
-                m = rightToLeft ? r.Match(MyAvalonEditor.Text, MyAvalonEditor.Text.Length - 1) : r.Match(MyAvalonEditor.Text, 0);
-                if (!m.Success) continue;
-                MyAvalonEditor.Select(m.Index, m.Length);
-                MyAvalonEditor.TextArea.Caret.BringCaretToView();
-                break;
-            } while (MyAvalonEditor != oldEditor);
-        }
-    }
-
-    private Regex GetRegEx(bool forceLeftToRight = false)
-    {
-        Regex r;
-        var o = RegexOptions.None;
-        var viewModel = (TabItem) DataContext;
-
-        if (viewModel.SearchUp && !forceLeftToRight)
-            o |= RegexOptions.RightToLeft;
-        if (!viewModel.CaseSensitive)
-            o |= RegexOptions.IgnoreCase;
-
-        if (viewModel.UseRegEx)
-        {
-            r = new Regex(viewModel.TextToFind, o);
-        }
-        else
-        {
-            var s = Regex.Escape(viewModel.TextToFind);
-            if (viewModel.WholeWord)
-                s = "\\W" + s + "\\W";
-
-            r = new Regex(s, o);
-        }
-
-        return r;
-    }
-
-    private void OnCloseClick(object sender, RoutedEventArgs e)
-    {
-        ((TabItem) DataContext).HasSearchOpen = false;
     }
 
     private void OnTabClose(object sender, EventArgs eventArgs)

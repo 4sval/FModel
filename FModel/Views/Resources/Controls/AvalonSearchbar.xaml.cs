@@ -117,4 +117,12 @@ public partial class AvalonSearchbar
 
         return new Regex(escaped, options);
     }
+
+    private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+        if (!(bool) e.NewValue) return;
+
+        SearchTextBox.Focus();
+        SearchTextBox.SelectAll();
+    }
 }

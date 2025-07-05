@@ -30,7 +30,7 @@
                        Stretch="Uniform"
                        RenderOptions.BitmapScalingMode="HighQuality" />
                 <TextBlock x:Name="LeftImageNotFound"
-                           Text="No image available"
+                           Text="NO IMAGE AVAILABLE"
                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}"
                            Padding="8"
                            FontWeight="Black"
