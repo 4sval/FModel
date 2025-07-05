@@ -175,6 +175,9 @@ public partial class DataDiffViewer
 
         if (sender is not ScrollViewer sv || !IsNearBottom(sv)) return;
 
+        if (_loadedChunkIndex >= Math.Max(_leftChunks.Count, _rightChunks.Count))
+            return;
+
         await LoadMoreChunksAsync();
         DiffNavbar.UpdateNavbar(_globalAlignment.Meta, _globalMovedStrings, true);
     }
