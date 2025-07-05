@@ -60,7 +60,9 @@ public enum ELoadingMode
     [Description("All (New)")]
     AllButNew,
     [Description("All (Modified)")]
-    AllButModified
+    AllButModified,
+    [Description("All (Except Patched Assets)")]
+    AllButPatched,
 }
 
 // public enum EUpdateMode

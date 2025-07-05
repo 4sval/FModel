@@ -87,6 +87,11 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
                         FilterNewOrModifiedFilesToDisplay(cancellationToken);
                         break;
                     }
+                    case ELoadingMode.AllButPatched:
+                    {
+                        FilterPacthedFilesToDisplay(cancellationToken);
+                        break;
+                    }
                     default: throw new ArgumentOutOfRangeException();
                 }
 
@@ -272,5 +277,27 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
             return;
 
         entries.Add(asset);
+    }
+
+    private void FilterPacthedFilesToDisplay(CancellationToken cancellationToken)
+    {
+        var loaded = new Dictionary<string, GameFile>(_applicationView.CUE4Parse.Provider.PathComparer);
+
+        foreach (var (key, asset) in _applicationView.CUE4Parse.Provider.Files)
+        {
+            cancellationToken.ThrowIfCancellationRequested(); // cancel if needed
+            if (asset.IsUePackagePayload) continue;
+
+            if (asset is VfsEntry entry && loaded.TryGetValue(key, out var file) &&
+                file is VfsEntry existingEntry && entry.Vfs.ReadOrder < existingEntry.Vfs.ReadOrder)
+            {
+                continue;
+            }
+
+            loaded[key] = asset;
+        }
+
+        _applicationView.Status.UpdateStatusLabel($"{loaded.Count:### ### ###} Packages");
+        _applicationView.CUE4Parse.AssetsFolder.BulkPopulate(loaded.Values);
     }
 }
