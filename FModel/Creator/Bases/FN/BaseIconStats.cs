@@ -129,7 +129,6 @@ public class BaseIconStats : BaseIcon
             {
                 _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "27B80BA44805ABD5A2D2BAB2902B250C", "Fire Rate"), burstEquation, 11));
             }
-
             else if (firingRate != 0f)
             {
                 _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "27B80BA44805ABD5A2D2BAB2902B250C", "Fire Rate"), firingRate, 11));

@@ -39,6 +39,7 @@ using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.Assets;
+using CUE4Parse.UE4.BinaryConfig;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.Utils;
 using EpicManifestParser;
@@ -577,6 +578,16 @@ public class CUE4ParseViewModel : ViewModel
                     if (CheckExport(cancellationToken, result.Package, i, bulk))
                         break;
                 }
+
+                break;
+            }
+            case "ini" when entry.Name.Contains("BinaryConfig"):
+            {
+                var ar = entry.CreateReader();
+                var configCache = new FConfigCacheIni(ar);
+
+                TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("json");
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(configCache, Formatting.Indented), saveProperties, updateUi);
 
                 break;
             }
