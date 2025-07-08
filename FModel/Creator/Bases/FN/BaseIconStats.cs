@@ -95,6 +95,8 @@ public class BaseIconStats : BaseIcon
             weaponRowValue.TryGetValue(out float heatMax, "OverheatingMaxValue"); //Maximum heat overheating weapons can hold before they need to cool off
             weaponRowValue.TryGetValue(out float heatPerShot, "OverheatHeatingValue"); //Heat generated per shot on overheat weapons
             weaponRowValue.TryGetValue(out float overheatCooldown, "OverheatedCooldownDelay"); //Cooldown after a weapon reaches its maximum heat capacity
+            weaponRowValue.TryGetValue(out int cartridgePerFire, "CartridgePerFire"); //Amount of bullets shot after pressing the fire button once
+            weaponRowValue.TryGetValue(out float burstFiringRate, "BurstFiringRate"); //Item firing rate during a burst, value is shots per second
             {
                 var multiplier = bpc != 0f ? bpc : 1;
                 if (dmgPb != 0f)
@@ -122,7 +124,12 @@ public class BaseIconStats : BaseIcon
                 _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "068239DD4327B36124498C9C5F61C038", "Magazine Size"), clipSize, 40));
             }
 
-            if (firingRate != 0f)
+            var burstEquation = cartridgePerFire / (((cartridgePerFire - 1f) / burstFiringRate) + (1f / firingRate));
+            if (burstEquation != 0f)
+            {
+                _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "27B80BA44805ABD5A2D2BAB2902B250C", "Fire Rate"), burstEquation, 11));
+            }
+            else if (firingRate != 0f)
             {
                 _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "27B80BA44805ABD5A2D2BAB2902B250C", "Fire Rate"), firingRate, 11));
             }
