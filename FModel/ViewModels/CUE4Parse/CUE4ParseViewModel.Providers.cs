@@ -175,11 +175,13 @@ public partial class CUE4ParseViewModel
     {
         Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
         Provider.ReadShaderMaps = UserSettings.Default.ReadShaderMaps;
+        Provider.ReadNaniteData = true;
 
         if (UserSettings.Default.DiffDir == null || DiffProvider == null) return;
 
         DiffProvider.ReadScriptData = UserSettings.Default.ReadScriptData;
         DiffProvider.ReadShaderMaps = UserSettings.Default.ReadShaderMaps;
+        DiffProvider.ReadNaniteData = true;
     }
 
     public IEnumerable<AbstractVfsFileProvider> AllProviders()
