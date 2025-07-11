@@ -141,6 +141,7 @@ public partial class CUE4ParseViewModel
         }
     }
 
+    // TODO: This logic overlaps Extract() method, it would be wise to extract common logic
     private static string ExtractTextForDiff(AbstractVfsFileProvider provider, GameFile entry)
     {
         var ext = entry.Extension.ToLowerInvariant();

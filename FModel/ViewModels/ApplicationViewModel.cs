@@ -102,6 +102,17 @@ public class ApplicationViewModel : ViewModel
             CUE4Parse.GameDirectory.Disable(reader);
         };
 
+        if (CUE4Parse.DiffProvider != null)
+        {
+            CUE4Parse.DiffProvider.VfsRegistered += (sender, count) =>
+            {
+                if (sender is not IAesVfsReader reader)
+                    return;
+
+                CUE4Parse.DiffGameDirectory.Add(reader);
+            };
+        }
+
         CustomDirectories = new CustomDirectoriesViewModel();
         SettingsView = new SettingsViewModel();
         AesManager = new AesManagerViewModel(CUE4Parse);
