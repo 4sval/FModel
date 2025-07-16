@@ -451,6 +451,13 @@ namespace FModel.Settings
             set => SetProperty(ref _cameraMode, value);
         }
 
+        private int _wwiseMaxBnkPrefetch;
+        public int WwiseMaxBnkPrefetch
+        {
+            get => _wwiseMaxBnkPrefetch;
+            set => SetProperty(ref _wwiseMaxBnkPrefetch, value);
+        }
+
         private int _previewMaxTextureSize = 1024;
         public int PreviewMaxTextureSize
         {

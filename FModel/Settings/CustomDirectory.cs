@@ -30,6 +30,21 @@ public class CustomDirectory : ViewModel
                     new("Shop Backgrounds", "ShooterGame/Content/UI/OutOfGame/MainMenu/Store/Shared/Textures/"),
                     new("Weapon Renders", "ShooterGame/Content/UI/Screens/OutOfGame/MainMenu/Collection/Assets/Large/")
                 };
+            case "Dead by Daylight":
+                return new List<CustomDirectory>
+                {
+                    new("Characters V1", "DeadByDaylight/Plugins/DBDCharacters/"),
+                    new("Characters V2", "DeadByDaylight/Plugins/Runtime/Bhvr/DBDCharacters/"),
+                    new("Characters (Deprecated)", "DeadbyDaylight/Content/Characters/"),
+                    new("Meshes", "DeadByDaylight/Content/Meshes/"),
+                    new("Textures", "DeadByDaylight/Content/Textures/"),
+                    new("Icons", "DeadByDaylight/Content/UI/UMGAssets/Icons/"),
+                    new("Blueprints", "DeadByDaylight/Content/Blueprints/"),
+                    new("Audio Events", "DeadByDaylight/Content/Audio/Events/"),
+                    new("Audio", "DeadByDaylight/Content/WwiseAudio/Cooked/"),
+                    new("Data Tables", "DeadByDaylight/Content/Data/"),
+                    new("Localization", "DeadByDaylight/Content/Localization/")
+                };
             default:
                 return new List<CustomDirectory>();
         }

@@ -624,6 +624,9 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                         ImGui.EndTable();
                     }
 
+                    ImGui.SeparatorText("Manual Inputs");
+                    model.Transforms[model.SelectedInstance].ImGuiTransform(s.Renderer.CameraOp.Speed / 100f);
+
                     ImGui.EndTabItem();
                 }
 

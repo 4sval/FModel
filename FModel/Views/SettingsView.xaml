@@ -57,6 +57,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -610,7 +611,6 @@
                               Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding ReadScriptData, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Margin="0 5 0 10" />
-
                     <TextBlock Grid.Row="24"
                                Grid.Column="0"
                                Text="Serialize Inlined Shader Maps"
@@ -621,6 +621,20 @@
                               Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding ReadShaderMaps, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Margin="0 5 0 10" />
+
+                    <TextBlock Grid.Row="25" Grid.Column="0" Text="Max Wwise Bank (.BNK) Prefetch" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <Slider Grid.Row="25"
+                            Grid.Column="2"
+                            Grid.ColumnSpan="5"
+                            TickPlacement="None"
+                            Minimum="0"
+                            Maximum="512"
+                            Ticks="0,2,4,8,16,32,64,128,256,512"
+                            AutoToolTipPlacement="BottomRight"
+                            IsMoveToPointEnabled="True"
+                            IsSnapToTickEnabled="True"
+                            Margin="0 5 0 5"
+                            Value="{Binding WwiseMaxBnkPrefetch, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="CreatorTemplate">
