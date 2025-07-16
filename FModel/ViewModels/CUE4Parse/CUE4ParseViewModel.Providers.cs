@@ -14,6 +14,7 @@ using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Readers;
 using CUE4Parse.UE4.Versions;
+using CUE4Parse.UE4.Wwise;
 using CUE4Parse.Utils;
 using EpicManifestParser;
 using EpicManifestParser.UE;
@@ -131,6 +132,7 @@ public partial class CUE4ParseViewModel
             }
         }
         provider.Initialize();
+        _wwiseProviderLazy ??= new Lazy<WwiseProvider>(() => new WwiseProvider(provider, UserSettings.Default.WwiseMaxBnkPrefetch));
     }
 
     private static AbstractVfsFileProvider CreateProvider(DirectorySettings dir, Regex fnLiveRegex)

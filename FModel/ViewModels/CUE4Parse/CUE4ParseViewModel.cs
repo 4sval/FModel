@@ -65,6 +65,13 @@ public partial class CUE4ParseViewModel : ViewModel
         set => SetProperty(ref _modelIsOverwritingMaterial, value);
     }
 
+    private bool _modelIsWaitingAnimation;
+    public bool ModelIsWaitingAnimation
+    {
+        get => _modelIsWaitingAnimation;
+        set => SetProperty(ref _modelIsWaitingAnimation, value);
+    }
+
     public bool IsSnooperOpen => _snooper is { Exists: true, IsVisible: true };
     private Snooper _snooper;
     public Snooper SnooperViewer
@@ -107,6 +114,8 @@ public partial class CUE4ParseViewModel : ViewModel
     public SearchViewModel SearchVm { get; }
     public TabControlViewModel TabControl { get; }
     public ConfigIni IoStoreOnDemand { get; }
+    private Lazy<WwiseProvider> _wwiseProviderLazy;
+    public WwiseProvider WwiseProvider => _wwiseProviderLazy.Value;
 
     public CUE4ParseViewModel()
     {
@@ -551,24 +560,12 @@ public partial class CUE4ParseViewModel : ViewModel
                     TabControl.SelectedTab.AddImage(sourceFile.SubstringAfterLast('/'), false, bitmap, false, updateUi);
                     return false;
                 }
-            case UAkAudioEvent when isNone && pointer.Object.Value is UAkAudioEvent { EventCookedData: { } wwiseData }:
+            case UAkAudioEvent when isNone && pointer.Object.Value is UAkAudioEvent audioEvent:
                 {
-                    foreach (var kvp in wwiseData.EventLanguageMap)
+                    var extractedSounds = WwiseProvider.ExtractAudioEventSounds(audioEvent);
+                    foreach (var sound in extractedSounds)
                     {
-                        if (!kvp.Value.HasValue)
-                            continue;
-
-                        foreach (var media in kvp.Value.Value.Media)
-                        {
-                            if (!Provider.TrySaveAsset(Path.Combine("Game/WwiseAudio/", media.MediaPathName.Text), out var data))
-                                continue;
-
-                            var namedPath = string.Concat(
-                                Provider.ProjectName, "/Content/WwiseAudio/",
-                                media.DebugName.Text.SubstringBeforeLast('.').Replace('\\', '/'),
-                                " (", kvp.Key.LanguageName.Text, ")");
-                            SaveAndPlaySound(namedPath, media.MediaPathName.Text.SubstringAfterLast('.'), data);
-                        }
+                        SaveAndPlaySound(sound.OutputPath, sound.Extension, sound.Data);
                     }
                     return false;
                 }
@@ -616,7 +613,7 @@ public partial class CUE4ParseViewModel : ViewModel
                     SnooperViewer.Run();
                     return true;
                 }
-            case UAnimSequenceBase when isNone && UserSettings.Default.PreviewAnimations || SnooperViewer.Renderer.Options.ModelIsWaitingAnimation:
+            case UAnimSequenceBase when isNone && UserSettings.Default.PreviewAnimations || ModelIsWaitingAnimation:
                 {
                     // animate all animations using their specified skeleton or when we explicitly asked for a loaded model to be animated (ignoring whether we wanted to preview animations)
                     SnooperViewer.Renderer.Animate(pointer.Object.Value);
@@ -666,7 +663,7 @@ public partial class CUE4ParseViewModel : ViewModel
 
     private void SaveAndPlaySound(string fullPath, string ext, byte[] data)
     {
-        if (fullPath.StartsWith("/"))
+        if (fullPath.StartsWith('/'))
             fullPath = fullPath[1..];
         var savedAudioPath = Path.Combine(UserSettings.Default.AudioDirectory,
             UserSettings.Default.KeepDirectoryStructure ? fullPath : fullPath.SubstringAfterLast('/')).Replace('\\', '/') + $".{ext.ToLowerInvariant()}";
