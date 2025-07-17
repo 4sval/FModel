@@ -17,8 +17,6 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse_Conversion.Textures;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.Utils;
-using Microsoft.VisualBasic.ApplicationServices;
-
 namespace FModel.ViewModels;
 
 public class TabImage : ViewModel
