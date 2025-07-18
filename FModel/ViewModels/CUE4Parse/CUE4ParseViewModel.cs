@@ -250,6 +250,8 @@ public partial class CUE4ParseViewModel : ViewModel
             ExportFolder(cancellationToken, f);
     }
 
+    private static string Serialize<T>(T obj) => JsonConvert.SerializeObject(obj, Formatting.Indented);
+
     public void ExtractFolder(CancellationToken cancellationToken, TreeItem folder)
         => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs));
 
@@ -273,13 +275,15 @@ public partial class CUE4ParseViewModel : ViewModel
             TabControl.AddTab(entry);
         else
             TabControl.SelectedTab.SoftReset(entry);
+
         TabControl.SelectedTab.DiffContent = null;
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(entry.Extension);
 
         var updateUi = !HasFlag(bulk, EBulkType.Auto);
         var saveProperties = HasFlag(bulk, EBulkType.Properties);
         var saveTextures = HasFlag(bulk, EBulkType.Textures);
-        switch (entry.Extension)
+
+        switch (entry.Extension.ToLowerInvariant())
         {
             case "uasset":
             case "umap":
@@ -289,7 +293,7 @@ public partial class CUE4ParseViewModel : ViewModel
 
                     if (saveProperties || updateUi)
                     {
-                        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(saveProperties), Formatting.Indented), saveProperties, updateUi);
+                        TabControl.SelectedTab.SetDocumentText(Serialize(result.GetDisplayData(saveProperties)), saveProperties, updateUi);
                         if (saveProperties)
                             break; // do not search for viewable exports if we are dealing with jsons
                     }
@@ -304,114 +308,10 @@ public partial class CUE4ParseViewModel : ViewModel
                 }
             case "ini" when entry.Name.Contains("BinaryConfig"):
                 {
-                    var ar = entry.CreateReader();
-                    var configCache = new FConfigCacheIni(ar);
+                    var configCache = new FConfigCacheIni(entry.CreateReader());
 
                     TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("json");
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(configCache, Formatting.Indented), saveProperties, updateUi);
-
-                    break;
-                }
-            case "upluginmanifest":
-            case "uproject":
-            case "manifest":
-            case "uplugin":
-            case "archive":
-            case "dnearchive": // Banishers: Ghosts of New Eden
-            case "vmodule":
-            case "uparam": // Steel Hunters
-            case "verse":
-            case "html":
-            case "json":
-            case "ini":
-            case "txt":
-            case "log":
-            case "lsd": // Days Gone
-            case "bat":
-            case "dat":
-            case "cfg":
-            case "ddr":
-            case "ide":
-            case "ipl":
-            case "zon":
-            case "xml":
-            case "css":
-            case "csv":
-            case "pem":
-            case "tps":
-            case "tgc": // State of Decay 2
-            case "lua":
-            case "js":
-            case "po":
-            case "h":
-                {
-                    var data = Provider.SaveAsset(entry);
-                    using var stream = new MemoryStream(data) { Position = 0 };
-                    using var reader = new StreamReader(stream);
-
-                    TabControl.SelectedTab.SetDocumentText(reader.ReadToEnd(), saveProperties, updateUi);
-
-                    break;
-                }
-            case "locmeta":
-                {
-                    var archive = entry.CreateReader();
-                    var metadata = new FTextLocalizationMetaDataResource(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(metadata, Formatting.Indented), saveProperties, updateUi);
-
-                    break;
-                }
-            case "locres":
-                {
-                    var archive = entry.CreateReader();
-                    var locres = new FTextLocalizationResource(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(locres, Formatting.Indented), saveProperties, updateUi);
-
-                    break;
-                }
-            case "bin" when entry.Name.Contains("AssetRegistry", StringComparison.OrdinalIgnoreCase):
-                {
-                    var archive = entry.CreateReader();
-                    var registry = new FAssetRegistryState(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), saveProperties, updateUi);
-
-                    break;
-                }
-            case "bin" when entry.Name.Contains("GlobalShaderCache", StringComparison.OrdinalIgnoreCase):
-                {
-                    var archive = entry.CreateReader();
-                    var registry = new FGlobalShaderCache(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), saveProperties, updateUi);
-
-                    break;
-                }
-            case "bnk":
-            case "pck":
-                {
-                    var archive = entry.CreateReader();
-                    var wwise = new WwiseReader(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(wwise, Formatting.Indented), saveProperties, updateUi);
-                    foreach (var (name, data) in wwise.WwiseEncodedMedias)
-                    {
-                        SaveAndPlaySound(entry.Path.SubstringBeforeWithLast('/') + name, "WEM", data);
-                    }
-
-                    break;
-                }
-            case "xvag":
-            case "at9":
-            case "wem":
-                {
-                    var data = Provider.SaveAsset(entry);
-                    SaveAndPlaySound(entry.PathWithoutExtension, entry.Extension, data);
-
-                    break;
-                }
-            case "udic":
-                {
-                    var archive = entry.CreateReader();
-                    var header = new FOodleDictionaryArchive(archive).Header;
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(header, Formatting.Indented), saveProperties, updateUi);
+                    TabControl.SelectedTab.SetDocumentText(Serialize(configCache), saveProperties, updateUi);
 
                     break;
                 }
@@ -420,54 +320,196 @@ public partial class CUE4ParseViewModel : ViewModel
             case "bmp":
                 {
                     var data = Provider.SaveAsset(entry);
-                    using var stream = new MemoryStream(data) { Position = 0 };
+                    using var stream = new MemoryStream(data);
                     TabControl.SelectedTab.AddImage(entry.NameWithoutExtension, false, SKBitmap.Decode(stream), saveTextures, updateUi);
-
                     break;
                 }
             case "svg":
                 {
                     var data = Provider.SaveAsset(entry);
-                    using var stream = new MemoryStream(data) { Position = 0 };
-                    var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(512, 512));
+                    using var stream = new MemoryStream(data);
                     var bitmap = RenderSvg(stream);
-
                     TabControl.SelectedTab.AddImage(entry.NameWithoutExtension, false, bitmap, saveTextures, updateUi);
+                    break;
+                }
+            // Audio
+            case "xvag":
+            case "at9":
+            case "wem":
+                {
+                    var data = Provider.SaveAsset(entry);
+                    SaveAndPlaySound(entry.PathWithoutExtension, entry.Extension, data);
+                    break;
+                }
+            // Wwise
+            case "bnk":
+            case "pck":
+                {
+                    var archive = entry.CreateReader();
+                    var wwise = new WwiseReader(archive);
+                    TabControl.SelectedTab.SetDocumentText(Serialize(wwise), saveProperties, updateUi);
+
+                    foreach (var (name, data) in wwise.WwiseEncodedMedias)
+                    {
+                        SaveAndPlaySound(entry.Path.SubstringBeforeWithLast('/') + name, "WEM", data);
+                    }
 
                     break;
                 }
+            // Fonts
             case "ufont":
             case "otf":
             case "ttf":
-                FLogger.Append(ELog.Warning, () =>
-                    FLogger.Text($"Export '{entry.Name}' raw data and change its extension if you want it to be an installable font file", Constants.WHITE, true));
-                break;
-            case "ushaderbytecode":
-            case "ushadercode":
                 {
-                    var archive = entry.CreateReader();
-                    var ar = new FShaderCodeArchive(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), saveProperties, updateUi);
-
-                    break;
-                }
-            case "upipelinecache":
-                {
-                    var archive = entry.CreateReader();
-                    var ar = new FPipelineCacheFile(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), saveProperties, updateUi);
-
+                    FLogger.Append(ELog.Warning, () =>
+                        FLogger.Text($"Export '{entry.Name}' raw data and change its extension if you want it to be an installable font file", Constants.WHITE, true));
                     break;
                 }
             case "res": // just skip
                 break;
+
             default:
                 {
-                    FLogger.Append(ELog.Warning, () =>
-                        FLogger.Text($"The package '{entry.Name}' is of an unknown type.", Constants.WHITE, true));
+                    if (TryExtractStructuredText(entry, Provider, out var text))
+                    {
+                        TabControl.SelectedTab.SetDocumentText(text, saveProperties, updateUi);
+                    }
+                    else
+                    {
+                        FLogger.Append(ELog.Warning, () =>
+                            FLogger.Text($"The package '{entry.Name}' is of an unknown type.", Constants.WHITE, true));
+                    }
+
                     break;
                 }
         }
+    }
+
+    private static bool TryExtractStructuredText(GameFile entry, AbstractVfsFileProvider provider, out string resultText)
+    {
+        resultText = string.Empty;
+        switch (entry.Extension.ToLowerInvariant())
+        {
+            // UE
+            case "uasset":
+            case "umap":
+                {
+                    var package = provider.GetLoadPackageResult(entry);
+                    resultText = Serialize(package.GetDisplayData());
+                    return true;
+                }
+
+            // Localization
+            case "locmeta":
+                resultText = Serialize(new FTextLocalizationMetaDataResource(entry.CreateReader()));
+                return true;
+            case "locres":
+                resultText = Serialize(new FTextLocalizationResource(entry.CreateReader()));
+                return true;
+
+            case "bin" when entry.Name.Contains("AssetRegistry", StringComparison.OrdinalIgnoreCase):
+                resultText = Serialize(new FAssetRegistryState(entry.CreateReader()));
+                return true;
+            case "bin" when entry.Name.Contains("GlobalShaderCache", StringComparison.OrdinalIgnoreCase):
+                resultText = Serialize(new FGlobalShaderCache(entry.CreateReader()));
+                return true;
+
+            // Wwise
+            case "bnk":
+            case "pck":
+                {
+                    var archive = entry.CreateReader();
+                    var wwise = new WwiseReader(archive);
+                    resultText = Serialize(wwise);
+                    return true;
+                }
+
+            case "udic":
+                resultText = Serialize(new FOodleDictionaryArchive(entry.CreateReader()).Header);
+                return true;
+            case "ushaderbytecode":
+            case "ushadercode":
+                resultText = Serialize(new FShaderCodeArchive(entry.CreateReader()));
+                return true;
+            case "upipelinecache":
+                resultText = Serialize(new FPipelineCacheFile(entry.CreateReader()));
+                return true;
+
+            // Common text-based formats
+            case "archive":
+            case "dnearchive": // Banishers: Ghosts of New Eden
+            case "json":
+            case "manifest":
+            case "uproject":
+            case "uplugin":
+            case "upluginmanifest":
+            case "uparam": // Steel Hunters
+            case "xml":
+            case "ini":
+            case "txt":
+            case "log":
+            case "bat":
+            case "cfg":
+            case "csv":
+            case "pem":
+            case "tps":
+            case "tgc": // State of Decay 2
+            case "lua":
+            case "js":
+            case "po":
+            case "h":
+            case "cpp":
+            case "c":
+            case "hpp":
+            case "cs":
+            case "vb":
+            case "py":
+            case "md":
+            case "markdown":
+            case "yml":
+            case "yaml":
+            case "sh":
+            case "cmd":
+            case "sql":
+            case "css":
+            case "scss":
+            case "less":
+            case "ts":
+            case "tsx":
+            case "jsx":
+            case "html":
+            case "htm":
+            case "lsd": // Days Gone
+            case "dat":
+            case "ddr":
+            case "ide":
+            case "ipl":
+            case "zon":
+            case "verse":
+            case "vmodule":
+                {
+                    var data = provider.SaveAsset(entry);
+                    using var stream = new MemoryStream(data) { Position = 0 };
+                    using var reader = new StreamReader(stream);
+                    resultText = reader.ReadToEnd();
+                    return true;
+                }
+            default:
+                {
+                    // Fallback: if it's a small file, try to display as text
+                    var data = provider.SaveAsset(entry);
+                    if (data != null && data.Length < 1024 * 1024)
+                    {
+                        using var stream = new MemoryStream(data);
+                        using var reader = new StreamReader(stream, true);
+                        resultText = reader.ReadToEnd();
+                        return true;
+                    }
+                    break;
+                }
+        }
+
+        return false;
     }
 
     public void ExtractAndScroll(CancellationToken cancellationToken, string fullPath, string objectName, string parentExportType)
@@ -482,7 +524,7 @@ public partial class CUE4ParseViewModel : ViewModel
 
         TabControl.SelectedTab.TitleExtra = result.TabTitleExtra;
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(""); // json
-        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(), Formatting.Indented), false, false);
+        TabControl.SelectedTab.SetDocumentText(Serialize(result.GetDisplayData()), false, false);
 
         for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
         {
@@ -658,7 +700,7 @@ public partial class CUE4ParseViewModel : ViewModel
         TabControl.SelectedTab.TitleExtra = "Metadata";
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("");
 
-        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(package, Formatting.Indented), false, false);
+        TabControl.SelectedTab.SetDocumentText(Serialize(package), false, false);
     }
 
     private void SaveAndPlaySound(string fullPath, string ext, byte[] data)

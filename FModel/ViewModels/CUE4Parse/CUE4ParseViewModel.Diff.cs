@@ -29,10 +29,12 @@ namespace FModel.ViewModels.CUE4Parse;
 
 public partial class CUE4ParseViewModel
 {
+    const string DiffTabId = "Diff";
+
     public async Task ShowAssetDiff(string assetPath)
     {
-        GameFile leftFile = TryGetFileByPathOrName(DiffProvider?.Files, assetPath);
-        GameFile rightFile = TryGetFileByPathOrName(Provider?.Files, assetPath);
+        var leftFile = TryGetFileByPathOrName(DiffProvider?.Files, assetPath);
+        var rightFile = TryGetFileByPathOrName(Provider?.Files, assetPath);
 
         var leftImage = LoadTabImageForDiff(DiffProvider, leftFile);
         var rightImage = LoadTabImageForDiff(Provider, rightFile);
@@ -40,7 +42,7 @@ public partial class CUE4ParseViewModel
         var titleExtra = Path.GetFileName(assetPath);
         string extension = Path.GetExtension(assetPath).TrimStart('.');
 
-        var existingTab = TabControl.TabsItems.FirstOrDefault(tab => tab.ParentExportType == "Diff");
+        var existingTab = TabControl.TabsItems.FirstOrDefault(tab => tab.ParentExportType == DiffTabId);
 
         await Application.Current.Dispatcher.Invoke(async () =>
         {
@@ -55,7 +57,7 @@ public partial class CUE4ParseViewModel
             }
             else
             {
-                var tab = new TabItem(new FakeGameFile("Diff Viewer"), "Diff")
+                var tab = new TabItem(new FakeGameFile("Diff Viewer"), DiffTabId)
                 {
                     TitleExtra = titleExtra,
                     DiffContent = diffContent
@@ -141,153 +143,12 @@ public partial class CUE4ParseViewModel
         }
     }
 
-    // TODO: This logic overlaps Extract() method, it would be wise to extract common logic
     private static string ExtractTextForDiff(AbstractVfsFileProvider provider, GameFile entry)
     {
-        var ext = entry.Extension.ToLowerInvariant();
-        try
-        {
-            switch (ext)
-            {
-                case "uasset":
-                case "umap":
-                    {
-                        var package = provider.GetLoadPackageResult(entry);
-                        return JsonConvert.SerializeObject(package.GetDisplayData(), Formatting.Indented);
-                    }
-                // Common text-based formats
-                case "json":
-                case "manifest":
-                case "uproject":
-                case "uplugin":
-                case "upluginmanifest":
-                case "xml":
-                case "ini":
-                case "txt":
-                case "log":
-                case "bat":
-                case "cfg":
-                case "csv":
-                case "pem":
-                case "tps":
-                case "tgc":
-                case "lua":
-                case "js":
-                case "po":
-                case "h":
-                case "cpp":
-                case "c":
-                case "hpp":
-                case "cs":
-                case "vb":
-                case "py":
-                case "md":
-                case "markdown":
-                case "yml":
-                case "yaml":
-                case "sh":
-                case "cmd":
-                case "sql":
-                case "css":
-                case "scss":
-                case "less":
-                case "ts":
-                case "tsx":
-                case "jsx":
-                case "html":
-                case "htm":
-                case "lsd":
-                case "dat":
-                case "ddr":
-                case "ide":
-                case "ipl":
-                case "zon":
-                case "verse":
-                    {
-                        var data = provider.SaveAsset(entry);
-                        using var ms = new MemoryStream(data);
-                        using var reader = new StreamReader(ms, true);
-                        return reader.ReadToEnd();
-                    }
-                // Localization
-                case "locmeta":
-                    {
-                        var archive = entry.CreateReader();
-                        var metadata = new FTextLocalizationMetaDataResource(archive);
-                        return JsonConvert.SerializeObject(metadata, Formatting.Indented);
-                    }
-                case "locres":
-                    {
-                        var archive = entry.CreateReader();
-                        var locres = new FTextLocalizationResource(archive);
-                        return JsonConvert.SerializeObject(locres, Formatting.Indented);
-                    }
-                // Asset registry
-                case "bin" when entry.Name.Contains("AssetRegistry", StringComparison.OrdinalIgnoreCase):
-                    {
-                        var archive = entry.CreateReader();
-                        var registry = new FAssetRegistryState(archive);
-                        return JsonConvert.SerializeObject(registry, Formatting.Indented);
-                    }
-                // Shader cache
-                case "bin" when entry.Name.Contains("GlobalShaderCache", StringComparison.OrdinalIgnoreCase):
-                    {
-                        var archive = entry.CreateReader();
-                        var registry = new FGlobalShaderCache(archive);
-                        return JsonConvert.SerializeObject(registry, Formatting.Indented);
-                    }
-                // Wwise
-                case "bnk":
-                case "pck":
-                    {
-                        var archive = entry.CreateReader();
-                        var wwise = new WwiseReader(archive);
-                        return JsonConvert.SerializeObject(wwise, Formatting.Indented);
-                    }
-                // Oodle dictionary
-                case "udic":
-                    {
-                        var archive = entry.CreateReader();
-                        var header = new FOodleDictionaryArchive(archive).Header;
-                        return JsonConvert.SerializeObject(header, Formatting.Indented);
-                    }
-                // Shader bytecode
-                case "ushaderbytecode":
-                case "ushadercode":
-                    {
-                        var archive = entry.CreateReader();
-                        var ar = new FShaderCodeArchive(archive);
-                        return JsonConvert.SerializeObject(ar, Formatting.Indented);
-                    }
-                // Pipeline cache
-                case "upipelinecache":
-                    {
-                        var archive = entry.CreateReader();
-                        var ar = new FPipelineCacheFile(archive);
-                        return JsonConvert.SerializeObject(ar, Formatting.Indented);
-                    }
-                default:
-                    {
-                        // Fallback: if it's a small file, try to display as text
-                        var data = provider.SaveAsset(entry);
-                        if (data.Length < 1024 * 1024) // 1MB
-                        {
-                            try
-                            {
-                                using var ms = new MemoryStream(data);
-                                using var reader = new StreamReader(ms, true);
-                                return reader.ReadToEnd();
-                            }
-                            catch { /* Ignore binary files */ }
-                        }
-                        return $"[No diffable text for type: {ext}]";
-                    }
-            }
-        }
-        catch (Exception ex)
-        {
-            return $"[Failed to extract: {ex.Message}]";
-        }
+        if (TryExtractStructuredText(entry, provider, out var result))
+            return result;
+
+        return $"[No diffable text for type: {entry.Extension}]";
     }
 
     private static TabImage LoadTabImageForDiff(AbstractVfsFileProvider provider, GameFile entry)
