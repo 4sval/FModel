@@ -40,12 +40,28 @@ public class GameSelectorViewModel : ViewModel
         set => SetProperty(ref _selectedDirectory, value);
     }
 
+    private DirectorySettings _selectedDiffDirectory;
+    public DirectorySettings SelectedDiffDirectory
+    {
+        get => _selectedDiffDirectory;
+        set => SetProperty(ref _selectedDiffDirectory, value);
+    }
+
+    private bool _allowDiffSelection;
+    public bool AllowDiffSelection
+    {
+        get => _allowDiffSelection;
+        set => SetProperty(ref _allowDiffSelection, value);
+    }
+
     private readonly ObservableCollection<DirectorySettings> _detectedDirectories;
     public ReadOnlyObservableCollection<DirectorySettings> DetectedDirectories { get; }
     public ReadOnlyObservableCollection<EGame> UeGames { get; }
 
-    public GameSelectorViewModel(string gameDirectory)
+    public GameSelectorViewModel(string gameDirectory, bool allowDiffSelection = false)
     {
+        _allowDiffSelection = allowDiffSelection;
+
         _detectedDirectories = new ObservableCollection<DirectorySettings>(EnumerateDetectedGames().Where(x => x != null));
         foreach (var dir in UserSettings.Default.PerDirectory.Values.Where(x => x.IsManual))
         {

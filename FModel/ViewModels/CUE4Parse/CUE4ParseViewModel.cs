@@ -440,7 +440,7 @@ public partial class CUE4ParseViewModel : ViewModel
             // Common text-based formats
             case "archive":
             case "dnearchive": // Banishers: Ghosts of New Eden
-            case "stUMeta": // LIS: Double Exposure
+            case "stumeta": // LIS: Double Exposure
             case "json":
             case "manifest":
             case "uproject":

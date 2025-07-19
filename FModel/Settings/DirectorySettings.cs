@@ -100,6 +100,9 @@ public class DirectorySettings : ViewModel, ICloneable
 
     private bool Equals(DirectorySettings other)
     {
+        if (other == null)
+            return false;
+
         return GameDirectory == other.GameDirectory && UeVersion == other.UeVersion;
     }
 

@@ -137,22 +137,27 @@ public class ApplicationViewModel : ViewModel
         return vm.SelectedDirectory;
     }
 
-    public DirectorySettings AvoidEmptyGameDirectory(bool bAlreadyLaunched)
+    public DirectorySettings AvoidEmptyGameDirectory(bool bAlreadyLaunched, bool allowDiffSelection = false)
     {
         var gameDirectory = UserSettings.Default.GameDirectory;
         if (!bAlreadyLaunched && UserSettings.Default.PerDirectory.TryGetValue(gameDirectory, out var currentDir))
             return currentDir;
 
-        var gameLauncherViewModel = new GameSelectorViewModel(gameDirectory);
+        var gameLauncherViewModel = new GameSelectorViewModel(gameDirectory, allowDiffSelection)
+        {
+            SelectedDiffDirectory = (DirectorySettings) UserSettings.Default.DiffDir?.Clone()
+        };
         var result = new DirectorySelector(gameLauncherViewModel).ShowDialog();
         if (!result.HasValue || !result.Value) return null;
 
         UserSettings.Default.GameDirectory = gameLauncherViewModel.SelectedDirectory.GameDirectory;
-        if (!bAlreadyLaunched || UserSettings.Default.CurrentDir.Equals(gameLauncherViewModel.SelectedDirectory))
+        if (!bAlreadyLaunched || UserSettings.Default.CurrentDir.Equals(gameLauncherViewModel.SelectedDirectory) && (allowDiffSelection && UserSettings.Default.DiffDir != null && UserSettings.Default.DiffDir.Equals(gameLauncherViewModel.SelectedDiffDirectory)))
             return gameLauncherViewModel.SelectedDirectory;
 
         // UserSettings.Save(); // ??? change key then change game, key saved correctly what?
         UserSettings.Default.CurrentDir = gameLauncherViewModel.SelectedDirectory;
+        UserSettings.Default.DiffDir = gameLauncherViewModel.SelectedDiffDirectory;
+        UserSettings.Default.DiffGameDirectory = gameLauncherViewModel.SelectedDiffDirectory?.GameDirectory;
         RestartWithWarning();
         return null;
     }
