@@ -142,7 +142,7 @@
                         <controls:FilterableComboBox Grid.Row="1"
                                                      Grid.Column="2"
                                                      Margin="0 0 0 5"
-                                                     ItemsSource="{Binding UeGames}"
+                                                     ItemsSource="{Binding DiffUeGames}"
                                                      Style="{StaticResource UComboBox}"
                                                      VerticalAlignment="Center"
                                                      SelectedItem="{Binding SelectedDiffDirectory.UeVersion, Mode=TwoWay}">

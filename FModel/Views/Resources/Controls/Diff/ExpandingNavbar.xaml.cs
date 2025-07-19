@@ -154,7 +154,7 @@ public partial class ExpandingNavbar
         double indicatorTop = canvasHeight * centerRatio - indicatorHeight / 2;
         indicatorTop = Math.Max(0, Math.Min(indicatorTop, canvasHeight - indicatorHeight));
 
-        ScrollIndicator.Height = Math.Max(10, indicatorHeight);
+        ScrollIndicator.Height = Math.Max(2, indicatorHeight);
         Canvas.SetTop(ScrollIndicator, indicatorTop);
         ScrollIndicator.Visibility = Visibility.Visible;
     }
@@ -191,7 +191,7 @@ public partial class ExpandingNavbar
             var rect = new Rectangle
             {
                 Width = NavExpandedWidth,
-                Height = 2,
+                Height = 1,
                 Tag = i,
                 Fill = piece.Type switch
                 {

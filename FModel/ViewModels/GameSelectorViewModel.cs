@@ -57,6 +57,7 @@ public class GameSelectorViewModel : ViewModel
     private readonly ObservableCollection<DirectorySettings> _detectedDirectories;
     public ReadOnlyObservableCollection<DirectorySettings> DetectedDirectories { get; }
     public ReadOnlyObservableCollection<EGame> UeGames { get; }
+    public ReadOnlyObservableCollection<EGame> DiffUeGames { get; }
 
     public GameSelectorViewModel(string gameDirectory, bool allowDiffSelection = false)
     {
@@ -77,7 +78,9 @@ public class GameSelectorViewModel : ViewModel
         else
             SelectedDirectory = DetectedDirectories.FirstOrDefault();
 
-        UeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(EnumerateUeGames()));
+        var games = EnumerateUeGames().ToList();
+        UeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(games));
+        DiffUeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(games));
     }
 
     public void AddUndetectedDir(string gameDirectory) => AddUndetectedDir(gameDirectory.SubstringAfterLast('\\'), gameDirectory);
