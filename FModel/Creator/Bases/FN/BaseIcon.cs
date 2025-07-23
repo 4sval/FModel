@@ -221,55 +221,32 @@ public class BaseIcon : UCreator
         return Utils.RemoveHtmlTags(string.Format(format, name));
     }
 
-    protected (int, int) GetInternalSID(int number)
+    protected (string, string, bool) GetInternalSID(string number)
     {
-        static int GetSeasonsInChapter(int chapter) => chapter switch
-        {
-            1 => 10,
-            2 => 8,
-            3 => 4,
-            4 => 5,
-            5 => 5,
-            _ => 10
-        };
+        if (!Utils.TryLoadObject("FortniteGame/Plugins/GameFeatures/BattlePassBase/Content/DataTables/Athena_SeasonTitles.Athena_SeasonTitles", out UDataTable seasonTitles) ||
+            !seasonTitles.TryGetDataTableRow(number, StringComparison.InvariantCulture, out var row) ||
+            !row.TryGetValue(out FText chapterText, "DisplayChapterText") ||
+            !row.TryGetValue(out FText seasonText, "DisplaySeasonText") ||
+            !row.TryGetValue(out FName displayType, "DisplayType"))
+            return (string.Empty, string.Empty, true);
 
-        var chapterIdx = 0;
-        var seasonIdx = 0;
-        while (number > 0)
-        {
-            var seasonsInChapter = GetSeasonsInChapter(++chapterIdx);
-            if (number > seasonsInChapter)
-                number -= seasonsInChapter;
-            else
-            {
-                seasonIdx = number;
-                number = 0;
-            }
-        }
-        return (chapterIdx, seasonIdx);
+        var onlySeason = displayType.Text.EndsWith("::OnlySeason") || (chapterText.Text == seasonText.Text && !int.TryParse(seasonText.Text, out _));
+        return (chapterText.Text, seasonText.Text, onlySeason);
     }
 
     protected string GetCosmeticSeason(string seasonNumber)
     {
         var s = seasonNumber["Cosmetics.Filter.Season.".Length..];
-        var initial = int.Parse(s);
-        (int chapterIdx, int seasonIdx) = GetInternalSID(initial);
+        (string chapterIdx, string seasonIdx, bool onlySeason) = GetInternalSID(s);
 
         var season = Utils.GetLocalizedResource("AthenaSeasonItemDefinitionInternal", "SeasonTextFormat", "Season {0}");
         var introduced = Utils.GetLocalizedResource("Fort.Cosmetics", "CosmeticItemDescription_Season", "\nIntroduced in <SeasonText>{0}</>.");
-        if (s == "10") return Utils.RemoveHtmlTags(string.Format(introduced, string.Format(season, "X")));
-        if (initial <= 10) return Utils.RemoveHtmlTags(string.Format(introduced, string.Format(season, s)));
+        if (onlySeason) return Utils.RemoveHtmlTags(string.Format(introduced, string.Format(season, seasonIdx)));
 
         var chapter = Utils.GetLocalizedResource("AthenaSeasonItemDefinitionInternal", "ChapterTextFormat", "Chapter {0}");
         var chapterFormat = Utils.GetLocalizedResource("AthenaSeasonItemDefinitionInternal", "ChapterSeasonTextFormat", "{0}, {1}");
         var d = string.Format(chapterFormat, string.Format(chapter, chapterIdx), string.Format(season, seasonIdx));
-        return s switch
-        {
-            "27" => Utils.RemoveHtmlTags(string.Format(introduced, string.Format("Fortnite: OG"))),
-            "32" => Utils.RemoveHtmlTags(string.Format(introduced, string.Format("Fortnite: Remix"))),
-            "35" => Utils.RemoveHtmlTags(string.Format(introduced, string.Format(chapterFormat, string.Format(chapter, chapterIdx), string.Format("MS1")))),
-            _ => Utils.RemoveHtmlTags(string.Format(introduced, d))
-        };
+        return Utils.RemoveHtmlTags(string.Format(introduced, d));
     }
 
     protected void CheckGameplayTags(FInstancedStruct[] dataList)

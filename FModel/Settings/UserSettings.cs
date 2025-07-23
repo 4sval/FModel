@@ -75,7 +75,8 @@ namespace FModel.Settings
             CompressionFormat = Default.CompressionFormat,
             Platform = Default.CurrentDir.TexturePlatform,
             ExportMorphTargets = Default.SaveMorphTargets,
-            ExportMaterials = Default.SaveEmbeddedMaterials
+            ExportMaterials = Default.SaveEmbeddedMaterials,
+            ExportHdrTexturesAsHdr = Default.SaveHdrTexturesAsHdr
         };
 
         private bool _showChangelog = true;
@@ -519,6 +520,13 @@ namespace FModel.Settings
         {
             get => _saveSkeletonAsMesh;
             set => SetProperty(ref _saveSkeletonAsMesh, value);
+        }
+
+        private bool _saveHdrTexturesAsHdr = true;
+        public bool SaveHdrTexturesAsHdr
+        {
+            get => _saveHdrTexturesAsHdr;
+            set => SetProperty(ref _saveHdrTexturesAsHdr, value);
         }
     }
 }

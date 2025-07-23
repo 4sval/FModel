@@ -123,15 +123,9 @@ public class BaseCommunity : BaseIcon
     {
         if (!bShort) return base.GetCosmeticSeason(seasonNumber);
         var s = seasonNumber["Cosmetics.Filter.Season.".Length..];
-        (int chapterIdx, int seasonIdx) = GetInternalSID(int.Parse(s));
-        return s switch
-        {
-            "10" => $"C{chapterIdx} SX",
-            "27" => $"Fortnite: OG",
-            "32" => $"Fortnite: Remix",
-            "35" => $"C{chapterIdx} MS1",
-            _ => $"C{chapterIdx} S{seasonIdx}"
-        };
+        (string chapterIdx, string seasonIdx, bool onlySeason) = GetInternalSID(s);
+        var prefix = int.TryParse(seasonIdx, out _) ? "S" : "";
+        return onlySeason ? $"{prefix}{seasonIdx}" : $"C{chapterIdx} {prefix}{seasonIdx}";
     }
 
     private new void DrawBackground(SKCanvas c)

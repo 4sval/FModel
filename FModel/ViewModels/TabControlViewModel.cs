@@ -152,7 +152,7 @@ public class TabImage : ViewModel
 
         if (PixelFormatUtils.IsHDR(bitmap.PixelFormat) || (UserSettings.Default.TextureExportFormat != ETextureFormat.Jpeg && UserSettings.Default.TextureExportFormat != ETextureFormat.Png))
         {
-            ImageBuffer = bitmap.Encode(UserSettings.Default.TextureExportFormat, out var ext);
+            ImageBuffer = bitmap.Encode(UserSettings.Default.TextureExportFormat, UserSettings.Default.SaveHdrTexturesAsHdr, out var ext);
             ExportName += "." + ext;
         }
         else

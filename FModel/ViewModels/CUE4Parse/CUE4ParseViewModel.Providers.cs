@@ -12,6 +12,7 @@ using CUE4Parse.Compression;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.UE4.Objects.Core.Serialization;
+using CUE4Parse.GameTypes.AshEchoes.FileProvider;
 using CUE4Parse.UE4.Pak;
 using CUE4Parse.UE4.Readers;
 using CUE4Parse.UE4.Versions;
