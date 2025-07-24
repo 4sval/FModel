@@ -20,9 +20,9 @@ public partial class DataDiffViewer
 
     private ScrollViewer _scroll;
 
-    private int _loadedChunkIndex;
-    private const int ChunksPerLoad = 1;
     private bool _isLoading;
+    private int _loadedChunkIndex;
+    public int ChunksPerLoad { get; set; } = 1;
 
     private readonly DiffAlignment _globalAlignment = new([], [], []);
     private readonly HashSet<string> _globalMovedStrings = [];
@@ -76,6 +76,7 @@ public partial class DataDiffViewer
         _globalRightColorizer = null;
 
         await LoadMoreChunksAsync();
+        RefreshChunkCountOptions();
     }
 
     private async Task LoadMoreChunksAsync()
@@ -192,6 +193,7 @@ public partial class DataDiffViewer
 
         if (sender is ScrollViewer sv && IsNearBottom(sv))
         {
+            RefreshChunkCountOptions();
             LoadMorePanel.Visibility = Visibility.Visible;
         }
         else
@@ -243,6 +245,37 @@ public partial class DataDiffViewer
         return null;
     }
 
+    private void ChunkCountComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (ChunkCountComboBox.SelectedItem is ComboBoxItem selectedItem &&
+            int.TryParse(selectedItem.Content.ToString(), out int count))
+        {
+            ChunksPerLoad = count;
+        }
+    }
+
+    private void RefreshChunkCountOptions()
+    {
+        int remainingChunks = Math.Max(_leftChunks.Count, _rightChunks.Count) - _loadedChunkIndex;
+        if (remainingChunks <= 0)
+            return;
+
+        var options = new List<int> { 1, 2, 5, 10, 25 }; // Better pray to god if you select 25 chunks
+        options = [.. options.Where(i => i <= remainingChunks)];
+
+        ChunkCountComboBox.ItemsSource = options.Select(i => new ComboBoxItem { Content = i.ToString() }).ToList();
+
+        if (ChunksPerLoad > remainingChunks)
+            ChunksPerLoad = 1;
+
+        var match = ChunkCountComboBox.Items.OfType<ComboBoxItem>()
+            .FirstOrDefault(c => c.Content.ToString() == ChunksPerLoad.ToString());
+
+        ChunkCountComboBox.SelectedItem = match ?? ChunkCountComboBox.Items[0];
+        ChunkCountComboBox.IsEnabled = ChunkCountComboBox.Items.Count > 1;
+    }
+
+    #region UI
     private static DiffAlignment AlignLinesWithGaps(SideBySideDiffModel model)
     {
         var leftLines = new List<string>();
@@ -314,4 +347,5 @@ public partial class DataDiffViewer
 
         return formatted.WidthIncludingTrailingWhitespace;
     }
+    #endregion
 }

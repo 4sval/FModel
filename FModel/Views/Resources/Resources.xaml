@@ -2223,7 +2223,7 @@
     </Style>
 
     <Style x:Key="SlideUpPanelStyle"
-           TargetType="StackPanel">
+           TargetType="Border">
         <Setter Property="Opacity"
                 Value="0" />
         <Setter Property="RenderTransform">
