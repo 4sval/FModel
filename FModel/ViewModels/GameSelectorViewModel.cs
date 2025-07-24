@@ -83,13 +83,21 @@ public class GameSelectorViewModel : ViewModel
         DiffUeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(games));
     }
 
-    public void AddUndetectedDir(string gameDirectory) => AddUndetectedDir(gameDirectory.SubstringAfterLast('\\'), gameDirectory);
-    public void AddUndetectedDir(string gameName, string gameDirectory)
+    public void AddUndetectedDir(string gameDirectory, bool isDiff = false) => AddUndetectedDir(gameDirectory.SubstringAfterLast('\\'), gameDirectory, isDiff);
+    public void AddUndetectedDir(string gameName, string gameDirectory, bool isDiff = false)
     {
         var setting = DirectorySettings.Default(gameName, gameDirectory, true);
         UserSettings.Default.PerDirectory[gameDirectory] = setting;
         _detectedDirectories.Add(setting);
-        SelectedDirectory = DetectedDirectories.Last();
+
+        if (isDiff)
+        {
+            SelectedDiffDirectory = setting;
+        }
+        else
+        {
+            SelectedDirectory = setting;
+        }
     }
 
     public void DeleteSelectedGame()

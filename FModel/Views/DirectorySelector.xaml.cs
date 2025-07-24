@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using FModel.ViewModels;
@@ -30,11 +30,14 @@ public partial class DirectorySelector
         if (DataContext is not GameSelectorViewModel gameLauncherViewModel)
             return;
 
-        var folderBrowser = new VistaFolderBrowserDialog {ShowNewFolderButton = false};
-        if (folderBrowser.ShowDialog() == true)
-        {
-            gameLauncherViewModel.AddUndetectedDir(folderBrowser.SelectedPath);
-        }
+        var button = sender as FrameworkElement;
+        var isDiff = (button?.Tag as string)?.Equals("Diff", StringComparison.OrdinalIgnoreCase) == true;
+
+        var folderBrowser = new VistaFolderBrowserDialog { ShowNewFolderButton = false };
+        if (folderBrowser.ShowDialog() != true)
+            return;
+
+        gameLauncherViewModel.AddUndetectedDir(folderBrowser.SelectedPath, isDiff);
     }
 
     private void OnBrowseManualDirectories(object sender, RoutedEventArgs e)

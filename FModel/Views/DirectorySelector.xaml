@@ -78,7 +78,7 @@
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Directory" VerticalAlignment="Center" />
                     <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding SelectedDirectory.GameDirectory, Mode=TwoWay}" />
-                    <Button Grid.Row="2" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseDirectories" />
+                    <Button Grid.Row="2" Grid.Column="4" Content="..." HorizontalAlignment="Right" Tag="Main" Click="OnBrowseDirectories" />
                     <Button Grid.Row="2" Grid.Column="4" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Padding="0"
                             Click="OnDeleteDirectory" Width="{Binding ActualWidth, ElementName=OkGuysButWhoFuckingAsked}" ToolTip="Delete Game"
                             Visibility="{Binding SelectedDirectory.IsManual, Converter={StaticResource BoolToVisibilityConverter}}">
@@ -113,6 +113,8 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="10" />
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="5" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Grid.Row="0"
@@ -122,6 +124,7 @@
                                    Margin="0 0 0 5" />
                         <controls:FilterableComboBox Grid.Row="0"
                                                      Grid.Column="2"
+                                                     Grid.ColumnSpan="3"
                                                      Margin="0 0 0 5"
                                                      ItemsSource="{Binding DetectedDirectories}"
                                                      Style="{StaticResource UComboBox}"
@@ -134,6 +137,7 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </controls:FilterableComboBox>
+                        
                         <TextBlock Grid.Row="1"
                                    Grid.Column="0"
                                    Text="UE Version"
@@ -141,6 +145,7 @@
                                    Margin="0 0 0 5" />
                         <controls:FilterableComboBox Grid.Row="1"
                                                      Grid.Column="2"
+                                                     Grid.ColumnSpan="3"
                                                      Margin="0 0 0 5"
                                                      ItemsSource="{Binding DiffUeGames}"
                                                      Style="{StaticResource UComboBox}"
@@ -152,6 +157,7 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </controls:FilterableComboBox>
+
                         <TextBlock Grid.Row="2"
                                    Grid.Column="0"
                                    Text="Directory"
@@ -159,6 +165,12 @@
                         <TextBox Grid.Row="2"
                                  Grid.Column="2"
                                  Text="{Binding SelectedDiffDirectory.GameDirectory, Mode=TwoWay}" />
+                        <Button Grid.Row="2"
+                                Grid.Column="4"
+                                Content="..."
+                                HorizontalAlignment="Right"
+                                Click="OnBrowseDirectories"
+                                Tag="Diff" />
                     </Grid>
                 </Expander>
 

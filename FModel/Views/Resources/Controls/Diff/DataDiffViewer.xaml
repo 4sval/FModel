@@ -4,6 +4,7 @@
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
              xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
              xmlns:diff="clr-namespace:FModel.Views.Resources.Controls.Diff"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              MinHeight="200"
              MinWidth="400"
              Background="{DynamicResource Brush.Layer1Background}">
@@ -85,9 +86,47 @@
                                           TargetEditor="{Binding ElementName=AvalonRight}" />
             </Grid>
             <diff:ExpandingNavbar x:Name="DiffNavbar"
-                Grid.Row="2" Grid.Column="3" HorizontalAlignment="Right"
-                                        VerticalAlignment="Stretch"
-                                        Panel.ZIndex="10" />
+                                  Grid.Row="2"
+                                  Grid.Column="3"
+                                  HorizontalAlignment="Right"
+                                  VerticalAlignment="Stretch"
+                                  Panel.ZIndex="10" />
+            <Grid Grid.Row="2"
+                  Grid.ColumnSpan="4"
+                  VerticalAlignment="Bottom"
+                  Height="48"
+                  Background="{DynamicResource Brush.Layer1Background}">
+                <StackPanel x:Name="LoadMorePanel"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Visibility="Collapsed"
+                            Style="{StaticResource SlideUpPanelStyle}"
+                            Margin="0,8">
+                    <Button x:Name="LoadMoreButton"
+                            Content="Load More Chunks ⟳"
+                            Margin="0,0,12,0"
+                            Padding="12,6"
+                            FontSize="13"
+                            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer4BackgroundBrush}}"
+                            Cursor="Hand"
+                            Click="LoadMoreButton_Click" />
+                </StackPanel>
+            </Grid>
+            <Grid x:Name="LoadingOverlay"
+                  Visibility="Collapsed"
+                  Background="#4D262630"
+                  Grid.RowSpan="3"
+                  Grid.ColumnSpan="4"
+                  Panel.ZIndex="1000">
+                <ContentControl ContentTemplate="{DynamicResource {x:Static adonisUi:Templates.LoadingBars}}"
+                                Width="40"
+                                Height="40"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Focusable="False"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+            </Grid>
         </Grid>
     </Border>
 </UserControl>

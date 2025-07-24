@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Threading;
 using DiffPlex.DiffBuilder;
 using DiffPlex.DiffBuilder.Model;
 using FModel.Extensions;
@@ -78,58 +80,69 @@ public partial class DataDiffViewer
 
     private async Task LoadMoreChunksAsync()
     {
-        if (_isLoading)
-            return;
-
-        if (_loadedChunkIndex >= Math.Max(_leftChunks.Count, _rightChunks.Count))
+        if (_isLoading || _loadedChunkIndex >= Math.Max(_leftChunks.Count, _rightChunks.Count))
             return;
 
         _isLoading = true;
 
         int chunksToLoad = Math.Min(ChunksPerLoad, Math.Max(_leftChunks.Count, _rightChunks.Count) - _loadedChunkIndex);
 
-        for (int i = 0; i < chunksToLoad; i++)
+        var (tempAlignment, moved, leftText, rightText) = await Task.Run(() =>
         {
-            string leftChunk = _loadedChunkIndex + i < _leftChunks.Count ? _leftChunks[_loadedChunkIndex + i] : "";
-            string rightChunk = _loadedChunkIndex + i < _rightChunks.Count ? _rightChunks[_loadedChunkIndex + i] : "";
+            var tempAlignment = new DiffAlignment([], [], []);
+            var moved = new HashSet<string>();
 
-            var builder = new SideBySideDiffBuilder();
-            var model = await Task.Run(() => builder.BuildDiffModel(leftChunk, rightChunk));
-            var alignment = AlignLinesWithGaps(model);
+            var leftBuilder = new StringBuilder();
+            var rightBuilder = new StringBuilder();
 
-            _globalAlignment.LeftLines.AddRange(alignment.LeftLines);
-            _globalAlignment.RightLines.AddRange(alignment.RightLines);
-            _globalAlignment.Meta.AddRange(alignment.Meta);
-
-            foreach (var moved in alignment.Meta
-                         .Where(m => m.Old != null && m.New != null && m.Old.Text == m.New.Text)
-                         .Select(m => m.New.Text))
+            for (int i = 0; i < chunksToLoad; i++)
             {
-                _globalMovedStrings.Add(moved);
+                string leftChunk = _loadedChunkIndex + i < _leftChunks.Count ? _leftChunks[_loadedChunkIndex + i] : "";
+                string rightChunk = _loadedChunkIndex + i < _rightChunks.Count ? _rightChunks[_loadedChunkIndex + i] : "";
+
+                var builder = new SideBySideDiffBuilder();
+                var model = builder.BuildDiffModel(leftChunk, rightChunk);
+                var alignment = AlignLinesWithGaps(model);
+
+                tempAlignment.LeftLines.AddRange(alignment.LeftLines);
+                tempAlignment.RightLines.AddRange(alignment.RightLines);
+                tempAlignment.Meta.AddRange(alignment.Meta);
+
+                foreach (var m in alignment.Meta
+                             .Where(m => m.Old != null && m.New != null && m.Old.Text == m.New.Text)
+                             .Select(m => m.New.Text))
+                {
+                    moved.Add(m);
+                }
+
+                leftBuilder.AppendJoin("\n", alignment.LeftLines).Append('\n');
+                rightBuilder.AppendJoin("\n", alignment.RightLines).Append('\n');
             }
 
-            var leftText = string.Join("\n", alignment.LeftLines) + "\n";
-            var rightText = string.Join("\n", alignment.RightLines) + "\n";
+            return (tempAlignment, moved, leftBuilder.ToString(), rightBuilder.ToString());
+        });
 
-            AvalonLeft.Document.BeginUpdate();
-            AvalonRight.Document.BeginUpdate();
+        AvalonLeft.Document.BeginUpdate();
+        AvalonRight.Document.BeginUpdate();
 
-            if (_loadedChunkIndex == 0)
-            {
-                AvalonLeft.Document.Text = leftText;
-                AvalonRight.Document.Text = rightText;
-            }
-            else
-            {
-                AvalonLeft.Document.Text += leftText;
-                AvalonRight.Document.Text += rightText;
-            }
-
-            AvalonLeft.Document.EndUpdate();
-            AvalonRight.Document.EndUpdate();
-
-            _loadedChunkIndex++;
+        if (_loadedChunkIndex == 0)
+        {
+            AvalonLeft.Document.Text = leftText;
+            AvalonRight.Document.Text = rightText;
         }
+        else
+        {
+            AvalonLeft.Document.Insert(AvalonLeft.Document.TextLength, leftText);
+            AvalonRight.Document.Insert(AvalonRight.Document.TextLength, rightText);
+        }
+
+        AvalonLeft.Document.EndUpdate();
+        AvalonRight.Document.EndUpdate();
+
+        _globalAlignment.LeftLines.AddRange(tempAlignment.LeftLines);
+        _globalAlignment.RightLines.AddRange(tempAlignment.RightLines);
+        _globalAlignment.Meta.AddRange(tempAlignment.Meta);
+        _globalMovedStrings.UnionWith(moved);
 
         SetupGapRenderers();
 
@@ -138,7 +151,6 @@ public partial class DataDiffViewer
             _globalLeftColorizer = new DataDiffColorizer(_globalAlignment, _globalMovedStrings, isLeft: true);
             AvalonLeft.TextArea.TextView.LineTransformers.Add(_globalLeftColorizer);
         }
-
 
         if (_globalRightColorizer == null)
         {
@@ -149,6 +161,7 @@ public partial class DataDiffViewer
         AvalonLeft.TextArea.TextView.Redraw();
         AvalonRight.TextArea.TextView.Redraw();
 
+        _loadedChunkIndex += chunksToLoad;
         _isLoading = false;
     }
 
@@ -157,7 +170,8 @@ public partial class DataDiffViewer
     {
         _scroll = FindScrollViewer(AvalonLeft);
 
-        if (_scroll == null) return;
+        if (_scroll == null)
+            return;
 
         _scroll.ScrollChanged += Scroll_ScrollChanged;
 
@@ -168,18 +182,40 @@ public partial class DataDiffViewer
         };
     }
 
-    private async void Scroll_ScrollChanged(object sender, ScrollChangedEventArgs e)
+    private void Scroll_ScrollChanged(object sender, ScrollChangedEventArgs e)
     {
-        if (_isLoading)
+        if (_isLoading || _loadedChunkIndex >= Math.Max(_leftChunks.Count, _rightChunks.Count))
+        {
+            LoadMorePanel.Visibility = Visibility.Collapsed;
             return;
+        }
 
-        if (sender is not ScrollViewer sv || !IsNearBottom(sv)) return;
+        if (sender is ScrollViewer sv && IsNearBottom(sv))
+        {
+            LoadMorePanel.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            LoadMorePanel.Visibility = Visibility.Collapsed;
+        }
+    }
 
-        if (_loadedChunkIndex >= Math.Max(_leftChunks.Count, _rightChunks.Count))
-            return;
+    private async void LoadMoreButton_Click(object sender, RoutedEventArgs e)
+    {
+        LoadMoreButton.IsEnabled = false;
+        LoadingOverlay.Visibility = Visibility.Visible;
 
-        await LoadMoreChunksAsync();
-        DiffNavbar.UpdateNavbar(_globalAlignment.Meta, _globalMovedStrings, true);
+        try
+        {
+            await Task.Delay(1500); // Very slight delay for loading indicator
+            await LoadMoreChunksAsync();
+            DiffNavbar.UpdateNavbar(_globalAlignment.Meta, _globalMovedStrings, true);
+        }
+        finally
+        {
+            LoadingOverlay.Visibility = Visibility.Collapsed;
+            LoadMoreButton.IsEnabled = true;
+        }
     }
 
     private static bool IsNearBottom(ScrollViewer sv)

@@ -1082,12 +1082,12 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="18"
+                    <TextBlock Grid.Row="19"
                                Grid.Column="0"
                                Text="Texture Format"
                                VerticalAlignment="Center"
                                Margin="0 0 0 5" />
-                    <ComboBox Grid.Row="18"
+                    <ComboBox Grid.Row="19"
                               Grid.Column="2"
                               Grid.ColumnSpan="3"
                               ItemsSource="{Binding SettingsView.TextureExportFormats}"

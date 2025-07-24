@@ -96,7 +96,7 @@ public partial class CUE4ParseViewModel
 
     private static List<string> SplitIntoChunks(string text)
     {
-        const int maxLinesPerChunk = 150_000;
+        const int maxLinesPerChunk = 100_000;
         var lines = text.Split('\n');
         var chunks = new List<string>();
 
