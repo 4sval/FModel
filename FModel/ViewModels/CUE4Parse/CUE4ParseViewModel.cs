@@ -498,18 +498,7 @@ public partial class CUE4ParseViewModel : ViewModel
                     return true;
                 }
             default:
-                {
-                    // Fallback: if it's a small file, try to display as text
-                    var data = provider.SaveAsset(entry);
-                    if (data != null && data.Length < 1024 * 1024)
-                    {
-                        using var stream = new MemoryStream(data);
-                        using var reader = new StreamReader(stream, true);
-                        resultText = reader.ReadToEnd();
-                        return true;
-                    }
-                    break;
-                }
+                break;
         }
 
         return false;
