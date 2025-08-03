@@ -1,8 +1,10 @@
+using System;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
-using ICSharpCode.AvalonEdit;
+using System.Windows.Threading;
 using FModel.ViewModels;
+using ICSharpCode.AvalonEdit;
 
 namespace FModel.Views.Resources.Controls;
 
@@ -118,11 +120,14 @@ public partial class AvalonSearchbar
         return new Regex(escaped, options);
     }
 
-    private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+    private void SearchGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
         if (!(bool) e.NewValue) return;
 
-        SearchTextBox.Focus();
-        SearchTextBox.SelectAll();
+        Dispatcher.BeginInvoke(new Action(() =>
+        {
+            SearchTextBox.Focus();
+            SearchTextBox.SelectAll();
+        }), DispatcherPriority.ApplicationIdle);
     }
 }

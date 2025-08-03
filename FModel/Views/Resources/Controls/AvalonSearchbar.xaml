@@ -6,7 +6,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              mc:Ignorable="d"
-             IsVisibleChanged="UserControl_IsVisibleChanged"
              PreviewKeyDown="OnPreviewKeyDown"
              d:DesignWidth="500" d:DesignHeight="30">
     <UserControl.Resources>
@@ -17,7 +16,9 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid HorizontalAlignment="Right" Width="400">
+    <Grid HorizontalAlignment="Right"
+          Width="400"
+          IsVisibleChanged="SearchGrid_IsVisibleChanged">
         <Grid.Style>
             <Style TargetType="{x:Type Grid}">
                 <Setter Property="Visibility" Value="Collapsed" />
