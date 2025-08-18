@@ -730,8 +730,10 @@ public partial class CUE4ParseViewModel : ViewModel
     private static partial Regex UnmangledCasedNameRegex();
     [GeneratedRegex(@"CallFunc_([A-Za-z0-9_]+)_ReturnValue")]
     private static partial Regex CallFuncReturnValueRegex();
-    public string Decompile(GameFile entry, bool setTabContent = true)
+    public string Decompile(GameFile entry, bool setTabContent = true, AbstractVfsFileProvider provider = null)
     {
+        var aProvider = provider ?? Provider;
+
         if (setTabContent)
         {
             if (TabControl.CanAddTabs)
@@ -746,7 +748,7 @@ public partial class CUE4ParseViewModel : ViewModel
         UClassCookedMetaData cookedMetaData = null;
         try
         {
-            var editorPkg = Provider.LoadPackage(entry.Path.Replace(".uasset", ".o.uasset"));
+            var editorPkg = aProvider.LoadPackage(entry.Path.Replace(".uasset", ".o.uasset"));
             cookedMetaData = editorPkg.GetExport<UClassCookedMetaData>("CookedClassMetaData");
         }
         catch
@@ -755,7 +757,7 @@ public partial class CUE4ParseViewModel : ViewModel
         }
 
         var cppList = new List<string>();
-        var pkg = Provider.LoadPackage(entry);
+        var pkg = aProvider.LoadPackage(entry);
         for (var i = 0; i < pkg.ExportMapLength; i++)
         {
             var pointer = new FPackageIndex(pkg, i + 1).ResolvedObject;
@@ -888,28 +890,5 @@ public partial class CUE4ParseViewModel : ViewModel
         canvas.Clear(SKColors.Transparent);
         canvas.DrawPicture(svg.Picture, paint);
         return bmp;
-    }
-
-    private static bool IsBlueprintPackage(AbstractVfsFileProvider provider, GameFile entry)
-    {
-        try
-        {
-            var pkg = provider.LoadPackage(entry);
-            foreach (var export in pkg.GetExports())
-            {
-                var className = export.Class?.Name;
-                if (className != null)
-                {
-                    if (className.Contains("Blueprint", StringComparison.OrdinalIgnoreCase) ||
-                        className.Contains("GeneratedClass", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return true;
-                    }
-                }
-            }
-        }
-        catch { } // Do nothing
-
-        return false;
     }
 }

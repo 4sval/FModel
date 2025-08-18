@@ -42,6 +42,7 @@
             <Word>int</Word>
             <Word>Int8</Word>
             <Word>Int16</Word>
+            <Word>int32</Word>
             <Word>Int32</Word>
             <Word>Int64</Word>
             <Word>uint</Word>

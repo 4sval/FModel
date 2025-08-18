@@ -137,7 +137,7 @@ public partial class CUE4ParseViewModel
     private string ExtractTextForDiff(AbstractVfsFileProvider provider, GameFile entry, bool isBlueprint)
     {
         if (isBlueprint)
-            return Decompile(entry, false);
+            return Decompile(entry, false, provider);
 
         if (TryExtractStructuredText(entry, provider, out var result))
             return result;
