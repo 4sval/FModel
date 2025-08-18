@@ -58,6 +58,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -621,9 +622,19 @@
                               Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding ReadShaderMaps, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Margin="0 5 0 10" />
-
-                    <TextBlock Grid.Row="25" Grid.Column="0" Text="Max Wwise Bank (.BNK) Prefetch" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Slider Grid.Row="25"
+                    <TextBlock Grid.Row="25"
+                               Grid.Column="0"
+                               Text="Decompile Blueprint to Pseudo C++"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5"
+                               ToolTip="Adds a right click option to decompile UClass packages into a pseudo C++ friendly format" />
+                    <CheckBox Grid.Row="25"
+                              Grid.Column="2"
+                              Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                              IsChecked="{Binding ShowDecompileOption, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                              Margin="0 5 0 10" />
+                    <TextBlock Grid.Row="26" Grid.Column="0" Text="Max Wwise Bank (.BNK) Prefetch" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <Slider Grid.Row="26"
                             Grid.Column="2"
                             Grid.ColumnSpan="5"
                             TickPlacement="None"

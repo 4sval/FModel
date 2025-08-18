@@ -489,7 +489,8 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="Show Metadata" Command="{Binding DataContext.RightClickMenuCommand}">
+                                            <MenuItem Header="Show Metadata"
+                                                      Command="{Binding DataContext.RightClickMenuCommand}">
                                                 <MenuItem.CommandParameter>
                                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                         <Binding Source="Assets_Show_Metadata" />
@@ -497,9 +498,12 @@
                                                     </MultiBinding>
                                                 </MenuItem.CommandParameter>
                                                 <MenuItem.Icon>
-                                                    <Viewbox Width="16" Height="16">
-                                                        <Canvas Width="24" Height="24">
-                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
+                                                    <Viewbox Width="16"
+                                                             Height="16">
+                                                        <Canvas Width="24"
+                                                                Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                                  Data="{StaticResource InfoIcon}" />
                                                         </Canvas>
                                                     </Viewbox>
                                                 </MenuItem.Icon>
@@ -520,6 +524,26 @@
                                                                 Height="24">
                                                             <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                                                   Data="{StaticResource DiffIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Decompile Blueprint"
+                                                      IsEnabled="{Binding ShowDecompileOption, Source={x:Static settings:UserSettings.Default}}"
+                                                      Command="{Binding DataContext.RightClickMenuCommand}">
+                                                <MenuItem.CommandParameter>
+                                                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                        <Binding Source="Assets_Decompile" />
+                                                        <Binding Path="SelectedItems" />
+                                                    </MultiBinding>
+                                                </MenuItem.CommandParameter>
+                                                <MenuItem.Icon>
+                                                    <Viewbox Width="16"
+                                                             Height="16">
+                                                        <Canvas Width="24"
+                                                                Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                                  Data="{StaticResource CppIcon}" />
                                                         </Canvas>
                                                     </Viewbox>
                                                 </MenuItem.Icon>

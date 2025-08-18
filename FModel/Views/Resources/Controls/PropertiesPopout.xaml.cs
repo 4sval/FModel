@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -32,6 +32,7 @@ public partial class PropertiesPopout
         MyAvalonEditor.TextArea.TextView.LinkTextBackgroundBrush = null;
         MyAvalonEditor.TextArea.TextView.LinkTextForegroundBrush = Brushes.Cornsilk;
         MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new GamePathElementGenerator());
+        MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new JumpElementGenerator());
         MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new HexColorElementGenerator());
         _manager = new JsonFoldingStrategies(MyAvalonEditor);
         _manager.UpdateFoldings(MyAvalonEditor.Document);

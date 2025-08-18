@@ -212,6 +212,13 @@ namespace FModel.Settings
             set => SetProperty(ref _keepDirectoryStructure, value);
         }
 
+        private bool _showDecompileOption = false;
+        public bool ShowDecompileOption
+        {
+            get => _showDecompileOption;
+            set => SetProperty(ref _showDecompileOption, value);
+        }
+
         private ECompressedAudio _compressedAudioMode = ECompressedAudio.PlayDecompressed;
         public ECompressedAudio CompressedAudioMode
         {

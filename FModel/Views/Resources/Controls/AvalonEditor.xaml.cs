@@ -39,6 +39,7 @@ public partial class AvalonEditor
         MyAvalonEditor.TextArea.TextView.LinkTextBackgroundBrush = null;
         MyAvalonEditor.TextArea.TextView.LinkTextForegroundBrush = Brushes.Cornsilk;
         MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new GamePathElementGenerator());
+        MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new JumpElementGenerator());
         MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new HexColorElementGenerator());
 
         ApplicationService.ApplicationView.CUE4Parse.TabControl.OnTabRemove += OnTabClose;

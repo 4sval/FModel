@@ -89,6 +89,7 @@ public class BaseIconStats : BaseIcon
             weaponRowValue.TryGetValue(out float dmgCritical, "DamageZone_Critical"); //Headshot multiplier
             weaponRowValue.TryGetValue(out int clipSize, "ClipSize"); //Item magazine size
             weaponRowValue.TryGetValue(out float firingRate, "FiringRate"); //Item firing rate, value is shots per second
+            weaponRowValue.TryGetValue(out float swingTime, "SwingTime"); //Item swing rate, value is swing per second
             weaponRowValue.TryGetValue(out float armTime, "ArmTime"); //Time it takes for traps to be able to be set off
             weaponRowValue.TryGetValue(out float reloadTime, "ReloadTime"); //Time it takes for a weapon to reload
             weaponRowValue.TryGetValue(out int bpc, "BulletsPerCartridge"); //Amount of pellets shot by a weapon at once, usually for shotguns
@@ -124,7 +125,7 @@ public class BaseIconStats : BaseIcon
                 _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "068239DD4327B36124498C9C5F61C038", "Magazine Size"), clipSize, 40));
             }
 
-            var burstEquation = cartridgePerFire / (((cartridgePerFire - 1f) / burstFiringRate) + (1f / firingRate));
+            var burstEquation = cartridgePerFire != 0f && burstFiringRate != 0f ? (cartridgePerFire / (((cartridgePerFire - 1f) / burstFiringRate) + (1f / firingRate))) : 0f;
             if (burstEquation != 0f)
             {
                 _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "27B80BA44805ABD5A2D2BAB2902B250C", "Fire Rate"), burstEquation, 11));
@@ -132,6 +133,10 @@ public class BaseIconStats : BaseIcon
             else if (firingRate != 0f)
             {
                 _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "27B80BA44805ABD5A2D2BAB2902B250C", "Fire Rate"), firingRate, 11));
+            }
+            else if (swingTime != 0f)
+            {
+                _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "27B80BA44805ABD5A2D2BAB2902B250C", "Fire Rate"), swingTime, 11));
             }
 
             if (armTime != 0f)
