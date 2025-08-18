@@ -730,15 +730,18 @@ public partial class CUE4ParseViewModel : ViewModel
     private static partial Regex UnmangledCasedNameRegex();
     [GeneratedRegex(@"CallFunc_([A-Za-z0-9_]+)_ReturnValue")]
     private static partial Regex CallFuncReturnValueRegex();
-    public void Decompile(GameFile entry)
+    public string Decompile(GameFile entry, bool setTabContent = true)
     {
-        if (TabControl.CanAddTabs)
-            TabControl.AddTab(entry);
-        else
-            TabControl.SelectedTab.SoftReset(entry);
+        if (setTabContent)
+        {
+            if (TabControl.CanAddTabs)
+                TabControl.AddTab(entry);
+            else
+                TabControl.SelectedTab.SoftReset(entry);
 
-        TabControl.SelectedTab.TitleExtra = "Decompiled";
-        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("cpp");
+            TabControl.SelectedTab.TitleExtra = "Decompiled";
+            TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("cpp");
+        }
 
         UClassCookedMetaData cookedMetaData = null;
         try
@@ -774,7 +777,12 @@ public partial class CUE4ParseViewModel : ViewModel
         cpp = CallFuncReturnValueRegex().Replace(cpp, "$1");
 
 
-        TabControl.SelectedTab.SetDocumentText(cpp, false, false);
+        if (setTabContent)
+        {
+            TabControl.SelectedTab.SetDocumentText(cpp, false, false);
+        }
+
+        return cpp;
     }
 
     private void SaveAndPlaySound(string fullPath, string ext, byte[] data)
@@ -880,5 +888,28 @@ public partial class CUE4ParseViewModel : ViewModel
         canvas.Clear(SKColors.Transparent);
         canvas.DrawPicture(svg.Picture, paint);
         return bmp;
+    }
+
+    private static bool IsBlueprintPackage(AbstractVfsFileProvider provider, GameFile entry)
+    {
+        try
+        {
+            var pkg = provider.LoadPackage(entry);
+            foreach (var export in pkg.GetExports())
+            {
+                var className = export.Class?.Name;
+                if (className != null)
+                {
+                    if (className.Contains("Blueprint", StringComparison.OrdinalIgnoreCase) ||
+                        className.Contains("GeneratedClass", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        catch { } // Do nothing
+
+        return false;
     }
 }

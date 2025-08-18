@@ -17,7 +17,7 @@ public partial class DataDiffViewer
         public static readonly Brush Delete = new SolidColorBrush(Color.FromRgb(140, 50, 50));
         public static readonly Brush Modify = new SolidColorBrush(Color.FromRgb(110, 100, 70));
         public static readonly Brush Move = new SolidColorBrush(Color.FromRgb(70, 100, 155));
-        public static readonly Brush CharDiff = new SolidColorBrush(Color.FromRgb(160, 140, 90));
+        public static readonly Brush CharDiff = new SolidColorBrush(Color.FromRgb(150, 90, 30));
         public static readonly Brush Transparent = Brushes.Transparent;
     }
 

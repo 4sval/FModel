@@ -82,11 +82,16 @@ public partial class CUE4ParseViewModel
             return viewer;
         }
 
-        var (l, r) = GetExtractedTextsForDiff(leftFile, rightFile);
+        bool isBlueprint = UserSettings.Default.ShowDecompileOption && (IsBlueprintPackage(DiffProvider, rightFile) && IsBlueprintPackage(Provider, leftFile));
+
+        var (l, r) = GetExtractedTextsForDiff(leftFile, rightFile, isBlueprint);
         if (AreTextsEqual(l, r))
         {
             return new SameDataMessage();
         }
+
+        if (isBlueprint)
+            extension = "cpp";
 
         var dataDiffViewer = new DataDiffViewer(l, r, extension);
         await dataDiffViewer.Initialize();
@@ -94,24 +99,10 @@ public partial class CUE4ParseViewModel
         return dataDiffViewer;
     }
 
-    private static List<string> SplitIntoChunks(string text)
+    private (List<string> left, List<string> right) GetExtractedTextsForDiff(GameFile leftFile, GameFile rightFile, bool isBlueprint)
     {
-        const int maxLinesPerChunk = 100_000;
-        var lines = text.Split('\n');
-        var chunks = new List<string>();
-
-        for (int i = 0; i < lines.Length; i += maxLinesPerChunk)
-        {
-            var chunkLines = lines.Skip(i).Take(maxLinesPerChunk);
-            chunks.Add(string.Join("\n", chunkLines));
-        }
-        return chunks;
-    }
-
-    private (List<string> left, List<string> right) GetExtractedTextsForDiff(GameFile leftFile, GameFile rightFile)
-    {
-        List<string> left = leftFile != null ? SplitIntoChunks(ExtractTextForDiff(DiffProvider, leftFile)) : [];
-        List<string> right = rightFile != null ? SplitIntoChunks(ExtractTextForDiff(Provider, rightFile)) : [];
+        List<string> left = leftFile != null ? SplitIntoChunks(ExtractTextForDiff(DiffProvider, leftFile, isBlueprint)) : [];
+        List<string> right = rightFile != null ? SplitIntoChunks(ExtractTextForDiff(Provider, rightFile, isBlueprint)) : [];
 
         return (left, right);
     }
@@ -143,8 +134,11 @@ public partial class CUE4ParseViewModel
         }
     }
 
-    private static string ExtractTextForDiff(AbstractVfsFileProvider provider, GameFile entry)
+    private string ExtractTextForDiff(AbstractVfsFileProvider provider, GameFile entry, bool isBlueprint)
     {
+        if (isBlueprint)
+            return Decompile(entry, false);
+
         if (TryExtractStructuredText(entry, provider, out var result))
             return result;
 
@@ -231,26 +225,47 @@ public partial class CUE4ParseViewModel
         }
     }
 
-    private static bool AreTextsEqual(List<string> leftChunks, List<string> rightChunks)
+    private static bool IsBlueprintPackage(AbstractVfsFileProvider provider, GameFile entry)
     {
-        if ((leftChunks == null || leftChunks.Count == 0) && (rightChunks == null || rightChunks.Count == 0))
-            return true;
+        try
+        {
+            var pkg = provider.LoadPackage(entry);
+            foreach (var export in pkg.GetExports())
+            {
+                var className = export.Class?.Name;
+                if (className != null)
+                {
+                    if (className.Contains("Blueprint", StringComparison.OrdinalIgnoreCase) ||
+                        className.Contains("GeneratedClass", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        catch { } // Do nothing
 
-        if (leftChunks == null || rightChunks == null)
-            return false;
-
-        if (leftChunks.Count != rightChunks.Count)
-            return false;
-
-        var leftHash = ComputeHashForChunks(leftChunks);
-        var rightHash = ComputeHashForChunks(rightChunks);
-
-        return leftHash.SequenceEqual(rightHash);
+        return false;
     }
 
-    private static byte[] ComputeHashForChunks(List<string> chunks)
+    private static bool AreTextsEqual(List<string> leftChunks, List<string> rightChunks)
     {
+        return ComputeHash(leftChunks).SequenceEqual(ComputeHash(rightChunks));
+    }
+
+    private static byte[] ComputeHash(List<string> chunks)
+    {
+        if (chunks == null || chunks.Count == 0)
+            return [];
         var combined = string.Concat(chunks);
         return SHA256.HashData(Encoding.UTF8.GetBytes(combined));
+    }
+
+    private static List<string> SplitIntoChunks(string text, int maxLines = 100_000)
+    {
+        return [.. text.Split('\n')
+                   .Select((line, index) => new { line, index })
+                   .GroupBy(x => x.index / maxLines)
+                   .Select(g => string.Join("\n", g.Select(x => x.line)))];
     }
 }
