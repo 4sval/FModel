@@ -1,20 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using CUE4Parse_Conversion;
-using CUE4Parse_Conversion.Sounds;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
 using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets;
-using CUE4Parse.UE4.BinaryConfig;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Material;
@@ -24,15 +22,19 @@ using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Verse;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
+using CUE4Parse.UE4.BinaryConfig;
 using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Localization;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
+using CUE4Parse.UE4.Objects.UObject.Editor;
 using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Shaders;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
 using CUE4Parse.Utils;
+using CUE4Parse_Conversion;
+using CUE4Parse_Conversion.Sounds;
 using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;
@@ -334,8 +336,13 @@ public partial class CUE4ParseViewModel : ViewModel
                 }
             // Audio
             case "xvag":
+            case "flac":
             case "at9":
             case "wem":
+            case "wav":
+            case "WAV":
+            case "ogg":
+            // TODO: CSCore.MediaFoundation.MediaFoundationException The byte stream type of the given URL is unsupported. case "aif":
                 {
                     var data = Provider.SaveAsset(entry);
                     SaveAndPlaySound(entry.PathWithoutExtension, entry.Extension, data);
@@ -436,16 +443,29 @@ public partial class CUE4ParseViewModel : ViewModel
             case "upipelinecache":
                 resultText = Serialize(new FPipelineCacheFile(entry.CreateReader()));
                 return true;
+            case "stinfo":
+                {
+                    var archive = entry.CreateReader();
+                    var ar = new FShaderTypeHashes(archive);
+                    resultText = Serialize(ar);
+                    return true;
+                }
 
             // Common text-based formats
             case "archive":
             case "dnearchive": // Banishers: Ghosts of New Eden
+            case "gitignore":
+            case "LICENSE":
+            case "template":
             case "stumeta": // LIS: Double Exposure
             case "json":
             case "manifest":
             case "uproject":
             case "uplugin":
             case "upluginmanifest":
+            case "code-workspace":
+            case "projectstore":
+            case "uefnproject":
             case "uparam": // Steel Hunters
             case "xml":
             case "ini":
@@ -456,18 +476,29 @@ public partial class CUE4ParseViewModel : ViewModel
             case "csv":
             case "pem":
             case "tps":
+            case "glslfx":
+            case "cptake":
+            case "spi1d":
+            case "uref":
+            case "cube":
+            case "usda":
+            case "ocio":
             case "tgc": // State of Decay 2
+            case "cpp":
+            case "apx":
+            case "udn":
+            case "doc":
             case "lua":
+            case "vdf":
             case "js":
             case "po":
             case "h":
-            case "cpp":
+            case "md":
             case "c":
             case "hpp":
             case "cs":
             case "vb":
             case "py":
-            case "md":
             case "markdown":
             case "yml":
             case "yaml":
@@ -525,7 +556,7 @@ public partial class CUE4ParseViewModel : ViewModel
         }
     }
 
-    private bool CheckExport(CancellationToken cancellationToken, IPackage pkg, int index, EBulkType bulk = EBulkType.None) // return true once you wanna stop searching for exports
+    private bool CheckExport(CancellationToken cancellationToken, IPackage pkg, int index, EBulkType bulk = EBulkType.None) // return true once you want to stop searching for exports
     {
         var isNone = bulk == EBulkType.None;
         var updateUi = !HasFlag(bulk, EBulkType.Auto);
@@ -693,6 +724,57 @@ public partial class CUE4ParseViewModel : ViewModel
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("");
 
         TabControl.SelectedTab.SetDocumentText(Serialize(package), false, false);
+    }
+
+    [GeneratedRegex("__verse_0x[a-fA-F0-9]{8}_")]
+    private static partial Regex UnmangledCasedNameRegex();
+    [GeneratedRegex(@"CallFunc_([A-Za-z0-9_]+)_ReturnValue")]
+    private static partial Regex CallFuncReturnValueRegex();
+    public void Decompile(GameFile entry)
+    {
+        if (TabControl.CanAddTabs)
+            TabControl.AddTab(entry);
+        else
+            TabControl.SelectedTab.SoftReset(entry);
+
+        TabControl.SelectedTab.TitleExtra = "Decompiled";
+        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("cpp");
+
+        UClassCookedMetaData cookedMetaData = null;
+        try
+        {
+            var editorPkg = Provider.LoadPackage(entry.Path.Replace(".uasset", ".o.uasset"));
+            cookedMetaData = editorPkg.GetExport<UClassCookedMetaData>("CookedClassMetaData");
+        }
+        catch
+        {
+            // ignored
+        }
+
+        var cppList = new List<string>();
+        var pkg = Provider.LoadPackage(entry);
+        for (var i = 0; i < pkg.ExportMapLength; i++)
+        {
+            var pointer = new FPackageIndex(pkg, i + 1).ResolvedObject;
+            if (pointer?.Object is null && pointer.Class?.Object?.Value is null)
+                continue;
+
+            var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class?.Object?.Value as UStruct, pkg);
+            if (dummy is not UClass || pointer.Object.Value is not UClass blueprint)
+                continue;
+
+            cppList.Add(blueprint.DecompileBlueprintToPseudo(cookedMetaData));
+        }
+
+        var cpp = cppList.Count > 1 ? string.Join("\n\n", cppList) : cppList.FirstOrDefault() ?? string.Empty;
+        if (entry.Path.Contains("_Verse.uasset"))
+        {
+            cpp = UnmangledCasedNameRegex().Replace(cpp, ""); // UnmangleCasedName
+        }
+        cpp = CallFuncReturnValueRegex().Replace(cpp, "$1");
+
+
+        TabControl.SelectedTab.SetDocumentText(cpp, false, false);
     }
 
     private void SaveAndPlaySound(string fullPath, string ext, byte[] data)
