@@ -54,6 +54,7 @@ public static class TextureHelper
             // B: Whatever (AO / S / E / ...)
             case "CCFF7R":
             case "PJ033":
+            case "ABINFINITE":
             {
                 texture.SwizzleMask =
                 [
