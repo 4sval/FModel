@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -118,6 +119,7 @@ public partial class CUE4ParseViewModel : ViewModel
     public ConfigIni IoStoreOnDemand { get; }
     private Lazy<WwiseProvider> _wwiseProviderLazy;
     public WwiseProvider WwiseProvider => _wwiseProviderLazy.Value;
+    public ConcurrentBag<string> UnknownExtensions = [];
 
     public CUE4ParseViewModel()
     {
@@ -385,8 +387,13 @@ public partial class CUE4ParseViewModel : ViewModel
                     }
                     else
                     {
-                        FLogger.Append(ELog.Warning, () =>
-                            FLogger.Text($"The package '{entry.Name}' is of an unknown type.", Constants.WHITE, true));
+                        Log.Warning($"The package '{entry.Name}' is of an unknown type.");
+                        if (!UnknownExtensions.Contains(entry.Extension))
+                        {
+                            UnknownExtensions.Add(entry.Extension);
+                            FLogger.Append(ELog.Warning, () =>
+                                    FLogger.Text($"There are some packages with an unknown type {entry.Extension}. Check Log file for a full list.", Constants.WHITE, true));
+                        }
                     }
 
                     break;
@@ -459,6 +466,7 @@ public partial class CUE4ParseViewModel : ViewModel
             case "template":
             case "stumeta": // LIS: Double Exposure
             case "json":
+            case "json5":
             case "manifest":
             case "uproject":
             case "uplugin":
@@ -521,6 +529,14 @@ public partial class CUE4ParseViewModel : ViewModel
             case "zon":
             case "verse":
             case "vmodule":
+            // Uncharted Waters Origin
+            case "crn":
+            case "uwt":
+            case "wvh":
+            case "bf":
+            case "bl":
+            case "bm":
+            case "br":
                 {
                     var data = provider.SaveAsset(entry);
                     using var stream = new MemoryStream(data) { Position = 0 };
