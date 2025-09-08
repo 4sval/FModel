@@ -45,7 +45,7 @@ public partial class EndpointEditor
 
     The second element is optional and will be assigned to the mapping file name. If unspecified, said file name will be grabbed from the URL.
 
-    Additionally, you can use the 'LATEST' keyword to automatically select the latest version from the endpoint. Example Expression: $.LATEST['url','fileName']",
+    Additionally, you can use the 'LATEST' keyword to automatically select the latest version from the endpoint.",
             _ => ""        
        };
     }
