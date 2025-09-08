@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CUE4Parse.Utils;
@@ -47,13 +48,49 @@ public class DynamicApiEndpoint : AbstractApiProvider
     public async Task<MappingsResponse[]> GetMappingsAsync(CancellationToken token, string url, string path)
     {
         var body = await GetRequestBody(token, url).ConfigureAwait(false);
-        var tokens = body.SelectTokens(path).ToArray();
+        JToken[] tokens = Array.Empty<JToken>();
+
+        if (path.Contains("LATEST") && body is JObject data)
+        {
+            var latestVersion = data.Properties()
+                .Select(p => {
+                    var key = p.Name;
+                    var parts = key.Split(new[] { '_' }, 2);
+                    System.Version.TryParse(parts[0], out var version);
+                    return new {
+                        Version = version ?? new System.Version(0,0),
+                        Suffix = parts.Length > 1 ? parts[1] : string.Empty,
+                        Original = key
+                    };
+                })
+                .OrderByDescending(x => x.Version)
+                .ThenByDescending(x => x.Suffix)
+                .Select(x => x.Original)
+                .FirstOrDefault();
+
+            if (!string.IsNullOrEmpty(latestVersion) && data[latestVersion] is { } latestVersionObject)
+            {
+                string propertySelectorPath = path.Substring(path.IndexOf("LATEST") + "LATEST".Length);
+                if (propertySelectorPath.StartsWith("."))
+                {
+                    propertySelectorPath = propertySelectorPath.Substring(1);
+                }
+                tokens = latestVersionObject.SelectTokens(propertySelectorPath).ToArray();
+            }
+        }
+
+        if (tokens.Length == 0)
+        {
+            tokens = body.SelectTokens(path).ToArray();
+        }
 
         var ret = new MappingsResponse[] { new() };
         ret[0].Url = tokens.ElementAtOrDefault(0)?.ToString();
         if (tokens.ElementAtOrDefault(1) is not { } fileName)
+        {
             fileName = ret[0].Url?.SubstringAfterLast("/");
-        ret[0].FileName = fileName.ToString();
+        }
+        ret[0].FileName = fileName?.ToString();
         return ret;
     }
 
