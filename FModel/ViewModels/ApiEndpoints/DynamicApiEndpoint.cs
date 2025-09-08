@@ -50,32 +50,63 @@ public class DynamicApiEndpoint : AbstractApiProvider
         var body = await GetRequestBody(token, url).ConfigureAwait(false);
         JToken[] tokens = Array.Empty<JToken>();
 
-        if (latest && path.Contains("LATEST") && body is JObject data)
+        if (latest && path.Contains("LATEST"))
         {
-            var latestVersion = data.Properties()
-                .Select(p => {
-                    var key = p.Name;
-                    var parts = key.Split(new[] { '_' }, 2);
-                    System.Version.TryParse(parts[0], out var version);
-                    return new {
-                        Version = version ?? new System.Version(0,0),
-                        Suffix = parts.Length > 1 ? parts[1] : string.Empty,
-                        Original = key
-                    };
-                })
-                .OrderByDescending(x => x.Version)
-                .ThenByDescending(x => x.Suffix)
-                .Select(x => x.Original)
-                .FirstOrDefault();
-
-            if (!string.IsNullOrEmpty(latestVersion) && data[latestVersion] is { } latestVersionObject)
+            if (body is JObject data)
             {
-                string propertySelectorPath = path.Substring(path.IndexOf("LATEST") + "LATEST".Length);
-                if (propertySelectorPath.StartsWith("."))
+                var latestVersion = data.Properties()
+                    .Select(p =>
+                    {
+                        var key = p.Name;
+                        var parts = key.Split(new[] { '_' }, 2);
+                        System.Version.TryParse(parts[0], out var version);
+                        return new
+                        {
+                            Version = version ?? new System.Version(0, 0),
+                            Suffix = parts.Length > 1 ? parts[1] : string.Empty,
+                            Original = key
+                        };
+                    })
+                    .OrderByDescending(x => x.Version)
+                    .ThenByDescending(x => x.Suffix)
+                    .Select(x => x.Original)
+                    .FirstOrDefault();
+
+                if (!string.IsNullOrEmpty(latestVersion) && data[latestVersion] is { } latestVersionObject)
                 {
-                    propertySelectorPath = propertySelectorPath.Substring(1);
+                    string propertySelectorPath = path.Substring(path.IndexOf("LATEST", StringComparison.Ordinal) + "LATEST".Length);
+                    if (propertySelectorPath.StartsWith("."))
+                    {
+                        propertySelectorPath = propertySelectorPath.Substring(1);
+                    }
+                    tokens = latestVersionObject.SelectTokens(propertySelectorPath).ToArray();
                 }
-                tokens = latestVersionObject.SelectTokens(propertySelectorPath).ToArray();
+            }
+            else if (body is JArray arrayData)
+            {
+                var latestObject = arrayData.Select(obj =>
+                    {
+                        var fileName = obj["fileName"]?.ToString() ?? string.Empty;
+                        var match = System.Text.RegularExpressions.Regex.Match(fileName, @"(\d+\.\d+)");
+                        return new
+                        {
+                            Version = match.Success ? new System.Version(match.Groups[1].Value) : new System.Version(0, 0),
+                            Object = obj
+                        };
+                    })
+                    .OrderByDescending(x => x.Version)
+                    .Select(x => x.Object)
+                    .FirstOrDefault();
+
+                if (latestObject != null)
+                {
+                    string propertySelectorPath = path.Substring(path.IndexOf("LATEST", StringComparison.Ordinal) + "LATEST".Length);
+                    if (propertySelectorPath.StartsWith("."))
+                    {
+                        propertySelectorPath = propertySelectorPath.Substring(1);
+                    }
+                    tokens = latestObject.SelectTokens(propertySelectorPath).ToArray();
+                }
             }
         }
 
