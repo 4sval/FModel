@@ -45,12 +45,12 @@ public class DynamicApiEndpoint : AbstractApiProvider
         return GetAesKeysAsync(token, url, path).GetAwaiter().GetResult();
     }
 
-    public async Task<MappingsResponse[]> GetMappingsAsync(CancellationToken token, string url, string path)
+    public async Task<MappingsResponse[]> GetMappingsAsync(CancellationToken token, string url, string path, bool latest = false)
     {
         var body = await GetRequestBody(token, url).ConfigureAwait(false);
         JToken[] tokens = Array.Empty<JToken>();
 
-        if (path.Contains("LATEST") && body is JObject data)
+        if (latest && path.Contains("LATEST") && body is JObject data)
         {
             var latestVersion = data.Properties()
                 .Select(p => {
@@ -94,9 +94,9 @@ public class DynamicApiEndpoint : AbstractApiProvider
         return ret;
     }
 
-    public MappingsResponse[] GetMappings(CancellationToken token, string url, string path)
+    public MappingsResponse[] GetMappings(CancellationToken token, string url, string path, bool latest = false)
     {
-        return GetMappingsAsync(token, url, path).GetAwaiter().GetResult();
+        return GetMappingsAsync(token, url, path, latest).GetAwaiter().GetResult();
     }
 
     public async Task<JToken> GetRequestBody(CancellationToken token, string url)

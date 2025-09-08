@@ -38,6 +38,13 @@ public class EndpointSettings : ViewModel
         set => SetProperty(ref _path, value);
     }
 
+    private bool _latest;
+    public bool Latest
+    {
+        get => _latest;
+        set => SetProperty(ref _latest, value);
+    }
+
     private bool _overwrite;
     public bool Overwrite
     {
@@ -69,10 +76,11 @@ public class EndpointSettings : ViewModel
         "Your endpoint configuration DOES NOT seem to be valid yet! Please, test it out!";
 
     public EndpointSettings() {}
-    public EndpointSettings(string url, string path)
+    public EndpointSettings(string url, string path, bool latest = false)
     {
         Url = url;
         Path = path;
+        Latest = latest;
         IsValid = !string.IsNullOrEmpty(url) && !string.IsNullOrEmpty(path); // be careful with this
     }
 
@@ -94,7 +102,7 @@ public class EndpointSettings : ViewModel
             }
             case EEndpointType.Mapping:
             {
-                var r = endpoint.GetMappings(default, Url, Path);
+                var r = endpoint.GetMappings(default, Url, Path, Latest);
                 response = JToken.FromObject(r);
                 IsValid = r.Any(x => x.IsValid);
                 break;
