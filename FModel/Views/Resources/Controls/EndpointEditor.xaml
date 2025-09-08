@@ -69,6 +69,11 @@
                 </StackPanel>
 
                 <Grid Grid.Row="1" Margin="{adonisUi:Space 1, 0.5}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="10" />
@@ -77,9 +82,10 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Column="0" Text="Expression" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <TextBox Grid.Column="2" Margin="0 0 0 5" Text="{Binding Path, Mode=TwoWay}" TextChanged="OnTextChanged" />
-                    <Button Grid.Column="4" Content="Test" HorizontalAlignment="Right" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Expression" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBox Grid.Row="0" Grid.Column="2" Margin="0 0 0 5" Text="{Binding Path, Mode=TwoWay}" TextChanged="OnTextChanged" />
+                    <CheckBox Grid.Row="2" Grid.Column="2" Content="Latest" IsChecked="{Binding Latest}"/>
+                    <Button Grid.Row="0" Grid.Column="4" Content="Test" HorizontalAlignment="Right" Margin="0 0 0 5"
                             Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Click="OnTest"/>
                 </Grid>
 
