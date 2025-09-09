@@ -188,6 +188,9 @@ public partial class SettingsView
     {
         var editor = new EndpointEditor(
             _applicationView.SettingsView.MappingEndpoint, "Endpoint Configuration (Mapping)", EEndpointType.Mapping);
-        editor.ShowDialog();
+        if (editor.ShowDialog() == true)
+        {
+            _applicationView.CUE4Parse.InitMappings();
+        }
     }
 }
