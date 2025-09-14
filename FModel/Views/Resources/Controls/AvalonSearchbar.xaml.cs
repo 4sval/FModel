@@ -13,6 +13,17 @@ public partial class AvalonSearchbar
     public AvalonSearchbar()
     {
         InitializeComponent();
+
+        DataContextChanged += AvalonSearchbar_DataContextChanged;
+    }
+
+    private void AvalonSearchbar_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+        if (e.OldValue is TabItem oldTab)
+            oldTab.PropertyChanged -= TabItem_PropertyChanged;
+
+        if (e.NewValue is TabItem newTab)
+            newTab.PropertyChanged += TabItem_PropertyChanged;
     }
 
     public TextEditor TargetEditor
@@ -120,14 +131,15 @@ public partial class AvalonSearchbar
         return new Regex(escaped, options);
     }
 
-    private void SearchGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+    private void TabItem_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (!(bool) e.NewValue) return;
+        if (e.PropertyName != nameof(TabItem.TriggerFocusSearch))
+            return;
 
-        Dispatcher.BeginInvoke(new Action(() =>
-        {
-            SearchTextBox.Focus();
-            SearchTextBox.SelectAll();
-        }), DispatcherPriority.ApplicationIdle);
+        if (DataContext is not TabItem)
+            return;
+
+        SearchTextBox.Focus();
+        SearchTextBox.SelectAll();
     }
 }

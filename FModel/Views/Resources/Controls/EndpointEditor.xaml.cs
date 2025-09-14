@@ -1,10 +1,11 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using FModel.Extensions;
 using FModel.Services;
 using FModel.Settings;
 using ICSharpCode.AvalonEdit.Document;
+using System.Windows.Media;
 using Newtonsoft.Json;
 
 namespace FModel.Views.Resources.Controls;
@@ -23,6 +24,8 @@ public partial class EndpointEditor
         InitializeComponent();
 
         Title = title;
+        EndpointResponse.TextArea.TextView.LinkTextForegroundBrush = Brushes.Cornsilk;
+        TargetResponse.TextArea.TextView.LinkTextForegroundBrush = Brushes.Cornsilk;
         TargetResponse.SyntaxHighlighting =
             EndpointResponse.SyntaxHighlighting = AvalonExtensions.HighlighterSelector("json");
 

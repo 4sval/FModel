@@ -208,6 +208,17 @@ public class TabItem : ViewModel
         set => SetProperty(ref _hasSearchOpen, value);
     }
 
+    private bool _triggerFocusSearch;
+    public bool TriggerFocusSearch
+    {
+        get => _triggerFocusSearch;
+        set
+        {
+            _triggerFocusSearch = value;
+            RaisePropertyChanged(nameof(TriggerFocusSearch));
+        }
+    }
+
     private string _textToFind;
     public string TextToFind
     {

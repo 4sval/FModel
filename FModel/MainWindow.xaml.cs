@@ -145,7 +145,12 @@ public partial class MainWindow
 
     private void OnOpenAvalonFinder()
     {
-        _applicationView.CUE4Parse.TabControl.SelectedTab.HasSearchOpen = true;
+        var tab = _applicationView.CUE4Parse.TabControl.SelectedTab;
+
+        if (tab == null) return;
+
+        tab.HasSearchOpen = true;
+        tab.TriggerFocusSearch = true;
     }
 
     private void OnAssetsTreeMouseDoubleClick(object sender, MouseButtonEventArgs e)
