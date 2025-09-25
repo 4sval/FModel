@@ -1,0 +1,128 @@
+
+<adonisControls:AdonisWindow x:Class="FModel.Views.DifferenceView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+        xmlns:viewModels="clr-namespace:FModel.ViewModels"
+        mc:Ignorable="d"
+        Title="Difference Viewer"
+        Height="700" Width="1000"
+        WindowStartupLocation="CenterOwner"
+        d:DataContext="{d:DesignInstance viewModels:DifferenceViewModel}">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5">
+            <Button Content="Create New Snapshot" Click="CreateSnapshot_Click" Margin="5"/>
+            <Button Content="Compare Selected" Click="CompareSnapshots_Click" Margin="5"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="Compare From (A):" FontWeight="Bold" Margin="5"/>
+                <ListView Grid.Row="1" ItemsSource="{Binding SnapshotsView}" SelectedItem="{Binding SelectedSnapshotA}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"/>
+                            <GridViewColumn Header="Date" DisplayMemberBinding="{Binding CreatedAt, StringFormat='yyyy-MM-dd HH:mm'}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
+                <TextBlock Grid.Row="2" Text="Compare To (B):" FontWeight="Bold" Margin="5"/>
+                <ListView Grid.Row="3" ItemsSource="{Binding SnapshotsView}" SelectedItem="{Binding SelectedSnapshotB}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"/>
+                            <GridViewColumn Header="Date" DisplayMemberBinding="{Binding CreatedAt, StringFormat='yyyy-MM-dd HH:mm'}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Grid>
+
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+
+            <TabControl Grid.Column="2">
+                <TabItem Header="Added">
+                    <ListView ItemsSource="{Binding AddedFiles}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="File Path" DisplayMemberBinding="{Binding FilePath}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </TabItem>
+                <TabItem Header="Deleted">
+                    <ListView ItemsSource="{Binding DeletedFiles}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="File Path" DisplayMemberBinding="{Binding FilePath}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </TabItem>
+                <TabItem Header="Modified">
+                    <ListView x:Name="ModifiedFilesListView" ItemsSource="{Binding ModifiedFiles}">
+                        <ListView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="View Differences" Click="ViewDifferences_Click"/>
+                            </ContextMenu>
+                        </ListView.ContextMenu>
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="File Path" DisplayMemberBinding="{Binding NewFile.FilePath}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </TabItem>
+                <TabItem Header="Renamed">
+                    <ListView ItemsSource="{Binding RenamedFiles}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Old Path" DisplayMemberBinding="{Binding OldFile.FilePath}" Width="300"/>
+                                <GridViewColumn Header="New Path" DisplayMemberBinding="{Binding NewFile.FilePath}" Width="300"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </TabItem>
+            </TabControl>
+        </Grid>
+
+        <!-- Progress Overlay -->
+        <Grid Grid.RowSpan="2" Background="#80000000">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsCreatingSnapshot}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="Creating Snapshot..." FontSize="16" Foreground="White" HorizontalAlignment="Center"/>
+                <ProgressBar Value="{Binding SnapshotCreationProgress}" Width="300" Height="20" Margin="10"/>
+                <TextBlock Text="{Binding SnapshotCreationProgressText}" Foreground="White" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</adonisControls:AdonisWindow>

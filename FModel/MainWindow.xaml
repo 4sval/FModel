@@ -135,7 +135,9 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
+                <MenuItem Header="Difference Viewer" Command="{Binding MenuCommand}" CommandParameter="Views_DifferenceViewer"/>
             </MenuItem>
+
             <MenuItem Header="Settings" Command="{Binding MenuCommand}" CommandParameter="Settings" />
             <MenuItem Header="Help" >
                 <MenuItem Header="Donate" Command="{Binding MenuCommand}" CommandParameter="Help_Donate">

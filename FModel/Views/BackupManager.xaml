@@ -1,4 +1,4 @@
-﻿<adonisControls:AdonisWindow x:Class="FModel.Views.BackupManager"
+<adonisControls:AdonisWindow x:Class="FModel.Views.BackupManager"
          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
          xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"

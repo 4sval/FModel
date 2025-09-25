@@ -1,0 +1,72 @@
+<adonisControls:AdonisWindow x:Class="FModel.Views.ComparisonWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+        xmlns:viewModels="clr-namespace:FModel.ViewModels"
+        xmlns:models="clr-namespace:FModel.Models"
+        mc:Ignorable="d"
+        Title="File Comparison"
+        Height="600" Width="900"
+        WindowStartupLocation="CenterOwner">
+    <Grid>
+        <!-- Text Diff Viewer -->
+        <ListView ItemsSource="{Binding DiffLines}" FontFamily="Consolas">
+            <ListView.Style>
+                <Style TargetType="ListView">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsImageComparison}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ListView.Style>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Type}" Value="{x:Static models:DiffLineType.Added}">
+                            <Setter Property="Background" Value="#2A402A"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Type}" Value="{x:Static models:DiffLineType.Deleted}">
+                            <Setter Property="Background" Value="#4A2A2A"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Text}" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <!-- Image Diff Viewer -->
+        <Grid>
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsImageComparison}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <TextBlock Text="Old" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="5"/>
+                <Image Source="{Binding OldImageSource}" Stretch="Uniform" />
+            </Grid>
+            <Grid Grid.Column="1">
+                <TextBlock Text="New" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="5"/>
+                <Image Source="{Binding NewImageSource}" Stretch="Uniform" />
+            </Grid>
+        </Grid>
+    </Grid>
+</adonisControls:AdonisWindow>

@@ -1153,4 +1153,6 @@ public class CUE4ParseViewModel : ViewModel
     {
         return (a & b) == b;
     }
+
+
 }
