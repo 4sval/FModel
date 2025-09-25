@@ -510,7 +510,11 @@
                                                       HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}">
                                         <ContentPresenter.Margin>
                                             <MultiBinding Converter="{x:Static adonisConverters:ValuesToThicknessConverter.Instance}">
-                                                <Binding Source="-5"/>
+                                                <Binding>
+                                                    <Binding.Source>
+                                                        <system:Double>-5</system:Double>
+                                                    </Binding.Source>
+                                                </Binding>
                                                 <Binding Path="Padding.Top" RelativeSource="{RelativeSource TemplatedParent}"/>
                                                 <Binding Path="Padding.Right" RelativeSource="{RelativeSource TemplatedParent}"/>
                                                 <Binding Path="Padding.Bottom" RelativeSource="{RelativeSource TemplatedParent}"/>
