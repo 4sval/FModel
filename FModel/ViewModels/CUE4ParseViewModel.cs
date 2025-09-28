@@ -64,6 +64,8 @@ using UE4Config.Parsing;
 using Application = System.Windows.Application;
 using FGuid = CUE4Parse.UE4.Objects.Core.Misc.FGuid;
 using CUE4Parse.UE4.Objects.UObject.Editor;
+using CUE4Parse.UE4.Assets.Exports.Fmod;
+using CUE4Parse.UE4.FMod;
 
 
 namespace FModel.ViewModels;
@@ -926,6 +928,15 @@ public class CUE4ParseViewModel : ViewModel
             case UAkAudioEvent when isNone && pointer.Object.Value is UAkAudioEvent audioEvent:
             {
                 var extractedSounds = WwiseProvider.ExtractAudioEventSounds(audioEvent);
+                foreach (var sound in extractedSounds)
+                {
+                    SaveAndPlaySound(sound.OutputPath, sound.Extension, sound.Data);
+                }
+                return false;
+            }
+            case UFMODEvent when isNone && pointer.Object.Value is UFMODEvent fmodEvent:
+            {
+                var extractedSounds = FModProvider.ExtractBankSounds(fmodEvent, UserSettings.Default.CurrentDir.GameDirectory);
                 foreach (var sound in extractedSounds)
                 {
                     SaveAndPlaySound(sound.OutputPath, sound.Extension, sound.Data);
