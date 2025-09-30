@@ -48,14 +48,9 @@
                 </ListView>
 
                 <TextBlock Grid.Row="2" Text="Compare To (B):" FontWeight="Bold" Margin="5"/>
-                <ListView Grid.Row="3" ItemsSource="{Binding SnapshotsView}" SelectedItem="{Binding SelectedSnapshotB}">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"/>
-                            <GridViewColumn Header="Date" DisplayMemberBinding="{Binding CreatedAt, StringFormat='yyyy-MM-dd HH:mm'}"/>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+                <GroupBox Grid.Row="3" Header="Source" Margin="5">
+                    <TextBlock Text="Current Loaded Version" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" FontWeight="SemiBold"/>
+                </GroupBox>
             </Grid>
 
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>

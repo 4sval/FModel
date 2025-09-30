@@ -27,14 +27,11 @@ public class DifferenceViewModel : ViewModel
     public Snapshot SelectedSnapshotA
     {
         get => _selectedSnapshotA;
-        set => SetProperty(ref _selectedSnapshotA, value);
-    }
-
-    private Snapshot _selectedSnapshotB;
-    public Snapshot SelectedSnapshotB
-    {
-        get => _selectedSnapshotB;
-        set => SetProperty(ref _selectedSnapshotB, value);
+        set
+        {
+            SetProperty(ref _selectedSnapshotA, value);
+            RaisePropertyChanged(nameof(CanCompareSnapshots));
+        }
     }
 
     public ObservableCollection<SnapshotFile> AddedFiles { get; } = new();
@@ -141,7 +138,7 @@ public class DifferenceViewModel : ViewModel
 
     public bool CanCompareSnapshots()
     {
-        return SelectedSnapshotA != null && SelectedSnapshotB != null && SelectedSnapshotA != SelectedSnapshotB;
+        return SelectedSnapshotA != null;
     }
 
     public void CompareSnapshots()
@@ -150,10 +147,10 @@ public class DifferenceViewModel : ViewModel
 
         _ = _threadWorkerView.Begin(async _ =>
         {
-            _applicationView.Status.SetStatus(EStatusKind.Loading, "Comparing Snapshots...");
+            _applicationView.Status.SetStatus(EStatusKind.Loading, "Comparing to current version...");
             try
             {
-                var result = await _snapshotService.CompareSnapshotsAsync(SelectedSnapshotA.FolderName, SelectedSnapshotB.FolderName);
+                var result = await _snapshotService.CompareProviderToSnapshotAsync(SelectedSnapshotA, _applicationView.CUE4Parse.Provider);
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -178,7 +175,7 @@ public class DifferenceViewModel : ViewModel
 
     public void ViewFileDifferences(SnapshotFilePair selectedPair)
     {
-        var comparisonViewModel = new FileComparisonViewModel(selectedPair.OldFile, selectedPair.NewFile);
+        var comparisonViewModel = new FileComparisonViewModel(selectedPair.OldFile, selectedPair.NewFile, SelectedSnapshotA.FolderName, "Live");
         var comparisonWindow = new ComparisonWindow
         {
             DataContext = comparisonViewModel,

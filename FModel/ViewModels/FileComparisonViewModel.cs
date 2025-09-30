@@ -35,10 +35,16 @@ public class FileComparisonViewModel : ViewModel
     public ImageSource OldImageSource { get; private set; }
     public ImageSource NewImageSource { get; private set; }
 
-    public FileComparisonViewModel(SnapshotFile oldFile, SnapshotFile newFile)
+    private readonly string _oldFolderName;
+    private readonly string _newFolderName;
+
+    public FileComparisonViewModel(SnapshotFile oldFile, SnapshotFile newFile, string oldFolderName, string newFolderName)
     {
         OldFile = oldFile;
         NewFile = newFile;
+        _oldFolderName = oldFolderName;
+        _newFolderName = newFolderName;
+
         _applicationView = ApplicationService.ApplicationView;
         LoadAndCompareContent();
     }
@@ -53,7 +59,7 @@ public class FileComparisonViewModel : ViewModel
         catch (Exception) { /* Ignore logging errors */ }
     }
 
-    private CUE4ParseExtensions.LoadPackageResult LoadPackageFromSnapshot(SnapshotFile snapshotFile)
+    private CUE4ParseExtensions.LoadPackageResult LoadPackageFromSnapshot(SnapshotFile snapshotFile, string folderName)
     {
         if (snapshotFile == null)
         {
@@ -61,12 +67,37 @@ public class FileComparisonViewModel : ViewModel
             return null;
         }
 
-        Log($"Processing file: {snapshotFile.FilePath} from snapshot: {snapshotFile.SnapshotName} (Folder: {snapshotFile.FolderName})");
+        Log($"Processing file: {snapshotFile.FilePath} from snapshot: {snapshotFile.SnapshotName} (Folder: {folderName})");
+
+        // Handle Live Session loading
+        if (folderName == "Live")
+        {
+            try
+            {
+                var mainProvider = _applicationView.CUE4Parse.Provider;
+                if (mainProvider.TryGetGameFile(snapshotFile.FilePath, out var fileEntry))
+                {
+                    Log("Successfully found game file in main provider for Live session.");
+                    var result = mainProvider.GetLoadPackageResult(fileEntry);
+                    Log(result != null ? "Successfully loaded package from Live session." : "Failed to load package from Live session.");
+                    return result;
+                }
+                else
+                {
+                    Log($"ERROR: Could not find game file {snapshotFile.FilePath} in main provider for Live session.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log($"EXCEPTION in Live Session LoadPackageFromSnapshot: {ex.Message}\n{ex.StackTrace}");
+            }
+            return null;
+        }
 
         string tempDir = string.Empty;
         try
         {
-            var absoluteFilePath = Path.Combine(UserSettings.Default.OutputDirectory, "Snapshots", snapshotFile.FolderName, snapshotFile.FilePath.Replace("/", "\\"));
+            var absoluteFilePath = Path.Combine(UserSettings.Default.OutputDirectory, "Snapshots", folderName, snapshotFile.FilePath.Replace("/", "\\"));
             Log($"Constructed absolute path: {absoluteFilePath}");
 
             bool fileExists = File.Exists(absoluteFilePath);
@@ -126,8 +157,8 @@ public class FileComparisonViewModel : ViewModel
 
     private void LoadAndCompareContent()
     {
-        var oldPackageResult = LoadPackageFromSnapshot(OldFile);
-        var newPackageResult = LoadPackageFromSnapshot(NewFile);
+        var oldPackageResult = LoadPackageFromSnapshot(OldFile, _oldFolderName);
+        var newPackageResult = LoadPackageFromSnapshot(NewFile, _newFolderName);
 
         var oldTexture = oldPackageResult?.Package.GetExports().FirstOrDefault(e => e is UTexture2D) as UTexture2D;
         var newTexture = newPackageResult?.Package.GetExports().FirstOrDefault(e => e is UTexture2D) as UTexture2D;
