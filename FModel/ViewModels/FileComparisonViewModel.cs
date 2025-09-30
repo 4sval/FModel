@@ -94,63 +94,51 @@ public class FileComparisonViewModel : ViewModel
             return null;
         }
 
-        string tempDir = string.Empty;
+        // Handle Snapshot loading
         try
         {
-            var absoluteFilePath = Path.Combine(UserSettings.Default.OutputDirectory, "Snapshots", folderName, snapshotFile.FilePath.Replace("/", "\\"));
-            Log($"Constructed absolute path: {absoluteFilePath}");
-
-            bool fileExists = File.Exists(absoluteFilePath);
-            Log($"File.Exists check returned: {fileExists}");
-
-            if (fileExists)
+            var snapshotDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Snapshots", folderName);
+            if (!Directory.Exists(snapshotDirectory))
             {
-                tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-                var tempFilePath = Path.Combine(tempDir, snapshotFile.FilePath.Replace("/", "\\"));
-                Directory.CreateDirectory(Path.GetDirectoryName(tempFilePath));
-                File.Copy(absoluteFilePath, tempFilePath);
-                Log($"Copied file to temporary directory: {tempFilePath}");
+                Log($"ERROR: Snapshot directory not found at {snapshotDirectory}");
+                return null;
+            }
 
-                var mainProvider = _applicationView.CUE4Parse.Provider;
-                var versions = mainProvider?.Versions;
-                var keys = mainProvider?.Keys;
+            var mainProvider = _applicationView.CUE4Parse.Provider;
+            var versions = mainProvider?.Versions;
+            var keys = mainProvider?.Keys;
 
-                var tempProvider = new DefaultFileProvider(new DirectoryInfo(tempDir), SearchOption.AllDirectories, versions);
-                tempProvider.Initialize();
-                if (keys != null)
-                {
-                    tempProvider.SubmitKeys(keys);
-                }
+            // Create a provider that points directly to the snapshot folder, so it can see all parts of an asset (.uasset, .ubulk, etc.)
+            var snapshotProvider = new DefaultFileProvider(new DirectoryInfo(snapshotDirectory), SearchOption.AllDirectories, versions);
+            snapshotProvider.Initialize();
 
-                if (mainProvider?.MappingsContainer != null)
-                {
-                    tempProvider.MappingsContainer = mainProvider.MappingsContainer;
-                }
+            if (keys != null)
+            {
+                snapshotProvider.SubmitKeys(keys);
+            }
 
-                if (tempProvider.TryGetGameFile(snapshotFile.FilePath, out var fileEntry))
-                {
-                    Log("Successfully found game file in temporary provider.");
-                    var result = tempProvider.GetLoadPackageResult(fileEntry);
-                    Log(result != null ? "Successfully loaded package." : "Failed to load package.");
-                    return result;
-                }
-                else
-                {
-                    Log("ERROR: Could not find game file in temporary provider despite file being copied.");
-                }
+            if (mainProvider?.MappingsContainer != null)
+            {
+                snapshotProvider.MappingsContainer = mainProvider.MappingsContainer;
+            }
+
+            if (snapshotProvider.TryGetGameFile(snapshotFile.FilePath, out var fileEntry))
+            {
+                Log("Successfully found game file in snapshot provider.");
+                var result = snapshotProvider.GetLoadPackageResult(fileEntry);
+                Log(result != null ? "Successfully loaded package from snapshot." : "Failed to load package from snapshot.");
+                return result;
+            }
+            else
+            {
+                Log($"ERROR: Could not find game file {snapshotFile.FilePath} in snapshot provider at {snapshotDirectory}.");
             }
         }
         catch (Exception ex)
         {
-            Log($"EXCEPTION in LoadPackageFromSnapshot: {ex.Message}\n{ex.StackTrace}");
+            Log($"EXCEPTION in Snapshot LoadPackageFromSnapshot: {ex.Message}\n{ex.StackTrace}");
         }
-        finally
-        {
-            if (!string.IsNullOrEmpty(tempDir) && Directory.Exists(tempDir))
-            {
-                Directory.Delete(tempDir, true);
-            }
-        }
+
         Log("LoadPackageFromSnapshot finished with null result.");
         return null;
     }
