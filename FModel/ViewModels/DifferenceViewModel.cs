@@ -219,7 +219,16 @@ namespace FModel.ViewModels
                     if (mainProvider?.Keys != null) snapshotProvider.SubmitKeys(mainProvider.Keys);
                     if (mainProvider?.MappingsContainer != null) snapshotProvider.MappingsContainer = mainProvider.MappingsContainer;
 
-                    Application.Current.Dispatcher.Invoke(() => AdonisUI.Controls.MessageBox.Show($"Successfully loaded snapshot '{SelectedSnapshotA.Name}'.\nProvider found {snapshotProvider.Files.Count} files.", "Test Load Successful"));
+                    var ueVersion = snapshotProvider.Versions?.Game.ToString() ?? "Not Found";
+                    var mappings = snapshotProvider.MappingsContainer != null ? "Loaded" : "Not Found";
+                    var fileCount = snapshotProvider.Files.Count;
+
+                    var successMessage = $"Successfully loaded snapshot '{SelectedSnapshotA.Name}'.\n\n" +
+                                     $"Provider found {fileCount} files.\n" +
+                                     $"UE Version: {ueVersion}\n" +
+                                     $"Mappings: {mappings}";
+
+                    Application.Current.Dispatcher.Invoke(() => AdonisUI.Controls.MessageBox.Show(successMessage, "Test Load Successful"));
                 }
                 catch (Exception ex)
                 {
