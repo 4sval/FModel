@@ -20,6 +20,7 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5">
             <Button Content="Create New Snapshot" Click="CreateSnapshot_Click" Margin="5"/>
             <Button Content="Compare Selected" Click="CompareSnapshots_Click" Margin="5"/>
+            <Button Content="Test Load Snapshot (A)" Click="TestLoadSnapshot_Click" Margin="5"/>
         </StackPanel>
 
         <Grid Grid.Row="1">
@@ -48,8 +49,21 @@
                 </ListView>
 
                 <TextBlock Grid.Row="2" Text="Compare To (B):" FontWeight="Bold" Margin="5"/>
-                <GroupBox Grid.Row="3" Header="Source" Margin="5">
-                    <TextBlock Text="Current Loaded Version" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" FontWeight="SemiBold"/>
+                <GroupBox Grid.Row="3" Header="Current Session (New)" Margin="5">
+                    <StackPanel Margin="5,10,5,5">
+                        <TextBlock>
+                            <Run Text="Files:" FontWeight="Bold"/>
+                            <Run Text="{Binding CurrentSessionFileCount, Mode=OneWay}"/>
+                        </TextBlock>
+                        <TextBlock Margin="0,5,0,0">
+                            <Run Text="Version:" FontWeight="Bold"/>
+                            <Run Text="{Binding CurrentSessionVersion, Mode=OneWay}"/>
+                        </TextBlock>
+                        <TextBlock Margin="0,5,0,0" TextWrapping="Wrap">
+                            <Run Text="Directory:" FontWeight="Bold"/>
+                            <Run Text="{Binding CurrentSessionDirectory, Mode=OneWay}"/>
+                        </TextBlock>
+                    </StackPanel>
                 </GroupBox>
             </Grid>
 

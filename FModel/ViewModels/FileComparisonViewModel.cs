@@ -110,6 +110,11 @@ public class FileComparisonViewModel : ViewModel
 
             // Create a provider that points directly to the snapshot folder, so it can see all parts of an asset (.uasset, .ubulk, etc.)
             var snapshotProvider = new DefaultFileProvider(new DirectoryInfo(snapshotDirectory), SearchOption.AllDirectories, versions);
+            
+            // Inherit all context from the main provider
+            snapshotProvider.ReadScriptData = mainProvider.ReadScriptData;
+            snapshotProvider.ReadShaderMaps = mainProvider.ReadShaderMaps;
+            snapshotProvider.ReadNaniteData = mainProvider.ReadNaniteData;
             snapshotProvider.Initialize();
 
             if (keys != null)

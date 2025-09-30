@@ -48,39 +48,26 @@ namespace FModel.Services
                 processedFiles++;
                 if (file.IsUePackagePayload) continue;
 
-                var provider = ApplicationService.ApplicationView.CUE4Parse.Provider;
-                provider.Files.FindPayloads(file, out var uexp, out var ubulks, out var uptnls, true);
-                var allParts = new List<GameFile> { file };
-                if (uexp != null) allParts.Add(uexp);
-                allParts.AddRange(ubulks);
-                allParts.AddRange(uptnls);
+                var fileData = file.Read(); // Use Read() to get raw asset data
+                if (fileData == null || fileData.Length == 0) continue;
 
-                foreach (var part in allParts)
+                var fullPath = Path.Combine(snapshotFolderPath, file.Path.Replace("/", "\\"));
+                Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
+                await File.WriteAllBytesAsync(fullPath, fileData);
+
+                using var sha256 = SHA256.Create();
+                var fileHash = BitConverter.ToString(sha256.ComputeHash(fileData)).Replace("-", "").ToLowerInvariant();
+
+                manifest.Files.Add(new SnapshotFile
                 {
-                    var fileData = part.Read();
-                    if (fileData == null || fileData.Length == 0) continue;
-
-                    var relativePath = part.Path.Replace("/", "\\");
-                    var fullPath = Path.Combine(snapshotFolderPath, relativePath);
-
-                    Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
-                    await File.WriteAllBytesAsync(fullPath, fileData);
-
-                    using var sha256 = SHA256.Create();
-                    var fileHash = BitConverter.ToString(sha256.ComputeHash(fileData)).Replace("-", "").ToLowerInvariant();
-
-                    manifest.Files.Add(new SnapshotFile
-                    {
-                        FilePath = part.Path,
-                        FileHash = fileHash,
-                        SnapshotName = name,
-                        FolderName = snapshotFolderName
-                    });
-                }
+                    FilePath = file.Path,
+                    FileHash = fileHash,
+                    SnapshotName = name,
+                    FolderName = snapshotFolderName
+                });
             }
 
-            var manifestPath = Path.Combine(snapshotFolderPath, "manifest.json");
-            var jsonContent = JsonConvert.SerializeObject(manifest, Formatting.Indented);
+            var manifestPath = Path.Combine(snapshotFolderPath, "manifest.json");            var jsonContent = JsonConvert.SerializeObject(manifest, Formatting.Indented);
             await File.WriteAllTextAsync(manifestPath, jsonContent);
         }
 

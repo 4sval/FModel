@@ -13,8 +13,8 @@ namespace FModel.Views
 
         public DifferenceView()
         {
-            DataContext = _viewModel = new DifferenceViewModel();
             InitializeComponent();
+            DataContext = _viewModel = new DifferenceViewModel();
         }
 
         private void CreateSnapshot_Click(object sender, RoutedEventArgs e)
@@ -39,6 +39,11 @@ namespace FModel.Views
             {
                 _viewModel.ViewFileDifferences(selectedPair);
             }
+        }
+
+        private void TestLoadSnapshot_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModel.TestLoadSnapshot();
         }
     }
 }
