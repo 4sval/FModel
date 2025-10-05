@@ -295,7 +295,13 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
                 Save(a, true);
             }
 
-            FLogger.Append(ELog.Information, () => FLogger.Text($"Successfully saved {_audioFiles.Count} audio files", Constants.WHITE, true));
+            FLogger.Append(ELog.Information, () =>
+            {
+                FLogger.Text("Successfully saved audio from ", Constants.WHITE);
+                FLogger.Link(_audioFiles.First().FileName, _audioFiles.First().FilePath, true);
+            });
+            if (_audioFiles.Count > 1)
+                FLogger.Append(ELog.Information, () => FLogger.Text($"Successfully saved {_audioFiles.Count} audio files", Constants.WHITE, true));
         });
     }
 
