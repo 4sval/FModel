@@ -326,6 +326,9 @@ public class CUE4ParseViewModel : ViewModel
 
         await _threadWorkerView.Begin(cancellationToken =>
         {
+            // deprecated values
+            if (endpoint.Url == "https://fortnitecentral.genxgames.gg/api/v1/aes") endpoint.Url = "https://uedb.dev/svc/api/v1/fortnite/aes";
+
             var aes = _apiEndpointView.DynamicApi.GetAesKeys(cancellationToken, endpoint.Url, endpoint.Path);
             if (aes is not { IsValid: true }) return;
 
@@ -367,8 +370,15 @@ public class CUE4ParseViewModel : ViewModel
             }
             else if (endpoint.IsValid)
             {
-                var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
+                // deprecated values
                 if (endpoint.Path == "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']") endpoint.Path = "$.[0].['url','fileName']";
+                if (endpoint.Url == "https://fortnitecentral.genxgames.gg/api/v1/mappings")
+                {
+                    endpoint.Url = "https://uedb.dev/svc/api/v1/fortnite/mappings";
+                    endpoint.Path = "$.mappings.ZStandard";
+                }
+
+                var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
                 var mappings = _apiEndpointView.DynamicApi.GetMappings(CancellationToken.None, endpoint.Url, endpoint.Path);
                 if (mappings is { Length: > 0 })
                 {
@@ -377,7 +387,7 @@ public class CUE4ParseViewModel : ViewModel
                         if (!mapping.IsValid) continue;
 
                         var mappingPath = Path.Combine(mappingsFolder, mapping.FileName);
-                        if (force || !File.Exists(mappingPath))
+                        if (force || !File.Exists(mappingPath) || new FileInfo(mappingPath).Length == 0)
                         {
                             _apiEndpointView.DownloadFile(mapping.Url, mappingPath);
                         }
