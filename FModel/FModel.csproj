@@ -29,6 +29,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="FbxExportPOC\**" />
+    <EmbeddedResource Remove="FbxExportPOC\**" />
+    <None Remove="FbxExportPOC\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Resources\android.png" />
     <None Remove="Resources\apple.png" />
     <None Remove="Resources\battlebreakers.png" />
