@@ -87,6 +87,7 @@ public class BaseIconStats : BaseIcon
             weaponRowValue.TryGetValue(out float dmgPb, "DmgPB"); //Damage at point blank
             weaponRowValue.TryGetValue(out float mdpc, "MaxDamagePerCartridge"); //Max damage a weapon can do in a single hit, usually used for shotguns
             weaponRowValue.TryGetValue(out float dmgCritical, "DamageZone_Critical"); //Headshot multiplier
+            weaponRowValue.TryGetValue(out float envDmgPb, "EnvDmgPB"); //Structure damage at point blank
             weaponRowValue.TryGetValue(out int clipSize, "ClipSize"); //Item magazine size
             weaponRowValue.TryGetValue(out float firingRate, "FiringRate"); //Item firing rate, value is shots per second
             weaponRowValue.TryGetValue(out float swingTime, "SwingTime"); //Item swing rate, value is swing per second
@@ -115,6 +116,15 @@ public class BaseIconStats : BaseIcon
                     _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "0DEF2455463B008C4499FEA03D149EDF", "Headshot Damage"), dmgPb * dmgCritical * multiplier, 160));
                 }
             }
+            {
+                var envdmgmultiplier = bpc != 0f ? bpc : 1;
+                if (envDmgPb != 0f)
+
+                {
+                    _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "11AF67134E0F4E27E5E588806AB475BE", "Structure Damage"), envDmgPb * envdmgmultiplier, 160));
+                }
+            }
+
             if (clipSize > 999f || clipSize == 0f)
             {
                 _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "068239DD4327B36124498C9C5F61C038", "Magazine Size"), Utils.GetLocalizedResource("", "0FAE8E5445029F2AA209ADB0FE49B23C", "Infinite"), -1));
