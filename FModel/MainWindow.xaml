@@ -523,7 +523,7 @@
                                                 <MenuItem.Icon>
                                                     <Viewbox Width="16" Height="16">
                                                         <Canvas Width="24" Height="24">
-                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource CppIcon}" />
                                                         </Canvas>
                                                     </Viewbox>
                                                 </MenuItem.Icon>
@@ -801,12 +801,41 @@
                                         <StackPanel Orientation="Vertical"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center">
-                                            <Path Data="{StaticResource FolderIconAlt}"
-                                                  Width="64"
-                                                  Height="64"
-                                                  Stretch="Uniform"
-                                                  Fill="#fcbf95"
-                                                  Effect="{DynamicResource ShadowEffect}" />
+                                            <Grid Width="64"
+                                                  Height="64">
+                                                <Path Data="{StaticResource FolderIconAlt}"
+                                                      Stretch="Uniform"
+                                                      Fill="#fcbf95"
+                                                      Effect="{DynamicResource ShadowEffect}" />
+                                                <Border Width="16"
+                                                        Height="16"
+                                                        Background="#624b39"
+                                                        CornerRadius="12"
+                                                        HorizontalAlignment="Right"
+                                                        VerticalAlignment="Bottom"
+                                                        Margin="0, 0, -10, 0">
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Setter Property="Visibility"
+                                                                    Value="Visible" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding AssetsList.Assets.Count}"
+                                                                             Value="0">
+                                                                    <Setter Property="Visibility"
+                                                                            Value="Collapsed" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+                                                    <TextBlock Text="{Binding AssetsList.Assets.Count, Converter={x:Static converters:CountAssetsConverter.Instance}}"
+                                                               Foreground="White"
+                                                               FontSize="8"
+                                                               FontWeight="SemiBold"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"
+                                                               TextAlignment="Center" />
+                                                </Border>
+                                            </Grid>
                                             <TextBlock Text="{Binding Header}"
                                                        HorizontalAlignment="Center"
                                                        Margin="0,6,0,0"
@@ -821,6 +850,7 @@
                                             Margin="6"
                                             Padding="6"
                                             Cursor="Hand"
+                                            Loaded="OnGameFileLoaded"
                                             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
                                             BorderThickness="1"
                                             adonisExtensions:CornerRadiusExtension.CornerRadius="8"
@@ -836,8 +866,8 @@
                                                 <Path Width="64"
                                                       Height="64"
                                                       Stretch="Uniform"
-                                                      Data="{Binding Asset.Name, Converter={x:Static converters:AssetVisualConverter.Instance}, ConverterParameter=Icon}"
-                                                      Fill="{Binding Asset.Name, Converter={x:Static converters:AssetVisualConverter.Instance}, ConverterParameter=Color}"
+                                                      Data="{Binding IconGeometry}"
+                                                      Fill="{Binding IconColor}"
                                                       Effect="{DynamicResource ShadowEffect}">
                                                     <Path.Style>
                                                         <Style TargetType="Path">
@@ -900,7 +930,7 @@
                             <ToggleButton Width="32"
                                           Height="32"
                                           Cursor="Hand"
-                                          ToolTip="Game Files"
+                                          ToolTip="File Properties"
                                           IsChecked="{Binding IsAssetsExplorerVisible, Converter={x:Static converters:InvertBooleanConverter.Instance}, Mode=TwoWay}"
                                           Style="{StaticResource ModernToggleButtonStyle}">
                                 <Viewbox Width="16"

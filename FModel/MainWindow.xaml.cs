@@ -227,6 +227,14 @@ public partial class MainWindow
         }
     }
 
+    private void OnGameFileLoaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement fe && fe.DataContext is GameFileViewModel vm)
+        {
+            vm.OnVisibleChanged(true);
+        }
+    }
+
     private async void OnAssetsListMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
         if (sender is not ListBox listBox) return;
