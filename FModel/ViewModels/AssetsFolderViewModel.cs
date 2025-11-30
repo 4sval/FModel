@@ -88,10 +88,10 @@ public class TreeItem : ViewModel
     {
         CombinedEntries.Clear();
 
-        foreach (var f in Folders)
+        foreach (var f in FoldersView)
             CombinedEntries.Add(f);
-        foreach (var a in AssetsList.Assets)
-            CombinedEntries.Add(new GameFileViewModel(a));
+        foreach (GameFile asset in AssetsList.AssetsView)
+            CombinedEntries.Add(new GameFileViewModel(asset));
     }
 
     public static void SelectTreeItem(TreeItem item, TreeView treeView)
