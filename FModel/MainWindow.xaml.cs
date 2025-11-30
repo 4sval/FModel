@@ -44,7 +44,17 @@ public partial class MainWindow
     }
 
     private void OnToggleExplorer(object sender, ExecutedRoutedEventArgs e) => ToggleExplorer();
-    private void ToggleExplorer() => _applicationView.IsAssetsExplorerVisible = !_applicationView.IsAssetsExplorerVisible;
+    private void ToggleExplorer(bool onlyGamesFileTab = false)
+    {
+        if (onlyGamesFileTab)
+        {
+            _applicationView.IsAssetsExplorerVisible = false;
+        }
+        else
+        {
+            _applicationView.IsAssetsExplorerVisible = !_applicationView.IsAssetsExplorerVisible;
+        }
+    }
 
     private void OnClosing(object sender, CancelEventArgs e)
     {
@@ -221,7 +231,7 @@ public partial class MainWindow
     {
         if (sender is not ListBox listBox) return;
 
-        ToggleExplorer();
+        ToggleExplorer(true);
 
         var selectedItems = listBox.SelectedItems.Cast<GameFile>().ToList();
         await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
