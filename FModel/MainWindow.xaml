@@ -9,6 +9,8 @@
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+        xmlns:vm="clr-namespace:FModel.ViewModels"
+        xmlns:vwp="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
         WindowStartupLocation="CenterScreen" Closing="OnClosing" Loaded="OnLoaded" PreviewKeyDown="OnWindowKeyDown"
         Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.85'}"
         Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.75'}">
@@ -315,7 +317,11 @@
                                 </StackPanel>
                             </Grid>
                             <Separator Grid.Row="1" Style="{StaticResource CustomSeparator}" Margin="0" />
-                            <TreeView Grid.Row="2" x:Name="AssetsFolderName" Style="{StaticResource AssetsFolderTreeView}" PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick">
+                            <TreeView Grid.Row="2"
+                                      x:Name="AssetsFolderName"
+                                      Style="{StaticResource AssetsFolderTreeView}"
+                                      SelectedItemChanged="AssetsFolder_SelectedItemChanged"
+                                      PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick">
                                 <TreeView.ContextMenu>
                                     <ContextMenu>
                                         <!-- <MenuItem Header="Extract Folder's Packages" Click="OnFolderExtractClick"> -->
@@ -727,7 +733,176 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <TabControl Grid.Row="0" x:Name="TabControlName" Style="{StaticResource GameFilesTabControl}" />
+                    <ListBox x:Name="AssetsExplorer"
+                             Grid.Row="0"
+                             Visibility="{Binding AssetsExplorerVisibility}"
+                             ItemsSource="{Binding SelectedItem.CombinedEntries, ElementName=AssetsFolderName}"
+                             VirtualizingPanel.IsVirtualizing="True"
+                             VirtualizingPanel.VirtualizationMode="Recycling"
+                             ScrollViewer.CanContentScroll="True"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
+                             BorderThickness="0">
+                        <!-- Hide ListBox styling completely -->
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Focusable"
+                                        Value="False" />
+                                <Setter Property="IsTabStop"
+                                        Value="False" />
+                                <Setter Property="Padding"
+                                        Value="0" />
+                                <Setter Property="Margin"
+                                        Value="0" />
+                                <Setter Property="Background"
+                                        Value="Transparent" />
+                                <Setter Property="BorderThickness"
+                                        Value="0" />
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <ContentPresenter />
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <vwp:VirtualizingWrapPanel Orientation="Horizontal"
+                                                           SpacingMode="Uniform"
+                                                           ScrollUnit="Pixel" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.Resources>
+                            <DataTemplate DataType="{x:Type vm:TreeItem}">
+                                <Button Width="128"
+                                        Height="128"
+                                        Margin="6"
+                                        Padding="6"
+                                        Cursor="Hand"
+                                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                                        BorderThickness="1"
+                                        adonisExtensions:CornerRadiusExtension.CornerRadius="8"
+                                        ClickMode="Press"
+                                        PreviewMouseDown="OnAssetClick">
+                                    <StackPanel Orientation="Vertical"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center">
+                                        <Path Data="{StaticResource FolderIconAlt}"
+                                              Width="64"
+                                              Height="64"
+                                              Stretch="Uniform"
+                                              Fill="#fcbf95"
+                                              Effect="{DynamicResource ShadowEffect}" />
+                                        <TextBlock Text="{Binding Header}"
+                                                   HorizontalAlignment="Center"
+                                                   Margin="0,6,0,0"
+                                                   FontSize="10"
+                                                   TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                </Button>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type vm:GameFileViewModel}">
+                                <Button Width="128"
+                                        Height="128"
+                                        Margin="6"
+                                        Padding="6"
+                                        Cursor="Hand"
+                                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                                        BorderThickness="1"
+                                        adonisExtensions:CornerRadiusExtension.CornerRadius="8"
+                                        ClickMode="Press"
+                                        PreviewMouseDown="OnAssetClick">
+                                    <StackPanel Orientation="Vertical"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center">
+                                        <Grid Width="96"
+                                              Height="96">
+                                            <Image Source="{Binding PreviewImage}"
+                                                   Stretch="Uniform" />
+                                            <Path Width="64"
+                                                  Height="64"
+                                                  Stretch="Uniform"
+                                                  Data="{Binding Asset.Name, Converter={x:Static converters:AssetVisualConverter.Instance}, ConverterParameter=Icon}"
+                                                  Fill="{Binding Asset.Name, Converter={x:Static converters:AssetVisualConverter.Instance}, ConverterParameter=Color}"
+                                                  Effect="{DynamicResource ShadowEffect}">
+                                                <Path.Style>
+                                                    <Style TargetType="Path">
+                                                        <Setter Property="Visibility"
+                                                                Value="Collapsed" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding PreviewImage}"
+                                                                         Value="{x:Null}">
+                                                                <Setter Property="Visibility"
+                                                                        Value="Visible" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Path.Style>
+                                            </Path>
+                                        </Grid>
+                                        <TextBlock Text="{Binding Asset.Name}"
+                                                   HorizontalAlignment="Center"
+                                                   Margin="0,6,0,0"
+                                                   FontSize="10"
+                                                   TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                </Button>
+                            </DataTemplate>
+                        </ListBox.Resources>
+                    </ListBox>
+
+                    <TabControl Grid.Row="0"
+                                x:Name="TabControlName"
+                                Style="{StaticResource GameFilesTabControl}"
+                                Visibility="{Binding GameFilesVisibility}" />
+
+                    <Border Grid.Row="0"
+                            VerticalAlignment="Bottom"
+                            HorizontalAlignment="Right"
+                            Margin="12"
+                            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                            CornerRadius="8"
+                            Padding="4"
+                            Effect="{DynamicResource ShadowEffect}">
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Center">
+                            <ToggleButton Width="32"
+                                          Height="32"
+                                          Cursor="Hand"
+                                          Margin="0, 0, 2, 0"
+                                          ToolTip="Assets Explorer"
+                                          IsChecked="{Binding IsAssetsExplorerVisible, Mode=TwoWay}"
+                                          Style="{StaticResource ModernToggleButtonStyle}">
+                                <Viewbox Width="16"
+                                         Height="16">
+                                    <Canvas Width="24"
+                                            Height="24">
+                                        <Path Data="{StaticResource FolderIconAlt}"
+                                              Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                                    </Canvas>
+                                </Viewbox>
+                            </ToggleButton>
+                            <ToggleButton Width="32"
+                                          Height="32"
+                                          Cursor="Hand"
+                                          ToolTip="Game Files"
+                                          IsChecked="{Binding IsAssetsExplorerVisible, Converter={x:Static converters:InvertBooleanConverter.Instance}, Mode=TwoWay}"
+                                          Style="{StaticResource ModernToggleButtonStyle}">
+                                <Viewbox Width="16"
+                                         Height="16">
+                                    <Canvas Width="24"
+                                            Height="24">
+                                        <Path Data="{StaticResource AssetIcon}"
+                                              Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                                    </Canvas>
+                                </Viewbox>
+                            </ToggleButton>
+                        </StackPanel>
+                    </Border>
+
                     <Expander Grid.Row="1" Margin="0 5 0 5" ExpandDirection="Down"
                               IsExpanded="{Binding IsLoggerExpanded, Source={x:Static settings:UserSettings.Default}}">
                         <Grid>

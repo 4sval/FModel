@@ -1,8 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.Versions;
@@ -32,7 +34,11 @@ public class TreeItem : ViewModel
     public bool IsSelected
     {
         get => _isSelected;
-        set => SetProperty(ref _isSelected, value);
+        set
+        {
+            if (SetProperty(ref _isSelected, value))
+                RefreshCombinedEntries();
+        }
     }
 
     private string _archive;
@@ -60,6 +66,8 @@ public class TreeItem : ViewModel
     public AssetsListViewModel AssetsList { get; }
     public RangeObservableCollection<TreeItem> Folders { get; }
     public ICollectionView FoldersView { get; }
+    public ObservableCollection<object> CombinedEntries { get; } = [];
+    public TreeItem Parent { get; set; }
 
     public TreeItem(string header, GameFile entry, string pathHere)
     {
@@ -73,7 +81,33 @@ public class TreeItem : ViewModel
         PathAtThisPoint = pathHere;
         AssetsList = new AssetsListViewModel();
         Folders = new RangeObservableCollection<TreeItem>();
-        FoldersView = new ListCollectionView(Folders) { SortDescriptions = { new SortDescription("Header", ListSortDirection.Ascending) } };
+        FoldersView = new ListCollectionView(Folders) { SortDescriptions = { new SortDescription(nameof(Header), ListSortDirection.Ascending) } };
+    }
+
+    public void RefreshCombinedEntries()
+    {
+        CombinedEntries.Clear();
+
+        foreach (var f in Folders)
+            CombinedEntries.Add(f);
+        foreach (var a in AssetsList.Assets)
+            CombinedEntries.Add(new GameFileViewModel(a));
+    }
+
+    public static void SelectTreeItem(TreeItem item, TreeView treeView)
+    {
+        if (item == null)
+            return;
+
+        for (var parent = item.Parent; parent != null; parent = parent.Parent)
+            parent.IsExpanded = true;
+
+        item.IsSelected = true;
+
+        if (treeView.ItemContainerGenerator.ContainerFromItem(item) is TreeViewItem tvi)
+        {
+            tvi.BringIntoView();
+        }
     }
 
     public override string ToString() => $"{Header} | {Folders.Count} Folders | {AssetsList.Assets.Count} Files";
@@ -103,6 +137,7 @@ public class AssetsFolderViewModel
             foreach (var entry in entries)
             {
                 TreeItem lastNode = null;
+                TreeItem parentItem = null;
                 var folders = entry.Path.Split('/', StringSplitOptions.RemoveEmptyEntries);
                 var builder = new StringBuilder(64);
                 var parentNode = treeItems;
@@ -127,12 +162,16 @@ public class AssetsFolderViewModel
                     if (lastNode == null)
                     {
                         var nodePath = builder.ToString();
-                        lastNode = new TreeItem(folder, entry, nodePath[..^1]);
+                        lastNode = new TreeItem(folder, entry, nodePath[..^1])
+                        {
+                            Parent = parentItem
+                        };
                         lastNode.Folders.SetSuppressionState(true);
                         lastNode.AssetsList.Assets.SetSuppressionState(true);
                         parentNode.Add(lastNode);
                     }
 
+                    parentItem = lastNode;
                     parentNode = lastNode.Folders;
                 }
 

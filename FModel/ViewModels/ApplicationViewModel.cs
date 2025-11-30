@@ -43,6 +43,22 @@ public class ApplicationViewModel : ViewModel
         private init => SetProperty(ref _status, value);
     }
 
+    private bool _isAssetsExplorerVisible = true;
+    public bool IsAssetsExplorerVisible
+    {
+        get => _isAssetsExplorerVisible;
+        set
+        {
+            if (SetProperty(ref _isAssetsExplorerVisible, value))
+            {
+                RaisePropertyChanged(nameof(AssetsExplorerVisibility));
+                RaisePropertyChanged(nameof(GameFilesVisibility));
+            }
+        }
+    }
+    public Visibility AssetsExplorerVisibility => IsAssetsExplorerVisible ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility GameFilesVisibility => IsAssetsExplorerVisible ? Visibility.Collapsed : Visibility.Visible;
+
     public RightClickMenuCommand RightClickMenuCommand => _rightClickMenuCommand ??= new RightClickMenuCommand(this);
     private RightClickMenuCommand _rightClickMenuCommand;
     public MenuCommand MenuCommand => _menuCommand ??= new MenuCommand(this);

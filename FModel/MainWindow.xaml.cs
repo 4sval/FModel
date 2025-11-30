@@ -26,17 +26,25 @@ public partial class MainWindow
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
     private DiscordHandler _discordHandler => DiscordService.DiscordHandler;
 
+    public static readonly RoutedCommand ToggleExplorerCommand = new();
+
     public MainWindow()
     {
         CommandBindings.Add(new CommandBinding(new RoutedCommand("ReloadMappings", typeof(MainWindow), new InputGestureCollection { new KeyGesture(Key.F12) }), OnMappingsReload));
         CommandBindings.Add(new CommandBinding(ApplicationCommands.Find, (_, _) => OnOpenAvalonFinder()));
+        CommandBindings.Add(new CommandBinding(ToggleExplorerCommand, OnToggleExplorer));
 
         DataContext = _applicationView;
         InitializeComponent();
 
+        AssetsExplorer.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
+
         FLogger.Logger = LogRtbName;
         YesWeCats = this;
     }
+
+    private void OnToggleExplorer(object sender, ExecutedRoutedEventArgs e) => ToggleExplorer();
+    private void ToggleExplorer() => _applicationView.IsAssetsExplorerVisible = !_applicationView.IsAssetsExplorerVisible;
 
     private void OnClosing(object sender, CancelEventArgs e)
     {
@@ -157,9 +165,63 @@ public partial class MainWindow
         LeftTabControl.SelectedIndex++;
     }
 
+    private async void OnAssetClick(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is not Button button)
+            return;
+
+        switch (button.DataContext)
+        {
+            case GameFileViewModel asset:
+                await _threadWorkerView.Begin(cancellationToken =>
+                    _applicationView.CUE4Parse.ExtractSelected(cancellationToken, [asset.Asset]));
+
+                ToggleExplorer();
+                break;
+
+            case TreeItem folder:
+                folder.RefreshCombinedEntries();
+                AssetsExplorer.ItemsSource = folder.CombinedEntries;
+                TreeItem.SelectTreeItem(folder, AssetsFolderName);
+                break;
+        }
+    }
+
+    private void AssetsFolder_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+    {
+        if (e.NewValue is not TreeItem folder)
+            return;
+
+        TreeItem.SelectTreeItem(folder, AssetsFolderName);
+        AssetsExplorer.ItemsSource = folder.CombinedEntries;
+    }
+
+    private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
+    {
+        var generator = AssetsExplorer.ItemContainerGenerator;
+
+        if (generator.Status != System.Windows.Controls.Primitives.GeneratorStatus.ContainersGenerated)
+            return;
+
+        for (int i = 0; i < AssetsExplorer.Items.Count; i++)
+        {
+            var item = AssetsExplorer.Items[i] as GameFileViewModel;
+            if (item == null || item.PreviewImage != null)
+                continue;
+
+            var container = generator.ContainerFromIndex(i) as FrameworkElement;
+            if (container != null && container.IsVisible)
+            {
+                item.OnVisibleChanged(true);
+            }
+        }
+    }
+
     private async void OnAssetsListMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
         if (sender is not ListBox listBox) return;
+
+        ToggleExplorer();
 
         var selectedItems = listBox.SelectedItems.Cast<GameFile>().ToList();
         await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
