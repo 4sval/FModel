@@ -733,126 +733,138 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <ListBox x:Name="AssetsExplorer"
-                             Grid.Row="0"
-                             Visibility="{Binding AssetsExplorerVisibility}"
-                             ItemsSource="{Binding SelectedItem.CombinedEntries, ElementName=AssetsFolderName}"
-                             VirtualizingPanel.IsVirtualizing="True"
-                             VirtualizingPanel.VirtualizationMode="Recycling"
-                             ScrollViewer.CanContentScroll="True"
-                             ScrollViewer.VerticalScrollBarVisibility="Auto"
-                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
-                             BorderThickness="0">
-                        <!-- Hide ListBox styling completely -->
-                        <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem">
-                                <Setter Property="Focusable"
-                                        Value="False" />
-                                <Setter Property="IsTabStop"
-                                        Value="False" />
-                                <Setter Property="Padding"
-                                        Value="0" />
-                                <Setter Property="Margin"
-                                        Value="0" />
-                                <Setter Property="Background"
-                                        Value="Transparent" />
-                                <Setter Property="BorderThickness"
-                                        Value="0" />
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="ListBoxItem">
-                                            <ContentPresenter />
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <vwp:VirtualizingWrapPanel Orientation="Horizontal"
-                                                           SpacingMode="Uniform"
-                                                           ScrollUnit="Pixel" />
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                        <ListBox.Resources>
-                            <DataTemplate DataType="{x:Type vm:TreeItem}">
-                                <Button Width="128"
-                                        Height="128"
-                                        Margin="6"
-                                        Padding="6"
-                                        Cursor="Hand"
-                                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
-                                        BorderThickness="1"
-                                        adonisExtensions:CornerRadiusExtension.CornerRadius="8"
-                                        ClickMode="Press"
-                                        PreviewMouseDown="OnAssetClick">
-                                    <StackPanel Orientation="Vertical"
-                                                HorizontalAlignment="Center"
-                                                VerticalAlignment="Center">
-                                        <Path Data="{StaticResource FolderIconAlt}"
-                                              Width="64"
-                                              Height="64"
-                                              Stretch="Uniform"
-                                              Fill="#fcbf95"
-                                              Effect="{DynamicResource ShadowEffect}" />
-                                        <TextBlock Text="{Binding Header}"
-                                                   HorizontalAlignment="Center"
-                                                   Margin="0,6,0,0"
-                                                   FontSize="10"
-                                                   TextTrimming="CharacterEllipsis" />
-                                    </StackPanel>
-                                </Button>
-                            </DataTemplate>
-                            <DataTemplate DataType="{x:Type vm:GameFileViewModel}">
-                                <Button Width="128"
-                                        Height="128"
-                                        Margin="6"
-                                        Padding="6"
-                                        Cursor="Hand"
-                                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
-                                        BorderThickness="1"
-                                        adonisExtensions:CornerRadiusExtension.CornerRadius="8"
-                                        ClickMode="Press"
-                                        PreviewMouseDown="OnAssetClick">
-                                    <StackPanel Orientation="Vertical"
-                                                HorizontalAlignment="Center"
-                                                VerticalAlignment="Center">
-                                        <Grid Width="96"
-                                              Height="96">
-                                            <Image Source="{Binding PreviewImage}"
-                                                   Stretch="Uniform" />
-                                            <Path Width="64"
+                    <Grid Visibility="{Binding AssetsExplorerVisibility}"
+                          Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <controls:Breadcrumb Grid.Row="0"
+                                             HorizontalAlignment="Left"
+                                             Margin="10 5 0 5"
+                                             DataContext="{Binding SelectedItem.PathAtThisPoint, ElementName=AssetsFolderName}" />
+
+                        <ListBox x:Name="AssetsExplorer"
+                                 Grid.Row="1"
+                                 ItemsSource="{Binding SelectedItem.CombinedEntries, ElementName=AssetsFolderName}"
+                                 VirtualizingPanel.IsVirtualizing="True"
+                                 VirtualizingPanel.VirtualizationMode="Recycling"
+                                 ScrollViewer.CanContentScroll="True"
+                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                 Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
+                                 BorderThickness="0">
+                            <!-- Hide ListBox styling completely -->
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Focusable"
+                                            Value="False" />
+                                    <Setter Property="IsTabStop"
+                                            Value="False" />
+                                    <Setter Property="Padding"
+                                            Value="0" />
+                                    <Setter Property="Margin"
+                                            Value="0" />
+                                    <Setter Property="Background"
+                                            Value="Transparent" />
+                                    <Setter Property="BorderThickness"
+                                            Value="0" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <ContentPresenter />
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <vwp:VirtualizingWrapPanel Orientation="Horizontal"
+                                                               SpacingMode="Uniform"
+                                                               ScrollUnit="Pixel" />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBox.Resources>
+                                <DataTemplate DataType="{x:Type vm:TreeItem}">
+                                    <Button Width="128"
+                                            Height="128"
+                                            Margin="6"
+                                            Padding="6"
+                                            Cursor="Hand"
+                                            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                                            BorderThickness="1"
+                                            adonisExtensions:CornerRadiusExtension.CornerRadius="8"
+                                            ClickMode="Press"
+                                            PreviewMouseDown="OnAssetClick">
+                                        <StackPanel Orientation="Vertical"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center">
+                                            <Path Data="{StaticResource FolderIconAlt}"
+                                                  Width="64"
                                                   Height="64"
                                                   Stretch="Uniform"
-                                                  Data="{Binding Asset.Name, Converter={x:Static converters:AssetVisualConverter.Instance}, ConverterParameter=Icon}"
-                                                  Fill="{Binding Asset.Name, Converter={x:Static converters:AssetVisualConverter.Instance}, ConverterParameter=Color}"
-                                                  Effect="{DynamicResource ShadowEffect}">
-                                                <Path.Style>
-                                                    <Style TargetType="Path">
-                                                        <Setter Property="Visibility"
-                                                                Value="Collapsed" />
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding PreviewImage}"
-                                                                         Value="{x:Null}">
-                                                                <Setter Property="Visibility"
-                                                                        Value="Visible" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Path.Style>
-                                            </Path>
-                                        </Grid>
-                                        <TextBlock Text="{Binding Asset.Name}"
-                                                   HorizontalAlignment="Center"
-                                                   Margin="0,6,0,0"
-                                                   FontSize="10"
-                                                   TextTrimming="CharacterEllipsis" />
-                                    </StackPanel>
-                                </Button>
-                            </DataTemplate>
-                        </ListBox.Resources>
-                    </ListBox>
+                                                  Fill="#fcbf95"
+                                                  Effect="{DynamicResource ShadowEffect}" />
+                                            <TextBlock Text="{Binding Header}"
+                                                       HorizontalAlignment="Center"
+                                                       Margin="0,6,0,0"
+                                                       FontSize="10"
+                                                       TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type vm:GameFileViewModel}">
+                                    <Button Width="128"
+                                            Height="128"
+                                            Margin="6"
+                                            Padding="6"
+                                            Cursor="Hand"
+                                            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                                            BorderThickness="1"
+                                            adonisExtensions:CornerRadiusExtension.CornerRadius="8"
+                                            ClickMode="Press"
+                                            PreviewMouseDown="OnAssetClick">
+                                        <StackPanel Orientation="Vertical"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center">
+                                            <Grid Width="96"
+                                                  Height="96">
+                                                <Image Source="{Binding PreviewImage}"
+                                                       Stretch="Uniform" />
+                                                <Path Width="64"
+                                                      Height="64"
+                                                      Stretch="Uniform"
+                                                      Data="{Binding Asset.Name, Converter={x:Static converters:AssetVisualConverter.Instance}, ConverterParameter=Icon}"
+                                                      Fill="{Binding Asset.Name, Converter={x:Static converters:AssetVisualConverter.Instance}, ConverterParameter=Color}"
+                                                      Effect="{DynamicResource ShadowEffect}">
+                                                    <Path.Style>
+                                                        <Style TargetType="Path">
+                                                            <Setter Property="Visibility"
+                                                                    Value="Collapsed" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding PreviewImage}"
+                                                                             Value="{x:Null}">
+                                                                    <Setter Property="Visibility"
+                                                                            Value="Visible" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Path.Style>
+                                                </Path>
+                                            </Grid>
+                                            <TextBlock Text="{Binding Asset.Name}"
+                                                       HorizontalAlignment="Center"
+                                                       Margin="0,6,0,0"
+                                                       FontSize="10"
+                                                       TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ListBox.Resources>
+                        </ListBox>
+                    </Grid>
 
                     <TabControl Grid.Row="0"
                                 x:Name="TabControlName"
