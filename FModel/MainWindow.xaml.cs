@@ -26,13 +26,10 @@ public partial class MainWindow
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
     private DiscordHandler _discordHandler => DiscordService.DiscordHandler;
 
-    public static readonly RoutedCommand ToggleExplorerCommand = new();
-
     public MainWindow()
     {
         CommandBindings.Add(new CommandBinding(new RoutedCommand("ReloadMappings", typeof(MainWindow), new InputGestureCollection { new KeyGesture(Key.F12) }), OnMappingsReload));
         CommandBindings.Add(new CommandBinding(ApplicationCommands.Find, (_, _) => OnOpenAvalonFinder()));
-        CommandBindings.Add(new CommandBinding(ToggleExplorerCommand, OnToggleExplorer));
 
         DataContext = _applicationView;
         InitializeComponent();

@@ -227,7 +227,8 @@ public class GameFileViewModel : ViewModel
             Log.Error(e, "Failed to load preview for {Path}", Asset.Path);
         }
 
-        if (IconGeometry == null && PreviewImage == null) // Don't load default icon immediately because it will look clunky when async icon is being loaded
+        // Don't load default icon immediately because it will look clunky when async icon is being loaded
+        if (IconGeometry == null && PreviewImage == null)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
