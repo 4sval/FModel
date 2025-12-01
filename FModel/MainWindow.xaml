@@ -850,7 +850,6 @@
                                             Margin="6"
                                             Padding="6"
                                             Cursor="Hand"
-                                            Loaded="OnGameFileLoaded"
                                             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
                                             BorderThickness="1"
                                             adonisExtensions:CornerRadiusExtension.CornerRadius="8"
@@ -911,12 +910,14 @@
                             Effect="{DynamicResource ShadowEffect}">
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Center">
-                            <ToggleButton Width="32"
+                            <ToggleButton x:Name="AssetsExplorerToggle"
+                                          Width="32"
                                           Height="32"
                                           Cursor="Hand"
                                           Margin="0, 0, 2, 0"
+                                          IsChecked="True"
+                                          Click="AssetsExplorerToggle_Click"
                                           ToolTip="Assets Explorer"
-                                          IsChecked="{Binding IsAssetsExplorerVisible, Mode=TwoWay}"
                                           Style="{StaticResource ModernToggleButtonStyle}">
                                 <Viewbox Width="16"
                                          Height="16">
@@ -927,11 +928,13 @@
                                     </Canvas>
                                 </Viewbox>
                             </ToggleButton>
-                            <ToggleButton Width="32"
+                            <ToggleButton x:Name="FilePropertiesToggle"
+                                          Width="32"
                                           Height="32"
                                           Cursor="Hand"
                                           ToolTip="File Properties"
-                                          IsChecked="{Binding IsAssetsExplorerVisible, Converter={x:Static converters:InvertBooleanConverter.Instance}, Mode=TwoWay}"
+                                          Click="AssetsExplorerToggle_Click"
+                                          IsChecked="False"
                                           Style="{StaticResource ModernToggleButtonStyle}">
                                 <Viewbox Width="16"
                                          Height="16">

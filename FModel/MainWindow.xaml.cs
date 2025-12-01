@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using AdonisUI.Controls;
 using CUE4Parse.FileProvider.Objects;
@@ -40,7 +41,16 @@ public partial class MainWindow
         YesWeCats = this;
     }
 
-    private void OnToggleExplorer(object sender, ExecutedRoutedEventArgs e) => ToggleExplorer();
+    private void AssetsExplorerToggle_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is ToggleButton toggleButton)
+        {
+            ToggleExplorer();
+            AssetsExplorerToggle.IsChecked = _applicationView.IsAssetsExplorerVisible;
+            FilePropertiesToggle.IsChecked = !_applicationView.IsAssetsExplorerVisible;
+        }
+    }
+
     private void ToggleExplorer(bool onlyGamesFileTab = false)
     {
         if (onlyGamesFileTab)
@@ -50,6 +60,22 @@ public partial class MainWindow
         else
         {
             _applicationView.IsAssetsExplorerVisible = !_applicationView.IsAssetsExplorerVisible;
+
+            // Force reload of preview icons when switching to assets explorer
+            if (_applicationView.IsAssetsExplorerVisible)
+            {
+                foreach (var obj in AssetsExplorer.Items)
+                {
+                    if (obj is GameFileViewModel item)
+                    {
+                        var container = AssetsExplorer.ItemContainerGenerator.ContainerFromItem(item) as FrameworkElement;
+                        if (container != null && container.IsVisible)
+                        {
+                            item.OnVisibleChanged(true);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -205,9 +231,12 @@ public partial class MainWindow
 
     private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
     {
+        if (!_applicationView.IsAssetsExplorerVisible)
+            return;
+
         var generator = AssetsExplorer.ItemContainerGenerator;
 
-        if (generator.Status != System.Windows.Controls.Primitives.GeneratorStatus.ContainersGenerated)
+        if (generator.Status != GeneratorStatus.ContainersGenerated)
             return;
 
         for (int i = 0; i < AssetsExplorer.Items.Count; i++)
@@ -221,14 +250,6 @@ public partial class MainWindow
             {
                 item.OnVisibleChanged(true);
             }
-        }
-    }
-
-    private void OnGameFileLoaded(object sender, RoutedEventArgs e)
-    {
-        if (sender is FrameworkElement fe && fe.DataContext is GameFileViewModel vm)
-        {
-            vm.OnVisibleChanged(true);
         }
     }
 

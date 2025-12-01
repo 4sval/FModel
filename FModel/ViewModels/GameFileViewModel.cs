@@ -86,7 +86,7 @@ public class GameFileViewModel : ViewModel
             if (await LoadPreviewByExtension(Asset.Extension))
                 return;
 
-            bool canLoadPackage = Asset.IsUePackage && _applicationView?.CUE4Parse != null;
+            bool canLoadPackage = Asset.IsUePackage && _applicationView?.CUE4Parse != null && _applicationView.IsAssetsExplorerVisible;
 
             if (canLoadPackage)
             {
