@@ -14,6 +14,7 @@ using FModel.ViewModels;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
 using ICSharpCode.AvalonEdit.Editing;
+using Newtonsoft.Json.Linq;
 
 namespace FModel;
 
@@ -46,8 +47,6 @@ public partial class MainWindow
         if (sender is ToggleButton toggleButton)
         {
             ToggleExplorer();
-            AssetsExplorerToggle.IsChecked = _applicationView.IsAssetsExplorerVisible;
-            FilePropertiesToggle.IsChecked = !_applicationView.IsAssetsExplorerVisible;
         }
     }
 
@@ -77,6 +76,9 @@ public partial class MainWindow
                 }
             }
         }
+
+        AssetsExplorerToggle.IsChecked = _applicationView.IsAssetsExplorerVisible;
+        FilePropertiesToggle.IsChecked = !_applicationView.IsAssetsExplorerVisible;
     }
 
     private void OnClosing(object sender, CancelEventArgs e)
@@ -210,11 +212,15 @@ public partial class MainWindow
                     _applicationView.CUE4Parse.ExtractSelected(cancellationToken, [asset.Asset]));
 
                 ToggleExplorer();
+                AssetsListName.SelectedItem = asset.Asset;
+                LeftTabControl.SelectedItem = PackagesTab;
+                AssetsListName.ScrollIntoView(asset.Asset);
                 break;
 
             case TreeItem folder:
                 folder.RefreshCombinedEntries();
                 AssetsExplorer.ItemsSource = folder.CombinedEntries;
+                LeftTabControl.SelectedItem = FoldersTab;
                 TreeItem.SelectTreeItem(folder, AssetsFolderName);
                 break;
         }
@@ -375,8 +381,22 @@ public partial class MainWindow
         if (sender is not TextBox textBox || AssetsFolderName.SelectedItem is not TreeItem folder)
             return;
 
-        var filters = textBox.Text.Trim().Split(' ');
+        var filters = textBox.Text.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
         folder.AssetsList.AssetsView.Filter = o => { return o is GameFile entry && filters.All(x => entry.Name.Contains(x, StringComparison.OrdinalIgnoreCase)); };
+        folder.CombinedView.Filter = o =>
+        {
+            if (filters.Length == 0)
+                return true;
+
+            return o switch
+            {
+                GameFileViewModel asset =>
+                    filters.All(t => asset.Asset.Name.Contains(t, StringComparison.OrdinalIgnoreCase)),
+                TreeItem folderItem =>
+                    filters.All(t => folderItem.Header.Contains(t, StringComparison.OrdinalIgnoreCase)),
+                _ => true
+            };
+        };
     }
 
     private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)

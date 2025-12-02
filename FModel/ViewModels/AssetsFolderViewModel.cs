@@ -62,11 +62,19 @@ public class TreeItem : ViewModel
         private set => SetProperty(ref _version, value);
     }
 
+    private Visibility _searchBarVisibility = Visibility.Collapsed;
+    public Visibility SearchBarVisibility
+    {
+        get => _searchBarVisibility;
+        set => SetProperty(ref _searchBarVisibility, value);
+    }
+
     public string PathAtThisPoint { get; }
     public AssetsListViewModel AssetsList { get; }
     public RangeObservableCollection<TreeItem> Folders { get; }
     public ICollectionView FoldersView { get; }
     public ObservableCollection<object> CombinedEntries { get; } = [];
+    public ICollectionView CombinedView { get; }
     public TreeItem Parent { get; set; }
 
     public TreeItem(string header, GameFile entry, string pathHere)
@@ -80,8 +88,10 @@ public class TreeItem : ViewModel
         }
         PathAtThisPoint = pathHere;
         AssetsList = new AssetsListViewModel();
-        Folders = new RangeObservableCollection<TreeItem>();
+        Folders = [];
         FoldersView = new ListCollectionView(Folders) { SortDescriptions = { new SortDescription(nameof(Header), ListSortDirection.Ascending) } };
+        CombinedEntries = [];
+        CombinedView = CollectionViewSource.GetDefaultView(CombinedEntries);
     }
 
     public void RefreshCombinedEntries()
@@ -92,6 +102,9 @@ public class TreeItem : ViewModel
             CombinedEntries.Add(f);
         foreach (GameFile asset in AssetsList.AssetsView)
             CombinedEntries.Add(new GameFileViewModel(asset));
+
+        if (CombinedEntries.Count > 0)
+            SearchBarVisibility = Visibility.Visible;
     }
 
     public static void SelectTreeItem(TreeItem item, TreeView treeView)

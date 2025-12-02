@@ -259,7 +259,9 @@
                             </Grid>
                         </DockPanel>
                     </TabItem>
-                    <TabItem Style="{StaticResource TabItemFillSpace}" Header="Folders">
+                    <TabItem x:Name="FoldersTab"
+                             Style="{StaticResource TabItemFillSpace}"
+                             Header="Folders">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -439,7 +441,8 @@
                             </StackPanel>
                         </Grid>
                     </TabItem>
-                    <TabItem Style="{StaticResource TabItemFillSpace}"
+                    <TabItem x:Name="PackagesTab"
+                             Style="{StaticResource TabItemFillSpace}"
                              Header="{Binding SelectedItem.AssetsList.Assets.Count, FallbackValue=0, ElementName=AssetsFolderName}"
                              HeaderStringFormat="{}{0} Packages">
                         <DockPanel>
@@ -737,17 +740,24 @@
                           Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <controls:Breadcrumb Grid.Row="0"
+                        <TextBox Style="{StaticResource ModernSearchBar}"
+                                 TextChanged="OnFilterTextChanged"
+                                 Margin="6"
+                                 adonisExtensions:WatermarkExtension.Watermark="Search by name.."
+                                 Visibility="{Binding SelectedItem.SearchBarVisibility, ElementName=AssetsFolderName, FallbackValue=Collapsed}"/>
+
+                        <controls:Breadcrumb Grid.Row="1"
                                              HorizontalAlignment="Left"
                                              Margin="10 5 0 5"
                                              DataContext="{Binding SelectedItem.PathAtThisPoint, ElementName=AssetsFolderName}" />
 
                         <ListBox x:Name="AssetsExplorer"
-                                 Grid.Row="1"
-                                 ItemsSource="{Binding SelectedItem.CombinedEntries, ElementName=AssetsFolderName}"
+                                 Grid.Row="2"
+                                 ItemsSource="{Binding SelectedItem.CombinedView, ElementName=AssetsFolderName}"
                                  VirtualizingPanel.IsVirtualizing="True"
                                  VirtualizingPanel.VirtualizationMode="Recycling"
                                  ScrollViewer.CanContentScroll="True"
