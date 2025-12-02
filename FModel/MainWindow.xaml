@@ -813,7 +813,7 @@
                                                     VerticalAlignment="Center">
                                             <Grid Width="64"
                                                   Height="64">
-                                                <Path Data="{StaticResource FolderIconAlt}"
+                                                <Path Data="{Binding Header, Converter={x:Static converters:FolderNameToIconConverter.Instance}}"
                                                       Stretch="Uniform"
                                                       Fill="#fcbf95"
                                                       Effect="{DynamicResource ShadowEffect}" />
