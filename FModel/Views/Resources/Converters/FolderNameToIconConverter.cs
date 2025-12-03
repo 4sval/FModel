@@ -24,7 +24,7 @@ public class FolderNameToIconConverter : IValueConverter
 
         return folderName.ToLowerInvariant() switch
         {
-            "textures" or "texture" or "ui" => _folderTextureIcon,
+            "textures" or "texture" or "ui" or "icons" or "umgassets" => _folderTextureIcon,
             "config" => _folderConfigIcon,
             "audio" => _folderAudioIcon,
             "movies" or "video" or "videos" => _folderVideoIcon,

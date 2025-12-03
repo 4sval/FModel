@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using CUE4Parse.FileProvider.Objects;
@@ -20,10 +22,16 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         if (parameter is not object[] parameters || parameters[0] is not string trigger)
             return;
 
-        var entries = ((IList) parameters[1]).Cast<GameFile>().ToArray();
+        IEnumerable<GameFile> entries = parameters[1] switch
+        {
+            GameFile gf => [gf],
+            IEnumerable ie => ie.Cast<GameFile>(),
+            _ => []
+        };
+
         if (!entries.Any()) return;
 
-        var updateUi = entries.Length > 1 ? EBulkType.Auto : EBulkType.None;
+        var updateUi = entries.Count() > 1 ? EBulkType.Auto : EBulkType.None;
         await _threadWorkerView.Begin(cancellationToken =>
         {
             switch (trigger)

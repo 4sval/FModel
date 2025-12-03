@@ -14,7 +14,6 @@ using FModel.ViewModels;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
 using ICSharpCode.AvalonEdit.Editing;
-using Newtonsoft.Json.Linq;
 
 namespace FModel;
 
@@ -208,10 +207,9 @@ public partial class MainWindow
         switch (button.DataContext)
         {
             case GameFileViewModel asset:
+                ToggleExplorer();
                 await _threadWorkerView.Begin(cancellationToken =>
                     _applicationView.CUE4Parse.ExtractSelected(cancellationToken, [asset.Asset]));
-
-                ToggleExplorer();
                 AssetsListName.SelectedItem = asset.Asset;
                 LeftTabControl.SelectedItem = PackagesTab;
                 AssetsListName.ScrollIntoView(asset.Asset);
@@ -259,6 +257,16 @@ public partial class MainWindow
         }
     }
 
+    private TreeItem GetCurrentFolder(object sender)
+    {
+        if (sender is MenuItem menuItem && menuItem.DataContext is TreeItem menuFolder) // Assets Explorer
+            return menuFolder;
+        if (AssetsFolderName.SelectedItem is TreeItem selectedFolder) // Folders Tree
+            return selectedFolder;
+
+        return null;
+    }
+
     private async void OnAssetsListMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
         if (sender is not ListBox listBox) return;
@@ -279,85 +287,98 @@ public partial class MainWindow
 
     private async void OnFolderExportClick(object sender, RoutedEventArgs e)
     {
-        if (AssetsFolderName.SelectedItem is TreeItem folder)
+        if (GetCurrentFolder(sender) is not TreeItem folder)
+            return;
+
+        ToggleExplorer(true);
+
+        await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExportFolder(cancellationToken, folder); });
+        FLogger.Append(ELog.Information, () =>
         {
-            await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExportFolder(cancellationToken, folder); });
-            FLogger.Append(ELog.Information, () =>
-            {
-                FLogger.Text("Successfully exported ", Constants.WHITE);
-                FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.RawDataDirectory, true);
-            });
-        }
+            FLogger.Text("Successfully exported ", Constants.WHITE);
+            FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.RawDataDirectory, true);
+        });
     }
 
     private async void OnFolderSaveClick(object sender, RoutedEventArgs e)
     {
-        if (AssetsFolderName.SelectedItem is TreeItem folder)
+        if (GetCurrentFolder(sender) is not TreeItem folder)
+            return;
+
+        ToggleExplorer(true);
+
+        await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.SaveFolder(cancellationToken, folder); });
+        FLogger.Append(ELog.Information, () =>
         {
-            await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.SaveFolder(cancellationToken, folder); });
-            FLogger.Append(ELog.Information, () =>
-            {
-                FLogger.Text("Successfully saved ", Constants.WHITE);
-                FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.PropertiesDirectory, true);
-            });
-        }
+            FLogger.Text("Successfully saved ", Constants.WHITE);
+            FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.PropertiesDirectory, true);
+        });
     }
 
     private async void OnFolderTextureClick(object sender, RoutedEventArgs e)
     {
-        if (AssetsFolderName.SelectedItem is TreeItem folder)
+        if (GetCurrentFolder(sender) is not TreeItem folder)
+            return;
+
+        ToggleExplorer(true);
+
+        await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.TextureFolder(cancellationToken, folder); });
+        FLogger.Append(ELog.Information, () =>
         {
-            await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.TextureFolder(cancellationToken, folder); });
-            FLogger.Append(ELog.Information, () =>
-            {
-                FLogger.Text("Successfully saved textures from ", Constants.WHITE);
-                FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.TextureDirectory, true);
-            });
-        }
+            FLogger.Text("Successfully saved textures from ", Constants.WHITE);
+            FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.TextureDirectory, true);
+        });
     }
 
     private async void OnFolderModelClick(object sender, RoutedEventArgs e)
     {
-        if (AssetsFolderName.SelectedItem is TreeItem folder)
+        if (GetCurrentFolder(sender) is not TreeItem folder)
+            return;
+
+        ToggleExplorer(true);
+
+        await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ModelFolder(cancellationToken, folder); });
+        FLogger.Append(ELog.Information, () =>
         {
-            await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ModelFolder(cancellationToken, folder); });
-            FLogger.Append(ELog.Information, () =>
-            {
-                FLogger.Text("Successfully saved models from ", Constants.WHITE);
-                FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.ModelDirectory, true);
-            });
-        }
+            FLogger.Text("Successfully saved models from ", Constants.WHITE);
+            FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.ModelDirectory, true);
+        });
     }
 
     private async void OnFolderAnimationClick(object sender, RoutedEventArgs e)
     {
-        if (AssetsFolderName.SelectedItem is TreeItem folder)
+        if (GetCurrentFolder(sender) is not TreeItem folder)
+            return;
+
+        ToggleExplorer(true);
+
+        await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.AnimationFolder(cancellationToken, folder); });
+        FLogger.Append(ELog.Information, () =>
         {
-            await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.AnimationFolder(cancellationToken, folder); });
-            FLogger.Append(ELog.Information, () =>
-            {
-                FLogger.Text("Successfully saved animations from ", Constants.WHITE);
-                FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.ModelDirectory, true);
-            });
-        }
+            FLogger.Text("Successfully saved animations from ", Constants.WHITE);
+            FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.ModelDirectory, true);
+        });
     }
 
     private async void OnFolderAudioClick(object sender, RoutedEventArgs e)
     {
-        if (AssetsFolderName.SelectedItem is TreeItem folder)
+        if (GetCurrentFolder(sender) is not TreeItem folder)
+            return;
+
+        ToggleExplorer(true);
+
+        await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.AudioFolder(cancellationToken, folder); });
+        FLogger.Append(ELog.Information, () =>
         {
-            await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.AudioFolder(cancellationToken, folder); });
-            FLogger.Append(ELog.Information, () =>
-            {
-                FLogger.Text("Successfully saved audio from ", Constants.WHITE);
-                FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.AudioDirectory, true);
-            });
-        }
+            FLogger.Text("Successfully saved audio from ", Constants.WHITE);
+            FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.AudioDirectory, true);
+        });
     }
 
     private void OnFavoriteDirectoryClick(object sender, RoutedEventArgs e)
     {
-        if (AssetsFolderName.SelectedItem is not TreeItem folder) return;
+        if (GetCurrentFolder(sender) is not TreeItem folder)
+            return;
 
         _applicationView.CustomDirectories.Add(new CustomDirectory(folder.Header, folder.PathAtThisPoint));
         FLogger.Append(ELog.Information, () =>
@@ -366,37 +387,16 @@ public partial class MainWindow
 
     private void OnCopyDirectoryPathClick(object sender, RoutedEventArgs e)
     {
-        if (AssetsFolderName.SelectedItem is not TreeItem folder) return;
+        if (GetCurrentFolder(sender) is not TreeItem folder)
+            return;
+
         Clipboard.SetText(folder.PathAtThisPoint);
     }
 
-    private void OnDeleteSearchClick(object sender, RoutedEventArgs e)
+    private void OnClearSearchClick(object sender, RoutedEventArgs e)
     {
-        AssetsSearchName.Text = string.Empty;
-        AssetsListName.ScrollIntoView(AssetsListName.SelectedItem);
-    }
-
-    private void OnFilterTextChanged(object sender, TextChangedEventArgs e)
-    {
-        if (sender is not TextBox textBox || AssetsFolderName.SelectedItem is not TreeItem folder)
-            return;
-
-        var filters = textBox.Text.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        folder.AssetsList.AssetsView.Filter = o => { return o is GameFile entry && filters.All(x => entry.Name.Contains(x, StringComparison.OrdinalIgnoreCase)); };
-        folder.CombinedView.Filter = o =>
-        {
-            if (filters.Length == 0)
-                return true;
-
-            return o switch
-            {
-                GameFileViewModel asset =>
-                    filters.All(t => asset.Asset.Name.Contains(t, StringComparison.OrdinalIgnoreCase)),
-                TreeItem folderItem =>
-                    filters.All(t => folderItem.Header.Contains(t, StringComparison.OrdinalIgnoreCase)),
-                _ => true
-            };
-        };
+        if (AssetsFolderName.SelectedItem is TreeItem folder)
+            folder.SearchText = string.Empty;
     }
 
     private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)

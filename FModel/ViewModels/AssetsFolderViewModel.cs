@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -69,6 +70,17 @@ public class TreeItem : ViewModel
         set => SetProperty(ref _searchBarVisibility, value);
     }
 
+    private string _searchText = string.Empty;
+    public string SearchText
+    {
+        get => _searchText;
+        set
+        {
+            if (SetProperty(ref _searchText, value))
+                ApplySearchbarFilter(_searchText);
+        }
+    }
+
     public string PathAtThisPoint { get; }
     public AssetsListViewModel AssetsList { get; }
     public RangeObservableCollection<TreeItem> Folders { get; }
@@ -100,11 +112,32 @@ public class TreeItem : ViewModel
 
         foreach (var f in FoldersView)
             CombinedEntries.Add(f);
-        foreach (GameFile asset in AssetsList.AssetsView)
+        foreach (GameFile asset in AssetsList.Assets.OrderBy(a => a.Path)) // We want to keep the sorting but ignore the filter
             CombinedEntries.Add(new GameFileViewModel(asset));
 
         if (CombinedEntries.Count > 0)
             SearchBarVisibility = Visibility.Visible;
+    }
+
+    private void ApplySearchbarFilter(string filterText)
+    {
+        var filters = filterText.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        AssetsList.AssetsView.Filter = o =>
+            filters.Length == 0 || (o is GameFile entry && filters.All(x => entry.Name.Contains(x, StringComparison.OrdinalIgnoreCase)));
+
+        CombinedView.Filter = o =>
+        {
+            if (filters.Length == 0)
+                return true;
+
+            return o switch
+            {
+                GameFileViewModel asset => filters.All(t => asset.Asset.Name.Contains(t, StringComparison.OrdinalIgnoreCase)),
+                TreeItem folderItem => filters.All(t => folderItem.Header.Contains(t, StringComparison.OrdinalIgnoreCase)),
+                _ => true
+            };
+        };
     }
 
     public static void SelectTreeItem(TreeItem item, TreeView treeView)

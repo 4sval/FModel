@@ -52,7 +52,9 @@ public class GameFileViewModel : ViewModel
     private static readonly Geometry _txtIcon = (Geometry) Application.Current.FindResource("TxtIcon");
     private static readonly Geometry _animationIcon = (Geometry) Application.Current.FindResource("AnimationIconAlt");
 
+    public string ResolvedAssetType { get; private set; }
     public GameFile Asset { get; }
+
     private ImageSource _previewImage;
     public ImageSource PreviewImage
     {
@@ -102,6 +104,8 @@ public class GameFileViewModel : ViewModel
                     {
                         var pointer = new FPackageIndex(package, i + 1).ResolvedObject;
                         var dummy = ((AbstractUePackage) package).ConstructObject(pointer.Class?.Object?.Value as UStruct, package);
+
+                        ResolvedAssetType = dummy?.ExportType;
 
                         switch (dummy)
                         {
