@@ -821,484 +821,543 @@
                             </ListBox.ItemsPanel>
                             <ListBox.Resources>
                                 <DataTemplate DataType="{x:Type vm:TreeItem}">
-                                    <Button Width="128"
-                                            Height="128"
-                                            Margin="6"
-                                            Padding="6"
-                                            Cursor="Hand"
-                                            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
-                                            BorderThickness="1"
-                                            adonisExtensions:CornerRadiusExtension.CornerRadius="8"
-                                            ClickMode="Press"
-                                            PreviewMouseLeftButtonDown="OnAssetClick">
-                                        <Button.ContextMenu>
-                                            <ContextMenu>
-                                                <MenuItem Header="Export Folder's Packages Raw Data (.uasset)"
-                                                          Click="OnFolderExportClick">
-                                                    <MenuItem.Icon>
-                                                        <Viewbox Width="16"
-                                                                 Height="16">
-                                                            <Canvas Width="24"
-                                                                    Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                                      Data="{StaticResource ExportIcon}" />
-                                                            </Canvas>
-                                                        </Viewbox>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <MenuItem Header="Save Folder's Packages Properties (.json)"
-                                                          Click="OnFolderSaveClick">
-                                                    <MenuItem.Icon>
-                                                        <Viewbox Width="16"
-                                                                 Height="16">
-                                                            <Canvas Width="24"
-                                                                    Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                                      Data="{StaticResource SaveIcon}" />
-                                                            </Canvas>
-                                                        </Viewbox>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <MenuItem Header="Save Folder's Packages Textures"
-                                                          Click="OnFolderTextureClick">
-                                                    <MenuItem.Icon>
-                                                        <Viewbox Width="16"
-                                                                 Height="16">
-                                                            <Canvas Width="24"
-                                                                    Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                                      Data="{StaticResource TextureIcon}" />
-                                                            </Canvas>
-                                                        </Viewbox>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <MenuItem Header="Save Folder's Packages Models"
-                                                          Click="OnFolderModelClick">
-                                                    <MenuItem.Icon>
-                                                        <Viewbox Width="16"
-                                                                 Height="16">
-                                                            <Canvas Width="24"
-                                                                    Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                                      Data="{StaticResource ModelIcon}" />
-                                                            </Canvas>
-                                                        </Viewbox>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <MenuItem Header="Save Folder's Packages Animations"
-                                                          Click="OnFolderAnimationClick">
-                                                    <MenuItem.Icon>
-                                                        <Viewbox Width="16"
-                                                                 Height="16">
-                                                            <Canvas Width="24"
-                                                                    Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                                      Data="{StaticResource AnimationIcon}" />
-                                                            </Canvas>
-                                                        </Viewbox>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <MenuItem Header="Save Folder's Packages Audio"
-                                                          Click="OnFolderAudioClick">
-                                                    <MenuItem.Icon>
-                                                        <Viewbox Width="16"
-                                                                 Height="16">
-                                                            <Canvas Width="24"
-                                                                    Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                                      Data="{StaticResource AudioIcon}" />
-                                                            </Canvas>
-                                                        </Viewbox>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <Separator />
-                                                <MenuItem Header="Favorite Directory"
-                                                          Click="OnFavoriteDirectoryClick">
-                                                    <MenuItem.Icon>
-                                                        <Viewbox Width="16"
-                                                                 Height="16">
-                                                            <Canvas Width="24"
-                                                                    Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                                      Data="{StaticResource DirectoriesAddIcon}" />
-                                                            </Canvas>
-                                                        </Viewbox>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <MenuItem Header="Copy Directory Path"
-                                                          Click="OnCopyDirectoryPathClick">
-                                                    <MenuItem.Icon>
-                                                        <Viewbox Width="16"
-                                                                 Height="16">
-                                                            <Canvas Width="24"
-                                                                    Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                                      Data="{StaticResource CopyIcon}" />
-                                                            </Canvas>
-                                                        </Viewbox>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                            </ContextMenu>
-                                        </Button.ContextMenu>
-                                        <StackPanel Orientation="Vertical"
-                                                    HorizontalAlignment="Center"
-                                                    VerticalAlignment="Center">
-                                            <Grid Width="64"
-                                                  Height="64">
-                                                <Path Data="{Binding Header, Converter={x:Static converters:FolderNameToIconConverter.Instance}}"
-                                                      Stretch="Uniform"
-                                                      Fill="#fcbf95"
-                                                      Effect="{DynamicResource ShadowEffect}" />
-                                                <Border Width="16"
-                                                        Height="16"
-                                                        Background="#624b39"
-                                                        CornerRadius="12"
-                                                        HorizontalAlignment="Right"
-                                                        VerticalAlignment="Bottom"
-                                                        Margin="0, 0, -10, 0">
-                                                    <Border.Style>
-                                                        <Style TargetType="Border">
-                                                            <Setter Property="Visibility"
-                                                                    Value="Visible" />
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding AssetsList.Assets.Count}"
-                                                                             Value="0">
-                                                                    <Setter Property="Visibility"
-                                                                            Value="Collapsed" />
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </Border.Style>
-                                                    <TextBlock Text="{Binding AssetsList.Assets.Count, Converter={x:Static converters:CountAssetsConverter.Instance}}"
-                                                               Foreground="White"
-                                                               FontSize="8"
-                                                               FontWeight="SemiBold"
+                                    <Grid>
+                                        <Button Width="128"
+                                                Height="128"
+                                                Margin="6"
+                                                Padding="6"
+                                                Cursor="Hand"
+                                                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                                                BorderThickness="1"
+                                                adonisExtensions:CornerRadiusExtension.CornerRadius="8"
+                                                ClickMode="Press"
+                                                PreviewMouseLeftButtonDown="OnAssetClick"
+                                                PreviewMouseMove="AssetsExplorerButton_PreviewMouseMove"
+                                                MouseEnter="AssetsExplorerButton_MouseEnter"
+                                                MouseLeave="AssetsExplorerButton_MouseLeave">
+                                            <Button.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Header="Export Folder's Packages Raw Data (.uasset)"
+                                                              Click="OnFolderExportClick">
+                                                        <MenuItem.Icon>
+                                                            <Viewbox Width="16"
+                                                                     Height="16">
+                                                                <Canvas Width="24"
+                                                                        Height="24">
+                                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                                          Data="{StaticResource ExportIcon}" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <MenuItem Header="Save Folder's Packages Properties (.json)"
+                                                              Click="OnFolderSaveClick">
+                                                        <MenuItem.Icon>
+                                                            <Viewbox Width="16"
+                                                                     Height="16">
+                                                                <Canvas Width="24"
+                                                                        Height="24">
+                                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                                          Data="{StaticResource SaveIcon}" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <MenuItem Header="Save Folder's Packages Textures"
+                                                              Click="OnFolderTextureClick">
+                                                        <MenuItem.Icon>
+                                                            <Viewbox Width="16"
+                                                                     Height="16">
+                                                                <Canvas Width="24"
+                                                                        Height="24">
+                                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                                          Data="{StaticResource TextureIcon}" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <MenuItem Header="Save Folder's Packages Models"
+                                                              Click="OnFolderModelClick">
+                                                        <MenuItem.Icon>
+                                                            <Viewbox Width="16"
+                                                                     Height="16">
+                                                                <Canvas Width="24"
+                                                                        Height="24">
+                                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                                          Data="{StaticResource ModelIcon}" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <MenuItem Header="Save Folder's Packages Animations"
+                                                              Click="OnFolderAnimationClick">
+                                                        <MenuItem.Icon>
+                                                            <Viewbox Width="16"
+                                                                     Height="16">
+                                                                <Canvas Width="24"
+                                                                        Height="24">
+                                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                                          Data="{StaticResource AnimationIcon}" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <MenuItem Header="Save Folder's Packages Audio"
+                                                              Click="OnFolderAudioClick">
+                                                        <MenuItem.Icon>
+                                                            <Viewbox Width="16"
+                                                                     Height="16">
+                                                                <Canvas Width="24"
+                                                                        Height="24">
+                                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                                          Data="{StaticResource AudioIcon}" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <Separator />
+                                                    <MenuItem Header="Favorite Directory"
+                                                              Click="OnFavoriteDirectoryClick">
+                                                        <MenuItem.Icon>
+                                                            <Viewbox Width="16"
+                                                                     Height="16">
+                                                                <Canvas Width="24"
+                                                                        Height="24">
+                                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                                          Data="{StaticResource DirectoriesAddIcon}" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <MenuItem Header="Copy Directory Path"
+                                                              Click="OnCopyDirectoryPathClick">
+                                                        <MenuItem.Icon>
+                                                            <Viewbox Width="16"
+                                                                     Height="16">
+                                                                <Canvas Width="24"
+                                                                        Height="24">
+                                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                                          Data="{StaticResource CopyIcon}" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                </ContextMenu>
+                                            </Button.ContextMenu>
+                                            <StackPanel Orientation="Vertical"
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center">
+                                                <Grid Width="64"
+                                                      Height="64">
+                                                    <Path Data="{Binding Header, Converter={x:Static converters:FolderNameToIconConverter.Instance}}"
+                                                          Stretch="Uniform"
+                                                          Fill="#fcbf95"
+                                                          Effect="{DynamicResource ShadowEffect}" />
+                                                    <Border Width="16"
+                                                            Height="16"
+                                                            Background="#624b39"
+                                                            CornerRadius="12"
+                                                            HorizontalAlignment="Right"
+                                                            VerticalAlignment="Bottom"
+                                                            Margin="0, 0, -10, 0">
+                                                        <Border.Style>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="Visibility"
+                                                                        Value="Visible" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding AssetsList.Assets.Count}"
+                                                                                 Value="0">
+                                                                        <Setter Property="Visibility"
+                                                                                Value="Collapsed" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Border.Style>
+                                                        <TextBlock Text="{Binding AssetsList.Assets.Count, Converter={x:Static converters:CountAssetsConverter.Instance}}"
+                                                                   Foreground="White"
+                                                                   FontSize="8"
+                                                                   FontWeight="SemiBold"
+                                                                   HorizontalAlignment="Center"
+                                                                   VerticalAlignment="Center"
+                                                                   TextAlignment="Center" />
+                                                    </Border>
+                                                </Grid>
+                                                <TextBlock Text="{Binding Header}"
+                                                           HorizontalAlignment="Center"
+                                                           Margin="0,6,0,0"
+                                                           FontSize="10"
+                                                           TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
+                                        </Button>
+                                        <Popup x:Name="AssetPopup"
+                                               AllowsTransparency="True"
+                                               Placement="AbsolutePoint"
+                                               StaysOpen="True"
+                                               IsOpen="False">
+                                            <Border x:Name="PopupBorder"
+                                                    Background="#F2202020"
+                                                    BorderBrush="#404040"
+                                                    BorderThickness="1"
+                                                    CornerRadius="6"
+                                                    Padding="10">
+                                                <StackPanel x:Name="PopupStack">
+                                                    <TextBlock x:Name="FoldersCountTextBlock"
                                                                HorizontalAlignment="Center"
-                                                               VerticalAlignment="Center"
-                                                               TextAlignment="Center" />
-                                                </Border>
-                                            </Grid>
-                                            <TextBlock Text="{Binding Header}"
-                                                       HorizontalAlignment="Center"
-                                                       Margin="0,6,0,0"
-                                                       FontSize="10"
-                                                       TextTrimming="CharacterEllipsis" />
-                                        </StackPanel>
-                                    </Button>
+                                                               Foreground="White"
+                                                               FontSize="12" />
+                                                    <TextBlock x:Name="AssetsCountTextBlock"
+                                                               HorizontalAlignment="Center"
+                                                               Foreground="White"
+                                                               FontSize="12" />
+                                                    <TextBlock x:Name="FileInfoTextBlock"
+                                                               Visibility="Collapsed" />
+                                                </StackPanel>
+                                            </Border>
+                                        </Popup>
+                                    </Grid>
                                 </DataTemplate>
                                 <DataTemplate DataType="{x:Type vm:GameFileViewModel}">
-                                    <Button Width="128"
-                                            Height="128"
-                                            Margin="6"
-                                            Padding="6"
-                                            Cursor="Hand"
-                                            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
-                                            BorderThickness="1"
-                                            adonisExtensions:CornerRadiusExtension.CornerRadius="8"
-                                            ClickMode="Press"
-                                            Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
-                                            PreviewMouseLeftButtonDown="OnAssetClick">
-                                        <Button.ContextMenu>
-                                            <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
-                                                <MenuItem Header="Extract in New Tab"
-                                                          Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                                    <MenuItem.CommandParameter>
-                                                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                            <Binding Source="Assets_Extract_New_Tab" />
-                                                            <Binding Path="DataContext.Asset"
-                                                                     RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
-                                                        </MultiBinding>
-                                                    </MenuItem.CommandParameter>
-                                                    <MenuItem.Icon>
-                                                        <Viewbox Width="16"
-                                                                 Height="16">
-                                                            <Canvas Width="24"
-                                                                    Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                                      Data="{StaticResource ExtractIcon}" />
-                                                            </Canvas>
-                                                        </Viewbox>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <MenuItem Header="Show Metadata"
-                                                          Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                                    <MenuItem.CommandParameter>
-                                                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                            <Binding Source="Assets_Show_Metadata" />
-                                                            <Binding Path="DataContext.Asset"
-                                                                     RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
-                                                        </MultiBinding>
-                                                    </MenuItem.CommandParameter>
-                                                    <MenuItem.Icon>
-                                                        <Viewbox Width="16"
-                                                                 Height="16">
-                                                            <Canvas Width="24"
-                                                                    Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                                      Data="{StaticResource InfoIcon}" />
-                                                            </Canvas>
-                                                        </Viewbox>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <MenuItem Header="Decompile Blueprint"
-                                                          Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                                    <MenuItem.CommandParameter>
-                                                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                            <Binding Source="Assets_Decompile" />
-                                                            <Binding Path="DataContext.Asset"
-                                                                     RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
-                                                        </MultiBinding>
-                                                    </MenuItem.CommandParameter>
-                                                    <MenuItem.Icon>
-                                                        <Viewbox Width="16"
-                                                                 Height="16">
-                                                            <Canvas Width="24"
-                                                                    Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                                      Data="{StaticResource CppIcon}" />
-                                                            </Canvas>
-                                                        </Viewbox>
-                                                    </MenuItem.Icon>
-                                                    <MenuItem.Style>
-                                                        <Style TargetType="{x:Type MenuItem}"
-                                                               BasedOn="{StaticResource {x:Type MenuItem}}">
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding ShowDecompileOption, Source={x:Static settings:UserSettings.Default}}"
-                                                                             Value="False">
-                                                                    <Setter Property="Visibility"
-                                                                            Value="Collapsed" />
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </MenuItem.Style>
-                                                </MenuItem>
-                                                <Separator />
-                                                <MenuItem Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                                    <MenuItem.Header>
-                                                        <TextBlock Text="{Binding DataContext.SelectedItem.Extension, FallbackValue='Export Raw Data', StringFormat='Export Raw Data (.{0})', RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
-                                                    </MenuItem.Header>
-                                                    <MenuItem.CommandParameter>
-                                                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                            <Binding Source="Assets_Export_Data" />
-                                                            <Binding Path="DataContext.Asset"
-                                                                     RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
-                                                        </MultiBinding>
-                                                    </MenuItem.CommandParameter>
-                                                    <MenuItem.Icon>
-                                                        <Viewbox Width="16"
-                                                                 Height="16">
-                                                            <Canvas Width="24"
-                                                                    Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                                      Data="{StaticResource ExportIcon}" />
-                                                            </Canvas>
-                                                        </Viewbox>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <MenuItem Header="Save Properties (.json)"
-                                                          Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                                    <MenuItem.CommandParameter>
-                                                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                            <Binding Source="Assets_Save_Properties" />
-                                                            <Binding Path="DataContext.Asset"
-                                                                     RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
-                                                        </MultiBinding>
-                                                    </MenuItem.CommandParameter>
-                                                    <MenuItem.Icon>
-                                                        <Viewbox Width="16"
-                                                                 Height="16">
-                                                            <Canvas Width="24"
-                                                                    Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                                      Data="{StaticResource SaveIcon}" />
-                                                            </Canvas>
-                                                        </Viewbox>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <MenuItem Header="Save Texture"
-                                                          IsEnabled="{Binding ResolvedAssetType, Converter={x:Static converters:AssetTypeToBoolConverter.Instance}, ConverterParameter='Texture2D'}"
-                                                          Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                                    <MenuItem.CommandParameter>
-                                                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                            <Binding Source="Assets_Save_Textures" />
-                                                            <Binding Path="DataContext.Asset"
-                                                                     RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
-                                                        </MultiBinding>
-                                                    </MenuItem.CommandParameter>
-                                                    <MenuItem.Icon>
-                                                        <Viewbox Width="16"
-                                                                 Height="16">
-                                                            <Canvas Width="24"
-                                                                    Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                                      Data="{StaticResource TextureIcon}" />
-                                                            </Canvas>
-                                                        </Viewbox>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <MenuItem Header="Save Model"
-                                                          IsEnabled="{Binding ResolvedAssetType, Converter={x:Static converters:AssetTypeToBoolConverter.Instance}, ConverterParameter='SkeletalMesh,StaticMesh'}"
-                                                          Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                                    <MenuItem.CommandParameter>
-                                                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                            <Binding Source="Assets_Save_Models" />
-                                                            <Binding Path="DataContext.Asset"
-                                                                     RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
-                                                        </MultiBinding>
-                                                    </MenuItem.CommandParameter>
-                                                    <MenuItem.Icon>
-                                                        <Viewbox Width="16"
-                                                                 Height="16">
-                                                            <Canvas Width="24"
-                                                                    Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                                      Data="{StaticResource ModelIcon}" />
-                                                            </Canvas>
-                                                        </Viewbox>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <MenuItem Header="Save Animation"
-                                                          IsEnabled="{Binding ResolvedAssetType, Converter={x:Static converters:AssetTypeToBoolConverter.Instance}, ConverterParameter='AnimSequence'}"
-                                                          Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                                    <MenuItem.CommandParameter>
-                                                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                            <Binding Source="Assets_Save_Animations" />
-                                                            <Binding Path="DataContext.Asset"
-                                                                     RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
-                                                        </MultiBinding>
-                                                    </MenuItem.CommandParameter>
-                                                    <MenuItem.Icon>
-                                                        <Viewbox Width="16"
-                                                                 Height="16">
-                                                            <Canvas Width="24"
-                                                                    Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                                      Data="{StaticResource AnimationIcon}" />
-                                                            </Canvas>
-                                                        </Viewbox>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <MenuItem Header="Save Audio"
-                                                          IsEnabled="{Binding ResolvedAssetType, Converter={x:Static converters:AssetTypeToBoolConverter.Instance}, ConverterParameter='SoundWave,AkMediaAssetData,AtomWaveBank,SoundAtomCue,AtomCueSheet,SoundAtomCueSheet,FMODBank,FMODEvent,AkAudioEvent'}"
-                                                          Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                                    <MenuItem.CommandParameter>
-                                                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                            <Binding Source="Assets_Save_Audio" />
-                                                            <Binding Path="DataContext.Asset"
-                                                                     RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
-                                                        </MultiBinding>
-                                                    </MenuItem.CommandParameter>
-                                                    <MenuItem.Icon>
-                                                        <Viewbox Width="16"
-                                                                 Height="16">
-                                                            <Canvas Width="24"
-                                                                    Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                                      Data="{StaticResource AudioIcon}" />
-                                                            </Canvas>
-                                                        </Viewbox>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <Separator />
-                                                <MenuItem Header="Copy">
-                                                    <MenuItem.Icon>
-                                                        <Viewbox Width="16"
-                                                                 Height="16">
-                                                            <Canvas Width="24"
-                                                                    Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                                      Data="{StaticResource CopyIcon}" />
-                                                            </Canvas>
-                                                        </Viewbox>
-                                                    </MenuItem.Icon>
-                                                    <MenuItem Header="Package Path"
-                                                              Command="{Binding PlacementTarget.Tag.CopyCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                    <Grid>
+                                        <Button Width="128"
+                                                Height="128"
+                                                Margin="6"
+                                                Padding="6"
+                                                Cursor="Hand"
+                                                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                                                BorderThickness="1"
+                                                adonisExtensions:CornerRadiusExtension.CornerRadius="8"
+                                                ClickMode="Press"
+                                                Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                PreviewMouseLeftButtonDown="OnAssetClick"
+                                                PreviewMouseMove="AssetsExplorerButton_PreviewMouseMove"
+                                                MouseEnter="AssetsExplorerButton_MouseEnter"
+                                                MouseLeave="AssetsExplorerButton_MouseLeave">
+                                            <Button.ContextMenu>
+                                                <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                                    <MenuItem Header="Extract in New Tab"
+                                                              Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                                         <MenuItem.CommandParameter>
                                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                                <Binding Source="File_Path" />
+                                                                <Binding Source="Assets_Extract_New_Tab" />
                                                                 <Binding Path="DataContext.Asset"
                                                                          RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                                                             </MultiBinding>
                                                         </MenuItem.CommandParameter>
+                                                        <MenuItem.Icon>
+                                                            <Viewbox Width="16"
+                                                                     Height="16">
+                                                                <Canvas Width="24"
+                                                                        Height="24">
+                                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                                          Data="{StaticResource ExtractIcon}" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                        </MenuItem.Icon>
                                                     </MenuItem>
-                                                    <MenuItem Header="Package Name"
-                                                              Command="{Binding PlacementTarget.Tag.CopyCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                                    <MenuItem Header="Show Metadata"
+                                                              Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                                         <MenuItem.CommandParameter>
                                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                                <Binding Source="File_Name" />
+                                                                <Binding Source="Assets_Show_Metadata" />
                                                                 <Binding Path="DataContext.Asset"
                                                                          RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                                                             </MultiBinding>
                                                         </MenuItem.CommandParameter>
+                                                        <MenuItem.Icon>
+                                                            <Viewbox Width="16"
+                                                                     Height="16">
+                                                                <Canvas Width="24"
+                                                                        Height="24">
+                                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                                          Data="{StaticResource InfoIcon}" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                        </MenuItem.Icon>
                                                     </MenuItem>
-                                                    <MenuItem Header="Directory Path"
-                                                              Command="{Binding PlacementTarget.Tag.CopyCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                                    <MenuItem Header="Decompile Blueprint"
+                                                              Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                                         <MenuItem.CommandParameter>
                                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                                <Binding Source="Directory_Path" />
+                                                                <Binding Source="Assets_Decompile" />
                                                                 <Binding Path="DataContext.Asset"
                                                                          RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                                                             </MultiBinding>
                                                         </MenuItem.CommandParameter>
+                                                        <MenuItem.Icon>
+                                                            <Viewbox Width="16"
+                                                                     Height="16">
+                                                                <Canvas Width="24"
+                                                                        Height="24">
+                                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                                          Data="{StaticResource CppIcon}" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                        </MenuItem.Icon>
+                                                        <MenuItem.Style>
+                                                            <Style TargetType="{x:Type MenuItem}"
+                                                                   BasedOn="{StaticResource {x:Type MenuItem}}">
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding ShowDecompileOption, Source={x:Static settings:UserSettings.Default}}"
+                                                                                 Value="False">
+                                                                        <Setter Property="Visibility"
+                                                                                Value="Collapsed" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </MenuItem.Style>
                                                     </MenuItem>
-                                                    <MenuItem Header="Package Path w/o Extension"
-                                                              Command="{Binding PlacementTarget.Tag.CopyCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                                    <Separator />
+                                                    <MenuItem Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                                        <MenuItem.Header>
+                                                            <TextBlock Text="{Binding DataContext.SelectedItem.Extension, FallbackValue='Export Raw Data', StringFormat='Export Raw Data (.{0})', RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                                        </MenuItem.Header>
                                                         <MenuItem.CommandParameter>
                                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                                <Binding Source="File_Path_No_Extension" />
+                                                                <Binding Source="Assets_Export_Data" />
                                                                 <Binding Path="DataContext.Asset"
                                                                          RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                                                             </MultiBinding>
                                                         </MenuItem.CommandParameter>
+                                                        <MenuItem.Icon>
+                                                            <Viewbox Width="16"
+                                                                     Height="16">
+                                                                <Canvas Width="24"
+                                                                        Height="24">
+                                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                                          Data="{StaticResource ExportIcon}" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                        </MenuItem.Icon>
                                                     </MenuItem>
-                                                    <MenuItem Header="Package Name w/o Extension"
-                                                              Command="{Binding PlacementTarget.Tag.CopyCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                                    <MenuItem Header="Save Properties (.json)"
+                                                              Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                                         <MenuItem.CommandParameter>
                                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                                <Binding Source="File_Name_No_Extension" />
+                                                                <Binding Source="Assets_Save_Properties" />
                                                                 <Binding Path="DataContext.Asset"
                                                                          RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                                                             </MultiBinding>
                                                         </MenuItem.CommandParameter>
+                                                        <MenuItem.Icon>
+                                                            <Viewbox Width="16"
+                                                                     Height="16">
+                                                                <Canvas Width="24"
+                                                                        Height="24">
+                                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                                          Data="{StaticResource SaveIcon}" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                        </MenuItem.Icon>
                                                     </MenuItem>
-                                                </MenuItem>
-                                            </ContextMenu>
-                                        </Button.ContextMenu>
-                                        <StackPanel Orientation="Vertical"
-                                                    HorizontalAlignment="Center"
-                                                    VerticalAlignment="Center">
-                                            <Grid Width="96"
-                                                  Height="96">
-                                                <Image Source="{Binding PreviewImage}"
-                                                       Stretch="Uniform" />
-                                                <Path Width="64"
-                                                      Height="64"
-                                                      Stretch="Uniform"
-                                                      Data="{Binding IconGeometry}"
-                                                      Fill="{Binding IconColor}"
-                                                      Effect="{DynamicResource ShadowEffect}">
-                                                    <Path.Style>
-                                                        <Style TargetType="Path">
-                                                            <Setter Property="Visibility"
-                                                                    Value="Collapsed" />
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding PreviewImage}"
-                                                                             Value="{x:Null}">
-                                                                    <Setter Property="Visibility"
-                                                                            Value="Visible" />
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </Path.Style>
-                                                </Path>
-                                            </Grid>
-                                            <TextBlock Text="{Binding Asset.Name}"
-                                                       HorizontalAlignment="Center"
-                                                       Margin="0,6,0,0"
-                                                       FontSize="10"
-                                                       TextTrimming="CharacterEllipsis" />
-                                        </StackPanel>
-                                    </Button>
+                                                    <MenuItem Header="Save Texture"
+                                                              IsEnabled="{Binding ResolvedAssetType, Converter={x:Static converters:AssetTypeToBoolConverter.Instance}, ConverterParameter='Texture2D'}"
+                                                              Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                                        <MenuItem.CommandParameter>
+                                                            <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                                <Binding Source="Assets_Save_Textures" />
+                                                                <Binding Path="DataContext.Asset"
+                                                                         RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
+                                                            </MultiBinding>
+                                                        </MenuItem.CommandParameter>
+                                                        <MenuItem.Icon>
+                                                            <Viewbox Width="16"
+                                                                     Height="16">
+                                                                <Canvas Width="24"
+                                                                        Height="24">
+                                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                                          Data="{StaticResource TextureIcon}" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <MenuItem Header="Save Model"
+                                                              IsEnabled="{Binding ResolvedAssetType, Converter={x:Static converters:AssetTypeToBoolConverter.Instance}, ConverterParameter='SkeletalMesh,StaticMesh'}"
+                                                              Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                                        <MenuItem.CommandParameter>
+                                                            <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                                <Binding Source="Assets_Save_Models" />
+                                                                <Binding Path="DataContext.Asset"
+                                                                         RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
+                                                            </MultiBinding>
+                                                        </MenuItem.CommandParameter>
+                                                        <MenuItem.Icon>
+                                                            <Viewbox Width="16"
+                                                                     Height="16">
+                                                                <Canvas Width="24"
+                                                                        Height="24">
+                                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                                          Data="{StaticResource ModelIcon}" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <MenuItem Header="Save Animation"
+                                                              IsEnabled="{Binding ResolvedAssetType, Converter={x:Static converters:AssetTypeToBoolConverter.Instance}, ConverterParameter='AnimSequence'}"
+                                                              Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                                        <MenuItem.CommandParameter>
+                                                            <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                                <Binding Source="Assets_Save_Animations" />
+                                                                <Binding Path="DataContext.Asset"
+                                                                         RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
+                                                            </MultiBinding>
+                                                        </MenuItem.CommandParameter>
+                                                        <MenuItem.Icon>
+                                                            <Viewbox Width="16"
+                                                                     Height="16">
+                                                                <Canvas Width="24"
+                                                                        Height="24">
+                                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                                          Data="{StaticResource AnimationIcon}" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <MenuItem Header="Save Audio"
+                                                              IsEnabled="{Binding ResolvedAssetType, Converter={x:Static converters:AssetTypeToBoolConverter.Instance}, ConverterParameter='SoundWave,AkMediaAssetData,AtomWaveBank,SoundAtomCue,AtomCueSheet,SoundAtomCueSheet,FMODBank,FMODEvent,AkAudioEvent'}"
+                                                              Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                                        <MenuItem.CommandParameter>
+                                                            <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                                <Binding Source="Assets_Save_Audio" />
+                                                                <Binding Path="DataContext.Asset"
+                                                                         RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
+                                                            </MultiBinding>
+                                                        </MenuItem.CommandParameter>
+                                                        <MenuItem.Icon>
+                                                            <Viewbox Width="16"
+                                                                     Height="16">
+                                                                <Canvas Width="24"
+                                                                        Height="24">
+                                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                                          Data="{StaticResource AudioIcon}" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <Separator />
+                                                    <MenuItem Header="Copy">
+                                                        <MenuItem.Icon>
+                                                            <Viewbox Width="16"
+                                                                     Height="16">
+                                                                <Canvas Width="24"
+                                                                        Height="24">
+                                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                                          Data="{StaticResource CopyIcon}" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                        </MenuItem.Icon>
+                                                        <MenuItem Header="Package Path"
+                                                                  Command="{Binding PlacementTarget.Tag.CopyCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                                            <MenuItem.CommandParameter>
+                                                                <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                                    <Binding Source="File_Path" />
+                                                                    <Binding Path="DataContext.Asset"
+                                                                             RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
+                                                                </MultiBinding>
+                                                            </MenuItem.CommandParameter>
+                                                        </MenuItem>
+                                                        <MenuItem Header="Package Name"
+                                                                  Command="{Binding PlacementTarget.Tag.CopyCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                                            <MenuItem.CommandParameter>
+                                                                <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                                    <Binding Source="File_Name" />
+                                                                    <Binding Path="DataContext.Asset"
+                                                                             RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
+                                                                </MultiBinding>
+                                                            </MenuItem.CommandParameter>
+                                                        </MenuItem>
+                                                        <MenuItem Header="Directory Path"
+                                                                  Command="{Binding PlacementTarget.Tag.CopyCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                                            <MenuItem.CommandParameter>
+                                                                <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                                    <Binding Source="Directory_Path" />
+                                                                    <Binding Path="DataContext.Asset"
+                                                                             RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
+                                                                </MultiBinding>
+                                                            </MenuItem.CommandParameter>
+                                                        </MenuItem>
+                                                        <MenuItem Header="Package Path w/o Extension"
+                                                                  Command="{Binding PlacementTarget.Tag.CopyCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                                            <MenuItem.CommandParameter>
+                                                                <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                                    <Binding Source="File_Path_No_Extension" />
+                                                                    <Binding Path="DataContext.Asset"
+                                                                             RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
+                                                                </MultiBinding>
+                                                            </MenuItem.CommandParameter>
+                                                        </MenuItem>
+                                                        <MenuItem Header="Package Name w/o Extension"
+                                                                  Command="{Binding PlacementTarget.Tag.CopyCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                                            <MenuItem.CommandParameter>
+                                                                <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                                    <Binding Source="File_Name_No_Extension" />
+                                                                    <Binding Path="DataContext.Asset"
+                                                                             RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
+                                                                </MultiBinding>
+                                                            </MenuItem.CommandParameter>
+                                                        </MenuItem>
+                                                    </MenuItem>
+                                                </ContextMenu>
+                                            </Button.ContextMenu>
+                                            <StackPanel Orientation="Vertical"
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center">
+                                                <Grid Width="96"
+                                                      Height="96">
+                                                    <Image Source="{Binding PreviewImage}"
+                                                           Stretch="Uniform" />
+                                                    <Path Width="64"
+                                                          Height="64"
+                                                          Stretch="Uniform"
+                                                          Data="{Binding IconGeometry}"
+                                                          Fill="{Binding IconColor}"
+                                                          Effect="{DynamicResource ShadowEffect}">
+                                                        <Path.Style>
+                                                            <Style TargetType="Path">
+                                                                <Setter Property="Visibility"
+                                                                        Value="Collapsed" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding PreviewImage}"
+                                                                                 Value="{x:Null}">
+                                                                        <Setter Property="Visibility"
+                                                                                Value="Visible" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Path.Style>
+                                                    </Path>
+                                                </Grid>
+                                                <TextBlock Text="{Binding Asset.Name}"
+                                                           HorizontalAlignment="Center"
+                                                           Margin="0,6,0,0"
+                                                           FontSize="10"
+                                                           TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
+                                        </Button>
+                                        <Popup x:Name="AssetPopup"
+                                               AllowsTransparency="True"
+                                               Placement="AbsolutePoint"
+                                               StaysOpen="True"
+                                               IsOpen="False">
+                                            <Border x:Name="PopupBorder"
+                                                    Background="#F2202020"
+                                                    BorderBrush="#404040"
+                                                    BorderThickness="1"
+                                                    CornerRadius="6"
+                                                    Padding="10">
+                                                <StackPanel x:Name="PopupStack">
+                                                    <TextBlock x:Name="FoldersCountTextBlock"
+                                                               Visibility="Collapsed" />
+                                                    <TextBlock x:Name="AssetsCountTextBlock"
+                                                               Visibility="Collapsed" />
+                                                    <TextBlock x:Name="FileInfoTextBlock"
+                                                               HorizontalAlignment="Center"
+                                                               TextAlignment="Center"
+                                                               Foreground="White"
+                                                               FontSize="12" />
+                                                </StackPanel>
+                                            </Border>
+                                        </Popup>
+                                    </Grid>
                                 </DataTemplate>
                             </ListBox.Resources>
                         </ListBox>

@@ -112,7 +112,9 @@ public class GameFileViewModel : ViewModel
                             case UTexture when pointer.Object.Value is UTexture texture:
                                 {
                                     var img = new CTexture[1];
-                                    img[0] = texture.Decode(UserSettings.Default.CurrentDir.TexturePlatform);
+                                    int targetSize = 128;
+                                    var mip = texture.GetMipByMaxSize(targetSize);
+                                    img[0] = texture.Decode(mip, UserSettings.Default.CurrentDir.TexturePlatform);
 
                                     using var ms = new MemoryStream();
 

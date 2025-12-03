@@ -5,9 +5,12 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 using AdonisUI.Controls;
 using CUE4Parse.FileProvider.Objects;
+using FModel.Extensions;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels;
@@ -417,5 +420,84 @@ public partial class MainWindow
                 await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
                 break;
         }
+    }
+
+    private void AssetsExplorerButton_MouseEnter(object sender, MouseEventArgs e)
+    {
+        if (sender is Button btn && FindPopup(btn) is Popup popup)
+        {
+            if (popup.Child is Border border && border.Child is StackPanel stack)
+            {
+                var foldersText = stack.Children[0] as TextBlock;
+                var assetsText = stack.Children[1] as TextBlock;
+                var fileInfoText = stack.Children[2] as TextBlock;
+
+                if (btn.DataContext is TreeItem item)
+                {
+                    if (foldersText != null)
+                    {
+                        foldersText.Inlines.Clear();
+                        foldersText.Inlines.Add(new Run("Folders Count: "));
+                        foldersText.Inlines.Add(new Run(item.Folders.Count.ToString()) { FontWeight = FontWeights.Bold });
+                    }
+
+                    if (assetsText != null)
+                    {
+                        assetsText.Inlines.Clear();
+                        assetsText.Inlines.Add(new Run("Assets Count: "));
+                        assetsText.Inlines.Add(new Run(item.AssetsList.Assets.Count.ToString()) { FontWeight = FontWeights.Bold });
+                    }
+                }
+
+                if (btn.DataContext is GameFileViewModel gameFile && fileInfoText != null)
+                {
+                    fileInfoText.Inlines.Clear();
+                    fileInfoText.Inlines.Add(new Run(gameFile.Asset.Name) { FontWeight = FontWeights.Bold });
+                    fileInfoText.Inlines.Add(new LineBreak());
+                    var assetType = !string.IsNullOrEmpty(gameFile.ResolvedAssetType) ? gameFile.ResolvedAssetType : gameFile.Asset.Extension;
+                    fileInfoText.Inlines.Add(new Run($"Type: {assetType}") { Foreground = Brushes.LightGray });
+                    fileInfoText.Inlines.Add(new LineBreak());
+                    fileInfoText.Inlines.Add(new Run($"Size: {StringExtensions.GetReadableSize(gameFile.Asset.Size)}") { Foreground = Brushes.LightGray });
+                }
+            }
+
+            popup.IsOpen = true;
+        }
+    }
+
+    private void AssetsExplorerButton_MouseLeave(object sender, MouseEventArgs e)
+    {
+        if (sender is Button btn && FindPopup(btn) is Popup popup)
+        {
+            popup.IsOpen = false;
+        }
+    }
+
+    private void AssetsExplorerButton_PreviewMouseMove(object sender, MouseEventArgs e)
+    {
+        if (sender is Button btn && FindPopup(btn) is Popup popup && popup.IsOpen)
+        {
+            var window = GetWindow(btn);
+            if (window == null)
+                return;
+
+            var point = btn.PointToScreen(e.GetPosition(btn));
+            var dpi = VisualTreeHelper.GetDpi(window);
+            popup.HorizontalOffset = point.X / dpi.DpiScaleX + 12;
+            popup.VerticalOffset = point.Y / dpi.DpiScaleY + 12;
+        }
+    }
+
+    private Popup FindPopup(Button btn)
+    {
+        if (VisualTreeHelper.GetParent(btn) is Grid grid)
+        {
+            foreach (var child in grid.Children)
+            {
+                if (child is Popup popup)
+                    return popup;
+            }
+        }
+        return null;
     }
 }
