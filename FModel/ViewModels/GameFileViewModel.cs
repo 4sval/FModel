@@ -51,6 +51,7 @@ public class GameFileViewModel : ViewModel
     private static readonly Geometry _jsonIcon = (Geometry) Application.Current.FindResource("JsonIcon");
     private static readonly Geometry _txtIcon = (Geometry) Application.Current.FindResource("TxtIcon");
     private static readonly Geometry _animationIcon = (Geometry) Application.Current.FindResource("AnimationIconAlt");
+    private static readonly Geometry _textureIcon = (Geometry) Application.Current.FindResource("TextureIconAlt");
 
     public string ResolvedAssetType { get; private set; }
     public GameFile Asset { get; }
@@ -111,6 +112,18 @@ public class GameFileViewModel : ViewModel
                         {
                             case UTexture when pointer.Object.Value is UTexture texture:
                                 {
+                                    if (!UserSettings.Default.PreviewTexturesAssetExplorer)
+                                    {
+                                        Application.Current.Dispatcher.Invoke(() =>
+                                        {
+                                            IconGeometry = _textureIcon;
+                                            IconColor = new SolidColorBrush(Color.FromRgb(201, 125, 239));
+                                        });
+
+                                        i = result.ExclusiveEnd;
+                                        break;
+                                    }
+
                                     var img = new CTexture[1];
                                     int targetSize = 128;
                                     var mip = texture.GetMipByMaxSize(targetSize);

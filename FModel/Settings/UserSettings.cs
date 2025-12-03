@@ -196,6 +196,13 @@ namespace FModel.Settings
             set => SetProperty(ref _keepDirectoryStructure, value);
         }
 
+        private bool _previewTexturesAssetExplorer = true;
+        public bool PreviewTexturesAssetExplorer
+        {
+            get => _previewTexturesAssetExplorer;
+            set => SetProperty(ref _previewTexturesAssetExplorer, value);
+        }
+
         private bool _showDecompileOption = false;
         public bool ShowDecompileOption
         {
