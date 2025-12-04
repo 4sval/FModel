@@ -19,6 +19,7 @@ using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.Objects.Engine;
+using CUE4Parse.UE4.Objects.MediaAssets;
 using CUE4Parse.UE4.Objects.PhysicsEngine;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse_Conversion.Textures;
@@ -52,6 +53,7 @@ public class GameFileViewModel : ViewModel
     private static readonly Geometry _txtIcon = (Geometry) Application.Current.FindResource("TxtIcon");
     private static readonly Geometry _animationIcon = (Geometry) Application.Current.FindResource("AnimationIconAlt");
     private static readonly Geometry _textureIcon = (Geometry) Application.Current.FindResource("TextureIconAlt");
+    private static readonly Geometry _videoIcon = (Geometry) Application.Current.FindResource("VideoIcon");
 
     public string ResolvedAssetType { get; private set; }
     public GameFile Asset { get; }
@@ -244,6 +246,15 @@ public class GameFileViewModel : ViewModel
                                     });
                                     return;
                                 }
+                            case UFileMediaSource:
+                                {
+                                    Application.Current.Dispatcher.Invoke(() =>
+                                    {
+                                        IconGeometry = _videoIcon;
+                                        IconColor = Brushes.Black;
+                                    });
+                                    return;
+                                }
                             default:
                                 break;
                         }
@@ -377,6 +388,10 @@ public class GameFileViewModel : ViewModel
                         PreviewImage = bmpImage;
                         return true;
                     }
+                case "mp4":
+                    IconGeometry = _videoIcon;
+                    IconColor = Brushes.Black;
+                    return true;
                 default:
                     return false;
             }

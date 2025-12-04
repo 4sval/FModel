@@ -27,7 +27,7 @@ public class FolderNameToIconConverter : IValueConverter
             "textures" or "texture" or "ui" or "icons" or "umgassets" => _folderTextureIcon,
             "config" => _folderConfigIcon,
             "audio" => _folderAudioIcon,
-            "movies" or "video" or "videos" => _folderVideoIcon,
+            "movies" or "video" or "videos" or "cinematics" => _folderVideoIcon,
             "data" or "datatable" or "datatables" => _folderDataIcon,
             _ => _defaultFolderIcon,
         };
