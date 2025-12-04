@@ -117,3 +117,20 @@ public enum EBulkType
     Animations =    1 << 5,
     Audio =         1 << 6
 }
+
+public enum EAssetCategory
+{
+    All,
+    Texture,
+    Mesh,
+    Skeleton,
+    Material,
+    Blueprint,
+    Audio,
+    Animation,
+    Font,
+    PhysicsAsset,
+    Video,
+    Data,
+    Map
+}

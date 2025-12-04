@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -12,7 +11,6 @@ using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.VirtualFileSystem;
 using FModel.Framework;
 using FModel.Services;
-using static FModel.ViewModels.GameFileViewModel;
 
 namespace FModel.ViewModels;
 
@@ -39,11 +37,7 @@ public class TreeItem : ViewModel
     public bool IsSelected
     {
         get => _isSelected;
-        set
-        {
-            if (SetProperty(ref _isSelected, value))
-                RefreshCombinedEntries();
-        }
+        set => SetProperty(ref _isSelected, value);
     }
 
     private string _archive;
@@ -81,18 +75,18 @@ public class TreeItem : ViewModel
         set
         {
             if (SetProperty(ref _searchText, value))
-                ApplySearchbarFilter(_searchText);
+                ApplyFilters(_searchText);
         }
     }
 
-    private GameFileViewModel.EAssetCategory? _selectedCategory;
-    public GameFileViewModel.EAssetCategory? SelectedCategory
+    private EAssetCategory _selectedCategory = EAssetCategory.All;
+    public EAssetCategory SelectedCategory
     {
         get => _selectedCategory;
         set
         {
             if (SetProperty(ref _selectedCategory, value))
-                ApplySearchbarFilter(SearchText);
+                ApplyFilters(SearchText);
         }
     }
 
@@ -100,7 +94,8 @@ public class TreeItem : ViewModel
     public AssetsListViewModel AssetsList { get; }
     public RangeObservableCollection<TreeItem> Folders { get; }
     public ICollectionView FoldersView { get; }
-    public ObservableCollection<object> CombinedEntries { get; } = [];
+    public ICollectionView FilteredFoldersView { get; }
+    public CompositeCollection CombinedEntries { get; } = [];
     public ICollectionView CombinedView { get; }
     public TreeItem Parent { get; set; }
 
@@ -117,46 +112,46 @@ public class TreeItem : ViewModel
         AssetsList = new AssetsListViewModel();
         Folders = [];
         FoldersView = new ListCollectionView(Folders) { SortDescriptions = { new SortDescription(nameof(Header), ListSortDirection.Ascending) } };
-        CombinedEntries = [];
-        CombinedView = CollectionViewSource.GetDefaultView(CombinedEntries);
+        // Separate folders view for combined entries because I don't want to filter folders tree
+        FilteredFoldersView = new ListCollectionView(Folders) { SortDescriptions = { new SortDescription(nameof(Header), ListSortDirection.Ascending) } };
+        CombinedEntries =
+        [
+            new CollectionContainer { Collection = FilteredFoldersView },
+            new CollectionContainer { Collection = AssetsList.AssetsView }
+        ];
+        CombinedView = new ListCollectionView(CombinedEntries);
+        SearchBarVisibility = Visibility.Visible;
     }
 
-    public void RefreshCombinedEntries()
+    private void ApplyFilters(string filterText)
     {
-        CombinedEntries.Clear();
-
-        foreach (var f in FoldersView)
-            CombinedEntries.Add(f);
-        foreach (GameFile asset in AssetsList.Assets.OrderBy(a => a.Path)) // We want to keep the sorting but ignore the filter
-            CombinedEntries.Add(new GameFileViewModel(asset));
-
-        if (CombinedEntries.Count > 0)
-            SearchBarVisibility = Visibility.Visible;
-    }
-
-    private void ApplySearchbarFilter(string filterText)
-    {
-        var filters = filterText.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var filters = filterText
+            .Trim()
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
         AssetsList.AssetsView.Filter = o =>
-            filters.Length == 0 || (o is GameFile entry && filters.All(x => entry.Name.Contains(x, StringComparison.OrdinalIgnoreCase)));
-
-        CombinedView.Filter = o =>
         {
-            if (filters.Length == 0 && SelectedCategory == EAssetCategory.All)
-                return true;
+            if (o is not GameFileViewModel entry)
+                return false;
 
-            return o switch
-            {
-                GameFileViewModel assetVm =>
-                (filters.Length == 0 || filters.All(t => assetVm.Asset.Name.Contains(t, StringComparison.OrdinalIgnoreCase))) &&
-                (SelectedCategory == EAssetCategory.All || assetVm.AssetCategory == SelectedCategory),
-                TreeItem folderItem => filters.All(t => folderItem.Header.Contains(t, StringComparison.OrdinalIgnoreCase)),
-                _ => true
-            };
+            bool matchesSearch = filters.Length == 0 || filters.All(x => entry.Asset.Name.Contains(x, StringComparison.OrdinalIgnoreCase));
+            bool matchesCategory = SelectedCategory == EAssetCategory.All || entry.AssetCategory == SelectedCategory;
+
+            return matchesSearch && matchesCategory;
         };
-    }
+        AssetsList.AssetsView.Refresh();
 
+        FilteredFoldersView.Filter = o =>
+        {
+            if (o is not TreeItem folder)
+                return false;
+
+            bool matchesSearch = filters.Length == 0 || filters.All(x => folder.Header.Contains(x, StringComparison.OrdinalIgnoreCase));
+
+            return matchesSearch;
+        };
+        FilteredFoldersView.Refresh();
+    }
     public static void SelectTreeItem(TreeItem item, TreeView treeView)
     {
         if (item == null)
@@ -183,7 +178,7 @@ public class AssetsFolderViewModel
 
     public AssetsFolderViewModel()
     {
-        Folders = new RangeObservableCollection<TreeItem>();
+        Folders = [];
         FoldersView = new ListCollectionView(Folders) { SortDescriptions = { new SortDescription("Header", ListSortDirection.Ascending) } };
     }
 
@@ -238,7 +233,7 @@ public class AssetsFolderViewModel
                     parentNode = lastNode.Folders;
                 }
 
-                lastNode?.AssetsList.Assets.Add(entry);
+                lastNode?.AssetsList.Add(entry);
             }
 
             Folders.AddRange(treeItems);

@@ -213,14 +213,12 @@ public partial class MainWindow
                 ToggleExplorer();
                 await _threadWorkerView.Begin(cancellationToken =>
                     _applicationView.CUE4Parse.ExtractSelected(cancellationToken, [asset.Asset]));
-                AssetsListName.SelectedItem = asset.Asset;
+                AssetsListName.SelectedItem = asset;
                 LeftTabControl.SelectedItem = PackagesTab;
                 AssetsListName.ScrollIntoView(asset.Asset);
                 break;
 
             case TreeItem folder:
-                folder.RefreshCombinedEntries();
-                AssetsExplorer.ItemsSource = folder.CombinedEntries;
                 LeftTabControl.SelectedItem = FoldersTab;
                 TreeItem.SelectTreeItem(folder, AssetsFolderName);
                 break;
@@ -276,7 +274,7 @@ public partial class MainWindow
 
         ToggleExplorer(true);
 
-        var selectedItems = listBox.SelectedItems.Cast<GameFile>().ToList();
+        var selectedItems = listBox.SelectedItems.Cast<GameFileViewModel>().Select(gvm => gvm.Asset).ToList();
         await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
     }
 
@@ -401,7 +399,7 @@ public partial class MainWindow
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             folder.SearchText = string.Empty;
-            folder.SelectedCategory = GameFileViewModel.EAssetCategory.All;
+            folder.SelectedCategory = EAssetCategory.All;
         }
     }
 
@@ -419,7 +417,8 @@ public partial class MainWindow
         switch (e.Key)
         {
             case Key.Enter:
-                var selectedItems = listBox.SelectedItems.Cast<GameFile>().ToList();
+                ToggleExplorer(true);
+                var selectedItems = listBox.SelectedItems.Cast<GameFileViewModel>().Select(gvm => gvm.Asset).ToList();
                 await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
                 break;
         }

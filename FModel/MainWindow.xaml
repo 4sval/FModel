@@ -521,7 +521,8 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="Decompile Blueprint" Command="{Binding DataContext.RightClickMenuCommand}">
+                                            <MenuItem Header="Decompile Blueprint"
+                                                      Command="{Binding DataContext.RightClickMenuCommand}">
                                                 <MenuItem.CommandParameter>
                                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                         <Binding Source="Assets_Decompile" />
@@ -549,7 +550,7 @@
                                             <MenuItem Command="{Binding DataContext.RightClickMenuCommand}">
                                                 <MenuItem.Header>
                                                     <TextBlock
-                                                        Text="{Binding DataContext.SelectedItem.Extension,
+                                                        Text="{Binding DataContext.SelectedItem.Asset.Extension,
                                                         FallbackValue='Export Raw Data',
                                                         StringFormat='Export Raw Data (.{0})',
                                                         RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
@@ -711,15 +712,15 @@
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.Offset, ElementName=AssetsListName, FallbackValue=0, StringFormat='{}0x{0:X}'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.Asset.Offset, ElementName=AssetsListName, FallbackValue=0, StringFormat='{}0x{0:X}'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                         <TextBlock Grid.Row="0" Grid.Column="1" Text="Offset" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.Size, ElementName=AssetsListName, FallbackValue=0, Converter={x:Static converters:SizeToStringConverter.Instance}}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.Asset.Size, ElementName=AssetsListName, FallbackValue=0, Converter={x:Static converters:SizeToStringConverter.Instance}}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                         <TextBlock Grid.Row="1" Grid.Column="1" Text="Size" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding SelectedItem.CompressionMethod, ElementName=AssetsListName, FallbackValue='Unknown'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding SelectedItem.Asset.CompressionMethod, ElementName=AssetsListName, FallbackValue='Unknown'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                         <TextBlock Grid.Row="2" Grid.Column="1" Text="Compression Method" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.IsEncrypted, ElementName=AssetsListName, FallbackValue='False'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.Asset.IsEncrypted, ElementName=AssetsListName, FallbackValue='False'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                         <TextBlock Grid.Row="3" Grid.Column="1" Text="Is Encrypted" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                        <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding SelectedItem.Vfs.Name, ElementName=AssetsListName, FallbackValue='None'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName, FallbackValue='None'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                         <TextBlock Grid.Row="4" Grid.Column="1" Text="Included In Archive" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                     </Grid>
                                 </StackPanel>
@@ -1045,7 +1046,7 @@
                                                         <MenuItem.CommandParameter>
                                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                                 <Binding Source="Assets_Extract_New_Tab" />
-                                                                <Binding Path="DataContext.Asset"
+                                                                <Binding Path="DataContext"
                                                                          RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                                                             </MultiBinding>
                                                         </MenuItem.CommandParameter>
@@ -1065,7 +1066,7 @@
                                                         <MenuItem.CommandParameter>
                                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                                 <Binding Source="Assets_Show_Metadata" />
-                                                                <Binding Path="DataContext.Asset"
+                                                                <Binding Path="DataContext"
                                                                          RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                                                             </MultiBinding>
                                                         </MenuItem.CommandParameter>
@@ -1081,11 +1082,12 @@
                                                         </MenuItem.Icon>
                                                     </MenuItem>
                                                     <MenuItem Header="Decompile Blueprint"
+                                                              IsEnabled="{Binding AssetCategory, Converter={x:Static converters:AssetTypeToBoolConverter.Instance}, ConverterParameter='Blueprint'}"
                                                               Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                                         <MenuItem.CommandParameter>
                                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                                 <Binding Source="Assets_Decompile" />
-                                                                <Binding Path="DataContext.Asset"
+                                                                <Binding Path="DataContext"
                                                                          RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                                                             </MultiBinding>
                                                         </MenuItem.CommandParameter>
@@ -1115,12 +1117,12 @@
                                                     <Separator />
                                                     <MenuItem Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                                         <MenuItem.Header>
-                                                            <TextBlock Text="{Binding DataContext.SelectedItem.Extension, FallbackValue='Export Raw Data', StringFormat='Export Raw Data (.{0})', RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                                            <TextBlock Text="{Binding DataContext.Asset.Extension, FallbackValue='Export Raw Data', StringFormat='Export Raw Data (.{0})', RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
                                                         </MenuItem.Header>
                                                         <MenuItem.CommandParameter>
                                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                                 <Binding Source="Assets_Export_Data" />
-                                                                <Binding Path="DataContext.Asset"
+                                                                <Binding Path="DataContext"
                                                                          RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                                                             </MultiBinding>
                                                         </MenuItem.CommandParameter>
@@ -1140,7 +1142,7 @@
                                                         <MenuItem.CommandParameter>
                                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                                 <Binding Source="Assets_Save_Properties" />
-                                                                <Binding Path="DataContext.Asset"
+                                                                <Binding Path="DataContext"
                                                                          RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                                                             </MultiBinding>
                                                         </MenuItem.CommandParameter>
@@ -1156,12 +1158,12 @@
                                                         </MenuItem.Icon>
                                                     </MenuItem>
                                                     <MenuItem Header="Save Texture"
-                                                              IsEnabled="{Binding ResolvedAssetType, Converter={x:Static converters:AssetTypeToBoolConverter.Instance}, ConverterParameter='Texture2D'}"
+                                                              IsEnabled="{Binding AssetCategory, Converter={x:Static converters:AssetTypeToBoolConverter.Instance}, ConverterParameter='Texture'}"
                                                               Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                                         <MenuItem.CommandParameter>
                                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                                 <Binding Source="Assets_Save_Textures" />
-                                                                <Binding Path="DataContext.Asset"
+                                                                <Binding Path="DataContext"
                                                                          RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                                                             </MultiBinding>
                                                         </MenuItem.CommandParameter>
@@ -1177,12 +1179,12 @@
                                                         </MenuItem.Icon>
                                                     </MenuItem>
                                                     <MenuItem Header="Save Model"
-                                                              IsEnabled="{Binding ResolvedAssetType, Converter={x:Static converters:AssetTypeToBoolConverter.Instance}, ConverterParameter='SkeletalMesh,StaticMesh'}"
+                                                              IsEnabled="{Binding AssetCategory, Converter={x:Static converters:AssetTypeToBoolConverter.Instance}, ConverterParameter='Mesh'}"
                                                               Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                                         <MenuItem.CommandParameter>
                                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                                 <Binding Source="Assets_Save_Models" />
-                                                                <Binding Path="DataContext.Asset"
+                                                                <Binding Path="DataContext"
                                                                          RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                                                             </MultiBinding>
                                                         </MenuItem.CommandParameter>
@@ -1198,12 +1200,12 @@
                                                         </MenuItem.Icon>
                                                     </MenuItem>
                                                     <MenuItem Header="Save Animation"
-                                                              IsEnabled="{Binding ResolvedAssetType, Converter={x:Static converters:AssetTypeToBoolConverter.Instance}, ConverterParameter='AnimSequence,AnimMontage,AnimSequenceBase'}"
+                                                              IsEnabled="{Binding AssetCategory, Converter={x:Static converters:AssetTypeToBoolConverter.Instance}, ConverterParameter='Animation'}"
                                                               Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                                         <MenuItem.CommandParameter>
                                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                                 <Binding Source="Assets_Save_Animations" />
-                                                                <Binding Path="DataContext.Asset"
+                                                                <Binding Path="DataContext"
                                                                          RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                                                             </MultiBinding>
                                                         </MenuItem.CommandParameter>
@@ -1219,12 +1221,12 @@
                                                         </MenuItem.Icon>
                                                     </MenuItem>
                                                     <MenuItem Header="Save Audio"
-                                                              IsEnabled="{Binding ResolvedAssetType, Converter={x:Static converters:AssetTypeToBoolConverter.Instance}, ConverterParameter='SoundCue,SoundWave,AkMediaAssetData,AtomWaveBank,SoundAtomCue,AtomCueSheet,SoundAtomCueSheet,FMODBank,FMODEvent,AkAudioEvent'}"
+                                                              IsEnabled="{Binding AssetCategory, Converter={x:Static converters:AssetTypeToBoolConverter.Instance}, ConverterParameter='Audio'}"
                                                               Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                                         <MenuItem.CommandParameter>
                                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                                 <Binding Source="Assets_Save_Audio" />
-                                                                <Binding Path="DataContext.Asset"
+                                                                <Binding Path="DataContext"
                                                                          RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                                                             </MultiBinding>
                                                         </MenuItem.CommandParameter>
@@ -1256,7 +1258,7 @@
                                                             <MenuItem.CommandParameter>
                                                                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                                     <Binding Source="File_Path" />
-                                                                    <Binding Path="DataContext.Asset"
+                                                                    <Binding Path="DataContext"
                                                                              RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                                                                 </MultiBinding>
                                                             </MenuItem.CommandParameter>
@@ -1266,7 +1268,7 @@
                                                             <MenuItem.CommandParameter>
                                                                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                                     <Binding Source="File_Name" />
-                                                                    <Binding Path="DataContext.Asset"
+                                                                    <Binding Path="DataContext"
                                                                              RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                                                                 </MultiBinding>
                                                             </MenuItem.CommandParameter>
@@ -1276,7 +1278,7 @@
                                                             <MenuItem.CommandParameter>
                                                                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                                     <Binding Source="Directory_Path" />
-                                                                    <Binding Path="DataContext.Asset"
+                                                                    <Binding Path="DataContext"
                                                                              RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                                                                 </MultiBinding>
                                                             </MenuItem.CommandParameter>
@@ -1286,7 +1288,7 @@
                                                             <MenuItem.CommandParameter>
                                                                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                                     <Binding Source="File_Path_No_Extension" />
-                                                                    <Binding Path="DataContext.Asset"
+                                                                    <Binding Path="DataContext"
                                                                              RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                                                                 </MultiBinding>
                                                             </MenuItem.CommandParameter>
@@ -1296,7 +1298,7 @@
                                                             <MenuItem.CommandParameter>
                                                                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                                     <Binding Source="File_Name_No_Extension" />
-                                                                    <Binding Path="DataContext.Asset"
+                                                                    <Binding Path="DataContext"
                                                                              RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                                                                 </MultiBinding>
                                                             </MenuItem.CommandParameter>

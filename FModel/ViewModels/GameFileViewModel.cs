@@ -34,23 +34,6 @@ namespace FModel.ViewModels;
 
 public class GameFileViewModel : ViewModel
 {
-    public enum EAssetCategory
-    {
-        All,
-        Texture,
-        Mesh,
-        Skeleton,
-        Material,
-        Blueprint,
-        Audio,
-        Animation,
-        Font,
-        PhysicsAsset,
-        Video,
-        Data,
-        Map
-    }
-
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
 
     private static readonly Geometry _defaultIcon = (Geometry) Application.Current.FindResource("AssetIcon");

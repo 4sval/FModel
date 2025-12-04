@@ -628,19 +628,19 @@
 
                         <Image x:Name="ListImage" Source="/FModel;component/Resources/unknown_asset.png"
                                Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3 0" />
-                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Name}" />
+                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Asset.Name}" />
                     </Grid>
                     <DataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding Extension}" Value="uasset">
+                        <DataTrigger Binding="{Binding Asset.Extension}" Value="uasset">
                             <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Extension}" Value="ini">
+                        <DataTrigger Binding="{Binding Asset.Extension}" Value="ini">
                             <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset_ini.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Extension}" Value="png">
+                        <DataTrigger Binding="{Binding Asset.Extension}" Value="png">
                             <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset_png.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Extension}" Value="psd">
+                        <DataTrigger Binding="{Binding Asset.Extension}" Value="psd">
                             <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset_psd.png" />
                         </DataTrigger>
                     </DataTemplate.Triggers>

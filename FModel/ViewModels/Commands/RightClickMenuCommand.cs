@@ -24,12 +24,13 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
 
         IEnumerable<GameFile> entries = parameters[1] switch
         {
-            GameFile gf => [gf],
-            IEnumerable ie => ie.Cast<GameFile>(),
+            GameFileViewModel gvm => [gvm.Asset],
+            IEnumerable ie => ie.Cast<object>().OfType<GameFileViewModel>().Select(gvm => gvm.Asset),
             _ => []
         };
 
-        if (!entries.Any()) return;
+        if (!entries.Any())
+            return;
 
         var updateUi = entries.Count() > 1 ? EBulkType.Auto : EBulkType.None;
         await _threadWorkerView.Begin(cancellationToken =>
