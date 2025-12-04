@@ -467,11 +467,11 @@
                                     <Button ToolTip="Clear Search Filter"
                                             Padding="5"
                                             Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}"
-                                            Click="OnClearSearchClick">
+                                            Click="OnClearFilterClick">
                                         <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                             <Canvas Width="24" Height="24">
                                                 <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                      Data="{StaticResource ClearSearchbarIcon}"/>
+                                                      Data="{StaticResource ClearFiltersIcon}"/>
                                             </Canvas>
                                         </Viewbox>
                                     </Button>
@@ -753,6 +753,7 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
                                 <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBox Style="{StaticResource ModernSearchBar}"
                                      Text="{Binding SelectedItem.SearchText, ElementName=AssetsFolderName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -762,15 +763,25 @@
                                     Cursor="Hand"
                                     Margin="4,0,0,0"
                                     Style="{StaticResource ModernIconButton}"
-                                    ToolTip="Clear Searchbar"
+                                    ToolTip="Clear Search Filter"
                                     Visibility="{Binding SelectedItem.SearchBarVisibility, ElementName=AssetsFolderName, FallbackValue=Collapsed}"
-                                    Click="OnClearSearchClick">
+                                    Click="OnClearFilterClick">
                                 <Viewbox Width="16"
                                          Height="24">
                                     <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                          Data="{StaticResource ClearSearchbarIcon}" />
+                                          Data="{StaticResource ClearFiltersIcon}" />
                                 </Viewbox>
                             </Button>
+                            <ComboBox Grid.Column="2"
+                                      Width="150"
+                                      Margin="6,0,0,0"
+                                      SelectedIndex="0"
+                                      BorderThickness="1.5"
+                                      adonisExtensions:CornerRadiusExtension.CornerRadius="8"
+                                      Cursor="Hand"
+                                      ItemsSource="{Binding SelectedItem.Categories, ElementName=AssetsFolderName}"
+                                      SelectedItem="{Binding SelectedItem.SelectedCategory, ElementName=AssetsFolderName, Mode=TwoWay}"
+                                      Visibility="{Binding SelectedItem.SearchBarVisibility, ElementName=AssetsFolderName, FallbackValue=Collapsed}" />
                         </Grid>
 
                         <controls:Breadcrumb Grid.Row="1"

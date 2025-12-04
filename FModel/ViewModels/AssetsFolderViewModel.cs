@@ -12,11 +12,15 @@ using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.VirtualFileSystem;
 using FModel.Framework;
 using FModel.Services;
+using static FModel.ViewModels.GameFileViewModel;
 
 namespace FModel.ViewModels;
 
 public class TreeItem : ViewModel
 {
+    public IEnumerable<EAssetCategory> Categories { get; } =
+        Enum.GetValues(typeof(EAssetCategory)).Cast<EAssetCategory>();
+
     private string _header;
     public string Header
     {
@@ -81,6 +85,17 @@ public class TreeItem : ViewModel
         }
     }
 
+    private GameFileViewModel.EAssetCategory? _selectedCategory;
+    public GameFileViewModel.EAssetCategory? SelectedCategory
+    {
+        get => _selectedCategory;
+        set
+        {
+            if (SetProperty(ref _selectedCategory, value))
+                ApplySearchbarFilter(SearchText);
+        }
+    }
+
     public string PathAtThisPoint { get; }
     public AssetsListViewModel AssetsList { get; }
     public RangeObservableCollection<TreeItem> Folders { get; }
@@ -128,12 +143,14 @@ public class TreeItem : ViewModel
 
         CombinedView.Filter = o =>
         {
-            if (filters.Length == 0)
+            if (filters.Length == 0 && SelectedCategory == EAssetCategory.All)
                 return true;
 
             return o switch
             {
-                GameFileViewModel asset => filters.All(t => asset.Asset.Name.Contains(t, StringComparison.OrdinalIgnoreCase)),
+                GameFileViewModel assetVm =>
+                (filters.Length == 0 || filters.All(t => assetVm.Asset.Name.Contains(t, StringComparison.OrdinalIgnoreCase))) &&
+                (SelectedCategory == EAssetCategory.All || assetVm.AssetCategory == SelectedCategory),
                 TreeItem folderItem => filters.All(t => folderItem.Header.Contains(t, StringComparison.OrdinalIgnoreCase)),
                 _ => true
             };

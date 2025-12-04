@@ -396,10 +396,13 @@ public partial class MainWindow
         Clipboard.SetText(folder.PathAtThisPoint);
     }
 
-    private void OnClearSearchClick(object sender, RoutedEventArgs e)
+    private void OnClearFilterClick(object sender, RoutedEventArgs e)
     {
         if (AssetsFolderName.SelectedItem is TreeItem folder)
+        {
             folder.SearchText = string.Empty;
+            folder.SelectedCategory = GameFileViewModel.EAssetCategory.All;
+        }
     }
 
     private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)

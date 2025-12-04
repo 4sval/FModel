@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,6 +34,23 @@ namespace FModel.ViewModels;
 
 public class GameFileViewModel : ViewModel
 {
+    public enum EAssetCategory
+    {
+        All,
+        Texture,
+        Mesh,
+        Skeleton,
+        Material,
+        Blueprint,
+        Audio,
+        Animation,
+        Font,
+        PhysicsAsset,
+        Video,
+        Data,
+        Map
+    }
+
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
 
     private static readonly Geometry _defaultIcon = (Geometry) Application.Current.FindResource("AssetIcon");
@@ -57,6 +75,13 @@ public class GameFileViewModel : ViewModel
 
     public string ResolvedAssetType { get; private set; }
     public GameFile Asset { get; }
+
+    private EAssetCategory _assetCategory = EAssetCategory.All;
+    public EAssetCategory AssetCategory
+    {
+        get => _assetCategory;
+        private set => SetProperty(ref _assetCategory, value);
+    }
 
     private ImageSource _previewImage;
     public ImageSource PreviewImage
@@ -113,6 +138,7 @@ public class GameFileViewModel : ViewModel
                         {
                             case UTexture when pointer.Object.Value is UTexture texture:
                                 {
+                                    AssetCategory = EAssetCategory.Texture;
                                     if (!UserSettings.Default.PreviewTexturesAssetExplorer)
                                     {
                                         Application.Current.Dispatcher.Invoke(() =>
@@ -152,6 +178,7 @@ public class GameFileViewModel : ViewModel
                             case UDataAsset:
                             case UDataTable:
                                 {
+                                    AssetCategory = EAssetCategory.Data;
                                     Application.Current.Dispatcher.Invoke(() =>
                                     {
                                         IconGeometry = _datatableIcon;
@@ -170,6 +197,7 @@ public class GameFileViewModel : ViewModel
                             case UFMODEvent:
                             case UAkAudioEvent:
                                 {
+                                    AssetCategory = EAssetCategory.Audio;
                                     Application.Current.Dispatcher.Invoke(() =>
                                     {
                                         IconGeometry = _audioIcon;
@@ -179,6 +207,7 @@ public class GameFileViewModel : ViewModel
                                 }
                             case USkeleton:
                                 {
+                                    AssetCategory = EAssetCategory.Skeleton;
                                     Application.Current.Dispatcher.Invoke(() =>
                                     {
                                         IconGeometry = _skeletonIcon;
@@ -189,6 +218,7 @@ public class GameFileViewModel : ViewModel
                             case UStaticMesh:
                             case USkeletalMesh:
                                 {
+                                    AssetCategory = EAssetCategory.Mesh;
                                     Application.Current.Dispatcher.Invoke(() =>
                                     {
                                         IconGeometry = _meshIcon;
@@ -199,6 +229,7 @@ public class GameFileViewModel : ViewModel
                             case UBlueprint:
                             case UBlueprintGeneratedClass:
                                 {
+                                    AssetCategory = EAssetCategory.Blueprint;
                                     Application.Current.Dispatcher.Invoke(() =>
                                     {
                                         IconGeometry = _blueprintIcon;
@@ -209,6 +240,7 @@ public class GameFileViewModel : ViewModel
                             case UMaterial:
                             case UMaterialInstance:
                                 {
+                                    AssetCategory = EAssetCategory.Material;
                                     Application.Current.Dispatcher.Invoke(() =>
                                     {
                                         IconGeometry = _materialIcon;
@@ -218,6 +250,7 @@ public class GameFileViewModel : ViewModel
                                 }
                             case UPhysicsAsset:
                                 {
+                                    AssetCategory = EAssetCategory.PhysicsAsset;
                                     Application.Current.Dispatcher.Invoke(() =>
                                     {
                                         IconGeometry = _physicsIcon;
@@ -229,6 +262,7 @@ public class GameFileViewModel : ViewModel
                             case UAnimMontage:
                             case UAnimSequenceBase:
                                 {
+                                    AssetCategory = EAssetCategory.Animation;
                                     Application.Current.Dispatcher.Invoke(() =>
                                     {
                                         IconGeometry = _animationIcon;
@@ -239,6 +273,7 @@ public class GameFileViewModel : ViewModel
                             case UFont:
                             case UFontFace:
                                 {
+                                    AssetCategory = EAssetCategory.Font;
                                     Application.Current.Dispatcher.Invoke(() =>
                                     {
                                         IconGeometry = _fontIcon;
@@ -248,6 +283,7 @@ public class GameFileViewModel : ViewModel
                                 }
                             case UFileMediaSource:
                                 {
+                                    AssetCategory = EAssetCategory.Video;
                                     Application.Current.Dispatcher.Invoke(() =>
                                     {
                                         IconGeometry = _videoIcon;
@@ -284,14 +320,17 @@ public class GameFileViewModel : ViewModel
             switch (gameFile.Extension)
             {
                 case "uplugin":
+                    AssetCategory = EAssetCategory.Data;
                     IconGeometry = _pluginIcon;
                     IconColor = Brushes.GreenYellow;
                     return true;
                 case "ini":
+                    AssetCategory = EAssetCategory.Data;
                     IconGeometry = _configIcon;
                     IconColor = Brushes.LightGray;
                     return true;
                 case "umap":
+                    AssetCategory = EAssetCategory.Map;
                     IconGeometry = _mapIcon;
                     IconColor = new SolidColorBrush(Color.FromRgb(244, 164, 96));
                     return true;
@@ -306,33 +345,39 @@ public class GameFileViewModel : ViewModel
                 case "at9":
                 case "wem":
                 case "ogg":
+                    AssetCategory = EAssetCategory.Audio;
                     IconGeometry = _audioIcon;
                     IconColor = Brushes.White;
                     return true;
                 case "locmeta":
                 case "locres":
+                    AssetCategory = EAssetCategory.Data;
                     IconGeometry = _localeIcon;
                     IconColor = new SolidColorBrush(Color.FromRgb(82, 144, 245));
                     return true;
                 case "ufont":
                 case "otf":
                 case "ttf":
+                    AssetCategory = EAssetCategory.Font;
                     IconGeometry = _fontIcon;
                     IconColor = Brushes.White;
                     return true;
                 case "lua":
                 case "luac":
+                    AssetCategory = EAssetCategory.Data;
                     IconGeometry = _luaIcon;
                     IconColor = Brushes.White;
                     return true;
                 case "json5":
                 case "json":
+                    AssetCategory = EAssetCategory.Data;
                     IconGeometry = _jsonIcon;
                     IconColor = Brushes.LightGreen;
                     return true;
                 case "txt":
                 case "log":
                 case "pem":
+                    AssetCategory = EAssetCategory.Data;
                     IconGeometry = _txtIcon;
                     IconColor = Brushes.White;
                     return true;
@@ -340,6 +385,7 @@ public class GameFileViewModel : ViewModel
                 case "png":
                 case "bmp":
                     {
+                        AssetCategory = EAssetCategory.Texture;
                         var data = _applicationView.CUE4Parse.Provider.SaveAsset(gameFile);
                         using var stream = new MemoryStream(data) { Position = 0 };
                         var bitmap = SKBitmap.Decode(stream);
@@ -363,6 +409,7 @@ public class GameFileViewModel : ViewModel
                     }
                 case "svg":
                     {
+                        AssetCategory = EAssetCategory.Texture;
                         var data = _applicationView.CUE4Parse.Provider.SaveAsset(gameFile);
                         using var stream = new MemoryStream(data) { Position = 0 };
                         var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(512, 512));
@@ -389,6 +436,7 @@ public class GameFileViewModel : ViewModel
                         return true;
                     }
                 case "mp4":
+                    AssetCategory = EAssetCategory.Video;
                     IconGeometry = _videoIcon;
                     IconColor = Brushes.Black;
                     return true;
