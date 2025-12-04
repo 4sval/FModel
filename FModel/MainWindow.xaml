@@ -1187,7 +1187,7 @@
                                                         </MenuItem.Icon>
                                                     </MenuItem>
                                                     <MenuItem Header="Save Animation"
-                                                              IsEnabled="{Binding ResolvedAssetType, Converter={x:Static converters:AssetTypeToBoolConverter.Instance}, ConverterParameter='AnimSequence'}"
+                                                              IsEnabled="{Binding ResolvedAssetType, Converter={x:Static converters:AssetTypeToBoolConverter.Instance}, ConverterParameter='AnimSequence,AnimMontage,AnimSequenceBase'}"
                                                               Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                                         <MenuItem.CommandParameter>
                                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">

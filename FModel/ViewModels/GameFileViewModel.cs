@@ -10,6 +10,7 @@ using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.CriWare;
 using CUE4Parse.UE4.Assets.Exports.Engine;
+using CUE4Parse.UE4.Assets.Exports.Engine.Font;
 using CUE4Parse.UE4.Assets.Exports.Fmod;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
@@ -21,7 +22,6 @@ using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.PhysicsEngine;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse_Conversion.Textures;
-using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -95,17 +95,16 @@ public class GameFileViewModel : ViewModel
             {
                 await Task.Run(() =>
                 {
-                    var result = _applicationView.CUE4Parse.Provider.GetLoadPackageResult(Asset);
-                    var package = result?.Package;
-
-                    if (package == null)
+                    if (!_applicationView.CUE4Parse.Provider.TryLoadPackage(Asset, out var package))
                         return;
 
-                    for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
+                    for (var i = 0; i < package.ExportMapLength; i++)
                     {
                         var pointer = new FPackageIndex(package, i + 1).ResolvedObject;
-                        var dummy = ((AbstractUePackage) package).ConstructObject(pointer.Class?.Object?.Value as UStruct, package);
+                        if (pointer?.Object is null)
+                            continue;
 
+                        var dummy = ((AbstractUePackage) package).ConstructObject(pointer.Class?.Object?.Value as UStruct, package);
                         ResolvedAssetType = dummy?.ExportType;
 
                         switch (dummy)
@@ -120,8 +119,7 @@ public class GameFileViewModel : ViewModel
                                             IconColor = new SolidColorBrush(Color.FromRgb(201, 125, 239));
                                         });
 
-                                        i = result.ExclusiveEnd;
-                                        break;
+                                        return;
                                     }
 
                                     var img = new CTexture[1];
@@ -147,8 +145,7 @@ public class GameFileViewModel : ViewModel
                                     image.Freeze();
 
                                     Application.Current.Dispatcher.Invoke(() => PreviewImage = image);
-                                    i = result.ExclusiveEnd; // Let's display first found texture
-                                    break;
+                                    return; // Let's display first found texture
                                 }
                             case UDataAsset:
                             case UDataTable:
@@ -158,7 +155,7 @@ public class GameFileViewModel : ViewModel
                                         IconGeometry = _datatableIcon;
                                         IconColor = Brushes.White;
                                     });
-                                    break;
+                                    return;
                                 }
                             case USoundCue:
                             case USoundWave:
@@ -176,7 +173,7 @@ public class GameFileViewModel : ViewModel
                                         IconGeometry = _audioIcon;
                                         IconColor = Brushes.White;
                                     });
-                                    break;
+                                    return;
                                 }
                             case USkeleton:
                                 {
@@ -185,7 +182,7 @@ public class GameFileViewModel : ViewModel
                                         IconGeometry = _skeletonIcon;
                                         IconColor = Brushes.White;
                                     });
-                                    break;
+                                    return;
                                 }
                             case UStaticMesh:
                             case USkeletalMesh:
@@ -195,7 +192,7 @@ public class GameFileViewModel : ViewModel
                                         IconGeometry = _meshIcon;
                                         IconColor = Brushes.White;
                                     });
-                                    break;
+                                    return;
                                 }
                             case UBlueprint:
                             case UBlueprintGeneratedClass:
@@ -205,7 +202,7 @@ public class GameFileViewModel : ViewModel
                                         IconGeometry = _blueprintIcon;
                                         IconColor = Brushes.AliceBlue;
                                     });
-                                    break;
+                                    return;
                                 }
                             case UMaterial:
                             case UMaterialInstance:
@@ -215,7 +212,7 @@ public class GameFileViewModel : ViewModel
                                         IconGeometry = _materialIcon;
                                         IconColor = Brushes.White;
                                     });
-                                    break;
+                                    return;
                                 }
                             case UPhysicsAsset:
                                 {
@@ -224,8 +221,10 @@ public class GameFileViewModel : ViewModel
                                         IconGeometry = _physicsIcon;
                                         IconColor = Brushes.White;
                                     });
-                                    break;
+                                    return;
                                 }
+                            case UAnimSequence:
+                            case UAnimMontage:
                             case UAnimSequenceBase:
                                 {
                                     Application.Current.Dispatcher.Invoke(() =>
@@ -233,7 +232,17 @@ public class GameFileViewModel : ViewModel
                                         IconGeometry = _animationIcon;
                                         IconColor = Brushes.White;
                                     });
-                                    break;
+                                    return;
+                                }
+                            case UFont:
+                            case UFontFace:
+                                {
+                                    Application.Current.Dispatcher.Invoke(() =>
+                                    {
+                                        IconGeometry = _fontIcon;
+                                        IconColor = Brushes.White;
+                                    });
+                                    return;
                                 }
                             default:
                                 break;
@@ -326,7 +335,7 @@ public class GameFileViewModel : ViewModel
 
                         if (bitmap != null)
                         {
-                            using var image = bitmap.Encode(SKEncodedImageFormat.Png, 100);
+                            using var image = bitmap.Encode(gameFile.Extension == "jpg" ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
                             using var ms = new MemoryStream(image.ToArray());
 
                             var bmpImage = new BitmapImage();
