@@ -424,45 +424,45 @@ public partial class MainWindow
 
     private void AssetsExplorerButton_MouseEnter(object sender, MouseEventArgs e)
     {
-        if (sender is Button btn && FindPopup(btn) is Popup popup)
+        if (sender is not Button btn || FindPopup(btn) is not Popup popup)
+            return;
+
+        if (popup.Child is Border border && border.Child is StackPanel stack)
         {
-            if (popup.Child is Border border && border.Child is StackPanel stack)
+            var fileInfoText = stack.Children[0] as TextBlock;
+
+            if (fileInfoText == null)
+                return;
+
+            switch (btn.DataContext)
             {
-                var foldersText = stack.Children[0] as TextBlock;
-                var assetsText = stack.Children[1] as TextBlock;
-                var fileInfoText = stack.Children[2] as TextBlock;
-
-                if (btn.DataContext is TreeItem item)
-                {
-                    if (foldersText != null)
+                case TreeItem item:
                     {
-                        foldersText.Inlines.Clear();
-                        foldersText.Inlines.Add(new Run("Folders Count: "));
-                        foldersText.Inlines.Add(new Run(item.Folders.Count.ToString()) { FontWeight = FontWeights.Bold });
+                        fileInfoText.Inlines.Clear();
+                        fileInfoText.Inlines.Add(new Run("Folders Count: "));
+                        fileInfoText.Inlines.Add(new Run(item.Folders.Count.ToString()) { FontWeight = FontWeights.Bold });
+                        fileInfoText.Inlines.Add(new LineBreak());
+                        fileInfoText.Inlines.Add(new Run("Assets Count: "));
+                        fileInfoText.Inlines.Add(new Run(item.AssetsList.Assets.Count.ToString()) { FontWeight = FontWeights.Bold });
+                        break;
                     }
-
-                    if (assetsText != null)
+                case GameFileViewModel gameFile:
                     {
-                        assetsText.Inlines.Clear();
-                        assetsText.Inlines.Add(new Run("Assets Count: "));
-                        assetsText.Inlines.Add(new Run(item.AssetsList.Assets.Count.ToString()) { FontWeight = FontWeights.Bold });
+                        fileInfoText.Inlines.Clear();
+                        fileInfoText.Inlines.Add(new Run(gameFile.Asset.Name) { FontWeight = FontWeights.Bold });
+                        fileInfoText.Inlines.Add(new LineBreak());
+                        var assetType = !string.IsNullOrEmpty(gameFile.ResolvedAssetType) ? gameFile.ResolvedAssetType : gameFile.Asset.Extension;
+                        fileInfoText.Inlines.Add(new Run($"Type: {assetType}") { Foreground = Brushes.LightGray });
+                        fileInfoText.Inlines.Add(new LineBreak());
+                        fileInfoText.Inlines.Add(new Run($"Size: {StringExtensions.GetReadableSize(gameFile.Asset.Size)}") { Foreground = Brushes.LightGray });
+                        break;
                     }
-                }
-
-                if (btn.DataContext is GameFileViewModel gameFile && fileInfoText != null)
-                {
-                    fileInfoText.Inlines.Clear();
-                    fileInfoText.Inlines.Add(new Run(gameFile.Asset.Name) { FontWeight = FontWeights.Bold });
-                    fileInfoText.Inlines.Add(new LineBreak());
-                    var assetType = !string.IsNullOrEmpty(gameFile.ResolvedAssetType) ? gameFile.ResolvedAssetType : gameFile.Asset.Extension;
-                    fileInfoText.Inlines.Add(new Run($"Type: {assetType}") { Foreground = Brushes.LightGray });
-                    fileInfoText.Inlines.Add(new LineBreak());
-                    fileInfoText.Inlines.Add(new Run($"Size: {StringExtensions.GetReadableSize(gameFile.Asset.Size)}") { Foreground = Brushes.LightGray });
-                }
+                default:
+                    break;
             }
-
-            popup.IsOpen = true;
         }
+
+        popup.IsOpen = true;
     }
 
     private void AssetsExplorerButton_MouseLeave(object sender, MouseEventArgs e)

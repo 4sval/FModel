@@ -86,7 +86,7 @@ public class GameFileViewModel : ViewModel
     {
         try
         {
-            if (await LoadPreviewByExtension(Asset.Extension))
+            if (await LoadPreviewByExtension(Asset))
                 return;
 
             bool canLoadPackage = Asset.IsUePackage && _applicationView?.CUE4Parse != null && _applicationView.IsAssetsExplorerVisible;
@@ -160,6 +160,7 @@ public class GameFileViewModel : ViewModel
                                     });
                                     break;
                                 }
+                            case USoundCue:
                             case USoundWave:
                             case UAkMediaAssetData:
                             case UAtomWaveBank:
@@ -256,11 +257,11 @@ public class GameFileViewModel : ViewModel
         }
     }
 
-    private Task<bool> LoadPreviewByExtension(string extension)
+    private Task<bool> LoadPreviewByExtension(GameFile gameFile)
     {
         return Application.Current.Dispatcher.InvokeAsync(() =>
         {
-            switch (extension)
+            switch (gameFile.Extension)
             {
                 case "uplugin":
                     IconGeometry = _pluginIcon;
@@ -315,6 +316,58 @@ public class GameFileViewModel : ViewModel
                     IconGeometry = _txtIcon;
                     IconColor = Brushes.White;
                     return true;
+                case "jpg":
+                case "png":
+                case "bmp":
+                    {
+                        var data = _applicationView.CUE4Parse.Provider.SaveAsset(gameFile);
+                        using var stream = new MemoryStream(data) { Position = 0 };
+                        var bitmap = SKBitmap.Decode(stream);
+
+                        if (bitmap != null)
+                        {
+                            using var image = bitmap.Encode(SKEncodedImageFormat.Png, 100);
+                            using var ms = new MemoryStream(image.ToArray());
+
+                            var bmpImage = new BitmapImage();
+                            bmpImage.BeginInit();
+                            bmpImage.CacheOption = BitmapCacheOption.OnLoad;
+                            bmpImage.StreamSource = ms;
+                            bmpImage.EndInit();
+                            bmpImage.Freeze();
+
+                            PreviewImage = bmpImage;
+                            return true;
+                        }
+                        return false;
+                    }
+                case "svg":
+                    {
+                        var data = _applicationView.CUE4Parse.Provider.SaveAsset(gameFile);
+                        using var stream = new MemoryStream(data) { Position = 0 };
+                        var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(512, 512));
+                        svg.Load(stream);
+
+                        var bitmap = new SKBitmap(512, 512);
+                        using (var canvas = new SKCanvas(bitmap))
+                        {
+                            canvas.Clear(SKColors.Transparent);
+                            canvas.DrawPicture(svg.Picture);
+                        }
+
+                        using var img = bitmap.Encode(SKEncodedImageFormat.Png, 100);
+                        using var ms = new MemoryStream(img.ToArray());
+
+                        var bmpImage = new BitmapImage();
+                        bmpImage.BeginInit();
+                        bmpImage.CacheOption = BitmapCacheOption.OnLoad;
+                        bmpImage.StreamSource = ms;
+                        bmpImage.EndInit();
+                        bmpImage.Freeze();
+
+                        PreviewImage = bmpImage;
+                        return true;
+                    }
                 default:
                     return false;
             }

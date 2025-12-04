@@ -1001,16 +1001,11 @@
                                                     CornerRadius="6"
                                                     Padding="10">
                                                 <StackPanel x:Name="PopupStack">
-                                                    <TextBlock x:Name="FoldersCountTextBlock"
-                                                               HorizontalAlignment="Center"
-                                                               Foreground="White"
-                                                               FontSize="12" />
-                                                    <TextBlock x:Name="AssetsCountTextBlock"
-                                                               HorizontalAlignment="Center"
-                                                               Foreground="White"
-                                                               FontSize="12" />
                                                     <TextBlock x:Name="FileInfoTextBlock"
-                                                               Visibility="Collapsed" />
+                                                               HorizontalAlignment="Center"
+                                                               TextAlignment="Center"
+                                                               Foreground="White"
+                                                               FontSize="12" />
                                                 </StackPanel>
                                             </Border>
                                         </Popup>
@@ -1213,7 +1208,7 @@
                                                         </MenuItem.Icon>
                                                     </MenuItem>
                                                     <MenuItem Header="Save Audio"
-                                                              IsEnabled="{Binding ResolvedAssetType, Converter={x:Static converters:AssetTypeToBoolConverter.Instance}, ConverterParameter='SoundWave,AkMediaAssetData,AtomWaveBank,SoundAtomCue,AtomCueSheet,SoundAtomCueSheet,FMODBank,FMODEvent,AkAudioEvent'}"
+                                                              IsEnabled="{Binding ResolvedAssetType, Converter={x:Static converters:AssetTypeToBoolConverter.Instance}, ConverterParameter='SoundCue,SoundWave,AkMediaAssetData,AtomWaveBank,SoundAtomCue,AtomCueSheet,SoundAtomCueSheet,FMODBank,FMODEvent,AkAudioEvent'}"
                                                               Command="{Binding PlacementTarget.Tag.RightClickMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                                         <MenuItem.CommandParameter>
                                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
@@ -1345,10 +1340,6 @@
                                                     CornerRadius="6"
                                                     Padding="10">
                                                 <StackPanel x:Name="PopupStack">
-                                                    <TextBlock x:Name="FoldersCountTextBlock"
-                                                               Visibility="Collapsed" />
-                                                    <TextBlock x:Name="AssetsCountTextBlock"
-                                                               Visibility="Collapsed" />
                                                     <TextBlock x:Name="FileInfoTextBlock"
                                                                HorizontalAlignment="Center"
                                                                TextAlignment="Center"
