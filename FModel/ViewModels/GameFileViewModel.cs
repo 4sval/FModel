@@ -28,6 +28,7 @@ using FModel.Services;
 using FModel.Settings;
 using Serilog;
 using SkiaSharp;
+using Svg.Skia;
 
 namespace FModel.ViewModels;
 
@@ -392,18 +393,26 @@ public class GameFileViewModel : ViewModel
 
                         var data = _applicationView.CUE4Parse.Provider.SaveAsset(gameFile);
                         using var stream = new MemoryStream(data) { Position = 0 };
-                        var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(512, 512));
+                        var svg = new SKSvg();
                         svg.Load(stream);
 
-                        var bitmap = new SKBitmap(512, 512);
-                        using (var canvas = new SKCanvas(bitmap))
-                        {
-                            canvas.Clear(SKColors.Transparent);
-                            canvas.DrawPicture(svg.Picture);
-                        }
+                        int size = 128;
+                        var bitmap = new SKBitmap(size, size);
+                        using var canvas = new SKCanvas(bitmap);
+                        canvas.Clear(SKColors.Transparent);
 
-                        using var img = bitmap.Encode(SKEncodedImageFormat.Png, 100);
-                        using var ms = new MemoryStream(img.ToArray());
+                        if (svg.Picture == null)
+                            return false;
+
+                        var bounds = svg.Picture.CullRect;
+                        float scale = Math.Min(size / bounds.Width, size / bounds.Height);
+                        canvas.Scale(scale);
+                        canvas.Translate(-bounds.Left, -bounds.Top);
+                        canvas.DrawPicture(svg.Picture);
+
+                        using var ms = new MemoryStream();
+                        using (var img = bitmap.Encode(SKEncodedImageFormat.Png, 100)) img.SaveTo(ms);
+                        ms.Position = 0;
 
                         var bmpImage = new BitmapImage();
                         bmpImage.BeginInit();

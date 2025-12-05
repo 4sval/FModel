@@ -9,7 +9,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using AdonisUI.Controls;
-using CUE4Parse.FileProvider.Objects;
 using FModel.Extensions;
 using FModel.Services;
 using FModel.Settings;
