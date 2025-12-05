@@ -32,6 +32,11 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         if (!entries.Any())
             return;
 
+        MainWindow.YesWeCats?.Dispatcher.Invoke(() =>
+        {
+            MainWindow.YesWeCats.ToggleExplorer(true);
+        });
+
         var updateUi = entries.Count() > 1 ? EBulkType.Auto : EBulkType.None;
         await _threadWorkerView.Begin(cancellationToken =>
         {

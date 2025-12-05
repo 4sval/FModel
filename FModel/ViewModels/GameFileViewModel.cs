@@ -1,5 +1,4 @@
 using System;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -122,16 +121,8 @@ public class GameFileViewModel : ViewModel
                             case UTexture when pointer.Object.Value is UTexture texture:
                                 {
                                     AssetCategory = EAssetCategory.Texture;
-                                    if (!UserSettings.Default.PreviewTexturesAssetExplorer)
-                                    {
-                                        Application.Current.Dispatcher.Invoke(() =>
-                                        {
-                                            IconGeometry = _textureIcon;
-                                            IconColor = new SolidColorBrush(Color.FromRgb(201, 125, 239));
-                                        });
-
+                                    if (TryApplyTextureFallbackIcon())
                                         return;
-                                    }
 
                                     var img = new CTexture[1];
                                     int targetSize = 128;
@@ -369,6 +360,9 @@ public class GameFileViewModel : ViewModel
                 case "bmp":
                     {
                         AssetCategory = EAssetCategory.Texture;
+                        if (TryApplyTextureFallbackIcon())
+                            return true;
+
                         var data = _applicationView.CUE4Parse.Provider.SaveAsset(gameFile);
                         using var stream = new MemoryStream(data) { Position = 0 };
                         var bitmap = SKBitmap.Decode(stream);
@@ -393,6 +387,9 @@ public class GameFileViewModel : ViewModel
                 case "svg":
                     {
                         AssetCategory = EAssetCategory.Texture;
+                        if (TryApplyTextureFallbackIcon())
+                            return true;
+
                         var data = _applicationView.CUE4Parse.Provider.SaveAsset(gameFile);
                         using var stream = new MemoryStream(data) { Position = 0 };
                         var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(512, 512));
@@ -427,6 +424,20 @@ public class GameFileViewModel : ViewModel
                     return false;
             }
         }).Task;
+    }
+
+    private bool TryApplyTextureFallbackIcon()
+    {
+        if (UserSettings.Default.PreviewTexturesAssetExplorer)
+            return false;
+
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            IconGeometry = _textureIcon;
+            IconColor = new SolidColorBrush(Color.FromRgb(201, 125, 239));
+        });
+
+        return true;
     }
 
     private CancellationTokenSource _previewCts;

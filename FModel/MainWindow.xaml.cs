@@ -52,7 +52,7 @@ public partial class MainWindow
         }
     }
 
-    private void ToggleExplorer(bool onlyGamesFileTab = false)
+    public void ToggleExplorer(bool onlyGamesFileTab = false)
     {
         if (onlyGamesFileTab)
         {

@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -55,8 +56,11 @@ public partial class SearchView
         do
         {
             await Task.Delay(100);
-            MainWindow.YesWeCats.AssetsListName.SelectedItem = entry;
-            MainWindow.YesWeCats.AssetsListName.ScrollIntoView(entry);
+            var vm = MainWindow.YesWeCats.AssetsListName.Items
+                .OfType<GameFileViewModel>()
+                .FirstOrDefault(x => x.Asset == entry);
+            MainWindow.YesWeCats.AssetsListName.SelectedItem = vm;
+            MainWindow.YesWeCats.AssetsListName.ScrollIntoView(vm);
         } while (MainWindow.YesWeCats.AssetsListName.SelectedItem == null);
     }
 
