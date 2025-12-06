@@ -597,6 +597,7 @@ public class CUE4ParseViewModel : ViewModel
 
     public void Extract(CancellationToken cancellationToken, GameFile entry, bool addNewTab = false, EBulkType bulk = EBulkType.None)
     {
+        ApplicationService.ApplicationView.IsAssetsExplorerVisible = false;
         Log.Information("User DOUBLE-CLICKED to extract '{FullPath}'", entry.Path);
 
         if (addNewTab && TabControl.CanAddTabs) TabControl.AddTab(entry);

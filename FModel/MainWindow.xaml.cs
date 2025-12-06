@@ -5,11 +5,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using AdonisUI.Controls;
-using FModel.Extensions;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels;
@@ -41,45 +38,6 @@ public partial class MainWindow
 
         FLogger.Logger = LogRtbName;
         YesWeCats = this;
-    }
-
-    private void AssetsExplorerToggle_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is ToggleButton toggleButton)
-        {
-            ToggleExplorer();
-        }
-    }
-
-    public void ToggleExplorer(bool onlyGamesFileTab = false)
-    {
-        if (onlyGamesFileTab)
-        {
-            _applicationView.IsAssetsExplorerVisible = false;
-        }
-        else
-        {
-            _applicationView.IsAssetsExplorerVisible = !_applicationView.IsAssetsExplorerVisible;
-
-            // Force reload of preview icons when switching to assets explorer
-            if (_applicationView.IsAssetsExplorerVisible)
-            {
-                foreach (var obj in AssetsExplorer.Items)
-                {
-                    if (obj is GameFileViewModel item)
-                    {
-                        var container = AssetsExplorer.ItemContainerGenerator.ContainerFromItem(item) as FrameworkElement;
-                        if (container != null && container.IsVisible)
-                        {
-                            item.OnVisibleChanged(true);
-                        }
-                    }
-                }
-            }
-        }
-
-        AssetsExplorerToggle.IsChecked = _applicationView.IsAssetsExplorerVisible;
-        FilePropertiesToggle.IsChecked = !_applicationView.IsAssetsExplorerVisible;
     }
 
     private void OnClosing(object sender, CancelEventArgs e)
@@ -201,36 +159,12 @@ public partial class MainWindow
         LeftTabControl.SelectedIndex++;
     }
 
-    private async void OnAssetClick(object sender, MouseButtonEventArgs e)
+    private void OnAssetsTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
     {
-        if (sender is not Button button)
-            return;
+        if (sender is not TreeView { SelectedItem: TreeItem }) return;
 
-        switch (button.DataContext)
-        {
-            case GameFileViewModel asset:
-                ToggleExplorer();
-                await _threadWorkerView.Begin(cancellationToken =>
-                    _applicationView.CUE4Parse.ExtractSelected(cancellationToken, [asset.Asset]));
-                AssetsListName.SelectedItem = asset;
-                LeftTabControl.SelectedItem = PackagesTab;
-                AssetsListName.ScrollIntoView(asset.Asset);
-                break;
-
-            case TreeItem folder:
-                LeftTabControl.SelectedItem = FoldersTab;
-                TreeItem.SelectTreeItem(folder, AssetsFolderName);
-                break;
-        }
-    }
-
-    private void AssetsFolder_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-    {
-        if (e.NewValue is not TreeItem folder)
-            return;
-
-        TreeItem.SelectTreeItem(folder, AssetsFolderName);
-        AssetsExplorer.ItemsSource = folder.CombinedEntries;
+        _applicationView.IsAssetsExplorerVisible = true;
+        LeftTabControl.SelectedIndex = 1;
     }
 
     private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
@@ -239,158 +173,28 @@ public partial class MainWindow
             return;
 
         var generator = AssetsExplorer.ItemContainerGenerator;
-
         if (generator.Status != GeneratorStatus.ContainersGenerated)
             return;
 
         for (int i = 0; i < AssetsExplorer.Items.Count; i++)
         {
             var item = AssetsExplorer.Items[i] as GameFileViewModel;
-            if (item == null || item.PreviewImage != null)
+            if (item is not { PreviewImage: null })
                 continue;
 
-            var container = generator.ContainerFromIndex(i) as FrameworkElement;
-            if (container != null && container.IsVisible)
+            if (generator.ContainerFromIndex(i) is FrameworkElement { IsVisible: true })
             {
                 item.OnVisibleChanged(true);
             }
         }
     }
 
-    private TreeItem GetCurrentFolder(object sender)
-    {
-        if (sender is MenuItem menuItem && menuItem.DataContext is TreeItem menuFolder) // Assets Explorer
-            return menuFolder;
-        if (AssetsFolderName.SelectedItem is TreeItem selectedFolder) // Folders Tree
-            return selectedFolder;
-
-        return null;
-    }
-
     private async void OnAssetsListMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
         if (sender is not ListBox listBox) return;
 
-        ToggleExplorer(true);
-
         var selectedItems = listBox.SelectedItems.Cast<GameFileViewModel>().Select(gvm => gvm.Asset).ToList();
         await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
-    }
-
-    private async void OnFolderExtractClick(object sender, RoutedEventArgs e)
-    {
-        if (AssetsFolderName.SelectedItem is TreeItem folder)
-        {
-            await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractFolder(cancellationToken, folder); });
-        }
-    }
-
-    private async void OnFolderExportClick(object sender, RoutedEventArgs e)
-    {
-        if (GetCurrentFolder(sender) is not TreeItem folder)
-            return;
-
-        ToggleExplorer(true);
-
-        await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExportFolder(cancellationToken, folder); });
-        FLogger.Append(ELog.Information, () =>
-        {
-            FLogger.Text("Successfully exported ", Constants.WHITE);
-            FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.RawDataDirectory, true);
-        });
-    }
-
-    private async void OnFolderSaveClick(object sender, RoutedEventArgs e)
-    {
-        if (GetCurrentFolder(sender) is not TreeItem folder)
-            return;
-
-        ToggleExplorer(true);
-
-        await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.SaveFolder(cancellationToken, folder); });
-        FLogger.Append(ELog.Information, () =>
-        {
-            FLogger.Text("Successfully saved ", Constants.WHITE);
-            FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.PropertiesDirectory, true);
-        });
-    }
-
-    private async void OnFolderTextureClick(object sender, RoutedEventArgs e)
-    {
-        if (GetCurrentFolder(sender) is not TreeItem folder)
-            return;
-
-        ToggleExplorer(true);
-
-        await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.TextureFolder(cancellationToken, folder); });
-        FLogger.Append(ELog.Information, () =>
-        {
-            FLogger.Text("Successfully saved textures from ", Constants.WHITE);
-            FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.TextureDirectory, true);
-        });
-    }
-
-    private async void OnFolderModelClick(object sender, RoutedEventArgs e)
-    {
-        if (GetCurrentFolder(sender) is not TreeItem folder)
-            return;
-
-        ToggleExplorer(true);
-
-        await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ModelFolder(cancellationToken, folder); });
-        FLogger.Append(ELog.Information, () =>
-        {
-            FLogger.Text("Successfully saved models from ", Constants.WHITE);
-            FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.ModelDirectory, true);
-        });
-    }
-
-    private async void OnFolderAnimationClick(object sender, RoutedEventArgs e)
-    {
-        if (GetCurrentFolder(sender) is not TreeItem folder)
-            return;
-
-        ToggleExplorer(true);
-
-        await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.AnimationFolder(cancellationToken, folder); });
-        FLogger.Append(ELog.Information, () =>
-        {
-            FLogger.Text("Successfully saved animations from ", Constants.WHITE);
-            FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.ModelDirectory, true);
-        });
-    }
-
-    private async void OnFolderAudioClick(object sender, RoutedEventArgs e)
-    {
-        if (GetCurrentFolder(sender) is not TreeItem folder)
-            return;
-
-        ToggleExplorer(true);
-
-        await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.AudioFolder(cancellationToken, folder); });
-        FLogger.Append(ELog.Information, () =>
-        {
-            FLogger.Text("Successfully saved audio from ", Constants.WHITE);
-            FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.AudioDirectory, true);
-        });
-    }
-
-    private void OnFavoriteDirectoryClick(object sender, RoutedEventArgs e)
-    {
-        if (GetCurrentFolder(sender) is not TreeItem folder)
-            return;
-
-        _applicationView.CustomDirectories.Add(new CustomDirectory(folder.Header, folder.PathAtThisPoint));
-        FLogger.Append(ELog.Information, () =>
-            FLogger.Text($"Successfully saved '{folder.PathAtThisPoint}' as a new favorite directory", Constants.WHITE, true));
-    }
-
-    private void OnCopyDirectoryPathClick(object sender, RoutedEventArgs e)
-    {
-        if (GetCurrentFolder(sender) is not TreeItem folder)
-            return;
-
-        Clipboard.SetText(folder.PathAtThisPoint);
     }
 
     private void OnClearFilterClick(object sender, RoutedEventArgs e)
@@ -416,89 +220,10 @@ public partial class MainWindow
         switch (e.Key)
         {
             case Key.Enter:
-                ToggleExplorer(true);
+                _applicationView.IsAssetsExplorerVisible = false;
                 var selectedItems = listBox.SelectedItems.Cast<GameFileViewModel>().Select(gvm => gvm.Asset).ToList();
                 await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
                 break;
         }
-    }
-
-    private void AssetsExplorerButton_MouseEnter(object sender, MouseEventArgs e)
-    {
-        if (sender is not Button btn || FindPopup(btn) is not Popup popup)
-            return;
-
-        if (popup.Child is Border border && border.Child is StackPanel stack)
-        {
-            var fileInfoText = stack.Children[0] as TextBlock;
-
-            if (fileInfoText == null)
-                return;
-
-            switch (btn.DataContext)
-            {
-                case TreeItem item:
-                    {
-                        fileInfoText.Inlines.Clear();
-                        fileInfoText.Inlines.Add(new Run("Folders Count: "));
-                        fileInfoText.Inlines.Add(new Run(item.Folders.Count.ToString()) { FontWeight = FontWeights.Bold });
-                        fileInfoText.Inlines.Add(new LineBreak());
-                        fileInfoText.Inlines.Add(new Run("Assets Count: "));
-                        fileInfoText.Inlines.Add(new Run(item.AssetsList.Assets.Count.ToString()) { FontWeight = FontWeights.Bold });
-                        break;
-                    }
-                case GameFileViewModel gameFile:
-                    {
-                        fileInfoText.Inlines.Clear();
-                        fileInfoText.Inlines.Add(new Run(gameFile.Asset.Name) { FontWeight = FontWeights.Bold });
-                        fileInfoText.Inlines.Add(new LineBreak());
-                        var assetType = !string.IsNullOrEmpty(gameFile.ResolvedAssetType) ? gameFile.ResolvedAssetType : gameFile.Asset.Extension;
-                        fileInfoText.Inlines.Add(new Run($"Type: {assetType}") { Foreground = Brushes.LightGray });
-                        fileInfoText.Inlines.Add(new LineBreak());
-                        fileInfoText.Inlines.Add(new Run($"Size: {StringExtensions.GetReadableSize(gameFile.Asset.Size)}") { Foreground = Brushes.LightGray });
-                        break;
-                    }
-                default:
-                    break;
-            }
-        }
-
-        popup.IsOpen = true;
-    }
-
-    private void AssetsExplorerButton_MouseLeave(object sender, MouseEventArgs e)
-    {
-        if (sender is Button btn && FindPopup(btn) is Popup popup)
-        {
-            popup.IsOpen = false;
-        }
-    }
-
-    private void AssetsExplorerButton_PreviewMouseMove(object sender, MouseEventArgs e)
-    {
-        if (sender is Button btn && FindPopup(btn) is Popup popup && popup.IsOpen)
-        {
-            var window = GetWindow(btn);
-            if (window == null)
-                return;
-
-            var point = btn.PointToScreen(e.GetPosition(btn));
-            var dpi = VisualTreeHelper.GetDpi(window);
-            popup.HorizontalOffset = point.X / dpi.DpiScaleX + 12;
-            popup.VerticalOffset = point.Y / dpi.DpiScaleY + 12;
-        }
-    }
-
-    private Popup FindPopup(Button btn)
-    {
-        if (VisualTreeHelper.GetParent(btn) is Grid grid)
-        {
-            foreach (var child in grid.Children)
-            {
-                if (child is Popup popup)
-                    return popup;
-            }
-        }
-        return null;
     }
 }

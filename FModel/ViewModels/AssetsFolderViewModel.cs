@@ -16,9 +16,6 @@ namespace FModel.ViewModels;
 
 public class TreeItem : ViewModel
 {
-    public IEnumerable<EAssetCategory> Categories { get; } =
-        Enum.GetValues(typeof(EAssetCategory)).Cast<EAssetCategory>();
-
     private string _header;
     public string Header
     {
@@ -37,7 +34,12 @@ public class TreeItem : ViewModel
     public bool IsSelected
     {
         get => _isSelected;
-        set => SetProperty(ref _isSelected, value);
+        set
+        {
+            if (SetProperty(ref _isSelected, value))
+                for (var parent = Parent; parent != null; parent = parent.Parent)
+                    parent.IsExpanded = true;
+        }
     }
 
     private string _archive;
@@ -96,8 +98,7 @@ public class TreeItem : ViewModel
     public ICollectionView FoldersView { get; }
     public ICollectionView FilteredFoldersView { get; }
     public CompositeCollection CombinedEntries { get; } = [];
-    public ICollectionView CombinedView { get; }
-    public TreeItem Parent { get; set; }
+    public TreeItem Parent { get; init; }
 
     public TreeItem(string header, GameFile entry, string pathHere)
     {
@@ -119,7 +120,6 @@ public class TreeItem : ViewModel
             new CollectionContainer { Collection = FilteredFoldersView },
             new CollectionContainer { Collection = AssetsList.AssetsView }
         ];
-        CombinedView = new ListCollectionView(CombinedEntries);
         SearchBarVisibility = Visibility.Visible;
     }
 
@@ -151,21 +151,6 @@ public class TreeItem : ViewModel
             return matchesSearch;
         };
         FilteredFoldersView.Refresh();
-    }
-    public static void SelectTreeItem(TreeItem item, TreeView treeView)
-    {
-        if (item == null)
-            return;
-
-        for (var parent = item.Parent; parent != null; parent = parent.Parent)
-            parent.IsExpanded = true;
-
-        item.IsSelected = true;
-
-        if (treeView.ItemContainerGenerator.ContainerFromItem(item) is TreeViewItem tvi)
-        {
-            tvi.BringIntoView();
-        }
     }
 
     public override string ToString() => $"{Header} | {Folders.Count} Folders | {AssetsList.Assets.Count} Files";

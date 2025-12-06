@@ -32,7 +32,7 @@ using Svg.Skia;
 
 namespace FModel.ViewModels;
 
-public class GameFileViewModel : ViewModel
+public class GameFileViewModel(GameFile asset) : ViewModel
 {
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
 
@@ -56,8 +56,21 @@ public class GameFileViewModel : ViewModel
     private static readonly Geometry _textureIcon = (Geometry) Application.Current.FindResource("TextureIconAlt");
     private static readonly Geometry _videoIcon = (Geometry) Application.Current.FindResource("VideoIcon");
 
-    public string ResolvedAssetType { get; private set; }
-    public GameFile Asset { get; }
+    public GameFile Asset { get; } = asset;
+
+    private string _resolvedAssetType = asset.Extension;
+    public string ResolvedAssetType
+    {
+        get => _resolvedAssetType;
+        private set => SetProperty(ref _resolvedAssetType, value);
+    }
+
+    private bool _isSelected;
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set => SetProperty(ref _isSelected, value);
+    }
 
     private EAssetCategory _assetCategory = EAssetCategory.All;
     public EAssetCategory AssetCategory
@@ -87,9 +100,9 @@ public class GameFileViewModel : ViewModel
         set => SetProperty(ref _iconColor, value);
     }
 
-    public GameFileViewModel(GameFile asset)
+    public async Task ExtractAsync()
     {
-        Asset = asset;
+        await ApplicationService.ThreadWorkerView.Begin(cancellationToken => _applicationView.CUE4Parse.ExtractSelected(cancellationToken, [Asset]));
     }
 
     private async void LoadPreviewAsync()

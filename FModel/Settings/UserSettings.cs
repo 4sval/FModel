@@ -523,5 +523,12 @@ namespace FModel.Settings
             get => _saveHdrTexturesAsHdr;
             set => SetProperty(ref _saveHdrTexturesAsHdr, value);
         }
+
+        private bool _previewNewExplorerSystem = true;
+        public bool PreviewNewExplorerSystem
+        {
+            get => _previewNewExplorerSystem;
+            set => SetProperty(ref _previewNewExplorerSystem, value);
+        }
     }
 }
