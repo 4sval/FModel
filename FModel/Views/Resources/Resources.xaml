@@ -662,6 +662,9 @@
             </Setter.Value>
         </Setter>
         <Style.Triggers>
+            <DataTrigger Binding="{Binding IsAssetsExplorerVisible}" Value="True">
+                <Setter Property="SelectionMode" Value="Single" />
+            </DataTrigger>
             <DataTrigger Binding="{Binding SelectedItem.AssetsList.Assets.Count, ElementName=AssetsFolderName, FallbackValue=0}" Value="0">
                 <Setter Property="Template">
                     <Setter.Value>

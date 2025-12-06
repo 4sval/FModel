@@ -3,7 +3,14 @@
                     xmlns:vwp="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
                     xmlns:vm="clr-namespace:FModel.ViewModels"
                     xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
-                    xmlns:local="clr-namespace:FModel.Views.Resources.Controls.TiledExplorer">
+                    xmlns:local="clr-namespace:FModel.Views.Resources.Controls.TiledExplorer"
+                    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+                    x:Class="FModel.Views.Resources.Controls.TiledExplorer.ResourcesDictionary">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="../ContextMenus/FolderContextMenu.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
 
     <controls:TypeDataTemplateSelector x:Key="TemplateSelector" />
 
@@ -18,16 +25,31 @@
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
                 <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                    <Setter Property="Focusable" Value="False" />
-                    <Setter Property="IsTabStop" Value="False" />
-                    <Setter Property="Padding" Value="0" />
-                    <Setter Property="Margin" Value="0" />
-                    <Setter Property="Background" Value="Transparent" />
-                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="8" />
+                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
+                    <Setter Property="Margin" Value="5" />
+                    <Setter Property="Padding" Value="5" />
+                    <Setter Property="BorderThickness" Value="1" />
+                    <Setter Property="Cursor" Value="Hand" />
+
+                    <EventSetter Event="MouseDoubleClick" Handler="OnMouseDoubleClick" />
+                    <EventSetter Event="MouseMove" Handler="OnMouseMove" />
+                    <EventSetter Event="MouseEnter" Handler="OnMouseEnter" />
+                    <EventSetter Event="MouseLeave" Handler="OnMouseLeave" />
+
                     <Setter Property="Template">
                         <Setter.Value>
-                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                <ContentPresenter />
+                            <ControlTemplate TargetType="ListBoxItem">
+                                <Grid>
+                                    <Border x:Name="Border"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="{TemplateBinding adonisExtensions:CornerRadiusExtension.CornerRadius}">
+                                        <ContentPresenter />
+                                    </Border>
+                                </Grid>
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
@@ -38,20 +60,63 @@
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <vwp:VirtualizingWrapPanel Orientation="Horizontal" SpacingMode="None" ScrollUnit="Pixel" AllowDifferentSizedItems="True" />
+                    <vwp:VirtualizingWrapPanel Orientation="Horizontal" SpacingMode="Uniform" ScrollUnit="Pixel" />
+                    <!-- <WrapPanel Orientation="Horizontal" ItemHeight="128" ItemWidth="128" /> -->
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
 
-        <Setter Property="ItemTemplateSelector" Value="{StaticResource TemplateSelector}" />
+        <Setter Property="ItemTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <ContentControl Content="{Binding}" ContentTemplateSelector="{StaticResource TemplateSelector}" />
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBox">
+                    <Grid>
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ScrollViewer Focusable="False">
+                                <ItemsPresenter />
+                            </ScrollViewer>
+                        </Border>
+                        <Popup x:Name="AssetPopup"
+                               AllowsTransparency="True"
+                               Placement="AbsolutePoint"
+                               StaysOpen="True"
+                               IsOpen="False">
+                            <Border x:Name="PopupBorder"
+                                    Background="#F2202020"
+                                    BorderBrush="#404040"
+                                    BorderThickness="1"
+                                    CornerRadius="6"
+                                    Padding="10">
+                                <StackPanel x:Name="PopupStack">
+                                    <TextBlock x:Name="FileInfoTextBlock"
+                                               HorizontalAlignment="Center"
+                                               TextAlignment="Center"
+                                               Foreground="White"
+                                               FontSize="12" />
+                                </StackPanel>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <DataTemplate x:Key="TiledFolderDataTemplate" DataType="{x:Type vm:TreeItem}">
-        <local:FolderButton Margin="5" />
+        <local:FolderButton ContextMenu="{StaticResource FolderContextMenu}" />
     </DataTemplate>
 
     <DataTemplate x:Key="TiledFileDataTemplate" DataType="{x:Type vm:GameFileViewModel}">
-        <local:GameFileButton Margin="5" />
+        <local:GameFileButton />
     </DataTemplate>
 
 </ResourceDictionary>
