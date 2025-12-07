@@ -26,7 +26,6 @@ public partial class ResourcesDictionary
         {
             case GameFileViewModel file:
                 ApplicationService.ApplicationView.SelectedLeftTabIndex = 2;
-                // file.IsSelected = true;
                 file.ExtractAsync();
                 // TODO: auto scroll on item selection just like folder view
                 // AssetsListName.ScrollIntoView(file.Asset);

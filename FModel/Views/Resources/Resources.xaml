@@ -659,7 +659,7 @@
                 <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                     <Setter Property="Padding" Value="5 3" />
-                    <!-- <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" /> -->
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                 </Style>
             </Setter.Value>
         </Setter>
