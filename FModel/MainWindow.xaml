@@ -684,7 +684,7 @@
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
 
-                                <Grid Grid.Row="0">
+                                <Grid Grid.Row="0" Margin="12">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
@@ -737,29 +737,87 @@
                                     Visibility="{Binding IsAssetsExplorerVisible, Converter={x:Static converters:InvertBoolToVisibilityConverter.Instance}}" />
                     </Grid>
 
-                    <StackPanel Grid.Row="0"
-                                Visibility="{Binding PreviewNewExplorerSystem, Source={x:Static settings:UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}"
-                                Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                                Margin="0 0 5 5">
-                        <ToggleButton Width="32" Height="32" ToolTip="Assets Explorer"
-                                      IsChecked="{Binding IsAssetsExplorerVisible, Mode=TwoWay}"
-                                      Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
-                            <Viewbox Width="16" Height="16">
-                                <Canvas Width="24" Height="24">
-                                    <Path Data="{StaticResource FolderIconAlt}" Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
-                                </Canvas>
-                            </Viewbox>
-                        </ToggleButton>
-                        <ToggleButton Width="32" Height="32" ToolTip="File Properties"
-                                      IsChecked="{Binding IsAssetsExplorerVisible, Converter={x:Static converters:InvertBooleanConverter.Instance}, Mode=TwoWay}"
-                                      Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
-                            <Viewbox Width="16" Height="16">
-                                <Canvas Width="24" Height="24">
-                                    <Path Data="{StaticResource AssetIcon}" Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
-                                </Canvas>
-                            </Viewbox>
-                        </ToggleButton>
-                    </StackPanel>
+                    <Border Grid.Row="0"
+                            VerticalAlignment="Bottom"
+                            HorizontalAlignment="Right"
+                            Margin="12,12,20,12"
+                            Opacity="0.5"
+                            Visibility="{Binding PreviewNewExplorerSystem, Source={x:Static settings:UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                            CornerRadius="8"
+                            Padding="4"
+                            Effect="{DynamicResource ShadowEffect}">
+                        <Border.Triggers>
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                         To="1"
+                                                         Duration="0:0:0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                         To="0.5"
+                                                         Duration="0:0:0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Center">
+                            <ToggleButton Width="32"
+                                          Height="32"
+                                          Cursor="Hand"
+                                          Margin="0, 0, 2, 0"
+                                          ToolTip="Preview Textures"
+                                          IsChecked="{Binding PreviewTexturesAssetExplorer, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
+                                          Style="{StaticResource ModernToggleButtonStyle}">
+                                <Viewbox Width="16"
+                                         Height="16">
+                                    <Canvas Width="24"
+                                            Height="24">
+                                        <Path Data="{StaticResource TextureIconAlt}"
+                                              Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                                    </Canvas>
+                                </Viewbox>
+                            </ToggleButton>
+                            <ToggleButton Width="32"
+                                          Height="32"
+                                          Cursor="Hand"
+                                          Margin="0, 0, 2, 0"
+                                          ToolTip="Assets Explorer"
+                                          IsChecked="{Binding IsAssetsExplorerVisible, Mode=TwoWay}"
+                                          Style="{StaticResource ModernToggleButtonStyle}">
+                                <Viewbox Width="16"
+                                         Height="16">
+                                    <Canvas Width="24"
+                                            Height="24">
+                                        <Path Data="{StaticResource FolderIconAlt}"
+                                              Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                                    </Canvas>
+                                </Viewbox>
+                            </ToggleButton>
+                            <ToggleButton Width="32"
+                                          Height="32"
+                                          Cursor="Hand"
+                                          ToolTip="File Properties"
+                                          IsChecked="{Binding IsAssetsExplorerVisible, Converter={x:Static converters:InvertBooleanConverter.Instance}, Mode=TwoWay}"
+                                          Style="{StaticResource ModernToggleButtonStyle}">
+                                <Viewbox Width="16"
+                                         Height="16">
+                                    <Canvas Width="24"
+                                            Height="24">
+                                        <Path Data="{StaticResource AssetIcon}"
+                                              Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                                    </Canvas>
+                                </Viewbox>
+                            </ToggleButton>
+                        </StackPanel>
+                    </Border>
 
                     <Expander Grid.Row="1" Margin="0 5 0 5" ExpandDirection="Down"
                               IsExpanded="{Binding IsLoggerExpanded, Source={x:Static settings:UserSettings.Default}}">

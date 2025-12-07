@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="FModel.Views.Resources.Controls.TiledExplorer.GameFileButton"
+<UserControl x:Class="FModel.Views.Resources.Controls.TiledExplorer.GameFileButton"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -37,7 +37,7 @@
         </Grid>
         <TextBlock Text="{Binding Asset.NameWithoutExtension}"
                    HorizontalAlignment="Center"
-                   Margin="0,6,0,0"
+                   Margin="6"
                    FontSize="10"
                    TextTrimming="CharacterEllipsis" />
     </StackPanel>
