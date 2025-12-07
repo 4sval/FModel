@@ -36,26 +36,6 @@ public class GameFileViewModel(GameFile asset) : ViewModel
 {
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
 
-    private static readonly Geometry _defaultIcon = (Geometry) Application.Current.FindResource("AssetIcon");
-    private static readonly Geometry _datatableIcon = (Geometry) Application.Current.FindResource("DataTableIcon");
-    private static readonly Geometry _mapIcon = (Geometry) Application.Current.FindResource("MapIconAlt");
-    private static readonly Geometry _pluginIcon = (Geometry) Application.Current.FindResource("PluginIcon");
-    private static readonly Geometry _configIcon = (Geometry) Application.Current.FindResource("ConfigIcon");
-    private static readonly Geometry _audioIcon = (Geometry) Application.Current.FindResource("AudioIconAlt");
-    private static readonly Geometry _meshIcon = (Geometry) Application.Current.FindResource("MeshIconAlt");
-    private static readonly Geometry _blueprintIcon = (Geometry) Application.Current.FindResource("BlueprintIcon");
-    private static readonly Geometry _materialIcon = (Geometry) Application.Current.FindResource("MaterialIcon");
-    private static readonly Geometry _skeletonIcon = (Geometry) Application.Current.FindResource("SkeletonIcon");
-    private static readonly Geometry _physicsIcon = (Geometry) Application.Current.FindResource("PhysicsIcon");
-    private static readonly Geometry _localeIcon = (Geometry) Application.Current.FindResource("LocaleIcon");
-    private static readonly Geometry _fontIcon = (Geometry) Application.Current.FindResource("FontIcon");
-    private static readonly Geometry _luaIcon = (Geometry) Application.Current.FindResource("LuaIcon");
-    private static readonly Geometry _jsonIcon = (Geometry) Application.Current.FindResource("JsonIcon");
-    private static readonly Geometry _txtIcon = (Geometry) Application.Current.FindResource("TxtIcon");
-    private static readonly Geometry _animationIcon = (Geometry) Application.Current.FindResource("AnimationIconAlt");
-    private static readonly Geometry _textureIcon = (Geometry) Application.Current.FindResource("TextureIconAlt");
-    private static readonly Geometry _videoIcon = (Geometry) Application.Current.FindResource("VideoIcon");
-
     public GameFile Asset { get; } = asset;
 
     private string _resolvedAssetType = asset.Extension;
@@ -86,336 +66,237 @@ public class GameFileViewModel(GameFile asset) : ViewModel
         set => SetProperty(ref _previewImage, value);
     }
 
-    private Geometry _iconGeometry;
-    public Geometry IconGeometry
-    {
-        get => _iconGeometry;
-        set => SetProperty(ref _iconGeometry, value);
-    }
+    public Task ExtractAsync()
+        => ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
+            _applicationView.CUE4Parse.ExtractSelected(cancellationToken, [Asset]));
 
-    private Brush _iconColor = Brushes.White;
-    public Brush IconColor
-    {
-        get => _iconColor;
-        set => SetProperty(ref _iconColor, value);
-    }
-
-    public async Task ExtractAsync()
-    {
-        await ApplicationService.ThreadWorkerView.Begin(cancellationToken => _applicationView.CUE4Parse.ExtractSelected(cancellationToken, [Asset]));
-    }
-
-    private async void LoadPreviewAsync()
+    private void ResolveCategoryAndLoadPreview()
     {
         try
         {
-            if (await LoadPreviewByExtension(Asset))
-                return;
+            if (!_applicationView.IsAssetsExplorerVisible) return;
 
-            bool canLoadPackage = Asset.IsUePackage && _applicationView?.CUE4Parse != null && _applicationView.IsAssetsExplorerVisible;
-
-            if (canLoadPackage)
+            if (!Asset.IsUePackage || _applicationView.CUE4Parse is null)
             {
-                await Task.Run(() =>
-                {
-                    if (!_applicationView.CUE4Parse.Provider.TryLoadPackage(Asset, out var package))
-                        return;
-
-                    for (var i = 0; i < package.ExportMapLength; i++)
-                    {
-                        var pointer = new FPackageIndex(package, i + 1).ResolvedObject;
-                        if (pointer?.Object is null)
-                            continue;
-
-                        var dummy = ((AbstractUePackage) package).ConstructObject(pointer.Class?.Object?.Value as UStruct, package);
-                        ResolvedAssetType = dummy?.ExportType;
-
-                        switch (dummy)
-                        {
-                            case UTexture when pointer.Object.Value is UTexture texture:
-                                {
-                                    AssetCategory = EAssetCategory.Texture;
-                                    if (TryApplyTextureFallbackIcon())
-                                        return;
-
-                                    var img = new CTexture[1];
-                                    int targetSize = 128;
-                                    var mip = texture.GetMipByMaxSize(targetSize);
-                                    img[0] = texture.Decode(mip, UserSettings.Default.CurrentDir.TexturePlatform);
-
-                                    using var ms = new MemoryStream();
-
-                                    if (img[0] == null)
-                                        break;
-
-                                    var bmp = img[0].ToSkBitmap();
-                                    byte[] imageData = bmp.Encode(SKEncodedImageFormat.Png, 100).ToArray();
-                                    ms.Position = 0;
-
-                                    using var stream = new MemoryStream(imageData);
-                                    var image = new BitmapImage();
-                                    image.BeginInit();
-                                    image.CacheOption = BitmapCacheOption.OnLoad;
-                                    image.StreamSource = stream;
-                                    image.EndInit();
-                                    image.Freeze();
-
-                                    Application.Current.Dispatcher.Invoke(() => PreviewImage = image);
-                                    return; // Let's display first found texture
-                                }
-                            case UDataAsset:
-                            case UDataTable:
-                                {
-                                    AssetCategory = EAssetCategory.Data;
-                                    Application.Current.Dispatcher.Invoke(() =>
-                                    {
-                                        IconGeometry = _datatableIcon;
-                                        IconColor = Brushes.White;
-                                    });
-                                    return;
-                                }
-                            case USoundCue:
-                            case USoundWave:
-                            case UAkMediaAssetData:
-                            case UAtomWaveBank:
-                            case USoundAtomCue:
-                            case UAtomCueSheet:
-                            case USoundAtomCueSheet:
-                            case UFMODBank:
-                            case UFMODEvent:
-                            case UAkAudioEvent:
-                                {
-                                    AssetCategory = EAssetCategory.Audio;
-                                    Application.Current.Dispatcher.Invoke(() =>
-                                    {
-                                        IconGeometry = _audioIcon;
-                                        IconColor = Brushes.White;
-                                    });
-                                    return;
-                                }
-                            case USkeleton:
-                                {
-                                    AssetCategory = EAssetCategory.Skeleton;
-                                    Application.Current.Dispatcher.Invoke(() =>
-                                    {
-                                        IconGeometry = _skeletonIcon;
-                                        IconColor = Brushes.White;
-                                    });
-                                    return;
-                                }
-                            case UStaticMesh:
-                            case USkeletalMesh:
-                                {
-                                    AssetCategory = EAssetCategory.Mesh;
-                                    Application.Current.Dispatcher.Invoke(() =>
-                                    {
-                                        IconGeometry = _meshIcon;
-                                        IconColor = Brushes.White;
-                                    });
-                                    return;
-                                }
-                            case UBlueprint:
-                            case UBlueprintGeneratedClass:
-                                {
-                                    AssetCategory = EAssetCategory.Blueprint;
-                                    Application.Current.Dispatcher.Invoke(() =>
-                                    {
-                                        IconGeometry = _blueprintIcon;
-                                        IconColor = Brushes.AliceBlue;
-                                    });
-                                    return;
-                                }
-                            case UMaterial:
-                            case UMaterialInstance:
-                                {
-                                    AssetCategory = EAssetCategory.Material;
-                                    Application.Current.Dispatcher.Invoke(() =>
-                                    {
-                                        IconGeometry = _materialIcon;
-                                        IconColor = Brushes.White;
-                                    });
-                                    return;
-                                }
-                            case UPhysicsAsset:
-                                {
-                                    AssetCategory = EAssetCategory.PhysicsAsset;
-                                    Application.Current.Dispatcher.Invoke(() =>
-                                    {
-                                        IconGeometry = _physicsIcon;
-                                        IconColor = Brushes.White;
-                                    });
-                                    return;
-                                }
-                            case UAnimSequence:
-                            case UAnimMontage:
-                            case UAnimSequenceBase:
-                                {
-                                    AssetCategory = EAssetCategory.Animation;
-                                    Application.Current.Dispatcher.Invoke(() =>
-                                    {
-                                        IconGeometry = _animationIcon;
-                                        IconColor = Brushes.White;
-                                    });
-                                    return;
-                                }
-                            case UFont:
-                            case UFontFace:
-                                {
-                                    AssetCategory = EAssetCategory.Font;
-                                    Application.Current.Dispatcher.Invoke(() =>
-                                    {
-                                        IconGeometry = _fontIcon;
-                                        IconColor = Brushes.White;
-                                    });
-                                    return;
-                                }
-                            case UFileMediaSource:
-                                {
-                                    AssetCategory = EAssetCategory.Video;
-                                    Application.Current.Dispatcher.Invoke(() =>
-                                    {
-                                        IconGeometry = _videoIcon;
-                                        IconColor = Brushes.Black;
-                                    });
-                                    return;
-                                }
-                            default:
-                                break;
-                        }
-                    }
-                });
+                ResolveCategoryAndLoadPreviewByExtension(Asset);
+                return;
             }
+
+            Task.Run(() =>
+            {
+                if (!_applicationView.CUE4Parse.Provider.TryLoadPackage(Asset, out var package))
+                    return;
+
+                var mainIndex = package.GetExportIndex(Asset.NameWithoutExtension);
+                if (mainIndex < 0) mainIndex = package.GetExportIndex($"{Asset.NameWithoutExtension}_C");
+                if (mainIndex < 0) mainIndex = 0;
+
+                var pointer = new FPackageIndex(package, mainIndex + 1).ResolvedObject;
+                if (pointer?.Object is null)
+                    return;
+
+                var dummy = ((AbstractUePackage) package).ConstructObject(pointer.Class?.Object?.Value as UStruct, package);
+                ResolvedAssetType = dummy.ExportType;
+
+                switch (dummy)
+                {
+                    case UTexture when pointer.Object.Value is UTexture texture:
+                    {
+                        AssetCategory = EAssetCategory.Texture;
+                        if (!UserSettings.Default.PreviewTexturesAssetExplorer)
+                            break;
+
+                        var img = new CTexture[1];
+                        const int targetSize = 128;
+                        var mip = texture.GetMipByMaxSize(targetSize);
+                        img[0] = texture.Decode(mip, UserSettings.Default.CurrentDir.TexturePlatform);
+
+                        using var ms = new MemoryStream();
+
+                        if (img[0] == null)
+                            break;
+
+                        var bmp = img[0].ToSkBitmap();
+                        byte[] imageData = bmp.Encode(SKEncodedImageFormat.Png, 100).ToArray();
+                        ms.Position = 0;
+
+                        using var stream = new MemoryStream(imageData);
+                        var image = new BitmapImage();
+                        image.BeginInit();
+                        image.CacheOption = BitmapCacheOption.OnLoad;
+                        image.StreamSource = stream;
+                        image.EndInit();
+                        image.Freeze();
+
+                        Application.Current.Dispatcher.InvokeAsync(() => PreviewImage = image);
+                        return; // Let's display first found texture
+                    }
+                    case UDataAsset:
+                    case UDataTable:
+                    {
+                        AssetCategory = EAssetCategory.Data;
+                        return;
+                    }
+                    case USoundCue:
+                    case USoundWave:
+                    case UAkMediaAssetData:
+                    case UAtomWaveBank:
+                    case USoundAtomCue:
+                    case UAtomCueSheet:
+                    case USoundAtomCueSheet:
+                    case UFMODBank:
+                    case UFMODEvent:
+                    case UAkAudioEvent:
+                    {
+                        AssetCategory = EAssetCategory.Audio;
+                        return;
+                    }
+                    case USkeleton:
+                    {
+                        AssetCategory = EAssetCategory.Skeleton;
+                        return;
+                    }
+                    case UStaticMesh:
+                    case USkeletalMesh:
+                    {
+                        AssetCategory = EAssetCategory.Mesh;
+                        return;
+                    }
+                    case UBlueprint:
+                    case UBlueprintGeneratedClass:
+                    {
+                        AssetCategory = EAssetCategory.Blueprint;
+                        return;
+                    }
+                    case UMaterial:
+                    case UMaterialInstance:
+                    {
+                        AssetCategory = EAssetCategory.Material;
+                        return;
+                    }
+                    case UPhysicsAsset:
+                    {
+                        AssetCategory = EAssetCategory.PhysicsAsset;
+                        return;
+                    }
+                    case UAnimSequence:
+                    case UAnimMontage:
+                    case UAnimSequenceBase:
+                    {
+                        AssetCategory = EAssetCategory.Animation;
+                        return;
+                    }
+                    case UFont:
+                    case UFontFace:
+                    {
+                        AssetCategory = EAssetCategory.Font;
+                        return;
+                    }
+                    case UFileMediaSource:
+                    {
+                        AssetCategory = EAssetCategory.Video;
+                        return;
+                    }
+                    case UWorld:
+                    {
+                        AssetCategory = EAssetCategory.Map;
+                        return;
+                    }
+                }
+            });
         }
         catch (Exception e)
         {
             Log.Error(e, "Failed to load preview for {Path}", Asset.Path);
         }
-
-        // Don't load default icon immediately because it will look clunky when async icon is being loaded
-        if (IconGeometry == null && PreviewImage == null)
-        {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                IconGeometry = _defaultIcon;
-            });
-        }
     }
 
-    private Task<bool> LoadPreviewByExtension(GameFile gameFile)
+    private void ResolveCategoryAndLoadPreviewByExtension(GameFile gameFile)
     {
-        return Application.Current.Dispatcher.InvokeAsync(() =>
+        switch (gameFile.Extension)
         {
-            switch (gameFile.Extension)
-            {
-                case "uplugin":
-                    AssetCategory = EAssetCategory.Data;
-                    IconGeometry = _pluginIcon;
-                    IconColor = Brushes.GreenYellow;
-                    return true;
-                case "ini":
-                    AssetCategory = EAssetCategory.Data;
-                    IconGeometry = _configIcon;
-                    IconColor = Brushes.LightGray;
-                    return true;
-                case "umap":
-                    AssetCategory = EAssetCategory.Map;
-                    IconGeometry = _mapIcon;
-                    IconColor = new SolidColorBrush(Color.FromRgb(244, 164, 96));
-                    return true;
-                case "wav":
-                case "bank":
-                case "bnk":
-                case "pck":
-                case "awb":
-                case "acb":
-                case "xvag":
-                case "flac":
-                case "at9":
-                case "wem":
-                case "ogg":
-                    AssetCategory = EAssetCategory.Audio;
-                    IconGeometry = _audioIcon;
-                    IconColor = Brushes.White;
-                    return true;
-                case "locmeta":
-                case "locres":
-                    AssetCategory = EAssetCategory.Data;
-                    IconGeometry = _localeIcon;
-                    IconColor = new SolidColorBrush(Color.FromRgb(82, 144, 245));
-                    return true;
-                case "ufont":
-                case "otf":
-                case "ttf":
-                    AssetCategory = EAssetCategory.Font;
-                    IconGeometry = _fontIcon;
-                    IconColor = Brushes.White;
-                    return true;
-                case "lua":
-                case "luac":
-                    AssetCategory = EAssetCategory.Data;
-                    IconGeometry = _luaIcon;
-                    IconColor = Brushes.White;
-                    return true;
-                case "json5":
-                case "json":
-                    AssetCategory = EAssetCategory.Data;
-                    IconGeometry = _jsonIcon;
-                    IconColor = Brushes.LightGreen;
-                    return true;
-                case "txt":
-                case "log":
-                case "pem":
-                    AssetCategory = EAssetCategory.Data;
-                    IconGeometry = _txtIcon;
-                    IconColor = Brushes.White;
-                    return true;
-                case "jpg":
-                case "png":
-                case "bmp":
-                    {
-                        AssetCategory = EAssetCategory.Texture;
-                        if (TryApplyTextureFallbackIcon())
-                            return true;
+            case "uplugin":
+            case "ini":
+            case "locmeta":
+            case "locres":
+            case "lua":
+            case "luac":
+            case "json5":
+            case "json":
+            case "txt":
+            case "log":
+            case "pem":
+                AssetCategory = EAssetCategory.Data;
+                break;
+            case "wav":
+            case "bank":
+            case "bnk":
+            case "pck":
+            case "awb":
+            case "acb":
+            case "xvag":
+            case "flac":
+            case "at9":
+            case "wem":
+            case "ogg":
+                AssetCategory = EAssetCategory.Audio;
+                break;
+            case "ufont":
+            case "otf":
+            case "ttf":
+                AssetCategory = EAssetCategory.Font;
+                break;
+            case "mp4":
+                AssetCategory = EAssetCategory.Video;
+                break;
+            case "jpg":
+            case "png":
+            case "bmp":
+                {
+                    AssetCategory = EAssetCategory.Texture;
+                    if (!UserSettings.Default.PreviewTexturesAssetExplorer)
+                        break;
 
+                    Task.Run(() =>
+                    {
                         var data = _applicationView.CUE4Parse.Provider.SaveAsset(gameFile);
                         using var stream = new MemoryStream(data) { Position = 0 };
                         var bitmap = SKBitmap.Decode(stream);
+                        if (bitmap == null) return;
 
-                        if (bitmap != null)
-                        {
-                            using var image = bitmap.Encode(gameFile.Extension == "jpg" ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
-                            using var ms = new MemoryStream(image.ToArray());
+                        using var image = bitmap.Encode(gameFile.Extension == "jpg" ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
+                        using var ms = new MemoryStream(image.ToArray());
 
-                            var bmpImage = new BitmapImage();
-                            bmpImage.BeginInit();
-                            bmpImage.CacheOption = BitmapCacheOption.OnLoad;
-                            bmpImage.StreamSource = ms;
-                            bmpImage.EndInit();
-                            bmpImage.Freeze();
+                        var bmpImage = new BitmapImage();
+                        bmpImage.BeginInit();
+                        bmpImage.CacheOption = BitmapCacheOption.OnLoad;
+                        bmpImage.StreamSource = ms;
+                        bmpImage.EndInit();
+                        bmpImage.Freeze();
 
-                            PreviewImage = bmpImage;
-                            return true;
-                        }
-                        return false;
-                    }
-                case "svg":
+                        Application.Current.Dispatcher.InvokeAsync(() => PreviewImage = bmpImage);
+                    });
+
+                    break;
+                }
+            case "svg":
+                {
+                    AssetCategory = EAssetCategory.Texture;
+                    if (!UserSettings.Default.PreviewTexturesAssetExplorer)
+                        break;
+
+                    Task.Run(() =>
                     {
-                        AssetCategory = EAssetCategory.Texture;
-                        if (TryApplyTextureFallbackIcon())
-                            return true;
-
                         var data = _applicationView.CUE4Parse.Provider.SaveAsset(gameFile);
                         using var stream = new MemoryStream(data) { Position = 0 };
                         var svg = new SKSvg();
                         svg.Load(stream);
+                        if (svg.Picture == null) return;
 
-                        int size = 128;
+                        const int size = 128;
                         var bitmap = new SKBitmap(size, size);
                         using var canvas = new SKCanvas(bitmap);
                         canvas.Clear(SKColors.Transparent);
-
-                        if (svg.Picture == null)
-                            return false;
 
                         var bounds = svg.Picture.CullRect;
                         float scale = Math.Min(size / bounds.Width, size / bounds.Height);
@@ -434,40 +315,22 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                         bmpImage.EndInit();
                         bmpImage.Freeze();
 
-                        PreviewImage = bmpImage;
-                        return true;
-                    }
-                case "mp4":
-                    AssetCategory = EAssetCategory.Video;
-                    IconGeometry = _videoIcon;
-                    IconColor = Brushes.Black;
-                    return true;
-                default:
-                    return false;
-            }
-        }).Task;
-    }
+                        Application.Current.Dispatcher.InvokeAsync(() => PreviewImage = bmpImage);
+                    });
 
-    private bool TryApplyTextureFallbackIcon()
-    {
-        if (UserSettings.Default.PreviewTexturesAssetExplorer)
-            return false;
-
-        Application.Current.Dispatcher.Invoke(() =>
-        {
-            IconGeometry = _textureIcon;
-            IconColor = new SolidColorBrush(Color.FromRgb(201, 125, 239));
-        });
-
-        return true;
+                    break;
+                }
+        }
     }
 
     private CancellationTokenSource _previewCts;
+    private bool _once = false;
     public void OnVisibleChanged(bool isVisible)
     {
-        if (!isVisible || PreviewImage != null)
+        if (_once || !isVisible)
             return;
 
+        _once = true;
         _previewCts?.Cancel();
         _previewCts = new CancellationTokenSource();
         var token = _previewCts.Token;
@@ -476,7 +339,13 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             .ContinueWith(t =>
             {
                 if (!t.IsCanceled)
-                    LoadPreviewAsync();
+                {
+                    ResolveCategoryAndLoadPreview();
+                    if (!UserSettings.Default.PreviewTexturesAssetExplorer)
+                    {
+                        _once = false; // Allow retrying if previews are disabled
+                    }
+                }
             }, TaskScheduler.FromCurrentSynchronizationContext());
     }
 }

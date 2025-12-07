@@ -52,7 +52,7 @@ public partial class SearchView
         while (!folder.IsSelected || MainWindow.YesWeCats.AssetsFolderName.SelectedItem != folder)
             await Task.Delay(50); // stops assets tab from opening too early
 
-        MainWindow.YesWeCats.LeftTabControl.SelectedIndex = 2; // assets tab
+        ApplicationService.ApplicationView.SelectedLeftTabIndex = 2; // assets tab
         do
         {
             await Task.Delay(100);

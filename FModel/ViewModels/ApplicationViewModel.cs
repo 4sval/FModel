@@ -49,7 +49,24 @@ public class ApplicationViewModel : ViewModel
     public bool IsAssetsExplorerVisible
     {
         get => _isAssetsExplorerVisible;
-        set => SetProperty(ref _isAssetsExplorerVisible, value);
+        set
+        {
+            if (SetProperty(ref _isAssetsExplorerVisible, value))
+            {
+                // SelectedLeftTabIndex = value ? 1 : 2;
+            }
+        }
+    }
+
+    private int _selectedLeftTabIndex;
+    public int SelectedLeftTabIndex
+    {
+        get => _selectedLeftTabIndex;
+        set
+        {
+            if (value is < 0 or > 2) return;
+            SetProperty(ref _selectedLeftTabIndex, value);
+        }
     }
 
     public RightClickMenuCommand RightClickMenuCommand => _rightClickMenuCommand ??= new RightClickMenuCommand(this);

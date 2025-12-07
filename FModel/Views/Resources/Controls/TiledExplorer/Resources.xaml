@@ -9,12 +9,14 @@
                     x:Class="FModel.Views.Resources.Controls.TiledExplorer.ResourcesDictionary">
 
     <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="../ContextMenus/FileContextMenu.xaml"/>
         <ResourceDictionary Source="../ContextMenus/FolderContextMenu.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
     <controls:TypeDataTemplateSelector x:Key="TemplateSelector" />
 
     <Style x:Key="TiledExplorer" TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
+        <Setter Property="ContextMenu" Value="{StaticResource FileContextMenu}" />
         <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
         <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
         <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
@@ -110,12 +112,12 @@
         </Setter>
     </Style>
 
-    <DataTemplate x:Key="TiledFolderDataTemplate" DataType="{x:Type vm:TreeItem}">
-        <local:FolderButton ContextMenu="{StaticResource FolderContextMenu}" />
-    </DataTemplate>
-
     <DataTemplate x:Key="TiledFileDataTemplate" DataType="{x:Type vm:GameFileViewModel}">
         <local:GameFileButton />
+    </DataTemplate>
+
+    <DataTemplate x:Key="TiledFolderDataTemplate" DataType="{x:Type vm:TreeItem}">
+        <local:FolderButton ContextMenu="{StaticResource FolderContextMenu}" />
     </DataTemplate>
 
 </ResourceDictionary>

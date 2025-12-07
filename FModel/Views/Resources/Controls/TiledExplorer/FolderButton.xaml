@@ -8,31 +8,31 @@
              xmlns:vm="clr-namespace:FModel.ViewModels"
              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
              Width="128" Height="128">
-    <StackPanel Orientation="Vertical"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
-        <Grid Width="64"
-              Height="64">
-            <Path Data="{Binding Header, Converter={x:Static converters:FolderNameToIconConverter.Instance}}"
-                  Stretch="Uniform"
-                  Fill="#fcbf95"
-                  Effect="{DynamicResource ShadowEffect}" />
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="96" />
+            <RowDefinition Height="2" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Path Data="{Binding Header, Converter={x:Static converters:FolderToGeometryConverter.Instance}}"
+                  Stretch="Uniform" Width="64" Height="64"
+                  Fill="#fcbf95" />
             <Border Width="16"
                     Height="16"
                     Background="#624b39"
                     CornerRadius="12"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
-                    Margin="0, 0, -10, 0">
+                    Margin="0  0 25 20">
                 <Border.Style>
                     <Style TargetType="Border">
                         <Setter Property="Visibility"
                                 Value="Visible" />
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding AssetsList.Assets.Count}"
-                                         Value="0">
-                                <Setter Property="Visibility"
-                                        Value="Collapsed" />
+                            <DataTrigger Binding="{Binding AssetsList.Assets.Count}" Value="0">
+                                <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -46,11 +46,12 @@
                            TextAlignment="Center" />
             </Border>
         </Grid>
-        <TextBlock Text="{Binding Header}"
+
+        <TextBlock Grid.Row="2" Text="{Binding Header}"
                    HorizontalAlignment="Center"
                    Margin="0,6,0,0"
                    FontSize="10"
                    TextTrimming="CharacterEllipsis" />
-    </StackPanel>
+    </Grid>
 </UserControl>
 

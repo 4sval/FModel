@@ -37,8 +37,12 @@ public class TreeItem : ViewModel
         set
         {
             if (SetProperty(ref _isSelected, value))
+            {
                 for (var parent = Parent; parent != null; parent = parent.Parent)
+                {
                     parent.IsExpanded = true;
+                }
+            }
         }
     }
 

@@ -55,7 +55,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
 #endif
         _applicationView.CUE4Parse.AssetsFolder.Folders.Clear();
         _applicationView.CUE4Parse.SearchVm.SearchResults.Clear();
-        MainWindow.YesWeCats.LeftTabControl.SelectedIndex = 1; // folders tab
+        _applicationView.SelectedLeftTabIndex = 1; // folders tab
         Helper.CloseWindow<AdonisWindow>("Search View"); // close search window if opened
 
         await Task.WhenAll(

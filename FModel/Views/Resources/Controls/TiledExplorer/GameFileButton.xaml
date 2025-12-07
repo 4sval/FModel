@@ -6,40 +6,48 @@
              mc:Ignorable="d" d:DesignHeight="128" d:DesignWidth="128"
              d:DataContext="{d:DesignInstance Type=vm:GameFileViewModel, IsDesignTimeCreatable=False}"
              xmlns:vm="clr-namespace:FModel.ViewModels"
+             xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
              Width="128" Height="128">
-    <StackPanel Orientation="Vertical"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
-        <Grid Width="96"
-              Height="96">
-            <Image Source="{Binding PreviewImage}"
-                   Stretch="Uniform" />
-            <Path Width="64"
-                  Height="64"
-                  Stretch="Uniform"
-                  Data="{Binding IconGeometry}"
-                  Fill="{Binding IconColor}"
-                  Effect="{DynamicResource ShadowEffect}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="96" />
+            <RowDefinition Height="2" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Image Source="{Binding PreviewImage}" Stretch="Uniform" />
+            <Path Width="64" Height="64" Stretch="Uniform">
                 <Path.Style>
                     <Style TargetType="Path">
-                        <Setter Property="Visibility"
-                                Value="Collapsed" />
+                        <Setter Property="Visibility" Value="Collapsed" />
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding PreviewImage}"
-                                         Value="{x:Null}">
-                                <Setter Property="Visibility"
-                                        Value="Visible" />
+                            <DataTrigger Binding="{Binding PreviewImage}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Visible" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Path.Style>
+                <Path.Data>
+                    <MultiBinding Converter="{x:Static converters:FileToGeometryConverter.Instance}">
+                        <Binding Path="AssetCategory" />
+                        <Binding Path="ResolvedAssetType" />
+                    </MultiBinding>
+                </Path.Data>
+                <Path.Fill>
+                    <MultiBinding Converter="{x:Static converters:FileToGeometryConverter.Instance}">
+                        <Binding Path="AssetCategory" />
+                        <Binding Path="ResolvedAssetType" />
+                    </MultiBinding>
+                </Path.Fill>
             </Path>
         </Grid>
-        <TextBlock Text="{Binding Asset.NameWithoutExtension}"
+
+        <TextBlock Grid.Row="2" Text="{Binding Asset.NameWithoutExtension}"
                    HorizontalAlignment="Center"
                    Margin="6"
                    FontSize="10"
                    TextTrimming="CharacterEllipsis" />
-    </StackPanel>
+    </Grid>
 </UserControl>
 

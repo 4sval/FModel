@@ -5,6 +5,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using FModel.Extensions;
+using FModel.Services;
 using FModel.ViewModels;
 
 namespace FModel.Views.Resources.Controls.TiledExplorer;
@@ -16,14 +17,14 @@ public partial class ResourcesDictionary
         InitializeComponent();
     }
 
-    private async void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+    private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
         if (sender is not ListBoxItem { DataContext: GameFileViewModel file })
             return;
 
-        MainWindow.YesWeCats.LeftTabControl.SelectedIndex = 2;
+        ApplicationService.ApplicationView.SelectedLeftTabIndex = 2;
 
-        await file.ExtractAsync();
+        file.ExtractAsync();
 
         // TODO: auto scroll on item selection just like folder view
         // AssetsListName.ScrollIntoView(file.Asset);
@@ -66,8 +67,7 @@ public partial class ResourcesDictionary
                     fileInfoText.Inlines.Clear();
                     fileInfoText.Inlines.Add(new Run(file.Asset.Name) { FontWeight = FontWeights.Bold });
                     fileInfoText.Inlines.Add(new LineBreak());
-                    var assetType = !string.IsNullOrEmpty(file.ResolvedAssetType) ? file.ResolvedAssetType : file.Asset.Extension;
-                    fileInfoText.Inlines.Add(new Run($"Type: {assetType}") { Foreground = Brushes.LightGray });
+                    fileInfoText.Inlines.Add(new Run($"Type: {file.ResolvedAssetType}") { Foreground = Brushes.LightGray });
                     fileInfoText.Inlines.Add(new LineBreak());
                     fileInfoText.Inlines.Add(new Run($"Size: {StringExtensions.GetReadableSize(file.Asset.Size)}") { Foreground = Brushes.LightGray });
                     break;

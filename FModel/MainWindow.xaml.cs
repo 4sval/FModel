@@ -121,10 +121,10 @@ public partial class MainWindow
             _applicationView.CUE4Parse.TabControl.GoLeftTab();
         else if (UserSettings.Default.AssetRightTab.IsTriggered(e.Key))
             _applicationView.CUE4Parse.TabControl.GoRightTab();
-        else if (UserSettings.Default.DirLeftTab.IsTriggered(e.Key) && LeftTabControl.SelectedIndex > 0)
-            LeftTabControl.SelectedIndex--;
-        else if (UserSettings.Default.DirRightTab.IsTriggered(e.Key) && LeftTabControl.SelectedIndex < LeftTabControl.Items.Count - 1)
-            LeftTabControl.SelectedIndex++;
+        else if (UserSettings.Default.DirLeftTab.IsTriggered(e.Key) && _applicationView.SelectedLeftTabIndex > 0)
+            _applicationView.SelectedLeftTabIndex--;
+        else if (UserSettings.Default.DirRightTab.IsTriggered(e.Key) && _applicationView.SelectedLeftTabIndex < LeftTabControl.Items.Count - 1)
+            _applicationView.SelectedLeftTabIndex++;
     }
 
     private void OnSearchViewClick(object sender, RoutedEventArgs e)
@@ -156,7 +156,7 @@ public partial class MainWindow
     {
         if (sender is not TreeView { SelectedItem: TreeItem treeItem } || treeItem.Folders.Count > 0) return;
 
-        LeftTabControl.SelectedIndex++;
+        _applicationView.SelectedLeftTabIndex++;
     }
 
     private void OnAssetsTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
@@ -166,7 +166,7 @@ public partial class MainWindow
             popup.IsOpen = false;
 
         _applicationView.IsAssetsExplorerVisible = true;
-        LeftTabControl.SelectedIndex = 1;
+        _applicationView.SelectedLeftTabIndex = 1;
     }
 
     private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
