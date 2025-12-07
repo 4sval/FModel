@@ -28,6 +28,17 @@
                     <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                 </MultiBinding>
             </MenuItem.CommandParameter>
+            <MenuItem.IsEnabled>
+                <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
+                    <Binding.Converter>
+                        <converters:AnyItemMeetsConditionConverter>
+                            <converters:AnyItemMeetsConditionConverter.Condition>
+                                <converters:ItemIsUePackageCondition />
+                            </converters:AnyItemMeetsConditionConverter.Condition>
+                        </converters:AnyItemMeetsConditionConverter>
+                    </Binding.Converter>
+                </Binding>
+            </MenuItem.IsEnabled>
             <MenuItem.Icon>
                 <Viewbox Width="16" Height="16">
                     <Canvas Width="24" Height="24">
@@ -44,6 +55,17 @@
                     <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                 </MultiBinding>
             </MenuItem.CommandParameter>
+            <MenuItem.IsEnabled>
+                <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
+                    <Binding.Converter>
+                        <converters:AnyItemMeetsConditionConverter>
+                            <converters:AnyItemMeetsConditionConverter.Condition>
+                                <converters:ItemCategoryCondition Category="Blueprint" />
+                            </converters:AnyItemMeetsConditionConverter.Condition>
+                        </converters:AnyItemMeetsConditionConverter>
+                    </Binding.Converter>
+                </Binding>
+            </MenuItem.IsEnabled>
             <MenuItem.Icon>
                 <Viewbox Width="16" Height="16">
                     <Canvas Width="24" Height="24">
@@ -106,6 +128,17 @@
                     <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                 </MultiBinding>
             </MenuItem.CommandParameter>
+            <MenuItem.IsEnabled>
+                <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
+                    <Binding.Converter>
+                        <converters:AnyItemMeetsConditionConverter>
+                            <converters:AnyItemMeetsConditionConverter.Condition>
+                                <converters:ItemCategoryCondition Category="Texture" />
+                            </converters:AnyItemMeetsConditionConverter.Condition>
+                        </converters:AnyItemMeetsConditionConverter>
+                    </Binding.Converter>
+                </Binding>
+            </MenuItem.IsEnabled>
             <MenuItem.Icon>
                 <Viewbox Width="16" Height="16">
                     <Canvas Width="24" Height="24">
@@ -121,6 +154,17 @@
                     <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                 </MultiBinding>
             </MenuItem.CommandParameter>
+            <MenuItem.IsEnabled>
+                <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
+                    <Binding.Converter>
+                        <converters:AnyItemMeetsConditionConverter>
+                            <converters:AnyItemMeetsConditionConverter.Condition>
+                                <converters:ItemCategoryCondition Category="Mesh" />
+                            </converters:AnyItemMeetsConditionConverter.Condition>
+                        </converters:AnyItemMeetsConditionConverter>
+                    </Binding.Converter>
+                </Binding>
+            </MenuItem.IsEnabled>
             <MenuItem.Icon>
                 <Viewbox Width="16" Height="16">
                     <Canvas Width="24" Height="24">
@@ -136,6 +180,17 @@
                     <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                 </MultiBinding>
             </MenuItem.CommandParameter>
+            <MenuItem.IsEnabled>
+                <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
+                    <Binding.Converter>
+                        <converters:AnyItemMeetsConditionConverter>
+                            <converters:AnyItemMeetsConditionConverter.Condition>
+                                <converters:ItemCategoryCondition Category="Animation" />
+                            </converters:AnyItemMeetsConditionConverter.Condition>
+                        </converters:AnyItemMeetsConditionConverter>
+                    </Binding.Converter>
+                </Binding>
+            </MenuItem.IsEnabled>
             <MenuItem.Icon>
                 <Viewbox Width="16" Height="16">
                     <Canvas Width="24" Height="24">
@@ -151,6 +206,17 @@
                     <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                 </MultiBinding>
             </MenuItem.CommandParameter>
+            <MenuItem.IsEnabled>
+                <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
+                    <Binding.Converter>
+                        <converters:AnyItemMeetsConditionConverter>
+                            <converters:AnyItemMeetsConditionConverter.Condition>
+                                <converters:ItemCategoryCondition Category="Audio" />
+                            </converters:AnyItemMeetsConditionConverter.Condition>
+                        </converters:AnyItemMeetsConditionConverter>
+                    </Binding.Converter>
+                </Binding>
+            </MenuItem.IsEnabled>
             <MenuItem.Icon>
                 <Viewbox Width="16" Height="16">
                     <Canvas Width="24" Height="24">

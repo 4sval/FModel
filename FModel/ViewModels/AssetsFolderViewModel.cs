@@ -16,11 +16,11 @@ namespace FModel.ViewModels;
 
 public class TreeItem : ViewModel
 {
-    private string _header;
+    private readonly string _header;
     public string Header
     {
         get => _header;
-        private set => SetProperty(ref _header, value);
+        private init => SetProperty(ref _header, value);
     }
 
     private bool _isExpanded;

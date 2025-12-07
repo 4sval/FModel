@@ -25,7 +25,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         IEnumerable<GameFile> entries = parameters[1] switch
         {
             GameFileViewModel gvm => [gvm.Asset],
-            IEnumerable ie => ie.Cast<object>().OfType<GameFileViewModel>().Select(gvm => gvm.Asset),
+            IEnumerable ie => ie.OfType<GameFileViewModel>().Select(gvm => gvm.Asset),
             _ => []
         };
 

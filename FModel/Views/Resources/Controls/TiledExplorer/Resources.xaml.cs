@@ -32,7 +32,15 @@ public partial class ResourcesDictionary
                 break;
             case TreeItem folder:
                 ApplicationService.ApplicationView.SelectedLeftTabIndex = 1;
-                folder.IsSelected = true;
+
+                // Auto expand single child folders
+                var childFolder = folder;
+                while (childFolder.Folders.Count == 1 && childFolder.AssetsList.Assets.Count == 0)
+                {
+                    childFolder.IsExpanded = true;
+                    childFolder = childFolder.Folders[0];
+                }
+                childFolder.IsSelected = true;
                 break;
         }
 
