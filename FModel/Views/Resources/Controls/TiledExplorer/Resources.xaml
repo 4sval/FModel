@@ -27,7 +27,7 @@
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
                 <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    <!-- <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" /> -->
                     <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="8" />
                     <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
                     <Setter Property="Margin" Value="5" />

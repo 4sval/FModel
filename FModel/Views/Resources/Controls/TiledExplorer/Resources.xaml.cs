@@ -19,15 +19,24 @@ public partial class ResourcesDictionary
 
     private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
-        if (sender is not ListBoxItem { DataContext: GameFileViewModel file })
+        if (sender is not ListBoxItem item)
             return;
 
-        ApplicationService.ApplicationView.SelectedLeftTabIndex = 2;
+        switch (item.DataContext)
+        {
+            case GameFileViewModel file:
+                ApplicationService.ApplicationView.SelectedLeftTabIndex = 2;
+                // file.IsSelected = true;
+                file.ExtractAsync();
+                // TODO: auto scroll on item selection just like folder view
+                // AssetsListName.ScrollIntoView(file.Asset);
+                break;
+            case TreeItem folder:
+                ApplicationService.ApplicationView.SelectedLeftTabIndex = 1;
+                folder.IsSelected = true;
+                break;
+        }
 
-        file.ExtractAsync();
-
-        // TODO: auto scroll on item selection just like folder view
-        // AssetsListName.ScrollIntoView(file.Asset);
     }
 
     private void OnMouseMove(object sender, MouseEventArgs e)
