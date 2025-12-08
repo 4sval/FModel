@@ -33,7 +33,6 @@ public partial class Breadcrumb
                 CornerRadius = new CornerRadius(4),
                 Padding = new Thickness(6, 2, 6, 2),
                 Margin = new Thickness(0, 0, 4, 0),
-                Cursor = Cursors.Hand,
                 Tag = i + 1
             };
 
@@ -45,13 +44,18 @@ public partial class Breadcrumb
             };
 
             folderBorder.Child = folderText;
-            folderBorder.MouseEnter += (_, _) =>
+
+            if (i != folders.Length - 1)
             {
-                if (i != folders.Length - 1)
-                    folderBorder.Background = new SolidColorBrush(Color.FromArgb(30, 255, 255, 255));
-            };
-            folderBorder.MouseLeave += (_, _) => folderBorder.Background = Brushes.Transparent;
-            folderBorder.MouseUp += OnFolderClick;
+                folderBorder.Cursor = Cursors.Hand;
+                folderBorder.MouseEnter += (_, _) =>
+                {
+                    if (i != folders.Length - 1)
+                        folderBorder.Background = new SolidColorBrush(Color.FromArgb(30, 255, 255, 255));
+                };
+                folderBorder.MouseLeave += (_, _) => folderBorder.Background = Brushes.Transparent;
+                folderBorder.MouseUp += OnFolderClick;
+            }
 
             InMeDaddy.Children.Add(folderBorder);
 
