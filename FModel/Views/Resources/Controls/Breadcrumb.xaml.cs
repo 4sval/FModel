@@ -50,8 +50,7 @@ public partial class Breadcrumb
                 folderBorder.Cursor = Cursors.Hand;
                 folderBorder.MouseEnter += (_, _) =>
                 {
-                    if (i != folders.Length - 1)
-                        folderBorder.Background = new SolidColorBrush(Color.FromArgb(30, 255, 255, 255));
+                    folderBorder.Background = new SolidColorBrush(Color.FromArgb(30, 255, 255, 255));
                 };
                 folderBorder.MouseLeave += (_, _) => folderBorder.Background = Brushes.Transparent;
                 folderBorder.MouseUp += OnFolderClick;
