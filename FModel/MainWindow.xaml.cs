@@ -30,6 +30,21 @@ public partial class MainWindow
     {
         CommandBindings.Add(new CommandBinding(new RoutedCommand("ReloadMappings", typeof(MainWindow), new InputGestureCollection { new KeyGesture(Key.F12) }), OnMappingsReload));
         CommandBindings.Add(new CommandBinding(ApplicationCommands.Find, (_, _) => OnOpenAvalonFinder()));
+        CommandBindings.Add(new CommandBinding(NavigationCommands.BrowseBack, (_, _) =>
+        {
+            if (!_applicationView.IsAssetsExplorerVisible)
+            {
+                // back browsing the json view will reopen the assets explorer
+                _applicationView.IsAssetsExplorerVisible = true;
+                return;
+            }
+
+            if (AssetsFolderName.SelectedItem is not TreeItem { Parent: { } parent })
+                return;
+
+            // back browsing the assets tree will select the parent folder
+            parent.IsSelected = true;
+        }));
 
         DataContext = _applicationView;
         InitializeComponent();

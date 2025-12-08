@@ -7,7 +7,8 @@
              d:DataContext="{d:DesignInstance Type=vm:TreeItem, IsDesignTimeCreatable=False}"
              xmlns:vm="clr-namespace:FModel.ViewModels"
              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
-             Width="128" Height="128">
+             Width="128" Height="128"
+             Background="Transparent">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="96" />

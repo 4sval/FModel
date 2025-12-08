@@ -3,6 +3,7 @@ using System.Collections;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Data;
+using FModel.Extensions;
 using FModel.ViewModels;
 
 namespace FModel.Views.Resources.Converters;
@@ -36,7 +37,7 @@ public class ItemCategoryCondition : IItemCondition
 
     public bool Matches(GameFileViewModel item)
     {
-        return item != null && item.AssetCategory == Category;
+        return item != null && item.AssetCategory.IsOfCategory(Category);
     }
 }
 

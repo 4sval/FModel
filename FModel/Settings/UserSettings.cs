@@ -196,13 +196,6 @@ namespace FModel.Settings
             set => SetProperty(ref _keepDirectoryStructure, value);
         }
 
-        private bool _previewTexturesAssetExplorer = true;
-        public bool PreviewTexturesAssetExplorer
-        {
-            get => _previewTexturesAssetExplorer;
-            set => SetProperty(ref _previewTexturesAssetExplorer, value);
-        }
-
         private bool _showDecompileOption = false;
         public bool ShowDecompileOption
         {
@@ -524,11 +517,11 @@ namespace FModel.Settings
             set => SetProperty(ref _saveHdrTexturesAsHdr, value);
         }
 
-        private bool _previewNewExplorerSystem = true;
-        public bool PreviewNewExplorerSystem
+        private bool _previewTexturesAssetExplorer = true;
+        public bool PreviewTexturesAssetExplorer
         {
-            get => _previewNewExplorerSystem;
-            set => SetProperty(ref _previewNewExplorerSystem, value);
+            get => _previewTexturesAssetExplorer;
+            set => SetProperty(ref _previewTexturesAssetExplorer, value);
         }
     }
 }

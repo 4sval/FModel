@@ -157,9 +157,13 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                         return;
                     }
                     case UStaticMesh:
+                    {
+                        AssetCategory = EAssetCategory.StaticMesh;
+                        return;
+                    }
                     case USkeletalMesh:
                     {
-                        AssetCategory = EAssetCategory.Mesh;
+                        AssetCategory = EAssetCategory.SkeletalMesh;
                         return;
                     }
                     case UBlueprint:

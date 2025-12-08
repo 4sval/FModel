@@ -20,7 +20,8 @@ public class FileToGeometryConverter : IMultiValueConverter
             var resource = category switch
             {
                 EAssetCategory.Texture => "TextureIconAlt",
-                EAssetCategory.Mesh => "MeshIconAlt",
+                EAssetCategory.StaticMesh => "StaticMeshIconAlt",
+                EAssetCategory.SkeletalMesh => "SkeletalMeshIconAlt",
                 EAssetCategory.Skeleton => "SkeletonIcon",
                 EAssetCategory.Material => "MaterialIcon",
                 EAssetCategory.Blueprint => "BlueprintIcon",

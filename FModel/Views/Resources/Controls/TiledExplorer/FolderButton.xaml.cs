@@ -8,6 +8,4 @@ public partial class FolderButton : UserControl
     {
         InitializeComponent();
     }
-
-
 }

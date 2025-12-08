@@ -11,6 +11,7 @@ using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.VirtualFileSystem;
+using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -43,7 +44,7 @@ public class ApplicationViewModel : ViewModel
         private init => SetProperty(ref _status, value);
     }
 
-    public IEnumerable<EAssetCategory> Categories { get; } = Enum.GetValues(typeof(EAssetCategory)).Cast<EAssetCategory>();
+    public IEnumerable<EAssetCategory> Categories { get; } = AssetCategoryExtensions.GetBaseCategories();
 
     private bool _isAssetsExplorerVisible;
     public bool IsAssetsExplorerVisible

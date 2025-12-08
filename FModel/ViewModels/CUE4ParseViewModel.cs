@@ -1184,6 +1184,8 @@ public class CUE4ParseViewModel : ViewModel
 
     public void ShowMetadata(GameFile entry)
     {
+        ApplicationService.ApplicationView.IsAssetsExplorerVisible = false;
+
         var package = Provider.LoadPackage(entry);
 
         if (TabControl.CanAddTabs) TabControl.AddTab(entry);
@@ -1197,6 +1199,8 @@ public class CUE4ParseViewModel : ViewModel
 
     public void Decompile(GameFile entry)
     {
+        ApplicationService.ApplicationView.IsAssetsExplorerVisible = false;
+
         if (TabControl.CanAddTabs) TabControl.AddTab(entry);
         else TabControl.SelectedTab.SoftReset(entry);
 

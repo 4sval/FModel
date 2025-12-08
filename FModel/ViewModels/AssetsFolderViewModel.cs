@@ -4,11 +4,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.VirtualFileSystem;
+using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 
@@ -34,16 +34,7 @@ public class TreeItem : ViewModel
     public bool IsSelected
     {
         get => _isSelected;
-        set
-        {
-            if (SetProperty(ref _isSelected, value))
-            {
-                for (var parent = Parent; parent != null; parent = parent.Parent)
-                {
-                    parent.IsExpanded = true;
-                }
-            }
-        }
+        set => SetProperty(ref _isSelected, value);
     }
 
     private string _archive;
@@ -67,7 +58,7 @@ public class TreeItem : ViewModel
         private set => SetProperty(ref _version, value);
     }
 
-    private Visibility _searchBarVisibility = Visibility.Collapsed;
+    private Visibility _searchBarVisibility = Visibility.Visible;
     public Visibility SearchBarVisibility
     {
         get => _searchBarVisibility;
@@ -97,11 +88,64 @@ public class TreeItem : ViewModel
     }
 
     public string PathAtThisPoint { get; }
-    public AssetsListViewModel AssetsList { get; }
-    public RangeObservableCollection<TreeItem> Folders { get; }
-    public ICollectionView FoldersView { get; }
-    public ICollectionView FilteredFoldersView { get; }
-    public CompositeCollection CombinedEntries { get; } = [];
+    public AssetsListViewModel AssetsList { get; } = new();
+    public RangeObservableCollection<TreeItem> Folders { get; } = [];
+
+    private ICollectionView _foldersView;
+    public ICollectionView FoldersView
+    {
+        get
+        {
+            _foldersView ??= new ListCollectionView(Folders)
+            {
+                SortDescriptions = { new SortDescription(nameof(Header), ListSortDirection.Ascending) }
+            };
+            return _foldersView;
+        }
+    }
+
+    private ICollectionView _filteredFoldersView;
+    public ICollectionView FilteredFoldersView
+    {
+        get
+        {
+            _filteredFoldersView ??= new ListCollectionView(Folders)
+            {
+                SortDescriptions = { new SortDescription(nameof(Header), ListSortDirection.Ascending) }
+            };
+            return _filteredFoldersView;
+        }
+    }
+
+    private CompositeCollection _combinedEntries;
+    public CompositeCollection CombinedEntries
+    {
+        get
+        {
+            if (_combinedEntries == null)
+            {
+                void CreateCombinedEntries()
+                {
+                    _combinedEntries = new CompositeCollection
+                    {
+                        new CollectionContainer { Collection = FilteredFoldersView },
+                        new CollectionContainer { Collection = AssetsList.AssetsView }
+                    };
+                }
+
+                if (!Application.Current.Dispatcher.CheckAccess())
+                {
+                    Application.Current.Dispatcher.Invoke(CreateCombinedEntries);
+                }
+                else
+                {
+                    CreateCombinedEntries();
+                }
+            }
+            return _combinedEntries;
+        }
+    }
+
     public TreeItem Parent { get; init; }
 
     public TreeItem(string header, GameFile entry, string pathHere)
@@ -114,17 +158,6 @@ public class TreeItem : ViewModel
             Version = vfsEntry.Vfs.Ver;
         }
         PathAtThisPoint = pathHere;
-        AssetsList = new AssetsListViewModel();
-        Folders = [];
-        FoldersView = new ListCollectionView(Folders) { SortDescriptions = { new SortDescription(nameof(Header), ListSortDirection.Ascending) } };
-        // Separate folders view for combined entries because I don't want to filter folders tree
-        FilteredFoldersView = new ListCollectionView(Folders) { SortDescriptions = { new SortDescription(nameof(Header), ListSortDirection.Ascending) } };
-        CombinedEntries =
-        [
-            new CollectionContainer { Collection = FilteredFoldersView },
-            new CollectionContainer { Collection = AssetsList.AssetsView }
-        ];
-        SearchBarVisibility = Visibility.Visible;
     }
 
     private void ApplyFilters(string filterText)
@@ -139,22 +172,26 @@ public class TreeItem : ViewModel
                 return false;
 
             bool matchesSearch = filters.Length == 0 || filters.All(x => entry.Asset.Name.Contains(x, StringComparison.OrdinalIgnoreCase));
-            bool matchesCategory = SelectedCategory == EAssetCategory.All || entry.AssetCategory == SelectedCategory;
+            bool matchesCategory = SelectedCategory == EAssetCategory.All || entry.AssetCategory.IsOfCategory(SelectedCategory);
 
             return matchesSearch && matchesCategory;
         };
         AssetsList.AssetsView.Refresh();
 
-        FilteredFoldersView.Filter = o =>
+        // Only apply filter if FilteredFoldersView has been accessed
+        if (_filteredFoldersView != null)
         {
-            if (o is not TreeItem folder)
-                return false;
+            FilteredFoldersView.Filter = o =>
+            {
+                if (o is not TreeItem folder)
+                    return false;
 
-            bool matchesSearch = filters.Length == 0 || filters.All(x => folder.Header.Contains(x, StringComparison.OrdinalIgnoreCase));
+                bool matchesSearch = filters.Length == 0 || filters.All(x => folder.Header.Contains(x, StringComparison.OrdinalIgnoreCase));
 
-            return matchesSearch;
-        };
-        FilteredFoldersView.Refresh();
+                return matchesSearch;
+            };
+            FilteredFoldersView.Refresh();
+        }
     }
 
     public override string ToString() => $"{Header} | {Folders.Count} Folders | {AssetsList.Assets.Count} Files";

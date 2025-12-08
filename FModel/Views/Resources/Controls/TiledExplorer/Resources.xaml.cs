@@ -26,12 +26,21 @@ public partial class ResourcesDictionary
         {
             case GameFileViewModel file:
                 ApplicationService.ApplicationView.SelectedLeftTabIndex = 2;
+                file.IsSelected = true;
                 file.ExtractAsync();
                 // TODO: auto scroll on item selection just like folder view
                 // AssetsListName.ScrollIntoView(file.Asset);
                 break;
             case TreeItem folder:
                 ApplicationService.ApplicationView.SelectedLeftTabIndex = 1;
+
+                // Expand all parent folders if not expanded
+                var parent = folder.Parent;
+                while (parent != null)
+                {
+                    parent.IsExpanded = true;
+                    parent = parent.Parent;
+                }
 
                 // Auto expand single child folders
                 var childFolder = folder;
@@ -40,6 +49,8 @@ public partial class ResourcesDictionary
                     childFolder.IsExpanded = true;
                     childFolder = childFolder.Folders[0];
                 }
+
+                childFolder.IsExpanded = true;
                 childFolder.IsSelected = true;
                 break;
         }
