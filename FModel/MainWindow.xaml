@@ -551,8 +551,19 @@
                                           Margin="0, 0, 2, 0"
                                           ToolTip="Preview Textures"
                                           Checked="OnPreviewTexturesToggled"
-                                          IsChecked="{Binding PreviewTexturesAssetExplorer, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
-                                          Style="{StaticResource ModernToggleButtonStyle}">
+                                          IsChecked="{Binding PreviewTexturesAssetExplorer, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}">
+                                <ToggleButton.Style>
+                                    <Style TargetType="ToggleButton"
+                                           BasedOn="{StaticResource ModernToggleButtonStyle}">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsChecked"
+                                                     Value="True">
+                                                <Setter Property="Background"
+                                                        Value="MediumPurple" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ToggleButton.Style>
                                 <Viewbox Width="16"
                                          Height="16">
                                     <Canvas Width="24"
