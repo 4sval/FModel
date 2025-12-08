@@ -550,6 +550,7 @@
                                           Cursor="Hand"
                                           Margin="0, 0, 2, 0"
                                           ToolTip="Preview Textures"
+                                          Checked="OnPreviewTexturesToggled"
                                           IsChecked="{Binding PreviewTexturesAssetExplorer, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                                           Style="{StaticResource ModernToggleButtonStyle}">
                                 <Viewbox Width="16"

@@ -184,6 +184,7 @@ public partial class MainWindow
         _applicationView.SelectedLeftTabIndex = 1;
     }
 
+    private void OnPreviewTexturesToggled(object sender, RoutedEventArgs e) => ItemContainerGenerator_StatusChanged(AssetsExplorer.ItemContainerGenerator, EventArgs.Empty);
     private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
     {
         if (!_applicationView.IsAssetsExplorerVisible)
