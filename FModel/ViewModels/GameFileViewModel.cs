@@ -154,8 +154,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                     if (!resolve.HasFlag(EResolveCompute.Preview))
                         break;
 
-                    var mip = texture.GetMipByMaxSize(MaxPreviewSize);
-                    var img = texture.Decode(mip, UserSettings.Default.CurrentDir.TexturePlatform);
+                    var img = texture.Decode(MaxPreviewSize, UserSettings.Default.CurrentDir.TexturePlatform);
                     if (img != null)
                     {
                         using var bitmap = img.ToSkBitmap();

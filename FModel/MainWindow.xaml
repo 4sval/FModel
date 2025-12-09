@@ -12,6 +12,16 @@
         WindowStartupLocation="CenterScreen" Closing="OnClosing" Loaded="OnLoaded" PreviewKeyDown="OnWindowKeyDown"
         Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.90'}"
         Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.80'}">
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo ProgressValue="1.0">
+            <TaskbarItemInfo.ProgressState>
+                <MultiBinding Converter="{converters:StatusToTaskbarStateConverter}">
+                    <Binding Path="Status.Kind" />
+                    <Binding Path="IsActive" RelativeSource="{RelativeSource AncestorType=Window}" />
+                </MultiBinding>
+            </TaskbarItemInfo.ProgressState>
+        </TaskbarItemInfo>
+    </Window.TaskbarItemInfo>
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
             <Setter Property="Title" Value="{Binding DataContext.InitialWindowTitle, RelativeSource={RelativeSource Self}}" />
