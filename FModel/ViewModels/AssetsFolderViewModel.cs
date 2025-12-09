@@ -271,7 +271,7 @@ public class AssetsFolderViewModel
             }
 
             Folders.AddRange(treeItems);
-            ApplicationService.ApplicationView.CUE4Parse.SearchVm.SearchResults.AddRange(entries);
+            ApplicationService.ApplicationView.CUE4Parse.SearchVm.ChangeCollection(entries);
 
             foreach (var folder in Folders)
                 InvokeOnCollectionChanged(folder);

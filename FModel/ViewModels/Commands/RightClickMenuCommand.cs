@@ -53,6 +53,13 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                         contextViewModel.CUE4Parse.ShowMetadata(entry);
                     }
                     break;
+                case "Assets_Show_References":
+                    {
+                        Thread.Yield();
+                        cancellationToken.ThrowIfCancellationRequested();
+                        contextViewModel.CUE4Parse.FindReferences(entries.FirstOrDefault());
+                    }
+                    break;
                 case "Assets_Decompile":
                     foreach (var entry in entries)
                     {

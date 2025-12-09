@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -48,9 +47,22 @@ public class SearchViewModel : ViewModel
         set => SetProperty(ref _currentSortSizeMode, value);
     }
 
-    public int ResultsCount => SearchResults?.Count ?? 0;
+    private int _resultsCount = 0;
+    public int ResultsCount
+    {
+        get => _resultsCount;
+        private set => SetProperty(ref _resultsCount, value);
+    }
+
+    private GameFile _refFile;
+    public GameFile RefFile
+    {
+        get => _refFile;
+        private set => SetProperty(ref _refFile, value);
+    }
+
     public RangeObservableCollection<GameFile> SearchResults { get; }
-    public ICollectionView SearchResultsView { get; }
+    public ListCollectionView SearchResultsView { get; }
 
     public SearchViewModel()
     {
@@ -59,11 +71,21 @@ public class SearchViewModel : ViewModel
         {
             Filter = e => ItemFilter(e, FilterText?.Trim().Split(' ') ?? []),
         };
+        ResultsCount = SearchResultsView.Count;
     }
 
     public void RefreshFilter()
     {
         SearchResultsView.Refresh();
+        ResultsCount = SearchResultsView.Count;
+    }
+
+    public void ChangeCollection(IEnumerable<GameFile> files, GameFile refFile = null)
+    {
+        SearchResults.Clear();
+        SearchResults.AddRange(files);
+        RefFile = refFile;
+        ResultsCount = SearchResultsView.Count;
     }
 
     public async Task CycleSortSizeMode()
@@ -105,7 +127,7 @@ public class SearchViewModel : ViewModel
         });
 
         SearchResults.Clear();
-        SearchResults.AddRange(sorted.ToList());
+        SearchResults.AddRange(sorted);
     }
 
     private bool ItemFilter(object item, IEnumerable<string> filters)

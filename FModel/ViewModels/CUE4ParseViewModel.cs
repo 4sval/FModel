@@ -134,6 +134,7 @@ public class CUE4ParseViewModel : ViewModel
     public GameDirectoryViewModel GameDirectory { get; }
     public AssetsFolderViewModel AssetsFolder { get; }
     public SearchViewModel SearchVm { get; }
+    public SearchViewModel RefVm { get; }
     public TabControlViewModel TabControl { get; }
     public ConfigIni IoStoreOnDemand { get; }
     private Lazy<WwiseProvider> _wwiseProviderLazy;
@@ -197,6 +198,7 @@ public class CUE4ParseViewModel : ViewModel
         GameDirectory = new GameDirectoryViewModel();
         AssetsFolder = new AssetsFolderViewModel();
         SearchVm = new SearchViewModel();
+        RefVm = new SearchViewModel();
         TabControl = new TabControlViewModel();
         IoStoreOnDemand = new ConfigIni(nameof(IoStoreOnDemand));
     }
@@ -1196,6 +1198,18 @@ public class CUE4ParseViewModel : ViewModel
 
         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(package, Formatting.Indented), false, false);
     }
+
+    public void FindReferences(GameFile entry)
+    {
+        var refs = Provider.ScanForPackageRefs(entry);
+        Application.Current.Dispatcher.Invoke(delegate
+        {
+            var refView = Helper.GetWindow<SearchView>("Search View", () => new SearchView().Show());
+            refView.ChangeCollection(ESearchVeiwTab.RefView, refs, entry);
+            refView.FocusTab(ESearchVeiwTab.RefView);
+        });
+    }
+
 
     public void Decompile(GameFile entry)
     {

@@ -117,6 +117,17 @@
         </Setter>
     </Style>
 
+    <Style x:Key="RefTabStyle" TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
+        <Setter Property="Width">
+            <Setter.Value>
+                <MultiBinding Converter="{x:Static converters:RefTabWidthConverter.Instance}">
+                    <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type TabControl}}" />
+                    <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type TabControl}}" Path="ActualWidth" />
+                </MultiBinding>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="HighlightedCheckBox" TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="BorderBrush" Value="White" />
@@ -1416,25 +1427,25 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type avalonedit:TextEditor}">
                     <Border
-						Background="{TemplateBinding Background}"
-						BorderBrush="{TemplateBinding BorderBrush}"
-						BorderThickness="{TemplateBinding BorderThickness}">
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
                         <ScrollViewer
-							Focusable="False"
-							Name="PART_ScrollViewer"
-							CanContentScroll="True"
-							VerticalScrollBarVisibility="{TemplateBinding VerticalScrollBarVisibility}"
-							HorizontalScrollBarVisibility="{TemplateBinding HorizontalScrollBarVisibility}"
-							Content="{Binding TextArea, RelativeSource={RelativeSource TemplatedParent}}"
-							VerticalContentAlignment="Top"
-							HorizontalContentAlignment="Left"
-							Padding="{TemplateBinding Padding}"
+                            Focusable="False"
+                            Name="PART_ScrollViewer"
+                            CanContentScroll="True"
+                            VerticalScrollBarVisibility="{TemplateBinding VerticalScrollBarVisibility}"
+                            HorizontalScrollBarVisibility="{TemplateBinding HorizontalScrollBarVisibility}"
+                            Content="{Binding TextArea, RelativeSource={RelativeSource TemplatedParent}}"
+                            VerticalContentAlignment="Top"
+                            HorizontalContentAlignment="Left"
+                            Padding="{TemplateBinding Padding}"
                             controls:CustomScrollViewer.VerticalOffset="{Binding ScrollPosition}"
                             adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode="ExpandOnHover"
                             adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement="Docked"
                             adonisExtensions:ScrollViewerExtension.HorizontalScrollBarExpansionMode="NeverExpand"
                             adonisExtensions:ScrollViewerExtension.HorizontalScrollBarPlacement="Docked"
-						/>
+                        />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="WordWrap" Value="True">
