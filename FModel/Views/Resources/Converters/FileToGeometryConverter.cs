@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
@@ -41,6 +41,7 @@ public class FileToGeometryConverter : IMultiValueConverter
                     _ => "DataTableIcon"
                 },
                 EAssetCategory.Map => "MapIconAlt",
+                EAssetCategory.Particle => "ParticleIcon",
                 _ => "AssetIcon"
             };
 
@@ -63,6 +64,7 @@ public class FileToGeometryConverter : IMultiValueConverter
                     _ => Brushes.White
                 },
                 EAssetCategory.Video => Brushes.Black,
+                EAssetCategory.Particle => Brushes.Gold,
                 _ => Brushes.White
             };
 

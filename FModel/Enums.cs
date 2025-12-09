@@ -136,4 +136,5 @@ public enum EAssetCategory : uint
     Video = AssetCategoryExtensions.CategoryBase + (11 << 16),
     Data = AssetCategoryExtensions.CategoryBase + (12 << 16),
     Map = AssetCategoryExtensions.CategoryBase + (13 << 16),
+    Particle = AssetCategoryExtensions.CategoryBase + (14 << 16)
 }

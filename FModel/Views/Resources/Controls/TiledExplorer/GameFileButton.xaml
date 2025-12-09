@@ -16,73 +16,65 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0">
+            <Ellipse Width="96"
+                     Height="96">
+                <Ellipse.Fill>
+                    <RadialGradientBrush GradientOrigin="0.5,0.5"
+                                         Center="0.5,0.5"
+                                         RadiusX="0.5"
+                                         RadiusY="0.5">
+                        <GradientStop Color="#33000000"
+                                      Offset="0.0" />
+                        <GradientStop Color="#00000000"
+                                      Offset="1.0" />
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+                <Ellipse.Style>
+                    <Style TargetType="Ellipse">
+                        <Setter Property="Visibility"
+                                Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding PreviewImage}"
+                                         Value="{x:Null}">
+                                <Setter Property="Visibility"
+                                        Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Ellipse.Style>
+            </Ellipse>
             <Image Source="{Binding PreviewImage}"
                    Stretch="Uniform" />
-            <Grid Width="64"
+            <Path Width="64"
                   Height="64"
-                  HorizontalAlignment="Center"
-                  VerticalAlignment="Center">
-                <Path Stretch="Uniform"
-                      Opacity="0.25"
-                      RenderTransformOrigin="0.5,0.5">
-                    <Path.RenderTransform>
-                        <ScaleTransform ScaleX="1.12"
-                                        ScaleY="1.12" />
-                    </Path.RenderTransform>
-                    <Path.Style>
-                        <Style TargetType="Path">
-                            <Setter Property="Visibility"
-                                    Value="Collapsed" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding PreviewImage}"
-                                             Value="{x:Null}">
-                                    <Setter Property="Visibility"
-                                            Value="Visible" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Path.Style>
-                    <Path.Data>
-                        <MultiBinding Converter="{x:Static converters:FileToGeometryConverter.Instance}">
-                            <Binding Path="AssetCategory" />
-                            <Binding Path="ResolvedAssetType" />
-                        </MultiBinding>
-                    </Path.Data>
-                    <Path.Fill>
-                        <SolidColorBrush Color="#33000000" />
-                    </Path.Fill>
-                </Path>
-                <Path Width="64"
-                      Height="64"
-                      Stretch="Uniform">
-                    <Path.Style>
-                        <Style TargetType="Path">
-                            <Setter Property="Visibility"
-                                    Value="Collapsed" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding PreviewImage}"
-                                             Value="{x:Null}">
-                                    <Setter Property="Visibility"
-                                            Value="Visible" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Path.Style>
-                    <Path.Data>
-                        <MultiBinding Converter="{x:Static converters:FileToGeometryConverter.Instance}">
-                            <Binding Path="AssetCategory" />
-                            <Binding Path="ResolvedAssetType" />
-                        </MultiBinding>
-                    </Path.Data>
+                  Stretch="Uniform">
+                <Path.Style>
+                    <Style TargetType="Path">
+                        <Setter Property="Visibility"
+                                Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding PreviewImage}"
+                                         Value="{x:Null}">
+                                <Setter Property="Visibility"
+                                        Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Path.Style>
+                <Path.Data>
+                    <MultiBinding Converter="{x:Static converters:FileToGeometryConverter.Instance}">
+                        <Binding Path="AssetCategory" />
+                        <Binding Path="ResolvedAssetType" />
+                    </MultiBinding>
+                </Path.Data>
 
-                    <Path.Fill>
-                        <MultiBinding Converter="{x:Static converters:FileToGeometryConverter.Instance}">
-                            <Binding Path="AssetCategory" />
-                            <Binding Path="ResolvedAssetType" />
-                        </MultiBinding>
-                    </Path.Fill>
-                </Path>
-            </Grid>
+                <Path.Fill>
+                    <MultiBinding Converter="{x:Static converters:FileToGeometryConverter.Instance}">
+                        <Binding Path="AssetCategory" />
+                        <Binding Path="ResolvedAssetType" />
+                    </MultiBinding>
+                </Path.Fill>
+            </Path>
         </Grid>
 
         <TextBlock Grid.Row="2" Text="{Binding Asset.NameWithoutExtension}"

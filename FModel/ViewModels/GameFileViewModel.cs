@@ -8,6 +8,7 @@ using System.Windows.Media.Imaging;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports.Animation;
+using CUE4Parse.UE4.Assets.Exports.Component;
 using CUE4Parse.UE4.Assets.Exports.CriWare;
 using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.Engine.Font;
@@ -20,10 +21,11 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.MediaAssets;
+using CUE4Parse.UE4.Objects.Niagara;
 using CUE4Parse.UE4.Objects.PhysicsEngine;
 using CUE4Parse.UE4.Objects.UObject;
-using CUE4Parse_Conversion.Textures;
 using CUE4Parse.Utils;
+using CUE4Parse_Conversion.Textures;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -208,6 +210,10 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                     break;
                 case UWorld:
                     AssetCategory = EAssetCategory.Map;
+                    break;
+                case UNiagaraSystem:
+                case UParticleSystem:
+                    AssetCategory = EAssetCategory.Particle;
                     break;
             }
         });
