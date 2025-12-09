@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using CUE4Parse.FileProvider.Objects;
@@ -83,7 +84,7 @@ public class TreeItem : ViewModel
         set
         {
             if (SetProperty(ref _selectedCategory, value))
-                ApplyFilters(SearchText);
+                _ = OnSelectedCategoryChanged();
         }
     }
 
@@ -192,6 +193,13 @@ public class TreeItem : ViewModel
             };
             FilteredFoldersView.Refresh();
         }
+    }
+
+    private async Task OnSelectedCategoryChanged()
+    {
+        var tasks = AssetsList.Assets.Select(asset => asset.ResolveAsset());
+        await Task.WhenAll(tasks);
+        ApplyFilters(SearchText);
     }
 
     public override string ToString() => $"{Header} | {Folders.Count} Folders | {AssetsList.Assets.Count} Files";

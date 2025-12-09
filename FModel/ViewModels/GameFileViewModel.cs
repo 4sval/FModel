@@ -36,6 +36,9 @@ public class GameFileViewModel(GameFile asset) : ViewModel
 {
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
 
+    private Task _resolveTask;
+    private bool _resolved;
+
     public GameFile Asset { get; } = asset;
 
     private string _resolvedAssetType = asset.Extension;
@@ -70,7 +73,17 @@ public class GameFileViewModel(GameFile asset) : ViewModel
         => ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
             _applicationView.CUE4Parse.ExtractSelected(cancellationToken, [Asset]));
 
-    private void ResolveCategoryAndLoadPreview()
+    public Task ResolveAsset()
+    {
+        if (_resolved)
+            return Task.CompletedTask;
+        if (_resolveTask != null)
+            return _resolveTask;
+
+        return _resolveTask = ResolveCategoryAndLoadPreview();
+    }
+
+    private async Task ResolveCategoryAndLoadPreview()
     {
         try
         {
@@ -82,7 +95,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 return;
             }
 
-            Task.Run(() =>
+            await Task.Run(() =>
             {
                 if (!_applicationView.CUE4Parse.Provider.TryLoadPackage(Asset, out var package))
                     return;
@@ -213,9 +226,13 @@ public class GameFileViewModel(GameFile asset) : ViewModel
         {
             Log.Error(e, "Failed to load preview for {Path}", Asset.Path);
         }
+        finally
+        {
+            _resolved = true;
+        }
     }
 
-    private void ResolveCategoryAndLoadPreviewByExtension(GameFile gameFile)
+    private async void ResolveCategoryAndLoadPreviewByExtension(GameFile gameFile)
     {
         switch (gameFile.Extension)
         {
@@ -261,7 +278,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                     if (!UserSettings.Default.PreviewTexturesAssetExplorer)
                         break;
 
-                    Task.Run(() =>
+                    await Task.Run(() =>
                     {
                         var data = _applicationView.CUE4Parse.Provider.SaveAsset(gameFile);
                         using var stream = new MemoryStream(data) { Position = 0 };
@@ -289,7 +306,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                     if (!UserSettings.Default.PreviewTexturesAssetExplorer)
                         break;
 
-                    Task.Run(() =>
+                    await Task.Run(() =>
                     {
                         var data = _applicationView.CUE4Parse.Provider.SaveAsset(gameFile);
                         using var stream = new MemoryStream(data) { Position = 0 };
@@ -344,7 +361,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             {
                 if (!t.IsCanceled)
                 {
-                    ResolveCategoryAndLoadPreview();
+                    _ = ResolveCategoryAndLoadPreview();
                     if (!UserSettings.Default.PreviewTexturesAssetExplorer)
                     {
                         _once = false; // Allow retrying if previews are disabled
