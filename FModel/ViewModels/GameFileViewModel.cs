@@ -23,6 +23,7 @@ using CUE4Parse.UE4.Objects.MediaAssets;
 using CUE4Parse.UE4.Objects.PhysicsEngine;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse_Conversion.Textures;
+using CUE4Parse.Utils;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -34,12 +35,19 @@ namespace FModel.ViewModels;
 
 public class GameFileViewModel(GameFile asset) : ViewModel
 {
-    private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
+    private const int MaxPreviewSize = 128; // TODO: get partial payload in C4P
 
-    private Task _resolveTask;
-    private bool _resolved;
+    private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
+    private EResolveCompute _resolved = EResolveCompute.None;
 
     public GameFile Asset { get; } = asset;
+
+    private IPackage? _package;
+    public IPackage? Package
+    {
+        get => _package;
+        private set => SetProperty(ref _package, value);
+    }
 
     private string _resolvedAssetType = asset.Extension;
     public string ResolvedAssetType
@@ -59,182 +67,155 @@ public class GameFileViewModel(GameFile asset) : ViewModel
     public EAssetCategory AssetCategory
     {
         get => _assetCategory;
-        private set => SetProperty(ref _assetCategory, value);
+        private set
+        {
+            if (SetProperty(ref _assetCategory, value))
+            {
+                _resolved |= EResolveCompute.Category;
+            }
+        }
     }
 
     private ImageSource _previewImage;
     public ImageSource PreviewImage
     {
         get => _previewImage;
-        set => SetProperty(ref _previewImage, value);
+        private set
+        {
+            if (SetProperty(ref _previewImage, value))
+            {
+                _resolved |= EResolveCompute.Preview;
+            }
+        }
     }
 
     public Task ExtractAsync()
         => ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
             _applicationView.CUE4Parse.ExtractSelected(cancellationToken, [Asset]));
 
-    public Task ResolveAsset()
-    {
-        if (_resolved)
-            return Task.CompletedTask;
-        if (_resolveTask != null)
-            return _resolveTask;
-
-        return _resolveTask = ResolveCategoryAndLoadPreview();
-    }
-
-    private async Task ResolveCategoryAndLoadPreview()
+    public Task ResolveAsync(EResolveCompute resolve)
     {
         try
         {
-            if (!_applicationView.IsAssetsExplorerVisible) return;
-
-            if (!Asset.IsUePackage || _applicationView.CUE4Parse is null)
-            {
-                ResolveCategoryAndLoadPreviewByExtension(Asset);
-                return;
-            }
-
-            await Task.Run(() =>
-            {
-                if (!_applicationView.CUE4Parse.Provider.TryLoadPackage(Asset, out var package))
-                    return;
-
-                var mainIndex = package.GetExportIndex(Asset.NameWithoutExtension);
-                if (mainIndex < 0) mainIndex = package.GetExportIndex($"{Asset.NameWithoutExtension}_C");
-                if (mainIndex < 0) mainIndex = 0;
-
-                var pointer = new FPackageIndex(package, mainIndex + 1).ResolvedObject;
-                if (pointer?.Object is null)
-                    return;
-
-                var dummy = ((AbstractUePackage) package).ConstructObject(pointer.Class?.Object?.Value as UStruct, package);
-                ResolvedAssetType = dummy.ExportType;
-
-                switch (dummy)
-                {
-                    case UTexture when pointer.Object.Value is UTexture texture:
-                    {
-                        AssetCategory = EAssetCategory.Texture;
-                        if (!UserSettings.Default.PreviewTexturesAssetExplorer)
-                            break;
-
-                        var img = new CTexture[1];
-                        const int targetSize = 128;
-                        var mip = texture.GetMipByMaxSize(targetSize);
-                        img[0] = texture.Decode(mip, UserSettings.Default.CurrentDir.TexturePlatform);
-
-                        using var ms = new MemoryStream();
-
-                        if (img[0] == null)
-                            break;
-
-                        var bmp = img[0].ToSkBitmap();
-                        byte[] imageData = bmp.Encode(SKEncodedImageFormat.Png, 100).ToArray();
-                        ms.Position = 0;
-
-                        using var stream = new MemoryStream(imageData);
-                        var image = new BitmapImage();
-                        image.BeginInit();
-                        image.CacheOption = BitmapCacheOption.OnLoad;
-                        image.StreamSource = stream;
-                        image.EndInit();
-                        image.Freeze();
-
-                        Application.Current.Dispatcher.InvokeAsync(() => PreviewImage = image);
-                        return; // Let's display first found texture
-                    }
-                    case UDataAsset:
-                    case UDataTable:
-                    {
-                        AssetCategory = EAssetCategory.Data;
-                        return;
-                    }
-                    case USoundCue:
-                    case USoundWave:
-                    case UAkMediaAssetData:
-                    case UAtomWaveBank:
-                    case USoundAtomCue:
-                    case UAtomCueSheet:
-                    case USoundAtomCueSheet:
-                    case UFMODBank:
-                    case UFMODEvent:
-                    case UAkAudioEvent:
-                    {
-                        AssetCategory = EAssetCategory.Audio;
-                        return;
-                    }
-                    case USkeleton:
-                    {
-                        AssetCategory = EAssetCategory.Skeleton;
-                        return;
-                    }
-                    case UStaticMesh:
-                    {
-                        AssetCategory = EAssetCategory.StaticMesh;
-                        return;
-                    }
-                    case USkeletalMesh:
-                    {
-                        AssetCategory = EAssetCategory.SkeletalMesh;
-                        return;
-                    }
-                    case UBlueprint:
-                    case UBlueprintGeneratedClass:
-                    {
-                        AssetCategory = EAssetCategory.Blueprint;
-                        return;
-                    }
-                    case UMaterial:
-                    case UMaterialInstance:
-                    {
-                        AssetCategory = EAssetCategory.Material;
-                        return;
-                    }
-                    case UPhysicsAsset:
-                    {
-                        AssetCategory = EAssetCategory.PhysicsAsset;
-                        return;
-                    }
-                    case UAnimSequence:
-                    case UAnimMontage:
-                    case UAnimSequenceBase:
-                    {
-                        AssetCategory = EAssetCategory.Animation;
-                        return;
-                    }
-                    case UFont:
-                    case UFontFace:
-                    {
-                        AssetCategory = EAssetCategory.Font;
-                        return;
-                    }
-                    case UFileMediaSource:
-                    {
-                        AssetCategory = EAssetCategory.Video;
-                        return;
-                    }
-                    case UWorld:
-                    {
-                        AssetCategory = EAssetCategory.Map;
-                        return;
-                    }
-                }
-            });
+            return ResolveInternalAsync(resolve);
         }
         catch (Exception e)
         {
-            Log.Error(e, "Failed to load preview for {Path}", Asset.Path);
-        }
-        finally
-        {
-            _resolved = true;
+            Log.Logger.Error(e, "Failed to resolve asset {AssetName} ({Resolver})", Asset.Path, resolve.ToStringBitfield());
+
+            _resolved = EResolveCompute.All;
+            return Task.CompletedTask;
         }
     }
 
-    private async void ResolveCategoryAndLoadPreviewByExtension(GameFile gameFile)
+    private Task ResolveInternalAsync(EResolveCompute resolve)
     {
-        switch (gameFile.Extension)
+        if (!_applicationView.IsAssetsExplorerVisible || !UserSettings.Default.PreviewTexturesAssetExplorer)
+        {
+            resolve &= ~EResolveCompute.Preview;
+        }
+
+        resolve &= ~_resolved;
+        if (resolve == EResolveCompute.None)
+            return Task.CompletedTask;
+
+        if (!Asset.IsUePackage || _applicationView.CUE4Parse is null)
+            return ResolveByExtensionAsync(resolve);
+
+        return ResolveByPackageAsync(resolve);
+    }
+
+    private Task ResolveByPackageAsync(EResolveCompute resolve)
+    {
+        return Task.Run(() =>
+        {
+            Package ??= _applicationView.CUE4Parse?.Provider.LoadPackage(Asset);
+            if (Package is null)
+                throw new InvalidOperationException("Failed to load package.");
+
+            var mainIndex = Package.GetExportIndex(Asset.NameWithoutExtension);
+            if (mainIndex < 0) mainIndex = Package.GetExportIndex($"{Asset.NameWithoutExtension}_C");
+            if (mainIndex < 0) mainIndex = 0;
+
+            var pointer = new FPackageIndex(Package, mainIndex + 1).ResolvedObject;
+            if (pointer?.Object is null)
+                return;
+
+            var dummy = ((AbstractUePackage) Package).ConstructObject(pointer.Class?.Object?.Value as UStruct, Package);
+            ResolvedAssetType = dummy.ExportType;
+
+            switch (dummy)
+            {
+                case UTexture when pointer.Object.Value is UTexture texture:
+                {
+                    AssetCategory = EAssetCategory.Texture;
+                    if (!resolve.HasFlag(EResolveCompute.Preview))
+                        break;
+
+                    var mip = texture.GetMipByMaxSize(MaxPreviewSize);
+                    var img = texture.Decode(mip, UserSettings.Default.CurrentDir.TexturePlatform);
+                    if (img != null)
+                    {
+                        using var bitmap = img.ToSkBitmap();
+                        using var image = bitmap.Encode(SKEncodedImageFormat.Png, 100);
+                        SetPreviewImage(image);
+                    }
+                    break;
+                }
+                case UDataAsset:
+                case UDataTable:
+                    AssetCategory = EAssetCategory.Data;
+                    break;
+                case USoundBase:
+                case UAkMediaAssetData:
+                case UAtomWaveBank:
+                case USoundAtomCue:
+                case UAtomCueSheet:
+                case USoundAtomCueSheet:
+                case UFMODBank:
+                case UFMODEvent:
+                case UAkAudioType:
+                    AssetCategory = EAssetCategory.Audio;
+                    break;
+                case USkeleton:
+                    AssetCategory = EAssetCategory.Skeleton;
+                    break;
+                case UStaticMesh:
+                    AssetCategory = EAssetCategory.StaticMesh;
+                    break;
+                case USkeletalMesh:
+                    AssetCategory = EAssetCategory.SkeletalMesh;
+                    break;
+                case UBlueprintCore:
+                case UBlueprintGeneratedClass:
+                    AssetCategory = EAssetCategory.Blueprint;
+                    break;
+                case UMaterialInterface:
+                    AssetCategory = EAssetCategory.Material;
+                    break;
+                case UPhysicsAsset:
+                    AssetCategory = EAssetCategory.PhysicsAsset;
+                    break;
+                case UAnimationAsset:
+                    AssetCategory = EAssetCategory.Animation;
+                    break;
+                case UFont:
+                case UFontFace:
+                    AssetCategory = EAssetCategory.Font;
+                    break;
+                case UFileMediaSource:
+                    AssetCategory = EAssetCategory.Video;
+                    break;
+                case UWorld:
+                    AssetCategory = EAssetCategory.Map;
+                    break;
+            }
+        });
+    }
+
+    private Task ResolveByExtensionAsync(EResolveCompute resolve)
+    {
+        switch (Asset.Extension)
         {
             case "uplugin":
             case "ini":
@@ -273,100 +254,91 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             case "jpg":
             case "png":
             case "bmp":
-                {
-                    AssetCategory = EAssetCategory.Texture;
-                    if (!UserSettings.Default.PreviewTexturesAssetExplorer)
-                        break;
-
-                    await Task.Run(() =>
-                    {
-                        var data = _applicationView.CUE4Parse.Provider.SaveAsset(gameFile);
-                        using var stream = new MemoryStream(data) { Position = 0 };
-                        var bitmap = SKBitmap.Decode(stream);
-                        if (bitmap == null) return;
-
-                        using var image = bitmap.Encode(gameFile.Extension == "jpg" ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
-                        using var ms = new MemoryStream(image.ToArray());
-
-                        var bmpImage = new BitmapImage();
-                        bmpImage.BeginInit();
-                        bmpImage.CacheOption = BitmapCacheOption.OnLoad;
-                        bmpImage.StreamSource = ms;
-                        bmpImage.EndInit();
-                        bmpImage.Freeze();
-
-                        Application.Current.Dispatcher.InvokeAsync(() => PreviewImage = bmpImage);
-                    });
-
-                    break;
-                }
             case "svg":
-                {
-                    AssetCategory = EAssetCategory.Texture;
-                    if (!UserSettings.Default.PreviewTexturesAssetExplorer)
-                        break;
+            {
+                AssetCategory = EAssetCategory.Texture;
+                if (!resolve.HasFlag(EResolveCompute.Preview))
+                    break;
 
-                    await Task.Run(() =>
+                return Task.Run(() =>
+                {
+                    var data = _applicationView.CUE4Parse.Provider.SaveAsset(Asset);
+                    using var stream = new MemoryStream(data);
+                    stream.Position = 0;
+
+                    SKBitmap bitmap;
+                    if (Asset.Extension == "svg")
                     {
-                        var data = _applicationView.CUE4Parse.Provider.SaveAsset(gameFile);
-                        using var stream = new MemoryStream(data) { Position = 0 };
                         var svg = new SKSvg();
                         svg.Load(stream);
-                        if (svg.Picture == null) return;
+                        if (svg.Picture == null)
+                            return;
 
-                        const int size = 128;
-                        var bitmap = new SKBitmap(size, size);
+                        bitmap = new SKBitmap(MaxPreviewSize, MaxPreviewSize);
                         using var canvas = new SKCanvas(bitmap);
                         canvas.Clear(SKColors.Transparent);
 
                         var bounds = svg.Picture.CullRect;
-                        float scale = Math.Min(size / bounds.Width, size / bounds.Height);
+                        float scale = Math.Min(MaxPreviewSize / bounds.Width, MaxPreviewSize / bounds.Height);
                         canvas.Scale(scale);
                         canvas.Translate(-bounds.Left, -bounds.Top);
                         canvas.DrawPicture(svg.Picture);
+                    }
+                    else
+                    {
+                        bitmap = SKBitmap.Decode(stream);
+                    }
 
-                        using var ms = new MemoryStream();
-                        using (var img = bitmap.Encode(SKEncodedImageFormat.Png, 100)) img.SaveTo(ms);
-                        ms.Position = 0;
+                    using var image = bitmap.Encode(Asset.Extension == "jpg" ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
+                    SetPreviewImage(image);
 
-                        var bmpImage = new BitmapImage();
-                        bmpImage.BeginInit();
-                        bmpImage.CacheOption = BitmapCacheOption.OnLoad;
-                        bmpImage.StreamSource = ms;
-                        bmpImage.EndInit();
-                        bmpImage.Freeze();
-
-                        Application.Current.Dispatcher.InvokeAsync(() => PreviewImage = bmpImage);
-                    });
-
-                    break;
-                }
+                    bitmap.Dispose();
+                });
+            }
         }
+
+        return Task.CompletedTask;
+    }
+
+    private void SetPreviewImage(SKData data)
+    {
+        using var ms = new MemoryStream(data.ToArray());
+        ms.Position = 0;
+
+        var bitmap = new BitmapImage();
+        bitmap.BeginInit();
+        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+        bitmap.StreamSource = ms;
+        bitmap.EndInit();
+        bitmap.Freeze();
+
+        Application.Current.Dispatcher.InvokeAsync(() => PreviewImage = bitmap);
     }
 
     private CancellationTokenSource _previewCts;
-    private bool _once = false;
     public void OnVisibleChanged(bool isVisible)
     {
-        if (_once || !isVisible)
+        if (!isVisible || _resolved == EResolveCompute.All)
             return;
 
-        _once = true;
         _previewCts?.Cancel();
         _previewCts = new CancellationTokenSource();
         var token = _previewCts.Token;
 
-        Task.Delay(100, token) // Slight delay so it won't start loading when user scrolls quickly
-            .ContinueWith(t =>
-            {
-                if (!t.IsCanceled)
-                {
-                    _ = ResolveCategoryAndLoadPreview();
-                    if (!UserSettings.Default.PreviewTexturesAssetExplorer)
-                    {
-                        _once = false; // Allow retrying if previews are disabled
-                    }
-                }
-            }, TaskScheduler.FromCurrentSynchronizationContext());
+        Task.Delay(100, token).ContinueWith(t =>
+        {
+            if (t.IsCanceled) return;
+            ResolveAsync(EResolveCompute.All);
+        }, TaskScheduler.FromCurrentSynchronizationContext());
     }
+}
+
+[Flags]
+public enum EResolveCompute
+{
+    None = 0,
+    Category = 1 << 0,
+    Preview = 1 << 1,
+
+    All = Category | Preview
 }

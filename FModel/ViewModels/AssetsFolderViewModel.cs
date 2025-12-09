@@ -197,7 +197,7 @@ public class TreeItem : ViewModel
 
     private async Task OnSelectedCategoryChanged()
     {
-        var tasks = AssetsList.Assets.Select(asset => asset.ResolveAsset());
+        var tasks = AssetsList.Assets.Select(asset => asset.ResolveAsync(EResolveCompute.Category));
         await Task.WhenAll(tasks);
         ApplyFilters(SearchText);
     }
