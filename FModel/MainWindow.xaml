@@ -510,7 +510,7 @@
 
                         <TabControl x:Name="TabControlName"
                                     Style="{StaticResource GameFilesTabControl}"
-                                    Visibility="{Binding IsAssetsExplorerVisible, Converter={x:Static converters:InvertBoolToVisibilityConverter.Instance}}" />
+                                    Visibility="{Binding IsAssetsExplorerVisible, Converter={x:Static converters:InvertBoolToVisibilityConverter.Instance}, ConverterParameter=Hidden}" />
                     </Grid>
 
                     <Border Grid.Row="0"

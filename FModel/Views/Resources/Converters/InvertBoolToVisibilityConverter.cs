@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
@@ -13,7 +13,8 @@ public class InvertBoolToVisibilityConverter : IValueConverter
     {
         if (value is bool boolValue)
         {
-            return boolValue ? Visibility.Collapsed : Visibility.Visible;
+            bool useHidden = parameter?.ToString().Equals("Hidden", StringComparison.OrdinalIgnoreCase) ?? false;
+            return boolValue ? (useHidden ? Visibility.Hidden : Visibility.Collapsed) : Visibility.Visible;
         }
         return Visibility.Visible;
     }
