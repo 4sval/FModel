@@ -117,17 +117,6 @@
         </Setter>
     </Style>
 
-    <Style x:Key="RefTabStyle" TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
-        <Setter Property="Width">
-            <Setter.Value>
-                <MultiBinding Converter="{x:Static converters:RefTabWidthConverter.Instance}">
-                    <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type TabControl}}" />
-                    <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type TabControl}}" Path="ActualWidth" />
-                </MultiBinding>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
     <Style x:Key="HighlightedCheckBox" TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="BorderBrush" Value="White" />

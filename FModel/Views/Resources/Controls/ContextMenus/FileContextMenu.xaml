@@ -32,9 +32,9 @@
                 <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
                     <Binding.Converter>
                         <converters:AnyItemMeetsConditionConverter>
-                            <converters:AnyItemMeetsConditionConverter.Condition>
+                            <converters:AnyItemMeetsConditionConverter.Conditions>
                                 <converters:ItemIsUePackageCondition />
-                            </converters:AnyItemMeetsConditionConverter.Condition>
+                            </converters:AnyItemMeetsConditionConverter.Conditions>
                         </converters:AnyItemMeetsConditionConverter>
                     </Binding.Converter>
                 </Binding>
@@ -58,9 +58,10 @@
                 <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
                     <Binding.Converter>
                         <converters:AnyItemMeetsConditionConverter>
-                            <converters:AnyItemMeetsConditionConverter.Condition>
+                            <converters:AnyItemMeetsConditionConverter.Conditions>
                                 <converters:ItemIsUePackageCondition />
-                            </converters:AnyItemMeetsConditionConverter.Condition>
+                                <converters:ItemIsIoStore />
+                            </converters:AnyItemMeetsConditionConverter.Conditions>
                         </converters:AnyItemMeetsConditionConverter>
                     </Binding.Converter>
                 </Binding>
@@ -85,9 +86,9 @@
                 <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
                     <Binding.Converter>
                         <converters:AnyItemMeetsConditionConverter>
-                            <converters:AnyItemMeetsConditionConverter.Condition>
+                            <converters:AnyItemMeetsConditionConverter.Conditions>
                                 <converters:ItemCategoryCondition Category="Blueprint" />
-                            </converters:AnyItemMeetsConditionConverter.Condition>
+                            </converters:AnyItemMeetsConditionConverter.Conditions>
                         </converters:AnyItemMeetsConditionConverter>
                     </Binding.Converter>
                 </Binding>
@@ -158,9 +159,9 @@
                 <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
                     <Binding.Converter>
                         <converters:AnyItemMeetsConditionConverter>
-                            <converters:AnyItemMeetsConditionConverter.Condition>
+                            <converters:AnyItemMeetsConditionConverter.Conditions>
                                 <converters:ItemCategoryCondition Category="Texture" />
-                            </converters:AnyItemMeetsConditionConverter.Condition>
+                            </converters:AnyItemMeetsConditionConverter.Conditions>
                         </converters:AnyItemMeetsConditionConverter>
                     </Binding.Converter>
                 </Binding>
@@ -184,9 +185,9 @@
                 <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
                     <Binding.Converter>
                         <converters:AnyItemMeetsConditionConverter>
-                            <converters:AnyItemMeetsConditionConverter.Condition>
+                            <converters:AnyItemMeetsConditionConverter.Conditions>
                                 <converters:ItemCategoryCondition Category="Mesh" />
-                            </converters:AnyItemMeetsConditionConverter.Condition>
+                            </converters:AnyItemMeetsConditionConverter.Conditions>
                         </converters:AnyItemMeetsConditionConverter>
                     </Binding.Converter>
                 </Binding>
@@ -210,9 +211,9 @@
                 <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
                     <Binding.Converter>
                         <converters:AnyItemMeetsConditionConverter>
-                            <converters:AnyItemMeetsConditionConverter.Condition>
+                            <converters:AnyItemMeetsConditionConverter.Conditions>
                                 <converters:ItemCategoryCondition Category="Animation" />
-                            </converters:AnyItemMeetsConditionConverter.Condition>
+                            </converters:AnyItemMeetsConditionConverter.Conditions>
                         </converters:AnyItemMeetsConditionConverter>
                     </Binding.Converter>
                 </Binding>
@@ -236,9 +237,9 @@
                 <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
                     <Binding.Converter>
                         <converters:AnyItemMeetsConditionConverter>
-                            <converters:AnyItemMeetsConditionConverter.Condition>
+                            <converters:AnyItemMeetsConditionConverter.Conditions>
                                 <converters:ItemCategoryCondition Category="Audio" />
-                            </converters:AnyItemMeetsConditionConverter.Condition>
+                            </converters:AnyItemMeetsConditionConverter.Conditions>
                         </converters:AnyItemMeetsConditionConverter>
                     </Binding.Converter>
                 </Binding>

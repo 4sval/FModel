@@ -24,7 +24,7 @@
     <Grid Margin="5 5">
         <GroupBox adonisExtensions:LayerExtension.Layer="2" Padding="{adonisUi:Space 0}" Background="Transparent">
             <TabControl x:Name="SearchTabControl" SelectionChanged="OnTabItemChange">
-                <TabItem Style="{StaticResource TabItemFillSpace}" Header="Search View" HorizontalAlignment="Left" Width="200">
+                <TabItem Style="{StaticResource TabItemFillSpace}" Header="Search View">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -342,13 +342,13 @@
                         </ListView>
                     </Grid>
                 </TabItem>
-                <TabItem Style="{StaticResource RefTabStyle}" HorizontalAlignment="Left">
+                <TabItem Style="{StaticResource TabItemFillSpace}" HorizontalAlignment="Stretch">
                     <TabItem.Header>
                         <TextBlock>
                             <TextBlock.Text>
                                 <MultiBinding FallbackValue="References" StringFormat="{}{0:### ### ##0} References for {1}">
                                     <Binding Path="RefTab.SearchResults.Count" />
-                                    <Binding Path="RefTab.RefFile.Path" TargetNullValue="Unknown file"/>
+                                    <Binding Path="RefTab.RefFile.Name" TargetNullValue="Unknown file"/>
                                 </MultiBinding>
                             </TextBlock.Text>
                         </TextBlock>

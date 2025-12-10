@@ -24,21 +24,3 @@ public class TabSizeConverter : IMultiValueConverter
         throw new NotImplementedException();
     }
 }
-
-public class RefTabWidthConverter : IMultiValueConverter
-{
-    public static readonly RefTabWidthConverter Instance = new();
-
-    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-    {
-        if (values[0] is not TabControl tabControl)
-            return 0;
-
-        return tabControl.ActualWidth - 200;
-    }
-
-    public object[] ConvertBack(object value, Type[] targetType, object parameter, CultureInfo culture)
-    {
-        throw new NotImplementedException();
-    }
-}

@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Data;
@@ -10,14 +11,14 @@ namespace FModel.Views.Resources.Converters;
 
 public class AnyItemMeetsConditionConverter : IValueConverter
 {
-    public IItemCondition Condition { get; set; }
+    public Collection<IItemCondition> Conditions { get; } = [];
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value is not IEnumerable items || Condition == null)
+        if (value is not IEnumerable items || Conditions.Count == 0)
             return false;
 
-        return items.OfType<GameFileViewModel>().Any(item => Condition.Matches(item));
+        return items.OfType<GameFileViewModel>().Any(item => Conditions.All(c => c.Matches(item)));
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -46,5 +47,13 @@ public class ItemIsUePackageCondition : IItemCondition
     public bool Matches(GameFileViewModel item)
     {
         return item?.Asset?.IsUePackage ?? false;
+    }
+}
+
+public class ItemIsIoStore : IItemCondition
+{
+    public bool Matches(GameFileViewModel item)
+    {
+        return item?.Package?.GetType()?.Name == "IoPackage";
     }
 }
