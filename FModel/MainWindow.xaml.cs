@@ -63,6 +63,14 @@ public partial class MainWindow
                     AssetsListName.SelectedItems.Remove(removed);
             }
         };
+        AssetsListName.SelectionChanged += (s, e) =>
+        {
+            foreach (var removed in e.RemovedItems.OfType<GameFileViewModel>())
+            {
+                if (AssetsExplorer.SelectedItems.Contains(removed))
+                    AssetsExplorer.SelectedItems.Remove(removed);
+            }
+        };
 
         FLogger.Logger = LogRtbName;
         YesWeCats = this;
