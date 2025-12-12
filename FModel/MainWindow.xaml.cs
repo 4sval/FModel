@@ -49,6 +49,20 @@ public partial class MainWindow
         InitializeComponent();
 
         AssetsExplorer.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
+        AssetsExplorer.SelectionChanged += (s, e) =>
+        {
+            foreach (var added in e.AddedItems.OfType<GameFileViewModel>())
+            {
+                if (!AssetsListName.SelectedItems.Contains(added))
+                    AssetsListName.SelectedItems.Add(added);
+            }
+
+            foreach (var removed in e.RemovedItems.OfType<GameFileViewModel>())
+            {
+                if (AssetsListName.SelectedItems.Contains(removed))
+                    AssetsListName.SelectedItems.Remove(removed);
+            }
+        };
 
         FLogger.Logger = LogRtbName;
         YesWeCats = this;

@@ -50,7 +50,7 @@ public class ItemIsUePackageCondition : IItemCondition
     }
 }
 
-public class ItemIsIoStore : IItemCondition
+public class ItemIsIoStoreCondition : IItemCondition
 {
     public bool Matches(GameFileViewModel item)
     {

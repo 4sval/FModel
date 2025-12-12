@@ -60,7 +60,7 @@
                         <converters:AnyItemMeetsConditionConverter>
                             <converters:AnyItemMeetsConditionConverter.Conditions>
                                 <converters:ItemIsUePackageCondition />
-                                <converters:ItemIsIoStore />
+                                <converters:ItemIsIoStoreCondition />
                             </converters:AnyItemMeetsConditionConverter.Conditions>
                         </converters:AnyItemMeetsConditionConverter>
                     </Binding.Converter>
