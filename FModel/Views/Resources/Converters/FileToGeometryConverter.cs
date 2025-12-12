@@ -63,8 +63,9 @@ public class FileToGeometryConverter : IMultiValueConverter
                     "json5" or "json" => Brushes.LightGreen,
                     _ => Brushes.White
                 },
-                EAssetCategory.Video => Brushes.Black,
+                EAssetCategory.Video => Brushes.IndianRed,
                 EAssetCategory.Particle => Brushes.Gold,
+                EAssetCategory.Audio => Brushes.MediumSeaGreen,
                 _ => Brushes.White
             };
 

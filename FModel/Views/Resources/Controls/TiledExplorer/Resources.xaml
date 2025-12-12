@@ -33,16 +33,12 @@
                     <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=OneWay}" />
                     <Setter Property="Margin" Value="5" />
                     <Setter Property="Padding" Value="5" />
-                    <Setter Property="BorderThickness" Value="1" />
+                    <Setter Property="BorderThickness" Value="1.5" />
                     <Setter Property="Cursor" Value="Hand" />
                     <Setter Property="controls:ListBoxItemBehavior.IsBroughtIntoViewWhenSelected" Value="True" />
-                    <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="8" />
                     <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
 
                     <EventSetter Event="MouseDoubleClick" Handler="OnMouseDoubleClick" />
-                    <EventSetter Event="MouseMove" Handler="OnMouseMove" />
-                    <EventSetter Event="MouseEnter" Handler="OnMouseEnter" />
-                    <EventSetter Event="MouseLeave" Handler="OnMouseLeave" />
 
                     <Setter Property="Template">
                         <Setter.Value>
@@ -90,26 +86,6 @@
                                 <ItemsPresenter />
                             </ScrollViewer>
                         </Border>
-                        <Popup x:Name="AssetPopup"
-                               AllowsTransparency="True"
-                               Placement="AbsolutePoint"
-                               StaysOpen="True"
-                               IsOpen="False">
-                            <Border x:Name="PopupBorder"
-                                    Background="#F2202020"
-                                    BorderBrush="#404040"
-                                    BorderThickness="1"
-                                    CornerRadius="6"
-                                    Padding="10">
-                                <StackPanel x:Name="PopupStack">
-                                    <TextBlock x:Name="FileInfoTextBlock"
-                                               HorizontalAlignment="Center"
-                                               TextAlignment="Center"
-                                               Foreground="White"
-                                               FontSize="12" />
-                                </StackPanel>
-                            </Border>
-                        </Popup>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -117,11 +93,11 @@
     </Style>
 
     <DataTemplate x:Key="TiledFileDataTemplate" DataType="{x:Type vm:GameFileViewModel}">
-        <local:FileButton />
+        <local:FileButton2 />
     </DataTemplate>
 
     <DataTemplate x:Key="TiledFolderDataTemplate" DataType="{x:Type vm:TreeItem}">
-        <local:FolderButton ContextMenu="{StaticResource FolderContextMenu}" />
+        <local:FolderButton2 ContextMenu="{StaticResource FolderContextMenu}" />
     </DataTemplate>
 
 </ResourceDictionary>

@@ -203,8 +203,6 @@ public partial class MainWindow
     private void OnAssetsTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
     {
         if (sender is not TreeView { SelectedItem: TreeItem }) return;
-        if (AssetsExplorer?.Template?.FindName("AssetPopup", AssetsExplorer) is Popup popup)
-            popup.IsOpen = false;
 
         _applicationView.IsAssetsExplorerVisible = true;
         _applicationView.SelectedLeftTabIndex = 1;

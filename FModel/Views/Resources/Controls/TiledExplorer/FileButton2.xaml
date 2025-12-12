@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="FModel.Views.Resources.Controls.TiledExplorer.FileButton2"
+<UserControl x:Class="FModel.Views.Resources.Controls.TiledExplorer.FileButton2"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -9,7 +9,7 @@
              xmlns:vm="clr-namespace:FModel.ViewModels"
              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-             Width="128" Height="192" BorderThickness="1"
+             Width="128" Height="192"
              Background="{DynamicResource {x:Static adonisUi:Brushes.Layer4BackgroundBrush}}"
              BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}">
     <Grid>
