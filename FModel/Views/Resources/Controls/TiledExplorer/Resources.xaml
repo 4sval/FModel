@@ -16,6 +16,8 @@
     <controls:TypeDataTemplateSelector x:Key="TemplateSelector" />
 
     <Style x:Key="TiledExplorer" TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
+        <Setter Property="local:SmoothScroll.IsEnabled" Value="True" />
+        <Setter Property="local:SmoothScroll.Factor" Value="1.25" />
         <Setter Property="SelectionMode" Value="Extended" />
         <Setter Property="ContextMenu" Value="{StaticResource FileContextMenu}" />
         <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
@@ -33,6 +35,7 @@
                     <Setter Property="Padding" Value="5" />
                     <Setter Property="BorderThickness" Value="1" />
                     <Setter Property="Cursor" Value="Hand" />
+                    <Setter Property="controls:ListBoxItemBehavior.IsBroughtIntoViewWhenSelected" Value="True" />
                     <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="8" />
                     <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
 
@@ -114,7 +117,7 @@
     </Style>
 
     <DataTemplate x:Key="TiledFileDataTemplate" DataType="{x:Type vm:GameFileViewModel}">
-        <local:GameFileButton />
+        <local:FileButton />
     </DataTemplate>
 
     <DataTemplate x:Key="TiledFolderDataTemplate" DataType="{x:Type vm:TreeItem}">

@@ -2,9 +2,9 @@
 
 namespace FModel.Views.Resources.Controls.TiledExplorer;
 
-public partial class GameFileButton : UserControl
+public partial class FileButton : UserControl
 {
-    public GameFileButton()
+    public FileButton()
     {
         InitializeComponent();
     }

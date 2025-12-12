@@ -28,8 +28,6 @@ public partial class ResourcesDictionary
                 ApplicationService.ApplicationView.SelectedLeftTabIndex = 2;
                 file.IsSelected = true;
                 file.ExtractAsync();
-                // TODO: auto scroll on item selection just like folder view
-                // AssetsListName.ScrollIntoView(file.Asset);
                 break;
             case TreeItem folder:
                 ApplicationService.ApplicationView.SelectedLeftTabIndex = 1;

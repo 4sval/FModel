@@ -49,15 +49,15 @@ public partial class MainWindow
         InitializeComponent();
 
         AssetsExplorer.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
-        AssetsExplorer.SelectionChanged += (s, e) => SyncSelection(AssetsExplorer, AssetsListName, e);
-        AssetsListName.SelectionChanged += (s, e) => SyncSelection(AssetsListName, AssetsExplorer, e);
+        AssetsExplorer.SelectionChanged += (_, e) => SyncSelection(AssetsListName, e);
+        AssetsListName.SelectionChanged += (_, e) => SyncSelection(AssetsExplorer, e);
 
         FLogger.Logger = LogRtbName;
         YesWeCats = this;
     }
 
     // Hack to sync selection between packages tab and explorer
-    private void SyncSelection(ListBox source, ListBox target, SelectionChangedEventArgs e)
+    private void SyncSelection(ListBox target, SelectionChangedEventArgs e)
     {
         foreach (var added in e.AddedItems.OfType<GameFileViewModel>())
         {
