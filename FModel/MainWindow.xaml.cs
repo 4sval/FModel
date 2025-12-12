@@ -259,14 +259,39 @@ public partial class MainWindow
 
     private async void OnPreviewKeyDown(object sender, KeyEventArgs e)
     {
-        if (!_applicationView.Status.IsReady || sender is not ListBox listBox) return;
+        if (!_applicationView.Status.IsReady || sender is not ListBox listBox)
+            return;
+        if (e.Key != Key.Enter)
+            return;
+        if (listBox.SelectedItem == null)
+            return;
 
-        switch (e.Key)
+        switch (listBox.SelectedItem)
         {
-            case Key.Enter:
+            case GameFileViewModel file:
                 _applicationView.IsAssetsExplorerVisible = false;
-                var selectedItems = listBox.SelectedItems.Cast<GameFileViewModel>().Select(gvm => gvm.Asset).ToList();
-                await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
+                ApplicationService.ApplicationView.SelectedLeftTabIndex = 2;
+                await _threadWorkerView.Begin(cancellationToken => _applicationView.CUE4Parse.ExtractSelected(cancellationToken, [file.Asset]));
+                break;
+            case TreeItem folder:
+                ApplicationService.ApplicationView.SelectedLeftTabIndex = 1;
+
+                var parent = folder.Parent;
+                while (parent != null)
+                {
+                    parent.IsExpanded = true;
+                    parent = parent.Parent;
+                }
+
+                var childFolder = folder;
+                while (childFolder.Folders.Count == 1 && childFolder.AssetsList.Assets.Count == 0)
+                {
+                    childFolder.IsExpanded = true;
+                    childFolder = childFolder.Folders[0];
+                }
+
+                childFolder.IsExpanded = true;
+                childFolder.IsSelected = true;
                 break;
         }
     }

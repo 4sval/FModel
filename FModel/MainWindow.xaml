@@ -423,6 +423,7 @@
                                          Style="{StaticResource AssetsListBox}"
                                          PreviewMouseDoubleClick="OnAssetsListMouseDoubleClick"
                                          PreviewKeyDown="OnPreviewKeyDown" />
+                                
                                 <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="INFORMATION" />
                                 <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0 0 0 5">
                                     <Grid HorizontalAlignment="Stretch">
@@ -523,7 +524,8 @@
                                 <ListBox x:Name="AssetsExplorer" Grid.Row="2"
                                          ItemsSource="{Binding SelectedItem.CombinedEntries, ElementName=AssetsFolderName, IsAsync=True}"
                                          Style="{StaticResource TiledExplorer}"
-                                         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
+                                         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
+                                         PreviewKeyDown="OnPreviewKeyDown" />
                             </Grid>
                         </Border>
 
