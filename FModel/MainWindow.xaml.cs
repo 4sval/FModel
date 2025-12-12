@@ -49,31 +49,27 @@ public partial class MainWindow
         InitializeComponent();
 
         AssetsExplorer.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
-        AssetsExplorer.SelectionChanged += (s, e) =>
-        {
-            foreach (var added in e.AddedItems.OfType<GameFileViewModel>())
-            {
-                if (!AssetsListName.SelectedItems.Contains(added))
-                    AssetsListName.SelectedItems.Add(added);
-            }
-
-            foreach (var removed in e.RemovedItems.OfType<GameFileViewModel>())
-            {
-                if (AssetsListName.SelectedItems.Contains(removed))
-                    AssetsListName.SelectedItems.Remove(removed);
-            }
-        };
-        AssetsListName.SelectionChanged += (s, e) =>
-        {
-            foreach (var removed in e.RemovedItems.OfType<GameFileViewModel>())
-            {
-                if (AssetsExplorer.SelectedItems.Contains(removed))
-                    AssetsExplorer.SelectedItems.Remove(removed);
-            }
-        };
+        AssetsExplorer.SelectionChanged += (s, e) => SyncSelection(AssetsExplorer, AssetsListName, e);
+        AssetsListName.SelectionChanged += (s, e) => SyncSelection(AssetsListName, AssetsExplorer, e);
 
         FLogger.Logger = LogRtbName;
         YesWeCats = this;
+    }
+
+    // Hack to sync selection between packages tab and explorer
+    private void SyncSelection(ListBox source, ListBox target, SelectionChangedEventArgs e)
+    {
+        foreach (var added in e.AddedItems.OfType<GameFileViewModel>())
+        {
+            if (!target.SelectedItems.Contains(added))
+                target.SelectedItems.Add(added);
+        }
+
+        foreach (var removed in e.RemovedItems.OfType<GameFileViewModel>())
+        {
+            if (target.SelectedItems.Contains(removed))
+                target.SelectedItems.Remove(removed);
+        }
     }
 
     private void OnClosing(object sender, CancelEventArgs e)
