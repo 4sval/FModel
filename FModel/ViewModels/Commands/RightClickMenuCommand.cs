@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using CUE4Parse.FileProvider.Objects;
@@ -24,21 +22,21 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         if (parameter is not object[] parameters || parameters[0] is not string trigger)
             return;
 
-        var param = parameters[1];
+        var param = (parameters[1] as IEnumerable)?.OfType<object>().ToArray() ?? [];
+        if (param.Length == 0) return;
 
-        var assets = (param as IEnumerable)?.OfType<object>()
-            .SelectMany(item => item switch
-            {
-                GameFile gf => new[] { gf },
-                GameFileViewModel gvm => new[] { gvm.Asset },
-                _ => []
-            }) ?? [];
-        var folders = (param as IEnumerable)?.OfType<TreeItem>() ?? [];
+        var folders = param.OfType<TreeItem>().ToArray();
+        var assets = param.SelectMany(item => item switch
+        {
+            GameFile gf => new[] { gf }, // search view passes GameFile directly
+            GameFileViewModel gvm => new[] { gvm.Asset },
+            _ => []
+        }).ToArray();
 
-        if (!assets.Any() && !folders.Any())
+        if (folders.Length == 0 && assets.Length == 0)
             return;
 
-        var updateUi = assets.Count() > 1 ? EBulkType.Auto : EBulkType.None;
+        var updateUi = assets.Length > 1 ? EBulkType.Auto : EBulkType.None;
         await _threadWorkerView.Begin(cancellationToken =>
         {
             switch (trigger)

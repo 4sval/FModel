@@ -163,13 +163,13 @@ public partial class MainWindow
 
     private void OnSearchViewClick(object sender, RoutedEventArgs e)
     {
-        var searchView = Helper.GetWindow<SearchView>("Search View", () => new SearchView().Show());
+        var searchView = Helper.GetWindow<SearchView>("Search For Packages", () => new SearchView().Show());
         searchView.FocusTab(ESearchViewTab.SearchView);
     }
 
     private void OnRefViewClick(object sender, RoutedEventArgs e)
     {
-        var searchView = Helper.GetWindow<SearchView>("Search View", () => new SearchView().Show());
+        var searchView = Helper.GetWindow<SearchView>("Search For Packages", () => new SearchView().Show());
         searchView.FocusTab(ESearchViewTab.RefView);
     }
 
@@ -235,7 +235,9 @@ public partial class MainWindow
     {
         if (sender is not ListBox listBox) return;
 
-        var selectedItems = listBox.SelectedItems.Cast<GameFileViewModel>().Select(gvm => gvm.Asset).ToList();
+        var selectedItems = listBox.SelectedItems.OfType<GameFileViewModel>().Select(gvm => gvm.Asset).ToArray();
+        if (selectedItems.Length == 0) return;
+
         await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
     }
 

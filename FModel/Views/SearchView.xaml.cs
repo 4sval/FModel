@@ -73,8 +73,7 @@ public partial class SearchView
         if (CurrentListView?.SelectedItem is not GameFile entry)
             return;
 
-        //await _applicationView.CUE4Parse.FindReferences(entry);
-        await _threadWorkerView.Begin(cancellationToken => _applicationView.CUE4Parse.FindReferences(entry));
+        await _threadWorkerView.Begin(_ => _applicationView.CUE4Parse.FindReferences(entry));
     }
 
     private void OnTabItemChange(object sender, SelectionChangedEventArgs e)

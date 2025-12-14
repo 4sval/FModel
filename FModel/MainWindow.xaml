@@ -529,7 +529,6 @@
                                 <ToggleButton.Style>
                                     <Style TargetType="ToggleButton" BasedOn="{StaticResource ModernToggleButtonStyle}">
                                         <Setter Property="ToolTip" Value="Preview Textures (OFF)" />
-                                        
                                         <Style.Triggers>
                                             <Trigger Property="IsChecked" Value="True">
                                                 <Setter Property="Background" Value="MediumPurple" />

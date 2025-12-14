@@ -56,7 +56,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
         _applicationView.CUE4Parse.AssetsFolder.Folders.Clear();
         _applicationView.CUE4Parse.SearchVm.SearchResults.Clear();
         _applicationView.SelectedLeftTabIndex = 1; // folders tab
-        Helper.CloseWindow<AdonisWindow>("Search View"); // close search window if opened
+        Helper.CloseWindow<AdonisWindow>("Search For Packages"); // close search window if opened
 
         await Task.WhenAll(
             _applicationView.CUE4Parse.LoadLocalizedResources(), // load locres if not already loaded,

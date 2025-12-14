@@ -38,7 +38,7 @@ public static class Helper
         else
         {
             var w = GetOpenedWindow<T>(windowName);
-            if (windowName == "Search View") w.WindowState = WindowState.Normal;
+            if (windowName == "Search For Packages") w.WindowState = WindowState.Normal;
             w.Focus();
         }
     }

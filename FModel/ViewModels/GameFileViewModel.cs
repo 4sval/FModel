@@ -26,6 +26,9 @@ using CUE4Parse.UE4.Objects.PhysicsEngine;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Textures;
+using CUE4Parse.GameTypes.FN.Assets.Exports.DataAssets;
+using CUE4Parse.UE4.Assets.Objects;
+using CUE4Parse.UE4.Objects.UObject.Editor;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -160,6 +163,37 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 case UDataAsset:
                 case UDataTable:
                     AssetCategory = EAssetCategory.Data;
+                    if (!resolve.HasFlag(EResolveCompute.Preview))
+                        break;
+
+                    if (dummy is UItemDefinitionBase && pointer.Object.Value is UItemDefinitionBase itemDef)
+                    {
+                        if (LookupPreview(itemDef.DataList)) break;
+
+                        if (itemDef is UAthenaPickaxeItemDefinition pickaxe && pickaxe.WeaponDefinition.TryLoad(out UItemDefinitionBase weaponDef))
+                        {
+                            LookupPreview(weaponDef.DataList);
+                        }
+
+                        bool LookupPreview(FInstancedStruct[] dataList)
+                        {
+                            foreach (var data in dataList)
+                            {
+                                if (!data.NonConstStruct.TryGetValue(out FSoftObjectPath icon, "Icon", "LargeIcon") ||
+                                    !icon.TryLoad<UTexture2D>(out var texture))
+                                    continue;
+
+                                var img = texture.Decode(MaxPreviewSize, UserSettings.Default.CurrentDir.TexturePlatform);
+                                if (img == null) return false;
+
+                                using var bitmap = img.ToSkBitmap();
+                                using var image = bitmap.Encode(SKEncodedImageFormat.Png, 100);
+                                SetPreviewImage(image);
+                                return true;
+                            }
+                            return false;
+                        }
+                    }
                     break;
                 case USoundBase:
                 case UAkMediaAssetData:
@@ -183,6 +217,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                     break;
                 case UBlueprintCore:
                 case UBlueprintGeneratedClass:
+                case UClassCookedMetaData:
                     AssetCategory = EAssetCategory.Blueprint;
                     break;
                 case UMaterialInterface:

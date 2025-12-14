@@ -323,7 +323,7 @@ public class CUE4ParseViewModel : ViewModel
 
         AssetsFolder.Folders.Clear();
         SearchVm.SearchResults.Clear();
-        Helper.CloseWindow<AdonisWindow>("Search View");
+        Helper.CloseWindow<AdonisWindow>("Search For Packages");
         Provider.UnloadNonStreamedVfs();
         GC.Collect();
     }
@@ -1204,7 +1204,7 @@ public class CUE4ParseViewModel : ViewModel
         var refs = Provider.ScanForPackageRefs(entry);
         Application.Current.Dispatcher.Invoke(delegate
         {
-            var refView = Helper.GetWindow<SearchView>("Search View", () => new SearchView().Show());
+            var refView = Helper.GetWindow<SearchView>("Search For Packages", () => new SearchView().Show());
             refView.ChangeCollection(ESearchViewTab.RefView, refs, entry);
             refView.FocusTab(ESearchViewTab.RefView);
         });

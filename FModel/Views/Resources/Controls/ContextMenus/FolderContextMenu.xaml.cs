@@ -20,7 +20,7 @@ public partial class FolderContextMenuDictionary
 
     private void FolderContextMenu_OnOpened(object sender, RoutedEventArgs e)
     {
-        if (sender is not ContextMenu menu || menu.PlacementTarget is not FrameworkElement fe)
+        if (sender is not ContextMenu { PlacementTarget: FrameworkElement fe } menu)
             return;
 
         var listBox = FindAncestor<ListBox>(fe);
@@ -52,7 +52,7 @@ public partial class FolderContextMenuDictionary
 
     private void OnFavoriteDirectoryClick(object sender, RoutedEventArgs e)
     {
-        if (sender is not MenuItem menu || menu.CommandParameter is not List<object> list || list.FirstOrDefault() is not TreeItem folder)
+        if (sender is not MenuItem { CommandParameter: List<object> list } || list.FirstOrDefault() is not TreeItem folder)
             return;
 
         _applicationView.CustomDirectories.Add(new CustomDirectory(folder.Header, folder.PathAtThisPoint));
@@ -62,7 +62,7 @@ public partial class FolderContextMenuDictionary
 
     private void OnCopyDirectoryPathClick(object sender, RoutedEventArgs e)
     {
-        if (sender is not MenuItem menu || menu.CommandParameter is not List<object> list || list.FirstOrDefault() is not TreeItem folder)
+        if (sender is not MenuItem { CommandParameter: List<object> list } || list.FirstOrDefault() is not TreeItem folder)
             return;
 
         Clipboard.SetText(folder.PathAtThisPoint);

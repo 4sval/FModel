@@ -42,26 +42,20 @@
                          Fill="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
                          Visibility="{Binding Visibility, ElementName=HintIcon}" />
 
-                <Viewbox Canvas.Left="86" Canvas.Top="86" Width="24" Height="24"
-                         Visibility="{Binding Visibility, ElementName=HintIcon}">
-                    <Canvas Width="24" Height="24"
-                            Visibility="{Binding Visibility, ElementName=HintIcon}">
-                        <Path x:Name="HintIcon"
-                              Data="{Binding Header, Converter={x:Static converters:FolderToGeometryConverter.Instance}}"
-                              Fill="{Binding Header, Converter={x:Static converters:FolderToGeometryConverter.Instance}}">
-                            <Path.Style>
-                                <Style TargetType="Path">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Data, RelativeSource={RelativeSource Self}}" Value="{x:Null}">
-                                            <Setter Property="Visibility" Value="Collapsed" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Path.Style>
-                        </Path>
-                    </Canvas>
-                </Viewbox>
+                <Path x:Name="HintIcon" Canvas.Left="88" Canvas.Top="88" Width="20" Height="20" Stretch="Uniform"
+                      Data="{Binding Header, Converter={x:Static converters:FolderToGeometryConverter.Instance}}"
+                      Fill="{Binding Header, Converter={x:Static converters:FolderToGeometryConverter.Instance}}">
+                    <Path.Style>
+                        <Style TargetType="Path">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Data, RelativeSource={RelativeSource Self}}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Path.Style>
+                </Path>
             </Canvas>
         </Viewbox>
 
