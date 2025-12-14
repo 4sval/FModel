@@ -2,9 +2,9 @@
 
 namespace FModel.Views.Resources.Controls.TiledExplorer;
 
-public partial class FolderButton2 : UserControl
+public partial class FolderButton3 : UserControl
 {
-    public FolderButton2()
+    public FolderButton3()
     {
         InitializeComponent();
     }

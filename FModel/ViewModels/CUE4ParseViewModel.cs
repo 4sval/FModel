@@ -1205,8 +1205,8 @@ public class CUE4ParseViewModel : ViewModel
         Application.Current.Dispatcher.Invoke(delegate
         {
             var refView = Helper.GetWindow<SearchView>("Search View", () => new SearchView().Show());
-            refView.ChangeCollection(ESearchVeiwTab.RefView, refs, entry);
-            refView.FocusTab(ESearchVeiwTab.RefView);
+            refView.ChangeCollection(ESearchViewTab.RefView, refs, entry);
+            refView.FocusTab(ESearchViewTab.RefView);
         });
     }
 

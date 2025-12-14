@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:FModel"
         xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
+        xmlns:inputs="clr-namespace:FModel.Views.Resources.Controls.Inputs"
         xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
         xmlns:settings="clr-namespace:FModel.Settings"
         xmlns:services="clr-namespace:FModel.Services"
@@ -10,8 +11,8 @@
         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
         WindowStartupLocation="CenterScreen" Closing="OnClosing" Loaded="OnLoaded" PreviewKeyDown="OnWindowKeyDown"
-        Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.90'}"
-        Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.80'}">
+        Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.95'}"
+        Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.90'}">
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo ProgressValue="1.0">
             <TaskbarItemInfo.ProgressState>
@@ -277,8 +278,7 @@
                             </Grid>
                         </DockPanel>
                     </TabItem>
-                    <TabItem x:Name="FoldersTab"
-                             Style="{StaticResource TabItemFillSpace}"
+                    <TabItem Style="{StaticResource TabItemFillSpace}"
                              Header="Folders">
                         <Grid>
                             <Grid.RowDefinitions>
@@ -372,42 +372,15 @@
                             </StackPanel>
                         </Grid>
                     </TabItem>
-                    <TabItem x:Name="PackagesTab"
-                             Style="{StaticResource TabItemFillSpace}"
+                    <TabItem Style="{StaticResource TabItemFillSpace}"
                              Header="{Binding SelectedItem.AssetsList.Assets.Count, FallbackValue=0, ElementName=AssetsFolderName}"
                              HeaderStringFormat="{}{0} Packages">
                         <DockPanel>
-                            <Grid DockPanel.Dock="Top" ZIndex="0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
 
-                                <Grid Grid.Column="0" ZIndex="1" HorizontalAlignment="Left" Margin="5 2 0 0">
-                                    <Viewbox Width="16" Height="16">
-                                        <Canvas Width="24" Height="24">
-                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SearchIcon}" />
-                                        </Canvas>
-                                    </Viewbox>
-                                </Grid>
-                                <TextBox Grid.Column="0" Grid.ColumnSpan="2" x:Name="AssetsSearchName" AcceptsTab="False" AcceptsReturn="False"
-                                         Text="{Binding SelectedItem.SearchText, ElementName=AssetsFolderName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                         Padding="25 0 0 0" HorizontalAlignment="Stretch"
-                                         adonisExtensions:WatermarkExtension.Watermark="Search by name.." />
-                                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                    <Button ToolTip="Clear Search Filter"
-                                            Padding="5"
-                                            Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}"
-                                            Click="OnClearFilterClick">
-                                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
-                                            <Canvas Width="24" Height="24">
-                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                      Data="{StaticResource ClearFiltersIcon}"/>
-                                            </Canvas>
-                                        </Viewbox>
-                                    </Button>
-                                </StackPanel>
-                            </Grid>
+                            <inputs:SearchTextBox DockPanel.Dock="Top" x:Name="AssetsSearchTextBox"
+                                                  Text="{Binding SelectedItem.SearchText, ElementName=AssetsFolderName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  ClearButtonClick="OnClearFilterClick" />
+
                             <Grid DockPanel.Dock="Top">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
@@ -416,14 +389,15 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <controls:Breadcrumb Grid.Row="0" MaxWidth="{Binding ActualWidth, ElementName=AssetsSearchName}" HorizontalAlignment="Left" Margin="0 5 0 5"
+                                <controls:Breadcrumb Grid.Row="0" HorizontalAlignment="Left" Margin="0 5 0 5"
+                                                     MaxWidth="{Binding ActualWidth, ElementName=AssetsSearchTextBox}"
                                                      DataContext="{Binding SelectedItem.PathAtThisPoint, ElementName=AssetsFolderName, FallbackValue='No/Directory/Detected/In/Folder'}"/>
 
                                 <ListBox Grid.Row="1" x:Name="AssetsListName"
                                          Style="{StaticResource AssetsListBox}"
                                          PreviewMouseDoubleClick="OnAssetsListMouseDoubleClick"
                                          PreviewKeyDown="OnPreviewKeyDown" />
-                                
+
                                 <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="INFORMATION" />
                                 <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0 0 0 5">
                                     <Grid HorizontalAlignment="Stretch">
@@ -470,55 +444,35 @@
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0">
-                        <Border BorderThickness="1"
+                        <Border BorderThickness="1" Padding="10"
                                 BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
+                                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
                                 Visibility="{Binding IsAssetsExplorerVisible, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <Grid Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
+                            <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
 
-                                <Grid Grid.Row="0" Margin="12">
+                                <Grid Grid.Row="0" adonisExtensions:LayerExtension.Layer="3">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="5" />
+                                        <ColumnDefinition Width="Auto" MinWidth="150" />
                                     </Grid.ColumnDefinitions>
 
-                                    <TextBox Grid.Column="0" Style="{StaticResource ModernSearchBar}"
-                                             Text="{Binding SelectedItem.SearchText, ElementName=AssetsFolderName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                             adonisExtensions:WatermarkExtension.Watermark="Search by name.."
-                                             Visibility="{Binding SelectedItem.SearchBarVisibility, ElementName=AssetsFolderName, FallbackValue=Collapsed}" />
-                                    <Button Grid.Column="1"
-                                            Cursor="Hand"
-                                            Margin="4,0,0,0"
-                                            Style="{StaticResource ModernIconButton}"
-                                            ToolTip="Clear Search Filter"
-                                            Visibility="{Binding SelectedItem.SearchBarVisibility, ElementName=AssetsFolderName, FallbackValue=Collapsed}"
-                                            Click="OnClearFilterClick">
-                                        <Viewbox Width="16"
-                                                 Height="24">
-                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                  Data="{StaticResource ClearFiltersIcon}" />
-                                        </Viewbox>
-                                    </Button>
+                                    <inputs:SearchTextBox Grid.Column="0"
+                                                          Text="{Binding SelectedItem.SearchText, ElementName=AssetsFolderName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                          ClearButtonClick="OnClearFilterClick" />
+
                                     <ComboBox Grid.Column="2"
-                                              Width="150"
-                                              Margin="6,0,0,0"
-                                              SelectedIndex="0"
-                                              BorderThickness="1.5"
-                                              adonisExtensions:CornerRadiusExtension.CornerRadius="8"
-                                              Cursor="Hand"
                                               ItemsSource="{Binding Categories}"
-                                              SelectedItem="{Binding SelectedItem.SelectedCategory, ElementName=AssetsFolderName, Mode=TwoWay}"
-                                              Visibility="{Binding SelectedItem.SearchBarVisibility, ElementName=AssetsFolderName, FallbackValue=Collapsed}" />
+                                              SelectedItem="{Binding SelectedItem.SelectedCategory, ElementName=AssetsFolderName, Mode=TwoWay}" />
                                 </Grid>
 
-                                <controls:Breadcrumb Grid.Row="1"
+                                <controls:Breadcrumb Grid.Row="1" Margin="0 5 0 0"
                                                      HorizontalAlignment="Left"
-                                                     Margin="10 5 0 5"
                                                      DataContext="{Binding SelectedItem.PathAtThisPoint, ElementName=AssetsFolderName}" />
 
                                 <ListBox x:Name="AssetsExplorer" Grid.Row="2"
@@ -570,17 +524,16 @@
                                           Height="32"
                                           Cursor="Hand"
                                           Margin="0, 0, 2, 0"
-                                          ToolTip="Preview Textures"
                                           Checked="OnPreviewTexturesToggled"
                                           IsChecked="{Binding PreviewTexturesAssetExplorer, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}">
                                 <ToggleButton.Style>
-                                    <Style TargetType="ToggleButton"
-                                           BasedOn="{StaticResource ModernToggleButtonStyle}">
+                                    <Style TargetType="ToggleButton" BasedOn="{StaticResource ModernToggleButtonStyle}">
+                                        <Setter Property="ToolTip" Value="Preview Textures (OFF)" />
+                                        
                                         <Style.Triggers>
-                                            <Trigger Property="IsChecked"
-                                                     Value="True">
-                                                <Setter Property="Background"
-                                                        Value="MediumPurple" />
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter Property="Background" Value="MediumPurple" />
+                                                <Setter Property="ToolTip" Value="Preview Textures (ON)" />
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>

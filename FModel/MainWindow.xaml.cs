@@ -164,13 +164,13 @@ public partial class MainWindow
     private void OnSearchViewClick(object sender, RoutedEventArgs e)
     {
         var searchView = Helper.GetWindow<SearchView>("Search View", () => new SearchView().Show());
-        searchView.FocusTab(ESearchVeiwTab.SearchView);
+        searchView.FocusTab(ESearchViewTab.SearchView);
     }
 
     private void OnRefViewClick(object sender, RoutedEventArgs e)
     {
         var searchView = Helper.GetWindow<SearchView>("Search View", () => new SearchView().Show());
-        searchView.FocusTab(ESearchVeiwTab.RefView);
+        searchView.FocusTab(ESearchViewTab.RefView);
     }
 
     private void OnTabItemChange(object sender, SelectionChangedEventArgs e)

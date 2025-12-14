@@ -10,7 +10,7 @@ namespace FModel.Views.Resources.Controls;
 
 public partial class Breadcrumb
 {
-    private const string NAVIGATE_NEXT = "M0,0 L6,6 L0,12 Z";
+    private const string NavigateNext = "M9.31 6.71c-.39.39-.39 1.02 0 1.41L13.19 12l-3.88 3.88c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l4.59-4.59c.39-.39.39-1.02 0-1.41L10.72 6.7c-.38-.38-1.02-.38-1.41.01z";
 
     public Breadcrumb()
     {
@@ -19,80 +19,83 @@ public partial class Breadcrumb
 
     private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
-        if (e.NewValue is not string pathAtThisPoint)
-            return;
+        if (e.NewValue is not string pathAtThisPoint) return;
         InMeDaddy.Children.Clear();
 
         var folders = pathAtThisPoint.Split('/');
-
-        for (int i = 0; i < folders.Length; i++)
+        for (var i = 0; i < folders.Length; i++)
         {
-            var folderBorder = new Border
+            var border = new Border
             {
+                BorderThickness = new Thickness(1),
+                BorderBrush = Brushes.Transparent,
                 Background = Brushes.Transparent,
-                CornerRadius = new CornerRadius(4),
-                Padding = new Thickness(6, 2, 6, 2),
-                Margin = new Thickness(0, 0, 4, 0),
-                Tag = i + 1
+                Padding = new Thickness(6, 3, 6, 3),
+                Cursor = Cursors.Hand,
+                Tag = i + 1,
+                IsEnabled = i < folders.Length - 1,
+                Child = new TextBlock
+                {
+                    Text = folders[i],
+                    VerticalAlignment = VerticalAlignment.Center
+                }
             };
 
-            var folderText = new TextBlock
-            {
-                Text = folders[i],
-                Foreground = i == folders.Length - 1 ? Brushes.White : Brushes.LightGray,
-                FontWeight = i == folders.Length - 1 ? FontWeights.Bold : FontWeights.Normal
-            };
+            border.MouseEnter += OnMouseEnter;
+            border.MouseLeave += OnMouseLeave;
+            border.MouseUp += OnMouseClick;
 
-            folderBorder.Child = folderText;
+            InMeDaddy.Children.Add(border);
+            if (i >= folders.Length - 1) continue;
 
-            if (i != folders.Length - 1)
+            InMeDaddy.Children.Add(new Viewbox
             {
-                folderBorder.Cursor = Cursors.Hand;
-                folderBorder.MouseEnter += (_, _) =>
+                Width = 16,
+                Height = 16,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Child = new Canvas
                 {
-                    folderBorder.Background = new SolidColorBrush(Color.FromArgb(30, 255, 255, 255));
-                };
-                folderBorder.MouseLeave += (_, _) => folderBorder.Background = Brushes.Transparent;
-                folderBorder.MouseUp += OnFolderClick;
-            }
-
-            InMeDaddy.Children.Add(folderBorder);
-
-            if (i < folders.Length - 1)
-            {
-                InMeDaddy.Children.Add(new Viewbox
-                {
-                    Width = 4,
-                    Height = 8,
-                    Margin = new Thickness(0, 0, 4, 0),
-                    Child = new Path
+                    Width = 24,
+                    Height = 24,
+                    Children =
                     {
-                        Fill = Brushes.LightGray,
-                        Data = Geometry.Parse(NAVIGATE_NEXT),
-                        Stretch = Stretch.Uniform
+                        new Path
+                        {
+                            Fill = Brushes.White,
+                            Data = Geometry.Parse(NavigateNext),
+                            Opacity = 0.6
+                        }
                     }
-                });
-            }
+                }
+            });
         }
     }
 
-    private void OnFolderClick(object sender, MouseButtonEventArgs e)
+    private void OnMouseEnter(object sender, MouseEventArgs e)
     {
-        if (sender is not Border { Tag: int index } folder)
-            return;
-        if (folder.Child is not TextBlock textBlock)
-            return;
+        if (sender is Border border)
+        {
+            border.BorderBrush = new SolidColorBrush(Color.FromRgb(127, 127, 144));
+            border.Background = new SolidColorBrush(Color.FromRgb(72, 73, 92));
+        }
+    }
 
-        var pathAtThisPoint = string.Join('/', InMeDaddy.Children
-            .OfType<Border>()
-            .Select(b => ((TextBlock) b.Child).Text));
+    private void OnMouseLeave(object sender, MouseEventArgs e)
+    {
+        if (sender is Border border)
+        {
+            border.BorderBrush = Brushes.Transparent;
+            border.Background = Brushes.Transparent;
+        }
+    }
 
-        var directories = pathAtThisPoint.Split('/');
-        var targetDirectory = string.Join('/', directories.Take(index));
+    private void OnMouseClick(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is not Border { DataContext: string pathAtThisPoint, Tag: int index }) return;
 
-        if (pathAtThisPoint.Equals(targetDirectory))
-            return;
+        var directory = string.Join('/', pathAtThisPoint.Split('/').Take(index));
+        if (pathAtThisPoint.Equals(directory)) return;
 
-        ApplicationService.ApplicationView.CustomDirectories.GoToCommand.JumpTo(targetDirectory);
+        ApplicationService.ApplicationView.CustomDirectories.GoToCommand.JumpTo(directory);
     }
 }

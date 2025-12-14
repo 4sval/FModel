@@ -11,7 +11,7 @@ using FModel.ViewModels;
 
 namespace FModel.Views;
 
-public enum ESearchVeiwTab
+public enum ESearchViewTab
 {
     SearchView,
     RefView
@@ -24,7 +24,7 @@ public partial class SearchView
     private SearchViewModel _searchViewModel => _applicationView.CUE4Parse.SearchVm;
     private SearchViewModel _refViewModel => _applicationView.CUE4Parse.RefVm;
 
-    private ESearchVeiwTab _currentTab = ESearchVeiwTab.SearchView;
+    private ESearchViewTab _currentTab = ESearchViewTab.SearchView;
 
     public SearchView()
     {
@@ -41,7 +41,7 @@ public partial class SearchView
         SearchTextBox.SelectAll();
     }
 
-    public void FocusTab(ESearchVeiwTab view)
+    public void FocusTab(ESearchViewTab view)
     {
         if (_currentTab == view)
             return;
@@ -49,20 +49,20 @@ public partial class SearchView
         _currentTab = view;
         SearchTabControl.SelectedIndex = view switch
         {
-            ESearchVeiwTab.SearchView => 0,
-            ESearchVeiwTab.RefView => 1,
+            ESearchViewTab.SearchView => 0,
+            ESearchViewTab.RefView => 1,
             _ => SearchTabControl.SelectedIndex
         };
         CurrentTextBox?.Focus();
         CurrentTextBox?.SelectAll();
     }
 
-    public void ChangeCollection(ESearchVeiwTab view, IEnumerable<GameFile> files, GameFile refFile)
+    public void ChangeCollection(ESearchViewTab view, IEnumerable<GameFile> files, GameFile refFile)
     {
         var vm = view switch
         {
-            ESearchVeiwTab.SearchView => _searchViewModel,
-            ESearchVeiwTab.RefView => _refViewModel,
+            ESearchViewTab.SearchView => _searchViewModel,
+            ESearchViewTab.RefView => _refViewModel,
             _ => null
         };
         vm?.ChangeCollection(files, refFile);
@@ -84,8 +84,8 @@ public partial class SearchView
 
         _currentTab = tabControl.SelectedIndex switch
         {
-            0 => ESearchVeiwTab.SearchView,
-            1 => ESearchVeiwTab.RefView,
+            0 => ESearchViewTab.SearchView,
+            1 => ESearchViewTab.RefView,
             _ => _currentTab
         };
         CurrentTextBox?.Focus();
@@ -103,22 +103,22 @@ public partial class SearchView
 
     private SearchViewModel CurrentViewModel => _currentTab switch
     {
-        ESearchVeiwTab.SearchView => _applicationView.CUE4Parse.SearchVm,
-        ESearchVeiwTab.RefView => _applicationView.CUE4Parse.RefVm,
+        ESearchViewTab.SearchView => _applicationView.CUE4Parse.SearchVm,
+        ESearchViewTab.RefView => _applicationView.CUE4Parse.RefVm,
         _ => null
     };
 
     private ListView CurrentListView => _currentTab switch
     {
-        ESearchVeiwTab.SearchView => SearchListView,
-        ESearchVeiwTab.RefView => RefListView,
+        ESearchViewTab.SearchView => SearchListView,
+        ESearchViewTab.RefView => RefListView,
         _ => null
     };
 
     private TextBox CurrentTextBox => _currentTab switch
     {
-        ESearchVeiwTab.SearchView => SearchTextBox,
-        ESearchVeiwTab.RefView => RefSearchTextBox,
+        ESearchViewTab.SearchView => SearchTextBox,
+        ESearchViewTab.RefView => RefSearchTextBox,
         _ => null
     };
 

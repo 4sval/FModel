@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Data;
 using CUE4Parse.UE4.Assets;
+using CUE4Parse.UE4.IO.Objects;
 using FModel.Extensions;
 using FModel.ViewModels;
 
@@ -55,6 +56,6 @@ public class ItemIsIoStoreCondition : IItemCondition
 {
     public bool Matches(GameFileViewModel item)
     {
-        return item?.Package is IoPackage;
+        return item?.Asset is FIoStoreEntry;
     }
 }

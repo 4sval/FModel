@@ -59,13 +59,6 @@ public class TreeItem : ViewModel
         private set => SetProperty(ref _version, value);
     }
 
-    private Visibility _searchBarVisibility = Visibility.Visible;
-    public Visibility SearchBarVisibility
-    {
-        get => _searchBarVisibility;
-        set => SetProperty(ref _searchBarVisibility, value);
-    }
-
     private string _searchText = string.Empty;
     public string SearchText
     {

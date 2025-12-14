@@ -37,19 +37,12 @@ namespace FModel.ViewModels;
 
 public class GameFileViewModel(GameFile asset) : ViewModel
 {
-    private const int MaxPreviewSize = 128; // TODO: get partial payload in C4P
+    private const int MaxPreviewSize = 128;
 
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
     private EResolveCompute _resolved = EResolveCompute.None;
 
     public GameFile Asset { get; } = asset;
-
-    private IPackage? _package;
-    public IPackage? Package
-    {
-        get => _package;
-        private set => SetProperty(ref _package, value);
-    }
 
     private string _resolvedAssetType = asset.Extension;
     public string ResolvedAssetType
@@ -131,19 +124,20 @@ public class GameFileViewModel(GameFile asset) : ViewModel
     {
         return Task.Run(() =>
         {
-            Package ??= _applicationView.CUE4Parse?.Provider.LoadPackage(Asset);
-            if (Package is null)
-                throw new InvalidOperationException("Failed to load package.");
+            // TODO: cache and reuse packages
+            var pkg = _applicationView.CUE4Parse?.Provider.LoadPackage(Asset);
+            if (pkg is null)
+                throw new InvalidOperationException($"Failed to load {Asset.Path} as UE package.");
 
-            var mainIndex = Package.GetExportIndex(Asset.NameWithoutExtension);
-            if (mainIndex < 0) mainIndex = Package.GetExportIndex($"{Asset.NameWithoutExtension}_C");
+            var mainIndex = pkg.GetExportIndex(Asset.NameWithoutExtension);
+            if (mainIndex < 0) mainIndex = pkg.GetExportIndex($"{Asset.NameWithoutExtension}_C");
             if (mainIndex < 0) mainIndex = 0;
 
-            var pointer = new FPackageIndex(Package, mainIndex + 1).ResolvedObject;
+            var pointer = new FPackageIndex(pkg, mainIndex + 1).ResolvedObject;
             if (pointer?.Object is null)
                 return;
 
-            var dummy = ((AbstractUePackage) Package).ConstructObject(pointer.Class?.Object?.Value as UStruct, Package);
+            var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class?.Object?.Value as UStruct, pkg);
             ResolvedAssetType = dummy.ExportType;
 
             switch (dummy)
