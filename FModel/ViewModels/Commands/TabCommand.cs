@@ -31,6 +31,9 @@ public class TabCommand : ViewModelCommand<TabItem>
             case "Close_Other_Tabs":
                 _applicationView.CUE4Parse.TabControl.RemoveOtherTabs(tabViewModel);
                 break;
+            case "Find_References":
+                _applicationView.CUE4Parse.FindReferences(tabViewModel.Entry);
+                break;
             case "Asset_Export_Data":
                 await _threadWorkerView.Begin(_ => _applicationView.CUE4Parse.ExportData(tabViewModel.Entry));
                 break;

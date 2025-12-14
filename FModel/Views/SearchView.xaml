@@ -176,6 +176,18 @@
                                                 </Canvas>
                                             </Viewbox>
                                         </MenuItem.Icon>
+                                        <MenuItem.IsEnabled>
+                                            <Binding Path="PlacementTarget.SelectedItem" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
+                                                <Binding.Converter>
+                                                    <converters:GameFileMeetsConditionConverter>
+                                                        <converters:GameFileMeetsConditionConverter.Conditions>
+                                                            <converters:GameFileIsUePackageCondition />
+                                                            <converters:GameFileIsIoStoreCondition />
+                                                        </converters:GameFileMeetsConditionConverter.Conditions>
+                                                    </converters:GameFileMeetsConditionConverter>
+                                                </Binding.Converter>
+                                            </Binding>
+                                        </MenuItem.IsEnabled>
                                     </MenuItem>
                                     <MenuItem Header="Decompile Blueprint" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
@@ -191,6 +203,17 @@
                                                 </Canvas>
                                             </Viewbox>
                                         </MenuItem.Icon>
+                                        <MenuItem.IsEnabled>
+                                            <Binding Path="PlacementTarget.DataContext" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
+                                                <Binding.Converter>
+                                                    <converters:GameFileMeetsConditionConverter>
+                                                        <converters:GameFileMeetsConditionConverter.Conditions>
+                                                            <converters:GameFileIsUePackageCondition />
+                                                        </converters:GameFileMeetsConditionConverter.Conditions>
+                                                    </converters:GameFileMeetsConditionConverter>
+                                                </Binding.Converter>
+                                            </Binding>
+                                        </MenuItem.IsEnabled>
                                     </MenuItem>
                                     <Separator />
                                     <MenuItem Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
