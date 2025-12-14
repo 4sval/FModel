@@ -19,12 +19,13 @@ public class CopyCommand : ViewModelCommand<ApplicationViewModel>
         if (parameter is not object[] parameters || parameters[0] is not string trigger)
             return;
 
-        IEnumerable<GameFile> entries = parameters[1] switch
-        {
-            GameFileViewModel gvm => [gvm.Asset],
-            IEnumerable ie => ie.OfType<GameFileViewModel>().Select(gvm => gvm.Asset),
-            _ => []
-        };
+        var entries = (parameters[1] as IEnumerable)?.OfType<object>()
+            .SelectMany(item => item switch
+            {
+                GameFile gf => new[] { gf },
+                GameFileViewModel gvm => new[] { gvm.Asset },
+                _ => []
+            }) ?? [];
 
         if (!entries.Any())
             return;

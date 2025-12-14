@@ -26,7 +26,13 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
 
         var param = parameters[1];
 
-        var assets = (param as IEnumerable)?.OfType<GameFileViewModel>().Select(x => x.Asset) ?? [];
+        var assets = (param as IEnumerable)?.OfType<object>()
+            .SelectMany(item => item switch
+            {
+                GameFile gf => new[] { gf },
+                GameFileViewModel gvm => new[] { gvm.Asset },
+                _ => []
+            }) ?? [];
         var folders = (param as IEnumerable)?.OfType<TreeItem>() ?? [];
 
         if (!assets.Any() && !folders.Any())
