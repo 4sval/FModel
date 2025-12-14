@@ -127,7 +127,9 @@ public enum EAssetCategory : uint
         StaticMesh = Mesh + 1,
         SkeletalMesh = Mesh + 2,
     Skeleton = AssetCategoryExtensions.CategoryBase + (4 << 16),
-    Material = AssetCategoryExtensions.CategoryBase + (5 << 16),
+    Materials = AssetCategoryExtensions.CategoryBase + (5 << 16),
+        Material = Materials + 1,
+        MaterialEditorData = Materials + 2,
     Blueprint = AssetCategoryExtensions.CategoryBase + (6 << 16),
     Audio = AssetCategoryExtensions.CategoryBase + (7 << 16),
     Animation = AssetCategoryExtensions.CategoryBase + (8 << 16),
@@ -136,5 +138,7 @@ public enum EAssetCategory : uint
     Video = AssetCategoryExtensions.CategoryBase + (11 << 16),
     Data = AssetCategoryExtensions.CategoryBase + (12 << 16),
     Map = AssetCategoryExtensions.CategoryBase + (13 << 16),
+        World = Map + 1,
+        BuildData = Map + 2,
     Particle = AssetCategoryExtensions.CategoryBase + (14 << 16)
 }

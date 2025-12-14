@@ -32,15 +32,17 @@ public class FileToGeometryConverter : IMultiValueConverter
                 EAssetCategory.Video => "VideoIcon",
                 EAssetCategory.Data => resolvedAssetType switch
                 {
-                    "uplugin" => "PluginIcon",
+                    "uplugin" or "upluginmanifest" or "uproject" or "uefnproject" => "PluginIcon",
                     "ini" => "ConfigIcon",
                     "locmeta" or "locres" => "LocaleIcon",
                     "lua" or "luac" => "LuaIcon",
                     "json5" or "json" => "JsonIcon",
                     "txt" or "log" or "pem" => "TxtIcon",
+                    "verse" => "VerseIcon",
                     _ => "DataTableIcon"
                 },
-                EAssetCategory.Map => "MapIconAlt",
+                EAssetCategory.World => "WorldIcon",
+                EAssetCategory.BuildData => "MapIconAlt",
                 EAssetCategory.Particle => "ParticleIcon",
                 _ => "AssetIcon"
             };
@@ -53,20 +55,35 @@ public class FileToGeometryConverter : IMultiValueConverter
             var brush = category switch
             {
                 EAssetCategory.Texture => Brushes.MediumPurple,
-                EAssetCategory.Blueprint => Brushes.DodgerBlue,
-                EAssetCategory.Map => Brushes.Orange,
+                EAssetCategory.Blueprint => resolvedAssetType switch
+                {
+                    "UserDefinedEnum" => Brushes.DarkGoldenrod,
+                    "UserDefinedStruct" => Brushes.Tan,
+                    "BluprintGeneratedClass" => Brushes.DodgerBlue,
+                    "AnimBlueprintGeneratedClass" => Brushes.Crimson,
+                    "WidgetBlueprintGeneratedClass" => Brushes.DarkViolet,
+                    "RigVMBlueprintGeneratedClass" or "ControlRigBlueprintGeneratedClass" => Brushes.Teal,
+                    "ClassCookedMetaData" or "StructCookedMetaData" or "EnumCookedMetaData" => Brushes.Yellow,
+                    "Blueprint" => Brushes.Yellow,
+                    _ => Brushes.DodgerBlue
+                },
+                EAssetCategory.World => Brushes.Orange,
+                EAssetCategory.BuildData => Brushes.Tomato,
                 EAssetCategory.Data => resolvedAssetType switch
                 {
-                    "uplugin" => Brushes.GreenYellow,
+                    "uproject" => Brushes.DeepSkyBlue,
+                    "uplugin" or "upluginmanifest" => Brushes.GreenYellow,
                     "ini" => Brushes.LightGray,
                     "locmeta" or "locres" => Brushes.CornflowerBlue,
                     "json5" or "json" => Brushes.LightGreen,
+                    "bin" => Brushes.Yellow,
                     _ => Brushes.White
                 },
                 EAssetCategory.Video => Brushes.IndianRed,
                 EAssetCategory.Particle => Brushes.Gold,
                 EAssetCategory.Audio => Brushes.MediumSeaGreen,
                 EAssetCategory.Material => Brushes.Beige,
+                EAssetCategory.MaterialEditorData => Brushes.Yellow,
                 EAssetCategory.Animation => Brushes.Coral,
                 _ => Brushes.White
             };

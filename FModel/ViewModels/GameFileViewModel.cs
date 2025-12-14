@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CUE4Parse.FileProvider.Objects;
+using CUE4Parse.GameTypes.FN.Assets.Exports.DataAssets;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Component;
@@ -14,21 +15,22 @@ using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.Engine.Font;
 using CUE4Parse.UE4.Assets.Exports.Fmod;
 using CUE4Parse.UE4.Assets.Exports.Material;
+using CUE4Parse.UE4.Assets.Exports.Material.Editor;
+using CUE4Parse.UE4.Assets.Exports.Niagara;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.Sound;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
+using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.MediaAssets;
 using CUE4Parse.UE4.Objects.Niagara;
 using CUE4Parse.UE4.Objects.PhysicsEngine;
 using CUE4Parse.UE4.Objects.UObject;
+using CUE4Parse.UE4.Objects.UObject.Editor;
 using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Textures;
-using CUE4Parse.GameTypes.FN.Assets.Exports.DataAssets;
-using CUE4Parse.UE4.Assets.Objects;
-using CUE4Parse.UE4.Objects.UObject.Editor;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -127,6 +129,20 @@ public class GameFileViewModel(GameFile asset) : ViewModel
     {
         return Task.Run(() =>
         {
+            _resolved |= EResolveCompute.Preview;
+            if (Asset.Extension is "umap")
+            {
+                AssetCategory = EAssetCategory.World;
+                ResolvedAssetType = "World";
+                return;
+            }
+            if (Asset.NameWithoutExtension.EndsWith("_BuiltData"))
+            {
+                AssetCategory = EAssetCategory.BuildData;
+                ResolvedAssetType = "MapBuildDataRegistry";
+                return;
+            }
+
             // TODO: cache and reuse packages
             var pkg = _applicationView.CUE4Parse?.Provider.LoadPackage(Asset);
             if (pkg is null)
@@ -147,6 +163,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             {
                 case UTexture when pointer.Object.Value is UTexture texture:
                 {
+                    _resolved &= ~EResolveCompute.Preview;
                     AssetCategory = EAssetCategory.Texture;
                     if (!resolve.HasFlag(EResolveCompute.Preview))
                         break;
@@ -160,13 +177,13 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                     }
                     break;
                 }
-                case UDataAsset:
-                case UDataTable:
+                case UItemDefinitionBase:
+                    _resolved &= ~EResolveCompute.Preview;
                     AssetCategory = EAssetCategory.Data;
                     if (!resolve.HasFlag(EResolveCompute.Preview))
                         break;
 
-                    if (dummy is UItemDefinitionBase && pointer.Object.Value is UItemDefinitionBase itemDef)
+                    if (pointer.Object.Value is UItemDefinitionBase itemDef)
                     {
                         if (LookupPreview(itemDef.DataList)) break;
 
@@ -195,6 +212,11 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                         }
                     }
                     break;
+                case UDataAsset:
+                case UDataTable:
+                case UCurveTable:
+                    AssetCategory = EAssetCategory.Data;
+                    break;
                 case USoundBase:
                 case UAkMediaAssetData:
                 case UAtomWaveBank:
@@ -215,13 +237,20 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 case USkeletalMesh:
                     AssetCategory = EAssetCategory.SkeletalMesh;
                     break;
-                case UBlueprintCore:
                 case UBlueprintGeneratedClass:
+                case UUserDefinedEnum:
+                case UUserDefinedStruct:
+                case UBlueprintCore:
                 case UClassCookedMetaData:
+                case UStructCookedMetaData:
+                case UEnumCookedMetaData:
                     AssetCategory = EAssetCategory.Blueprint;
                     break;
                 case UMaterialInterface:
                     AssetCategory = EAssetCategory.Material;
+                    break;
+                case UMaterialInterfaceEditorOnlyData:
+                    AssetCategory = EAssetCategory.MaterialEditorData;
                     break;
                 case UPhysicsAsset:
                     AssetCategory = EAssetCategory.PhysicsAsset;
@@ -237,8 +266,9 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                     AssetCategory = EAssetCategory.Video;
                     break;
                 case UWorld:
-                    AssetCategory = EAssetCategory.Map;
+                    AssetCategory = EAssetCategory.World;
                     break;
+                case UNiagaraScriptBase:
                 case UNiagaraSystem:
                 case UParticleSystem:
                     AssetCategory = EAssetCategory.Particle;
@@ -249,16 +279,22 @@ public class GameFileViewModel(GameFile asset) : ViewModel
 
     private Task ResolveByExtensionAsync(EResolveCompute resolve)
     {
+        _resolved |= EResolveCompute.Preview;
         switch (Asset.Extension)
         {
+            case "uproject":
+            case "uefnproject":
+            case "upluginmanifest":
             case "uplugin":
             case "ini":
             case "locmeta":
             case "locres":
+            case "verse":
             case "lua":
             case "luac":
             case "json5":
             case "json":
+            case "bin":
             case "txt":
             case "log":
             case "pem":
@@ -290,6 +326,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             case "bmp":
             case "svg":
             {
+                _resolved &= ~EResolveCompute.Preview;
                 AssetCategory = EAssetCategory.Texture;
                 if (!resolve.HasFlag(EResolveCompute.Preview))
                     break;
