@@ -66,6 +66,8 @@ public class FileToGeometryConverter : IMultiValueConverter
                 EAssetCategory.Video => Brushes.IndianRed,
                 EAssetCategory.Particle => Brushes.Gold,
                 EAssetCategory.Audio => Brushes.MediumSeaGreen,
+                EAssetCategory.Material => Brushes.Beige,
+                EAssetCategory.Animation => Brushes.Coral,
                 _ => Brushes.White
             };
 

@@ -54,10 +54,12 @@ public class FolderToGeometryConverter : IValueConverter
                 "movies" or "video" or "videos" or "cinematics" => Brushes.IndianRed,
                 "data" or "datatable" or "datatables" => Brushes.SteelBlue,
                 "blueprint" or "blueprints" => Brushes.DodgerBlue,
+                "material" or "materials" => Brushes.Beige,
                 "plugin" or "plugins" => Brushes.GreenYellow,
                 "localization" => Brushes.CornflowerBlue,
                 "map" or "maps" or "world" or "worlds" => Brushes.Orange,
                 "effect" or "effects" or "niagara" => Brushes.Gold,
+                "animation" or "animations" or "anim" or "animsequences" or "montage" or "montages" => Brushes.Coral,
                 _ => Brushes.White,
             };
 
