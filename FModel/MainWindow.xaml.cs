@@ -198,6 +198,18 @@ public partial class MainWindow
             });
         }
     }
+    private async void OnFolderSaveDecompiled(object sender, RoutedEventArgs e)
+    {
+        if (AssetsFolderName.SelectedItem is TreeItem folder)
+        {
+            await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.SaveDecompiled(cancellationToken, folder); });
+            FLogger.Append(ELog.Information, () =>
+            {
+                FLogger.Text("Successfully saved ", Constants.WHITE);
+                FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.PropertiesDirectory, true);
+            });
+        }
+    }
 
     private async void OnFolderTextureClick(object sender, RoutedEventArgs e)
     {

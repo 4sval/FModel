@@ -581,7 +581,8 @@ public class CUE4ParseViewModel : ViewModel
 
     public void SaveFolder(CancellationToken cancellationToken, TreeItem folder)
         => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, EBulkType.Properties | EBulkType.Auto));
-
+    public void SaveDecompiled(CancellationToken cancellationToken, TreeItem folder)
+  => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, EBulkType.Code | EBulkType.Auto));
     public void TextureFolder(CancellationToken cancellationToken, TreeItem folder)
         => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, EBulkType.Textures | EBulkType.Auto));
 
@@ -606,6 +607,7 @@ public class CUE4ParseViewModel : ViewModel
         var saveProperties = HasFlag(bulk, EBulkType.Properties);
         var saveTextures = HasFlag(bulk, EBulkType.Textures);
         var saveAudio = HasFlag(bulk, EBulkType.Audio);
+        var saveDecompiled = HasFlag(bulk, EBulkType.Code);
         switch (entry.Extension)
         {
             case "uasset":
@@ -619,8 +621,13 @@ public class CUE4ParseViewModel : ViewModel
                     TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(saveProperties), Formatting.Indented), saveProperties, updateUi);
                     if (saveProperties) break; // do not search for viewable exports if we are dealing with jsons
                 }
+                if (saveDecompiled || updateUi)
+                {
+                    Decompile(entry, false);
+                    TabControl.SelectedTab.SaveDecompiled(updateUi);
+                }
 
-                for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
+                    for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
                 {
                     if (CheckExport(cancellationToken, result.Package, i, bulk))
                         break;
@@ -1178,9 +1185,9 @@ public class CUE4ParseViewModel : ViewModel
         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(package, Formatting.Indented), false, false);
     }
 
-    public void Decompile(GameFile entry)
+    public void Decompile(GameFile entry, bool AddTab = true)
     {
-        if (TabControl.CanAddTabs) TabControl.AddTab(entry);
+        if (TabControl.CanAddTabs && AddTab) TabControl.AddTab(entry);
         else TabControl.SelectedTab.SoftReset(entry);
 
         TabControl.SelectedTab.TitleExtra = "Decompiled";
