@@ -143,9 +143,9 @@ public partial class MainWindow
             OnSearchViewClick(null, null);
         else if (_applicationView.Status.IsReady && e.Key == Key.R && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
             OnRefViewClick(null, null);
-        else if (e.Key == Key.Left && _applicationView.CUE4Parse.TabControl.SelectedTab.HasImage)
+        else if (e.Key == Key.Left && _applicationView.CUE4Parse.TabControl.SelectedTab != null && _applicationView.CUE4Parse.TabControl.SelectedTab.HasImage)
             _applicationView.CUE4Parse.TabControl.SelectedTab.GoPreviousImage();
-        else if (e.Key == Key.Right && _applicationView.CUE4Parse.TabControl.SelectedTab.HasImage)
+        else if (e.Key == Key.Right && _applicationView.CUE4Parse.TabControl.SelectedTab != null && _applicationView.CUE4Parse.TabControl.SelectedTab.HasImage)
             _applicationView.CUE4Parse.TabControl.SelectedTab.GoNextImage();
         else if (UserSettings.Default.AssetAddTab.IsTriggered(e.Key))
             _applicationView.CUE4Parse.TabControl.AddTab();

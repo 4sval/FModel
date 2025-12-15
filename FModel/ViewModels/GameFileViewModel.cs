@@ -24,6 +24,7 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Objects.Engine;
+using CUE4Parse.UE4.Objects.Engine.Curves;
 using CUE4Parse.UE4.Objects.MediaAssets;
 using CUE4Parse.UE4.Objects.Niagara;
 using CUE4Parse.UE4.Objects.PhysicsEngine;
@@ -215,8 +216,11 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 case UDataAsset:
                 case UDataTable:
                 case UCurveTable:
+                case UCurveBase:
+                case UFunction:
                     AssetCategory = EAssetCategory.Data;
                     break;
+                case UWwiseAssetLibrary:
                 case USoundBase:
                 case UAkMediaAssetData:
                 case UAtomWaveBank:
@@ -245,6 +249,9 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 case UStructCookedMetaData:
                 case UEnumCookedMetaData:
                     AssetCategory = EAssetCategory.Blueprint;
+                    break;
+                case UMaterialFunction:
+                    AssetCategory = EAssetCategory.MaterialFunction;
                     break;
                 case UMaterialInterface:
                     AssetCategory = EAssetCategory.Material;

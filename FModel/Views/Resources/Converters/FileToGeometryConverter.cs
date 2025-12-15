@@ -15,6 +15,8 @@ public class FileToGeometryConverter : IMultiValueConverter
         if (values.Length < 2 || values[0] is not EAssetCategory category || values[1] is not string resolvedAssetType)
             return null;
 
+        resolvedAssetType = resolvedAssetType.ToLowerInvariant();
+
         if (targetType == typeof(Geometry))
         {
             var resource = category switch
@@ -24,6 +26,7 @@ public class FileToGeometryConverter : IMultiValueConverter
                 EAssetCategory.SkeletalMesh => "SkeletalMeshIconAlt",
                 EAssetCategory.Skeleton => "SkeletonIcon",
                 EAssetCategory.Material => "MaterialIcon",
+                EAssetCategory.MaterialFunction => "MaterialFunctionIcon",
                 EAssetCategory.Blueprint => "BlueprintIcon",
                 EAssetCategory.Audio => "AudioIconAlt",
                 EAssetCategory.Animation => "AnimationIconAlt",
@@ -39,6 +42,8 @@ public class FileToGeometryConverter : IMultiValueConverter
                     "json5" or "json" => "JsonIcon",
                     "txt" or "log" or "pem" => "TxtIcon",
                     "verse" => "VerseIcon",
+                    "curvelinearcolor" or "curvefloat" => "CurveIcon",
+                    "function" => "FunctionIcon",
                     _ => "DataTableIcon"
                 },
                 EAssetCategory.World => "WorldIcon",
@@ -77,12 +82,14 @@ public class FileToGeometryConverter : IMultiValueConverter
                     "locmeta" or "locres" => Brushes.CornflowerBlue,
                     "json5" or "json" => Brushes.LightGreen,
                     "bin" => Brushes.Yellow,
+                    "curvelinearcolor" or "curvefloat" => Brushes.HotPink,
                     _ => Brushes.White
                 },
                 EAssetCategory.Video => Brushes.IndianRed,
                 EAssetCategory.Particle => Brushes.Gold,
                 EAssetCategory.Audio => Brushes.MediumSeaGreen,
                 EAssetCategory.Material => Brushes.Beige,
+                EAssetCategory.MaterialFunction => Brushes.LavenderBlush,
                 EAssetCategory.MaterialEditorData => Brushes.Yellow,
                 EAssetCategory.Animation => Brushes.Coral,
                 _ => Brushes.White

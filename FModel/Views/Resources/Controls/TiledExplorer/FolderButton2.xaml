@@ -110,7 +110,7 @@
             <TextBlock Grid.Row="0"
                        Text="{Binding Header, FallbackValue=Folder Name}"
                        FontSize="13"
-                       TextWrapping="Wrap"
+                       TextWrapping="NoWrap"
                        TextTrimming="CharacterEllipsis"
                        FontWeight="DemiBold"
                        TextAlignment="Center"

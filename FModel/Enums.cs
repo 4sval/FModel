@@ -130,6 +130,7 @@ public enum EAssetCategory : uint
     Materials = AssetCategoryExtensions.CategoryBase + (5 << 16),
         Material = Materials + 1,
         MaterialEditorData = Materials + 2,
+        MaterialFunction = Materials + 3,
     Blueprint = AssetCategoryExtensions.CategoryBase + (6 << 16),
     Audio = AssetCategoryExtensions.CategoryBase + (7 << 16),
     Animation = AssetCategoryExtensions.CategoryBase + (8 << 16),

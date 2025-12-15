@@ -52,7 +52,7 @@ public partial class FolderContextMenuDictionary
 
     private void OnFavoriteDirectoryClick(object sender, RoutedEventArgs e)
     {
-        if (sender is not MenuItem { CommandParameter: List<object> list } || list.FirstOrDefault() is not TreeItem folder)
+        if (sender is not MenuItem { CommandParameter: IEnumerable<object> list } || list.FirstOrDefault() is not TreeItem folder)
             return;
 
         _applicationView.CustomDirectories.Add(new CustomDirectory(folder.Header, folder.PathAtThisPoint));
@@ -62,7 +62,7 @@ public partial class FolderContextMenuDictionary
 
     private void OnCopyDirectoryPathClick(object sender, RoutedEventArgs e)
     {
-        if (sender is not MenuItem { CommandParameter: List<object> list } || list.FirstOrDefault() is not TreeItem folder)
+        if (sender is not MenuItem { CommandParameter: IEnumerable<object> list } || list.FirstOrDefault() is not TreeItem folder)
             return;
 
         Clipboard.SetText(folder.PathAtThisPoint);
