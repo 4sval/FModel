@@ -66,16 +66,6 @@ public enum ELoadingMode
     AllButPatched,
 }
 
-// public enum EUpdateMode
-// {
-//     [Description("Stable")]
-//     Stable,
-//     [Description("Beta")]
-//     Beta,
-//     [Description("QA Testing")]
-//     Qa
-// }
-
 public enum ECompressedAudio
 {
     [Description("Play the decompressed data")]

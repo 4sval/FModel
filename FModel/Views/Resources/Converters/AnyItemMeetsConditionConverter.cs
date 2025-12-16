@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Data;
-using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.IO.Objects;
 using FModel.Extensions;
 using FModel.Settings;
@@ -20,8 +19,13 @@ public class AnyItemMeetsConditionConverter : IValueConverter
     {
         if (value is not IEnumerable items || Conditions.Count == 0)
             return false;
-        if (UserSettings.Default.DisableNewAssetsExplorer)
+        if (!UserSettings.Default.FeaturePreviewNewAssetExplorer)
+        {
+            // actually this hints at a bigger problem, the legacy asset explorer relies on the new one for this converter
+            // because only this new one resolves assets, meaning that unresolved visible items would always return false here
+            // and they can be both unresolved and visible in the legacy asset explorer
             return true;
+        }
 
         return items.OfType<GameFileViewModel>().Any(item => Conditions.All(c => c.Matches(item)));
     }

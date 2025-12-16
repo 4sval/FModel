@@ -52,7 +52,7 @@ public class ApplicationViewModel : ViewModel
         get => _isAssetsExplorerVisible;
         set
         {
-            if (UserSettings.Default.DisableNewAssetsExplorer)
+            if (value && !UserSettings.Default.FeaturePreviewNewAssetExplorer)
                 return;
 
             SetProperty(ref _isAssetsExplorerVisible, value);

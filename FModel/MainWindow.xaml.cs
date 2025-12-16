@@ -312,4 +312,9 @@ public partial class MainWindow
                 break;
         }
     }
+
+    private void FeaturePreviewOnUnchecked(object sender, RoutedEventArgs e)
+    {
+        _applicationView.IsAssetsExplorerVisible = false;
+    }
 }
