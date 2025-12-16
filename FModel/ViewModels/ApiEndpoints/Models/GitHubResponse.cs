@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using AdonisUI.Controls;
 using AutoUpdaterDotNET;
@@ -37,8 +38,7 @@ public class GitHubAsset : ViewModel
 public class GitHubCommit : ViewModel
 {
     private string _sha;
-    [J("sha")]
-    public string Sha
+    [J("sha")] public string Sha
     {
         get => _sha;
         set
@@ -51,6 +51,35 @@ public class GitHubCommit : ViewModel
 
     [J("commit")] public Commit Commit { get; set; }
     [J("author")] public Author Author { get; set; }
+
+    private Author[] _coAuthors = [];
+    public Author[] CoAuthors
+    {
+        get => _coAuthors;
+        set
+        {
+            SetProperty(ref _coAuthors, value);
+            RaisePropertyChanged(nameof(Authors));
+            RaisePropertyChanged(nameof(AuthorNames));
+        }
+    }
+
+    public Author[] Authors => Author != null ? new[] { Author }.Concat(CoAuthors).ToArray() : CoAuthors;
+
+    public string AuthorNames
+    {
+        get
+        {
+            var authors = Authors;
+            return authors.Length switch
+            {
+                0 => string.Empty,
+                1 => authors[0].Login,
+                2 => $"{authors[0].Login} and {authors[1].Login}",
+                _ => string.Join(", ", authors.Take(authors.Length - 1).Select(a => a.Login)) + $", and {authors[^1].Login}"
+            };
+        }
+    }
 
     private GitHubAsset _asset;
     public GitHubAsset Asset

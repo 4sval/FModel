@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using CUE4Parse.Utils;
@@ -13,7 +15,7 @@ using FModel.Views.Resources.Converters;
 
 namespace FModel.ViewModels;
 
-public class UpdateViewModel : ViewModel
+public partial class UpdateViewModel : ViewModel
 {
     private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
 
@@ -25,7 +27,7 @@ public class UpdateViewModel : ViewModel
 
     public UpdateViewModel()
     {
-        Commits = new RangeObservableCollection<GitHubCommit>();
+        Commits = [];
         CommitsView = new ListCollectionView(Commits)
         {
             GroupDescriptions = { new PropertyGroupDescription("Commit.Author.Date", new DateTimeToDateConverter()) }
@@ -35,43 +37,121 @@ public class UpdateViewModel : ViewModel
             RemindMeCommand.Execute(this, null);
     }
 
-    public async Task Load()
+    public async Task LoadAsync()
     {
-        Commits.AddRange(await _apiEndpointView.GitHubApi.GetCommitHistoryAsync());
+        var commits = await _apiEndpointView.GitHubApi.GetCommitHistoryAsync();
+        if (commits == null || commits.Length == 0)
+            return;
 
-        var qa = await _apiEndpointView.GitHubApi.GetReleaseAsync("qa");
-        var assets = qa.Assets.OrderByDescending(x => x.CreatedAt).ToList();
+        Commits.AddRange(commits);
 
-        for (var i = 0; i < assets.Count; i++)
+        try
         {
-            var asset = assets[i];
-            asset.IsLatest = i == 0;
-
-            var commitSha = asset.Name.SubstringBeforeLast(".zip");
-            var commit = Commits.FirstOrDefault(x => x.Sha == commitSha);
-            if (commit != null)
-            {
-                commit.Asset = asset;
-            }
-            else
-            {
-                Commits.Add(new GitHubCommit
-                {
-                    Sha = commitSha,
-                    Commit = new Commit
-                    {
-                        Message = $"FModel ({commitSha[..7]})",
-                        Author = new Author { Name = asset.Uploader.Login, Date = asset.CreatedAt }
-                    },
-                    Author = asset.Uploader,
-                    Asset = asset
-                });
-            }
+            _ = LoadCoAuthors();
+            _ = LoadAssets();
         }
+        catch
+        {
+            //
+        }
+    }
+
+    private Task LoadCoAuthors()
+    {
+        return Task.Run(async () =>
+        {
+            var coAuthorMap = new Dictionary<GitHubCommit, HashSet<string>>();
+            foreach (var commit in Commits)
+            {
+                if (!commit.Commit.Message.Contains("Co-authored-by"))
+                    continue;
+
+                var regex = GetCoAuthorRegex();
+                var matches = regex.Matches(commit.Commit.Message);
+                if (matches.Count == 0) continue;
+
+                commit.Commit.Message = regex.Replace(commit.Commit.Message, string.Empty).Trim();
+
+                coAuthorMap[commit] = [];
+                foreach (Match match in matches)
+                {
+                    if (match.Groups.Count < 3) continue;
+                    coAuthorMap[commit].Add(match.Groups[1].Value);
+                }
+            }
+
+            if (coAuthorMap.Count == 0) return;
+
+            var uniqueUsernames = coAuthorMap.Values.SelectMany(x => x).Distinct().ToArray();
+            var authorCache = new Dictionary<string, Author>();
+            foreach (var username in uniqueUsernames)
+            {
+                try
+                {
+                    var author = await _apiEndpointView.GitHubApi.GetUserAsync(username);
+                    if (author != null)
+                        authorCache[username] = author;
+                }
+                catch
+                {
+                    //
+                }
+            }
+
+            foreach (var (commit, usernames) in coAuthorMap)
+            {
+                var coAuthors = usernames
+                    .Where(username => authorCache.ContainsKey(username))
+                    .Select(username => authorCache[username])
+                    .ToArray();
+
+                if (coAuthors.Length > 0)
+                    commit.CoAuthors = coAuthors;
+            }
+        });
+    }
+
+    private Task LoadAssets()
+    {
+        return Task.Run(async () =>
+        {
+            var qa = await _apiEndpointView.GitHubApi.GetReleaseAsync("qa");
+            var assets = qa.Assets.OrderByDescending(x => x.CreatedAt).ToList();
+
+            for (var i = 0; i < assets.Count; i++)
+            {
+                var asset = assets[i];
+                asset.IsLatest = i == 0;
+
+                var commitSha = asset.Name.SubstringBeforeLast(".zip");
+                var commit = Commits.FirstOrDefault(x => x.Sha == commitSha);
+                if (commit != null)
+                {
+                    commit.Asset = asset;
+                }
+                else
+                {
+                    Commits.Add(new GitHubCommit
+                    {
+                        Sha = commitSha,
+                        Commit = new Commit
+                        {
+                            Message = $"FModel ({commitSha[..7]})",
+                            Author = new Author { Name = asset.Uploader.Login, Date = asset.CreatedAt }
+                        },
+                        Author = asset.Uploader,
+                        Asset = asset
+                    });
+                }
+            }
+        });
     }
 
     public void DownloadLatest()
     {
         Commits.FirstOrDefault(x => x.IsDownloadable && x.Asset.IsLatest)?.Download();
     }
+
+    [GeneratedRegex(@"Co-authored-by:\s*(.+?)\s*<(.+?)>", RegexOptions.IgnoreCase | RegexOptions.Multiline, "en-US")]
+    private static partial Regex GetCoAuthorRegex();
 }
