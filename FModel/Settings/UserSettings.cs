@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
+using CUE4Parse.UE4.Assets.Exports.Material;
+using CUE4Parse.UE4.Assets.Exports.Nanite;
+using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Animations;
-using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
 using CUE4Parse_Conversion.UEFormat.Enums;
-using CUE4Parse.UE4.Assets.Exports.Material;
-using CUE4Parse.UE4.Assets.Exports.Nanite;
 using FModel.Framework;
+using FModel.Services;
 using FModel.ViewModels;
 using FModel.ViewModels.ApiEndpoints.Models;
 using FModel.Views.Snooper;
@@ -27,6 +28,7 @@ namespace FModel.Settings
 #else
         public static readonly string FilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FModel", "AppSettings.json");
 #endif
+        private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
 
         static UserSettings()
         {
@@ -264,6 +266,17 @@ namespace FModel.Settings
         {
             get => _readShaderMaps;
             set => SetProperty(ref _readShaderMaps, value);
+        }
+
+        private bool _disableNewAssetsExplorer;
+        public bool DisableNewAssetsExplorer
+        {
+            get => _disableNewAssetsExplorer;
+            set
+            {
+                _applicationView.IsAssetsExplorerVisible = false;
+                SetProperty(ref _disableNewAssetsExplorer, value);
+            }
         }
 
         private IDictionary<string, DirectorySettings> _perDirectory = new Dictionary<string, DirectorySettings>();

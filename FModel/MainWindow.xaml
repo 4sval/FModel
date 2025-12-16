@@ -519,7 +519,8 @@
                             </EventTrigger>
                         </Border.Triggers>
                         <StackPanel Orientation="Horizontal"
-                                    HorizontalAlignment="Center">
+                                    HorizontalAlignment="Center"
+                                    Visibility="{Binding DisableNewAssetsExplorer, Source={x:Static settings:UserSettings.Default}, Converter={x:Static converters:InvertBoolToVisibilityConverter.Instance}}">
                             <ToggleButton Width="32"
                                           Height="32"
                                           Cursor="Hand"

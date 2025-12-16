@@ -52,10 +52,10 @@ public class ApplicationViewModel : ViewModel
         get => _isAssetsExplorerVisible;
         set
         {
-            if (SetProperty(ref _isAssetsExplorerVisible, value))
-            {
-                // SelectedLeftTabIndex = value ? 1 : 2;
-            }
+            if (UserSettings.Default.DisableNewAssetsExplorer)
+                return;
+
+            SetProperty(ref _isAssetsExplorerVisible, value);
         }
     }
 

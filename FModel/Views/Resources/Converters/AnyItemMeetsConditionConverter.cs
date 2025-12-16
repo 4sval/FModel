@@ -7,6 +7,7 @@ using System.Windows.Data;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.IO.Objects;
 using FModel.Extensions;
+using FModel.Settings;
 using FModel.ViewModels;
 
 namespace FModel.Views.Resources.Converters;
@@ -19,6 +20,8 @@ public class AnyItemMeetsConditionConverter : IValueConverter
     {
         if (value is not IEnumerable items || Conditions.Count == 0)
             return false;
+        if (UserSettings.Default.DisableNewAssetsExplorer)
+            return true;
 
         return items.OfType<GameFileViewModel>().Any(item => Conditions.All(c => c.Matches(item)));
     }
