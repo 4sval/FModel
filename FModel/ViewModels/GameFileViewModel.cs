@@ -9,11 +9,13 @@ using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.GameTypes.FN.Assets.Exports.DataAssets;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports.Animation;
+using CUE4Parse.UE4.Assets.Exports.BuildData;
 using CUE4Parse.UE4.Assets.Exports.Component;
 using CUE4Parse.UE4.Assets.Exports.CriWare;
 using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.Engine.Font;
 using CUE4Parse.UE4.Assets.Exports.Fmod;
+using CUE4Parse.UE4.Assets.Exports.LevelSequence;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Material.Editor;
 using CUE4Parse.UE4.Assets.Exports.Niagara;
@@ -24,15 +26,16 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Objects.Engine;
+using CUE4Parse.UE4.Objects.Engine.Animation;
 using CUE4Parse.UE4.Objects.Engine.Curves;
 using CUE4Parse.UE4.Objects.MediaAssets;
 using CUE4Parse.UE4.Objects.Niagara;
 using CUE4Parse.UE4.Objects.PhysicsEngine;
+using CUE4Parse.UE4.Objects.RigVM;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Objects.UObject.Editor;
 using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Textures;
-using CUE4Parse.UE4.Assets.Exports.LevelSequence;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -133,12 +136,14 @@ public class GameFileViewModel(GameFile asset) : ViewModel
         {
             AssetCategory = EAssetCategory.World;
             ResolvedAssetType = "World";
+            _resolved |= EResolveCompute.Preview;
             return Task.CompletedTask;
         }
         if (Asset.NameWithoutExtension.EndsWith("_BuiltData"))
         {
             AssetCategory = EAssetCategory.BuildData;
             ResolvedAssetType = "MapBuildDataRegistry";
+            _resolved |= EResolveCompute.Preview;
             return Task.CompletedTask;
         }
 
@@ -160,11 +165,52 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class?.Object?.Value as UStruct, pkg);
             ResolvedAssetType = dummy.ExportType;
 
-            switch (dummy)
+            AssetCategory = dummy switch
             {
-                case UTexture when pointer.Object.Value is UTexture texture:
+                URigVMBlueprintGeneratedClass => EAssetCategory.RigVMBlueprintGeneratedClass,
+                UAnimBlueprintGeneratedClass => EAssetCategory.AnimBlueprintGeneratedClass,
+                UWidgetBlueprintGeneratedClass => EAssetCategory.WidgetBlueprintGeneratedClass,
+                UBlueprintGeneratedClass or UFunction => EAssetCategory.BlueprintGeneratedClass,
+                UUserDefinedEnum => EAssetCategory.UserDefinedEnum,
+                UUserDefinedStruct => EAssetCategory.UserDefinedStruct,
+                UBlueprintCore => EAssetCategory.Blueprint,
+                UClassCookedMetaData or UStructCookedMetaData or UEnumCookedMetaData => EAssetCategory.CookedMetaData,
+
+                UStaticMesh => EAssetCategory.StaticMesh,
+                USkeletalMesh => EAssetCategory.SkeletalMesh,
+                UPhysicsAsset => EAssetCategory.PhysicsAsset,
+
+                UTexture => EAssetCategory.Texture,
+
+                UMaterialInterface => EAssetCategory.Material,
+                UMaterialInterfaceEditorOnlyData => EAssetCategory.MaterialEditorData,
+                UMaterialFunction => EAssetCategory.MaterialFunction,
+
+                UAnimationAsset => EAssetCategory.Animation,
+                USkeleton => EAssetCategory.Skeleton,
+
+                UWorld => EAssetCategory.World,
+                UMapBuildDataRegistry => EAssetCategory.BuildData,
+                ULevelSequence => EAssetCategory.LevelSequence,
+
+                UItemDefinitionBase => EAssetCategory.ItemDefinitionBase,
+                UDataAsset or UDataTable or UCurveTable => EAssetCategory.Data,
+                UCurveBase => EAssetCategory.CurveBase,
+
+                UWwiseAssetLibrary or USoundBase or UAkMediaAssetData or UAtomWaveBank or USoundAtomCue
+                    or UAtomCueSheet or USoundAtomCueSheet or UFMODBank or UFMODEvent or UAkAudioType => EAssetCategory.Audio,
+                UFileMediaSource => EAssetCategory.Video,
+                UFont or UFontFace => EAssetCategory.Font,
+
+                UNiagaraSystem or UNiagaraScriptBase or UParticleSystem => EAssetCategory.Particle,
+
+                _ => EAssetCategory.All
+            };
+            
+            switch (AssetCategory)
+            {
+                case EAssetCategory.Texture when pointer.Object.Value is UTexture texture:
                 {
-                    AssetCategory = EAssetCategory.Texture;
                     if (!resolve.HasFlag(EResolveCompute.Preview))
                         break;
 
@@ -177,8 +223,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                     }
                     break;
                 }
-                case UItemDefinitionBase:
-                    AssetCategory = EAssetCategory.Data;
+                case EAssetCategory.ItemDefinitionBase:
                     if (!resolve.HasFlag(EResolveCompute.Preview))
                         break;
 
@@ -211,75 +256,8 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                         }
                     }
                     break;
-                case UDataAsset:
-                case UDataTable:
-                case UCurveTable:
-                case UCurveBase:
-                case UFunction:
-                    AssetCategory = EAssetCategory.Data;
-                    break;
-                case UWwiseAssetLibrary:
-                case USoundBase:
-                case UAkMediaAssetData:
-                case UAtomWaveBank:
-                case USoundAtomCue:
-                case UAtomCueSheet:
-                case USoundAtomCueSheet:
-                case UFMODBank:
-                case UFMODEvent:
-                case UAkAudioType:
-                    AssetCategory = EAssetCategory.Audio;
-                    break;
-                case USkeleton:
-                    AssetCategory = EAssetCategory.Skeleton;
-                    break;
-                case UStaticMesh:
-                    AssetCategory = EAssetCategory.StaticMesh;
-                    break;
-                case USkeletalMesh:
-                    AssetCategory = EAssetCategory.SkeletalMesh;
-                    break;
-                case UBlueprintGeneratedClass:
-                case UUserDefinedEnum:
-                case UUserDefinedStruct:
-                case UBlueprintCore:
-                case UClassCookedMetaData:
-                case UStructCookedMetaData:
-                case UEnumCookedMetaData:
-                    AssetCategory = EAssetCategory.Blueprint;
-                    break;
-                case UMaterialFunction:
-                    AssetCategory = EAssetCategory.MaterialFunction;
-                    break;
-                case UMaterialInterface:
-                    AssetCategory = EAssetCategory.Material;
-                    break;
-                case UMaterialInterfaceEditorOnlyData:
-                    AssetCategory = EAssetCategory.MaterialEditorData;
-                    break;
-                case UPhysicsAsset:
-                    AssetCategory = EAssetCategory.PhysicsAsset;
-                    break;
-                case UAnimationAsset:
-                    AssetCategory = EAssetCategory.Animation;
-                    break;
-                case UFont:
-                case UFontFace:
-                    AssetCategory = EAssetCategory.Font;
-                    break;
-                case UFileMediaSource:
-                    AssetCategory = EAssetCategory.Video;
-                    break;
-                case UWorld:
-                    AssetCategory = EAssetCategory.World;
-                    break;
-                case ULevelSequence:
-                    AssetCategory = EAssetCategory.LevelSequence;
-                    break;
-                case UNiagaraScriptBase:
-                case UNiagaraSystem:
-                case UParticleSystem:
-                    AssetCategory = EAssetCategory.Particle;
+                default:
+                    _resolved |= EResolveCompute.Preview;
                     break;
             }
         });
@@ -287,6 +265,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
 
     private Task ResolveByExtensionAsync(EResolveCompute resolve)
     {
+        _resolved |= EResolveCompute.Preview;
         switch (Asset.Extension)
         {
             case "uproject":
@@ -333,6 +312,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             case "bmp":
             case "svg":
             {
+                _resolved |= ~EResolveCompute.Preview;
                 AssetCategory = EAssetCategory.Texture;
                 if (!resolve.HasFlag(EResolveCompute.Preview))
                     break;

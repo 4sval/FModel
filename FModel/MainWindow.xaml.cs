@@ -143,10 +143,27 @@ public partial class MainWindow
             OnSearchViewClick(null, null);
         else if (_applicationView.Status.IsReady && e.Key == Key.R && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
             OnRefViewClick(null, null);
-        else if (e.Key == Key.Left && _applicationView.CUE4Parse.TabControl.SelectedTab is { HasImage: true })
+        else if (e.Key == Key.Left && !_applicationView.IsAssetsExplorerVisible && _applicationView.CUE4Parse.TabControl.SelectedTab is { HasImage: true })
             _applicationView.CUE4Parse.TabControl.SelectedTab.GoPreviousImage();
-        else if (e.Key == Key.Right && _applicationView.CUE4Parse.TabControl.SelectedTab is { HasImage: true })
+        else if (e.Key == Key.Right && !_applicationView.IsAssetsExplorerVisible && _applicationView.CUE4Parse.TabControl.SelectedTab is { HasImage: true })
             _applicationView.CUE4Parse.TabControl.SelectedTab.GoNextImage();
+        else if (_applicationView.Status.IsReady && _applicationView.IsAssetsExplorerVisible && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt))
+        {
+            CategoriesSelector.SelectedIndex = e.SystemKey switch
+            {
+                Key.D0 or Key.NumPad0 => 0,
+                Key.D1 or Key.NumPad1 => 1,
+                Key.D2 or Key.NumPad2 => 2,
+                Key.D3 or Key.NumPad3 => 3,
+                Key.D4 or Key.NumPad4 => 4,
+                Key.D5 or Key.NumPad5 => 5,
+                Key.D6 or Key.NumPad6 => 6,
+                Key.D7 or Key.NumPad7 => 7,
+                Key.D8 or Key.NumPad8 => 8,
+                Key.D9 or Key.NumPad9 => 9,
+                _ => CategoriesSelector.SelectedIndex
+            };
+        }
         else if (UserSettings.Default.AssetAddTab.IsTriggered(e.Key))
             _applicationView.CUE4Parse.TabControl.AddTab();
         else if (UserSettings.Default.AssetRemoveTab.IsTriggered(e.Key))

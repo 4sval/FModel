@@ -462,11 +462,11 @@
                                         <ColumnDefinition Width="Auto" MinWidth="150" />
                                     </Grid.ColumnDefinitions>
 
-                                    <inputs:SearchTextBox Grid.Column="0"
+                                    <inputs:SearchTextBox x:Name="AssetsExplorerSearch" Grid.Column="0"
                                                           Text="{Binding SelectedItem.SearchText, ElementName=AssetsFolderName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                           ClearButtonClick="OnClearFilterClick" />
 
-                                    <ComboBox Grid.Column="2"
+                                    <ComboBox x:Name="CategoriesSelector" Grid.Column="2"
                                               ItemsSource="{Binding Categories}"
                                               SelectedItem="{Binding SelectedItem.SelectedCategory, ElementName=AssetsFolderName, Mode=TwoWay}" />
                                 </Grid>

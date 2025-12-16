@@ -21,18 +21,33 @@ public class FileToGeometryConverter : IMultiValueConverter
         {
             var resource = category switch
             {
-                EAssetCategory.Texture => "TextureIconAlt",
+                EAssetCategory.BlueprintGeneratedClass => "BlueprintIcon",
+                EAssetCategory.WidgetBlueprintGeneratedClass => "BlueprintIcon",
+                EAssetCategory.AnimBlueprintGeneratedClass => "BlueprintIcon",
+                EAssetCategory.RigVMBlueprintGeneratedClass => "BlueprintIcon",
+                EAssetCategory.Blueprint => "BlueprintIcon",
+                EAssetCategory.UserDefinedEnum => "BlueprintIcon",
+                EAssetCategory.UserDefinedStruct => "BlueprintIcon",
+                EAssetCategory.CookedMetaData => "BlueprintIcon",
+
                 EAssetCategory.StaticMesh => "StaticMeshIconAlt",
                 EAssetCategory.SkeletalMesh => "SkeletalMeshIconAlt",
-                EAssetCategory.Skeleton => "SkeletonIcon",
-                EAssetCategory.Material => "MaterialIcon",
-                EAssetCategory.MaterialFunction => "MaterialFunctionIcon",
-                EAssetCategory.Blueprint => "BlueprintIcon",
-                EAssetCategory.Audio => "AudioIconAlt",
-                EAssetCategory.Animation => "AnimationIconAlt",
-                EAssetCategory.Font => "FontIcon",
                 EAssetCategory.PhysicsAsset => "PhysicsIcon",
-                EAssetCategory.Video => "VideoIcon",
+
+                EAssetCategory.Texture => "TextureIconAlt",
+
+                EAssetCategory.Material or EAssetCategory.MaterialEditorData => "MaterialIcon",
+                EAssetCategory.MaterialFunction => "MaterialFunctionIcon",
+
+                EAssetCategory.Animation => "AnimationIconAlt",
+                EAssetCategory.Skeleton => "SkeletonIcon",
+
+                EAssetCategory.World => "WorldIcon",
+                EAssetCategory.BuildData => "MapIconAlt",
+                EAssetCategory.LevelSequence => "ClapperIcon",
+
+                EAssetCategory.CurveBase => "CurveIcon",
+                EAssetCategory.ItemDefinitionBase => "DataTableIcon",
                 EAssetCategory.Data => resolvedAssetType switch
                 {
                     "uplugin" or "upluginmanifest" or "uproject" or "uefnproject" => "PluginIcon",
@@ -42,13 +57,14 @@ public class FileToGeometryConverter : IMultiValueConverter
                     "json5" or "json" => "JsonIcon",
                     "txt" or "log" or "pem" => "TxtIcon",
                     "verse" => "VerseIcon",
-                    "curvelinearcolor" or "curvefloat" => "CurveIcon",
                     "function" => "FunctionIcon",
                     _ => "DataTableIcon"
                 },
-                EAssetCategory.World => "WorldIcon",
-                EAssetCategory.BuildData => "MapIconAlt",
-                EAssetCategory.LevelSequence => "ClapperIcon",
+
+                EAssetCategory.Audio => "AudioIconAlt",
+                EAssetCategory.Video => "VideoIcon",
+                EAssetCategory.Font => "FontIcon",
+
                 EAssetCategory.Particle => "ParticleIcon",
                 _ => "AssetIcon"
             };
@@ -60,38 +76,43 @@ public class FileToGeometryConverter : IMultiValueConverter
         {
             var brush = category switch
             {
+                EAssetCategory.BlueprintGeneratedClass => Brushes.DodgerBlue,
+                EAssetCategory.WidgetBlueprintGeneratedClass => Brushes.DarkViolet,
+                EAssetCategory.AnimBlueprintGeneratedClass => Brushes.Crimson,
+                EAssetCategory.RigVMBlueprintGeneratedClass => Brushes.Teal,
+                EAssetCategory.Blueprint => Brushes.Yellow,
+                EAssetCategory.CookedMetaData => Brushes.Yellow,
+                EAssetCategory.UserDefinedEnum => Brushes.DarkGoldenrod,
+                EAssetCategory.UserDefinedStruct => Brushes.Tan,
+
                 EAssetCategory.Texture => Brushes.MediumPurple,
-                EAssetCategory.Blueprint => resolvedAssetType switch
-                {
-                    "userdefinedenum" => Brushes.DarkGoldenrod,
-                    "userdefinedstruct" => Brushes.Tan,
-                    "blueprintgeneratedclass" => Brushes.DodgerBlue,
-                    "animblueprintgeneratedclass" => Brushes.Crimson,
-                    "widgetblueprintgeneratedclass" => Brushes.DarkViolet,
-                    "rigvmblueprintgeneratedclass" or "controlrigblueprintgeneratedclass" => Brushes.Teal,
-                    "classcookedmetadata" or "structcookedmetadata" or "enumcookedmetadata" => Brushes.Yellow,
-                    "blueprint" => Brushes.Yellow,
-                    _ => Brushes.DodgerBlue
-                },
+
+                EAssetCategory.Material or EAssetCategory.MaterialFunction => Brushes.BurlyWood,
+                EAssetCategory.MaterialEditorData => Brushes.Yellow,
+
+                EAssetCategory.Animation => Brushes.Coral,
+
                 EAssetCategory.World => Brushes.Orange,
                 EAssetCategory.BuildData => Brushes.Tomato,
+                EAssetCategory.LevelSequence => Brushes.Coral,
+
+                EAssetCategory.CurveBase => Brushes.HotPink,
+
                 EAssetCategory.Data => resolvedAssetType switch
                 {
-                    "uproject" => Brushes.DeepSkyBlue,
+                    "uproject" or "uefnproject" => Brushes.DeepSkyBlue,
                     "uplugin" or "upluginmanifest" => Brushes.GreenYellow,
                     "ini" => Brushes.LightGray,
                     "locmeta" or "locres" => Brushes.CornflowerBlue,
                     "json5" or "json" => Brushes.LightGreen,
                     "bin" => Brushes.Yellow,
-                    "curvelinearcolor" or "curvefloat" => Brushes.HotPink,
                     _ => Brushes.White
                 },
-                EAssetCategory.Video => Brushes.IndianRed,
-                EAssetCategory.Particle => Brushes.Gold,
                 EAssetCategory.Audio => Brushes.MediumSeaGreen,
-                EAssetCategory.Material or EAssetCategory.MaterialFunction => Brushes.BurlyWood,
-                EAssetCategory.MaterialEditorData => Brushes.Yellow,
-                EAssetCategory.Animation or EAssetCategory.LevelSequence => Brushes.Coral,
+                EAssetCategory.Video => Brushes.IndianRed,
+
+                EAssetCategory.Particle => Brushes.Gold,
+                
                 _ => Brushes.White
             };
 
