@@ -9,6 +9,10 @@ using FModel.ViewModels;
 
 namespace FModel.Views.Resources.Converters;
 
+/// <summary>
+/// TODO: migrate legacy view models to use GameFileViewModel instead of GameFile, then remove this converter
+/// for example <see cref="TabItem"/> or <see cref="SearchViewModel"/>
+/// </summary>
 public class GameFileMeetsConditionConverter : IValueConverter
 {
     public Collection<IGameFileCondition> Conditions { get; } = [];

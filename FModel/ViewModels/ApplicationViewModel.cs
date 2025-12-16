@@ -77,7 +77,7 @@ public class ApplicationViewModel : ViewModel
     public CopyCommand CopyCommand => _copyCommand ??= new CopyCommand(this);
     private CopyCommand _copyCommand;
 
-    public string InitialWindowTitle => $"FModel ({Constants.APP_SHORT_COMMIT_ID}, {Constants.APP_BUILD_DATE})";
+    public string InitialWindowTitle => $"FModel ({Constants.APP_SHORT_COMMIT_ID} - {Constants.APP_BUILD_DATE:MMM d, yyyy})";
     public string GameDisplayName => CUE4Parse.Provider.GameDisplayName ?? "Unknown";
     public string TitleExtra => $"({UserSettings.Default.CurrentDir.UeVersion}){(Build != EBuildKind.Release ? $" ({Build})" : "")}";
 

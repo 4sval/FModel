@@ -70,7 +70,11 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
                     case ELoadingMode.Multiple:
                     {
                         var l = (IList) parameter;
-                        if (l.Count < 1) return;
+                        if (l.Count == 0)
+                        {
+                            UserSettings.Default.LoadingMode = ELoadingMode.All;
+                            goto case ELoadingMode.All;
+                        }
 
                         var directoryFilesToShow = l.Cast<FileItem>();
                         FilterDirectoryFilesToDisplay(cancellationToken, directoryFilesToShow);

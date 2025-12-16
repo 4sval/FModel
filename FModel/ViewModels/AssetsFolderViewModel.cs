@@ -181,8 +181,9 @@ public class TreeItem : ViewModel
                     return false;
 
                 bool matchesSearch = filters.Length == 0 || filters.All(x => folder.Header.Contains(x, StringComparison.OrdinalIgnoreCase));
+                bool matchesCategory = SelectedCategory == EAssetCategory.All;
 
-                return matchesSearch;
+                return matchesSearch && matchesCategory;
             };
             FilteredFoldersView.Refresh();
         }

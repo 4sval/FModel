@@ -32,6 +32,7 @@ using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Objects.UObject.Editor;
 using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Textures;
+using CUE4Parse.UE4.Assets.Exports.LevelSequence;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -128,29 +129,28 @@ public class GameFileViewModel(GameFile asset) : ViewModel
 
     private Task ResolveByPackageAsync(EResolveCompute resolve)
     {
+        if (Asset.Extension is "umap")
+        {
+            AssetCategory = EAssetCategory.World;
+            ResolvedAssetType = "World";
+            return Task.CompletedTask;
+        }
+        if (Asset.NameWithoutExtension.EndsWith("_BuiltData"))
+        {
+            AssetCategory = EAssetCategory.BuildData;
+            ResolvedAssetType = "MapBuildDataRegistry";
+            return Task.CompletedTask;
+        }
+
         return Task.Run(() =>
         {
-            _resolved |= EResolveCompute.Preview;
-            if (Asset.Extension is "umap")
-            {
-                AssetCategory = EAssetCategory.World;
-                ResolvedAssetType = "World";
-                return;
-            }
-            if (Asset.NameWithoutExtension.EndsWith("_BuiltData"))
-            {
-                AssetCategory = EAssetCategory.BuildData;
-                ResolvedAssetType = "MapBuildDataRegistry";
-                return;
-            }
-
             // TODO: cache and reuse packages
             var pkg = _applicationView.CUE4Parse?.Provider.LoadPackage(Asset);
             if (pkg is null)
                 throw new InvalidOperationException($"Failed to load {Asset.Path} as UE package.");
 
-            var mainIndex = pkg.GetExportIndex(Asset.NameWithoutExtension);
-            if (mainIndex < 0) mainIndex = pkg.GetExportIndex($"{Asset.NameWithoutExtension}_C");
+            var mainIndex = pkg.GetExportIndex(Asset.NameWithoutExtension, StringComparison.OrdinalIgnoreCase);
+            if (mainIndex < 0) mainIndex = pkg.GetExportIndex($"{Asset.NameWithoutExtension}_C", StringComparison.OrdinalIgnoreCase);
             if (mainIndex < 0) mainIndex = 0;
 
             var pointer = new FPackageIndex(pkg, mainIndex + 1).ResolvedObject;
@@ -164,7 +164,6 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             {
                 case UTexture when pointer.Object.Value is UTexture texture:
                 {
-                    _resolved &= ~EResolveCompute.Preview;
                     AssetCategory = EAssetCategory.Texture;
                     if (!resolve.HasFlag(EResolveCompute.Preview))
                         break;
@@ -179,7 +178,6 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                     break;
                 }
                 case UItemDefinitionBase:
-                    _resolved &= ~EResolveCompute.Preview;
                     AssetCategory = EAssetCategory.Data;
                     if (!resolve.HasFlag(EResolveCompute.Preview))
                         break;
@@ -275,6 +273,9 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 case UWorld:
                     AssetCategory = EAssetCategory.World;
                     break;
+                case ULevelSequence:
+                    AssetCategory = EAssetCategory.LevelSequence;
+                    break;
                 case UNiagaraScriptBase:
                 case UNiagaraSystem:
                 case UParticleSystem:
@@ -286,7 +287,6 @@ public class GameFileViewModel(GameFile asset) : ViewModel
 
     private Task ResolveByExtensionAsync(EResolveCompute resolve)
     {
-        _resolved |= EResolveCompute.Preview;
         switch (Asset.Extension)
         {
             case "uproject":
@@ -333,7 +333,6 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             case "bmp":
             case "svg":
             {
-                _resolved &= ~EResolveCompute.Preview;
                 AssetCategory = EAssetCategory.Texture;
                 if (!resolve.HasFlag(EResolveCompute.Preview))
                     break;

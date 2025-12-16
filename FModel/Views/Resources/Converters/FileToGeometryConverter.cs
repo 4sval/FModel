@@ -48,6 +48,7 @@ public class FileToGeometryConverter : IMultiValueConverter
                 },
                 EAssetCategory.World => "WorldIcon",
                 EAssetCategory.BuildData => "MapIconAlt",
+                EAssetCategory.LevelSequence => "ClapperIcon",
                 EAssetCategory.Particle => "ParticleIcon",
                 _ => "AssetIcon"
             };
@@ -62,14 +63,14 @@ public class FileToGeometryConverter : IMultiValueConverter
                 EAssetCategory.Texture => Brushes.MediumPurple,
                 EAssetCategory.Blueprint => resolvedAssetType switch
                 {
-                    "UserDefinedEnum" => Brushes.DarkGoldenrod,
-                    "UserDefinedStruct" => Brushes.Tan,
-                    "BluprintGeneratedClass" => Brushes.DodgerBlue,
-                    "AnimBlueprintGeneratedClass" => Brushes.Crimson,
-                    "WidgetBlueprintGeneratedClass" => Brushes.DarkViolet,
-                    "RigVMBlueprintGeneratedClass" or "ControlRigBlueprintGeneratedClass" => Brushes.Teal,
-                    "ClassCookedMetaData" or "StructCookedMetaData" or "EnumCookedMetaData" => Brushes.Yellow,
-                    "Blueprint" => Brushes.Yellow,
+                    "userdefinedenum" => Brushes.DarkGoldenrod,
+                    "userdefinedstruct" => Brushes.Tan,
+                    "blueprintgeneratedclass" => Brushes.DodgerBlue,
+                    "animblueprintgeneratedclass" => Brushes.Crimson,
+                    "widgetblueprintgeneratedclass" => Brushes.DarkViolet,
+                    "rigvmblueprintgeneratedclass" or "controlrigblueprintgeneratedclass" => Brushes.Teal,
+                    "classcookedmetadata" or "structcookedmetadata" or "enumcookedmetadata" => Brushes.Yellow,
+                    "blueprint" => Brushes.Yellow,
                     _ => Brushes.DodgerBlue
                 },
                 EAssetCategory.World => Brushes.Orange,
@@ -88,10 +89,9 @@ public class FileToGeometryConverter : IMultiValueConverter
                 EAssetCategory.Video => Brushes.IndianRed,
                 EAssetCategory.Particle => Brushes.Gold,
                 EAssetCategory.Audio => Brushes.MediumSeaGreen,
-                EAssetCategory.Material => Brushes.Beige,
-                EAssetCategory.MaterialFunction => Brushes.LavenderBlush,
+                EAssetCategory.Material or EAssetCategory.MaterialFunction => Brushes.BurlyWood,
                 EAssetCategory.MaterialEditorData => Brushes.Yellow,
-                EAssetCategory.Animation => Brushes.Coral,
+                EAssetCategory.Animation or EAssetCategory.LevelSequence => Brushes.Coral,
                 _ => Brushes.White
             };
 

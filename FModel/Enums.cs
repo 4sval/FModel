@@ -138,8 +138,9 @@ public enum EAssetCategory : uint
     PhysicsAsset = AssetCategoryExtensions.CategoryBase + (10 << 16),
     Video = AssetCategoryExtensions.CategoryBase + (11 << 16),
     Data = AssetCategoryExtensions.CategoryBase + (12 << 16),
-    Map = AssetCategoryExtensions.CategoryBase + (13 << 16),
-        World = Map + 1,
-        BuildData = Map + 2,
+    Level = AssetCategoryExtensions.CategoryBase + (13 << 16),
+        World = Level + 1,
+        BuildData = Level + 2,
+        LevelSequence = Level + 3,
     Particle = AssetCategoryExtensions.CategoryBase + (14 << 16)
 }
