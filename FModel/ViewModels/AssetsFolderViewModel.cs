@@ -208,6 +208,7 @@ public class AssetsFolderViewModel
     {
         Folders = [];
         FoldersView = new ListCollectionView(Folders) { SortDescriptions = { new SortDescription("Header", ListSortDirection.Ascending) } };
+        Folders.CollectionChanged += (_, __) => Folders.FirstOrDefault()?.IsSelected = true;
     }
 
     public void BulkPopulate(IReadOnlyCollection<GameFile> entries)

@@ -307,6 +307,13 @@ namespace FModel.Settings
             set => SetProperty(ref _dirRightTab, value);
         }
 
+        private Hotkey _switchAssetExplorer = new(Key.Z);
+        public Hotkey SwitchAssetExplorer
+        {
+            get => _switchAssetExplorer;
+            set => SetProperty(ref _switchAssetExplorer, value);
+        }
+
         private Hotkey _assetLeftTab = new(Key.Q);
         public Hotkey AssetLeftTab
         {

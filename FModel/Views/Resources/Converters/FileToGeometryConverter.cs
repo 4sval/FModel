@@ -32,7 +32,7 @@ public class FileToGeometryConverter : IMultiValueConverter
 
                 EAssetCategory.StaticMesh => "StaticMeshIconAlt",
                 EAssetCategory.SkeletalMesh => "SkeletalMeshIconAlt",
-                EAssetCategory.PhysicsAsset => "PhysicsIcon",
+                EAssetCategory.Skeleton => "SkeletonIcon",
 
                 EAssetCategory.Texture => "TextureIconAlt",
 
@@ -40,12 +40,12 @@ public class FileToGeometryConverter : IMultiValueConverter
                 EAssetCategory.MaterialFunction => "MaterialFunctionIcon",
 
                 EAssetCategory.Animation => "AnimationIconAlt",
-                EAssetCategory.Skeleton => "SkeletonIcon",
 
                 EAssetCategory.World => "WorldIcon",
                 EAssetCategory.BuildData => "MapIconAlt",
                 EAssetCategory.LevelSequence => "ClapperIcon",
 
+                EAssetCategory.PhysicsAsset => "PhysicsIcon",
                 EAssetCategory.CurveBase => "CurveIcon",
                 EAssetCategory.ItemDefinitionBase => "DataTableIcon",
                 EAssetCategory.Data => resolvedAssetType switch

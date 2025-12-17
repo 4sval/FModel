@@ -360,6 +360,7 @@
                                       x:Name="AssetsFolderName"
                                       Style="{StaticResource AssetsFolderTreeView}"
                                       SelectedItemChanged="OnAssetsTreeSelectedItemChanged"
+                                      PreviewKeyDown="OnFoldersPreviewKeyDown"
                                       PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick">
                             </TreeView>
                             <Separator Grid.Row="3" Style="{StaticResource CustomSeparator}" Tag="INFORMATION" />

@@ -31,6 +31,20 @@ public partial class MainWindow
         CommandBindings.Add(new CommandBinding(ApplicationCommands.Find, (_, _) => OnOpenAvalonFinder()));
         CommandBindings.Add(new CommandBinding(NavigationCommands.BrowseBack, (_, _) =>
         {
+            if (!UserSettings.Default.FeaturePreviewNewAssetExplorer)
+            {
+                if (LeftTabControl.SelectedIndex == 2)
+                {
+                    LeftTabControl.SelectedIndex = 1;
+                }
+                else if (LeftTabControl.SelectedIndex == 1 && AssetsFolderName.SelectedItem is TreeItem { Parent: TreeItem parent1 })
+                {
+                    parent1.IsSelected = true;
+                }
+
+                return;
+            }
+
             if (!_applicationView.IsAssetsExplorerVisible)
             {
                 // back browsing the json view will reopen the assets explorer
@@ -38,11 +52,9 @@ public partial class MainWindow
                 return;
             }
 
-            if (AssetsFolderName.SelectedItem is not TreeItem { Parent: { } parent })
-                return;
+            if (AssetsFolderName.SelectedItem is TreeItem { Parent: TreeItem parent })
+                parent.IsSelected = true;
 
-            // back browsing the assets tree will select the parent folder
-            parent.IsSelected = true;
         }));
 
         DataContext = _applicationView;
@@ -143,6 +155,8 @@ public partial class MainWindow
             OnSearchViewClick(null, null);
         else if (_applicationView.Status.IsReady && e.Key == Key.R && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
             OnRefViewClick(null, null);
+        else if (e.Key == Key.F3)
+            OnOpenAvalonFinder();
         else if (e.Key == Key.Left && !_applicationView.IsAssetsExplorerVisible && _applicationView.CUE4Parse.TabControl.SelectedTab is { HasImage: true })
             _applicationView.CUE4Parse.TabControl.SelectedTab.GoPreviousImage();
         else if (e.Key == Key.Right && !_applicationView.IsAssetsExplorerVisible && _applicationView.CUE4Parse.TabControl.SelectedTab is { HasImage: true })
@@ -164,6 +178,8 @@ public partial class MainWindow
                 _ => CategoriesSelector.SelectedIndex
             };
         }
+        else if (_applicationView.Status.IsReady && UserSettings.Default.FeaturePreviewNewAssetExplorer && UserSettings.Default.SwitchAssetExplorer.IsTriggered(e.Key))
+            _applicationView.IsAssetsExplorerVisible = !_applicationView.IsAssetsExplorerVisible;
         else if (UserSettings.Default.AssetAddTab.IsTriggered(e.Key))
             _applicationView.CUE4Parse.TabControl.AddTab();
         else if (UserSettings.Default.AssetRemoveTab.IsTriggered(e.Key))
@@ -195,7 +211,18 @@ public partial class MainWindow
         if (e.OriginalSource is not TabControl tabControl)
             return;
 
-        (tabControl.SelectedItem as System.Windows.Controls.TabItem)?.Focus();
+        switch (tabControl.SelectedIndex)
+        {
+            case 0:
+                DirectoryFilesListBox.Focus();
+                break;
+            case 1:
+                AssetsFolderName.Focus();
+                break;
+            case 2:
+                AssetsListName.Focus();
+                break;
+        }
     }
 
     private async void OnMappingsReload(object sender, ExecutedRoutedEventArgs e)
@@ -205,9 +232,17 @@ public partial class MainWindow
 
     private void OnOpenAvalonFinder()
     {
-        _applicationView.CUE4Parse.TabControl.SelectedTab.HasSearchOpen = true;
-        AvalonEditor.YesWeSearch.Focus();
-        AvalonEditor.YesWeSearch.SelectAll();
+        if (_applicationView.IsAssetsExplorerVisible)
+        {
+            AssetsExplorerSearch.TextBox.Focus();
+            AssetsExplorerSearch.TextBox.SelectAll();
+        }
+        else if (_applicationView.CUE4Parse.TabControl.SelectedTab is { } tab)
+        {
+            tab.HasSearchOpen = true;
+            AvalonEditor.YesWeSearch.Focus();
+            AvalonEditor.YesWeSearch.SelectAll();
+        }
     }
 
     private void OnAssetsTreeMouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -316,5 +351,25 @@ public partial class MainWindow
     private void FeaturePreviewOnUnchecked(object sender, RoutedEventArgs e)
     {
         _applicationView.IsAssetsExplorerVisible = false;
+    }
+
+    private async void OnFoldersPreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Enter || sender is not TreeView treeView || treeView.SelectedItem is not TreeItem folder)
+            return;
+
+        var childFolder = folder;
+        while (childFolder.Folders.Count == 1 && childFolder.AssetsList.Assets.Count == 0)
+        {
+            childFolder.IsExpanded = true;
+            childFolder = childFolder.Folders[0];
+        }
+
+        childFolder.IsExpanded = true;
+        childFolder.IsSelected = true;
+        if (childFolder.Folders.Count == 0)
+        {
+            _applicationView.SelectedLeftTabIndex++;
+        }
     }
 }
