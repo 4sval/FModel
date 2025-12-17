@@ -108,14 +108,18 @@ public partial class MainWindow
                 break;
         }
 
-        await ApplicationViewModel.InitOodle();
-        await ApplicationViewModel.InitZlib();
+        await Task.WhenAll(
+            ApplicationViewModel.InitOodle(),
+            ApplicationViewModel.InitZlib()
+        ).ConfigureAwait(false);
+
         await _applicationView.CUE4Parse.Initialize();
         await _applicationView.AesManager.InitAes();
         await _applicationView.UpdateProvider(true);
 #if !DEBUG
         await _applicationView.CUE4Parse.InitInformation();
 #endif
+        
         await Task.WhenAll(
             _applicationView.CUE4Parse.VerifyConsoleVariables(),
             _applicationView.CUE4Parse.VerifyOnDemandArchives(),

@@ -261,7 +261,7 @@ public class ApplicationViewModel : ViewModel
         }
     }
 
-    public static async ValueTask InitOodle()
+    public static async Task InitOodle()
     {
         if (File.Exists(OodleHelper.OODLE_DLL_NAME_OLD))
         {
@@ -272,7 +272,11 @@ public class ApplicationViewModel : ViewModel
             catch { /* ignored */}
         }
 
-        var oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_DLL_NAME);
+        var oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_DLL_NAME_OLD);
+        if (!File.Exists(oodlePath))
+        {
+            oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_DLL_NAME);
+        }
 
         if (!File.Exists(oodlePath))
         {
@@ -286,7 +290,7 @@ public class ApplicationViewModel : ViewModel
         OodleHelper.Initialize(oodlePath);
     }
 
-    public static async ValueTask InitZlib()
+    public static async Task InitZlib()
     {
         var zlibPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", ZlibHelper.DLL_NAME);
         var zlibFileInfo = new FileInfo(zlibPath);
