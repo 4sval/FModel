@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../CUE4Parse/CUE4Parse-Conversion/CUE4Parse-Conversion.csproj" />
+  <Project Path="../CUE4Parse/CUE4Parse/CUE4Parse.csproj" />
+  <Project Path="FModel.csproj" />
+</Solution>

@@ -263,14 +263,24 @@ public class ApplicationViewModel : ViewModel
 
     public static async ValueTask InitOodle()
     {
-        var oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_DLL_NAME);
-        if (File.Exists(OodleHelper.OODLE_DLL_NAME))
+        if (File.Exists(OodleHelper.OODLE_DLL_NAME_OLD))
         {
-            File.Move(OodleHelper.OODLE_DLL_NAME, oodlePath, true);
+            try
+            {
+                File.Delete(OodleHelper.OODLE_DLL_NAME_OLD);
+            }
+            catch { /* ignored */}
         }
-        else if (!File.Exists(oodlePath))
+
+        var oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_DLL_NAME);
+
+        if (!File.Exists(oodlePath))
         {
-            await OodleHelper.DownloadOodleDllAsync(oodlePath);
+            if (!await OodleHelper.DownloadOodleDllAsync(oodlePath))
+            {
+                FLogger.Append(ELog.Error, () => FLogger.Text("Failed to download Oodle", Constants.WHITE, true));
+                return;
+            }
         }
 
         OodleHelper.Initialize(oodlePath);
@@ -279,9 +289,15 @@ public class ApplicationViewModel : ViewModel
     public static async ValueTask InitZlib()
     {
         var zlibPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", ZlibHelper.DLL_NAME);
-        if (!File.Exists(zlibPath))
+        var zlibFileInfo = new FileInfo(zlibPath);
+
+        if (!zlibFileInfo.Exists || zlibFileInfo.LastWriteTimeUtc < DateTime.UtcNow.AddMonths(-4))
         {
-            await ZlibHelper.DownloadDllAsync(zlibPath);
+            if (!await ZlibHelper.DownloadDllAsync(zlibPath))
+            {
+                FLogger.Append(ELog.Error, () => FLogger.Text("Failed to download Zlib-ng", Constants.WHITE, true));
+                if (!zlibFileInfo.Exists) return;
+            }
         }
 
         ZlibHelper.Initialize(zlibPath);
