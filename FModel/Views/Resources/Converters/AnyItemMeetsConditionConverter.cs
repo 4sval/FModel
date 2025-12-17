@@ -39,9 +39,7 @@ public class ItemCategoryCondition : IItemCondition
 
     public bool Matches(GameFileViewModel item)
     {
-        // TODO: Don't fallback to true here if asset is not resolved
-        // For this we need to add virtualization to the packages tab and resolve assets there as well
-        return item != null && item.AssetCategory.IsOfCategory(Category) || item.Resolved is EResolveCompute.None;
+        return item != null && item.AssetCategory.IsOfCategory(Category);
     }
 }
 

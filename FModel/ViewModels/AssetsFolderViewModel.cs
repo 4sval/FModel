@@ -206,7 +206,6 @@ public class AssetsFolderViewModel
     {
         Folders = [];
         FoldersView = new ListCollectionView(Folders) { SortDescriptions = { new SortDescription("Header", ListSortDirection.Ascending) } };
-        Folders.CollectionChanged += (_, __) => Folders.FirstOrDefault()?.IsSelected = true;
     }
 
     public void BulkPopulate(IReadOnlyCollection<GameFile> entries)
@@ -261,6 +260,12 @@ public class AssetsFolderViewModel
                 }
 
                 lastNode?.AssetsList.Add(entry);
+            }
+
+            if (treeItems.Count > 0)
+            {
+                var projectName = ApplicationService.ApplicationView.CUE4Parse.Provider.ProjectName;
+                (treeItems.FirstOrDefault(x => x.Header.Equals(projectName, StringComparison.OrdinalIgnoreCase)) ?? treeItems[0]).IsSelected = true;
             }
 
             Folders.AddRange(treeItems);

@@ -36,6 +36,7 @@ using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Objects.UObject.Editor;
 using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Textures;
+using CUE4Parse.UE4.Assets.Exports.Internationalization;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -50,8 +51,8 @@ public class GameFileViewModel(GameFile asset) : ViewModel
     private const int MaxPreviewSize = 128;
 
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
-    public EResolveCompute Resolved = EResolveCompute.None;
 
+    public EResolveCompute Resolved { get; private set; } = EResolveCompute.None;
     public GameFile Asset { get; } = asset;
 
     private string _resolvedAssetType = asset.Extension;
@@ -74,10 +75,8 @@ public class GameFileViewModel(GameFile asset) : ViewModel
         get => _assetCategory;
         private set
         {
-            if (SetProperty(ref _assetCategory, value))
-            {
-                Resolved |= EResolveCompute.Category;
-            }
+            SetProperty(ref _assetCategory, value);
+            Resolved |= EResolveCompute.Category; // blindly assume category is resolved when set, even if unchanged
         }
     }
 
@@ -106,7 +105,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
         }
         catch (Exception e)
         {
-            Log.Logger.Error(e, "Failed to resolve asset {AssetName} ({Resolver})", Asset.Path, resolve.ToStringBitfield());
+            Log.Error(e, "Failed to resolve asset {AssetName} ({Resolver})", Asset.Path, resolve.ToStringBitfield());
 
             Resolved = EResolveCompute.All;
             return Task.CompletedTask;
@@ -194,7 +193,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 ULevelSequence => EAssetCategory.LevelSequence,
 
                 UItemDefinitionBase => EAssetCategory.ItemDefinitionBase,
-                UDataAsset or UDataTable or UCurveTable => EAssetCategory.Data,
+                UDataAsset or UDataTable or UCurveTable or UStringTable => EAssetCategory.Data,
                 UCurveBase => EAssetCategory.CurveBase,
 
                 UWwiseAssetLibrary or USoundBase or UAkMediaAssetData or UAtomWaveBank or USoundAtomCue
@@ -206,7 +205,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
 
                 _ => EAssetCategory.All
             };
-            
+
             switch (AssetCategory)
             {
                 case EAssetCategory.Texture when pointer.Object.Value is UTexture texture:
@@ -352,6 +351,9 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                     bitmap.Dispose();
                 });
             }
+            default:
+                AssetCategory = EAssetCategory.All; // just so it sets resolved
+                break;
         }
 
         return Task.CompletedTask;
@@ -373,9 +375,9 @@ public class GameFileViewModel(GameFile asset) : ViewModel
     }
 
     private CancellationTokenSource _previewCts;
-    public void OnVisibleChanged(bool isVisible)
+    public void OnIsVisible()
     {
-        if (!isVisible || Resolved == EResolveCompute.All)
+        if (Resolved == EResolveCompute.All)
             return;
 
         _previewCts?.Cancel();

@@ -61,6 +61,7 @@ public partial class MainWindow
         InitializeComponent();
 
         AssetsExplorer.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
+        AssetsListName.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
         AssetsExplorer.SelectionChanged += (_, e) => SyncSelection(AssetsListName, e);
         AssetsListName.SelectionChanged += (_, e) => SyncSelection(AssetsExplorer, e);
 
@@ -263,22 +264,25 @@ public partial class MainWindow
     private void OnPreviewTexturesToggled(object sender, RoutedEventArgs e) => ItemContainerGenerator_StatusChanged(AssetsExplorer.ItemContainerGenerator, EventArgs.Empty);
     private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
     {
-        if (!_applicationView.IsAssetsExplorerVisible)
+        if (sender is not ItemContainerGenerator { Status: GeneratorStatus.ContainersGenerated } generator)
             return;
 
-        var generator = AssetsExplorer.ItemContainerGenerator;
-        if (generator.Status != GeneratorStatus.ContainersGenerated)
-            return;
+        var foundVisibleItem = false;
+        var itemCount = generator.Items.Count;
 
-        for (int i = 0; i < AssetsExplorer.Items.Count; i++)
+        for (var i = 0; i < itemCount; i++)
         {
-            var item = AssetsExplorer.Items[i] as GameFileViewModel;
-            if (item is not { PreviewImage: null })
-                continue;
-
-            if (generator.ContainerFromIndex(i) is FrameworkElement { IsVisible: true })
+            var container = generator.ContainerFromIndex(i);
+            if (container == null)
             {
-                item.OnVisibleChanged(true);
+                if (foundVisibleItem) break; // we're past the visible range already
+                continue; // keep scrolling to find visible items
+            }
+
+            if (container is FrameworkElement { IsVisible: true } && generator.Items[i] is GameFileViewModel file)
+            {
+                foundVisibleItem = true;
+                file.OnIsVisible();
             }
         }
     }
