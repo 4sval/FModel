@@ -53,49 +53,25 @@
                       StrokeThickness="2"
                       Data="M13 60 H115 V104 C115 110 110 115 104 115 H24  C18 115 13 110 13 104 Z" />
 
-                <Canvas Width="128"
-                        Height="128">
-                    <Ellipse x:Name="HintEllipse"
-                             Width="32"
-                             Height="32"
-                             Canvas.Left="96"
-                             Canvas.Top="96"
-                             Fill="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
-                             Opacity="0.95"
-                             Stroke="#b28c53"
-                             StrokeThickness="1.5"
-                             Visibility="{Binding Visibility, ElementName=HintIcon}" />
-                    <Grid Width="32"
-                          Height="32"
-                          Canvas.Left="95"
-                          Canvas.Top="95"
-                          HorizontalAlignment="Center"
-                          VerticalAlignment="Center"
-                          Visibility="{Binding Visibility, ElementName=HintIcon}">
-                        <Viewbox Width="16"
-                                 Height="16"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Center">
-                            <Path x:Name="HintIcon"
-                                  Data="{Binding Header, Converter={x:Static converters:FolderToGeometryConverter.Instance}}"
-                                  Fill="{Binding Header, Converter={x:Static converters:FolderToGeometryConverter.Instance}}">
-                                <Path.Style>
-                                    <Style TargetType="Path">
-                                        <Setter Property="Visibility"
-                                                Value="Visible" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Data, RelativeSource={RelativeSource Self}}"
-                                                         Value="{x:Null}">
-                                                <Setter Property="Visibility"
-                                                        Value="Collapsed" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Path.Style>
-                            </Path>
-                        </Viewbox>
-                    </Grid>
-                </Canvas>
+                <Ellipse Canvas.Left="90" Canvas.Top="90" Width="36" Height="36"
+                         Opacity="0.95" Stroke="#b28c53" StrokeThickness="1.5"
+                         Fill="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
+                         Visibility="{Binding Visibility, ElementName=HintIcon}" />
+
+                <Path x:Name="HintIcon" Canvas.Left="98" Canvas.Top="98" Width="20" Height="20" Stretch="Uniform"
+                      Data="{Binding Header, Converter={x:Static converters:FolderToGeometryConverter.Instance}}"
+                      Fill="{Binding Header, Converter={x:Static converters:FolderToGeometryConverter.Instance}}">
+                    <Path.Style>
+                        <Style TargetType="Path">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Data, RelativeSource={RelativeSource Self}}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Path.Style>
+                </Path>
             </Canvas>
         </Viewbox>
 
