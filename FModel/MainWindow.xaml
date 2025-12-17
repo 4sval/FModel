@@ -41,14 +41,6 @@
             </Style.Triggers>
         </Style>
     </adonisControls:AdonisWindow.Style>
-    <adonisControls:AdonisWindow.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Views/Resources/Resources.xaml"/>
-                <ResourceDictionary Source="Views/Resources/Controls/TiledExplorer/Resources.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </adonisControls:AdonisWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

@@ -3,7 +3,6 @@
                     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                     xmlns:settings="clr-namespace:FModel.Settings"
                     xmlns:converters="clr-namespace:FModel.Views.Resources.Converters">
-
     <ContextMenu x:Key="FileContextMenu" x:Shared="False"
                  DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
         <MenuItem Header="Extract in New Tab" Command="{Binding RightClickMenuCommand}">
@@ -304,4 +303,3 @@
         </MenuItem>
     </ContextMenu>
 </ResourceDictionary>
-

@@ -9,9 +9,10 @@ namespace FModel.Views.Resources.Converters;
 public class StatusToTaskbarStateConverter : MarkupExtension, IMultiValueConverter
 {
     private static readonly StatusToTaskbarStateConverter _instance = new();
+
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
-        if (values.Length != 2 || (values[1] is bool isActive && isActive) || values[0] is not EStatusKind kind)
+        if (values.Length != 2 || values[1] is true || values[0] is not EStatusKind kind)
             return TaskbarItemProgressState.None;
 
         return kind switch

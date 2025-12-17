@@ -19,7 +19,7 @@ public class SearchViewModel : ViewModel
         Descending
     }
 
-    private string _filterText;
+    private string _filterText = string.Empty;
     public string FilterText
     {
         get => _filterText;
@@ -66,10 +66,10 @@ public class SearchViewModel : ViewModel
 
     public SearchViewModel()
     {
-        SearchResults = new RangeObservableCollection<GameFile>();
+        SearchResults = [];
         SearchResultsView = new ListCollectionView(SearchResults)
         {
-            Filter = e => ItemFilter(e, FilterText?.Trim().Split(' ') ?? []),
+            Filter = e => ItemFilter(e, FilterText.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries)),
         };
         ResultsCount = SearchResultsView.Count;
     }

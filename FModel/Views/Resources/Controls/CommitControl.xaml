@@ -4,13 +4,6 @@
              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              xmlns:controls="clr-namespace:FModel.Views.Resources.Controls">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Resources.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
     <Border BorderThickness="1" CornerRadius="0.5"
             BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer4BackgroundBrush}}">
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">

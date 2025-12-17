@@ -16,13 +16,6 @@
             <Setter Property="Title" Value="Audio Player" />
         </Style>
     </adonisControls:AdonisWindow.Style>
-    <adonisControls:AdonisWindow.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Resources/Resources.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </adonisControls:AdonisWindow.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="350" />

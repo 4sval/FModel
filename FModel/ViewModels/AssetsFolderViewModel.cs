@@ -66,7 +66,9 @@ public class TreeItem : ViewModel
         set
         {
             if (SetProperty(ref _searchText, value))
-                ApplyFilters(_searchText);
+            {
+                RefreshFilters();
+            }
         }
     }
 
@@ -98,14 +100,15 @@ public class TreeItem : ViewModel
         }
     }
 
-    private ICollectionView _filteredFoldersView;
-    public ICollectionView FilteredFoldersView
+    private ICollectionView? _filteredFoldersView;
+    public ICollectionView? FilteredFoldersView
     {
         get
         {
             _filteredFoldersView ??= new ListCollectionView(Folders)
             {
-                SortDescriptions = { new SortDescription(nameof(Header), ListSortDirection.Ascending) }
+                SortDescriptions = { new SortDescription(nameof(Header), ListSortDirection.Ascending) },
+                Filter = e => ItemFilter(e, SearchText.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries))
             };
             return _filteredFoldersView;
         }
@@ -152,48 +155,43 @@ public class TreeItem : ViewModel
             Version = vfsEntry.Vfs.Ver;
         }
         PathAtThisPoint = pathHere;
+
+        AssetsList.AssetsView.Filter = o => ItemFilter(o, SearchText.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries));
     }
 
-    private void ApplyFilters(string filterText)
+    private void RefreshFilters()
     {
-        var filters = filterText
-            .Trim()
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        AssetsList.AssetsView.Filter = o =>
-        {
-            if (o is not GameFileViewModel entry)
-                return false;
-
-            bool matchesSearch = filters.Length == 0 || filters.All(x => entry.Asset.Name.Contains(x, StringComparison.OrdinalIgnoreCase));
-            bool matchesCategory = SelectedCategory == EAssetCategory.All || entry.AssetCategory.IsOfCategory(SelectedCategory);
-
-            return matchesSearch && matchesCategory;
-        };
         AssetsList.AssetsView.Refresh();
+        FilteredFoldersView?.Refresh();
+    }
 
-        // Only apply filter if FilteredFoldersView has been accessed
-        if (_filteredFoldersView != null)
+    private bool ItemFilter(object item, IEnumerable<string> filters)
+    {
+        var f = filters.ToArray();
+        switch (item)
         {
-            FilteredFoldersView.Filter = o =>
+            case GameFileViewModel entry:
             {
-                if (o is not TreeItem folder)
-                    return false;
+                bool matchesSearch = f.Length == 0 || f.All(x => entry.Asset.Name.Contains(x, StringComparison.OrdinalIgnoreCase));
+                bool matchesCategory = SelectedCategory == EAssetCategory.All || entry.AssetCategory.IsOfCategory(SelectedCategory);
 
-                bool matchesSearch = filters.Length == 0 || filters.All(x => folder.Header.Contains(x, StringComparison.OrdinalIgnoreCase));
+                return matchesSearch && matchesCategory;
+            }
+            case TreeItem folder:
+            {
+                bool matchesSearch = f.Length == 0 || f.All(x => folder.Header.Contains(x, StringComparison.OrdinalIgnoreCase));
                 bool matchesCategory = SelectedCategory == EAssetCategory.All;
 
                 return matchesSearch && matchesCategory;
-            };
-            FilteredFoldersView.Refresh();
+            }
         }
+        return false;
     }
 
     private async Task OnSelectedCategoryChanged()
     {
-        var tasks = AssetsList.Assets.Select(asset => asset.ResolveAsync(EResolveCompute.Category));
-        await Task.WhenAll(tasks);
-        ApplyFilters(SearchText);
+        await Task.WhenAll(AssetsList.Assets.Select(asset => asset.ResolveAsync(EResolveCompute.Category)));
+        RefreshFilters();
     }
 
     public override string ToString() => $"{Header} | {Folders.Count} Folders | {AssetsList.Assets.Count} Files";

@@ -4,13 +4,6 @@
          xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
          xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
          WindowStartupLocation="CenterScreen" IconVisibility="Collapsed">
-    <adonisControls:AdonisWindow.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Resources.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </adonisControls:AdonisWindow.Resources>
     <DockPanel HorizontalAlignment="Center" VerticalAlignment="Center">
         <controls:MagnifierManager.Magnifier>
             <controls:Magnifier Radius="150" ZoomFactor=".7" />

@@ -18,10 +18,6 @@
     </adonisControls:AdonisWindow.Style>
     <adonisControls:AdonisWindow.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Resources/Resources.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-
             <controls:OnTagDataTemplateSelector x:Key="TagTemplateSelector" />
             <DataTemplate x:Key="GeneralTemplate">
                 <Grid adonisExtensions:LayerExtension.Layer="2">

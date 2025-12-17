@@ -7,12 +7,6 @@
                     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                     xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                     x:Class="FModel.Views.Resources.Controls.TiledExplorer.ResourcesDictionary">
-
-    <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="../ContextMenus/FileContextMenu.xaml"/>
-        <ResourceDictionary Source="../ContextMenus/FolderContextMenu.xaml"/>
-    </ResourceDictionary.MergedDictionaries>
-
     <controls:TypeDataTemplateSelector x:Key="TemplateSelector" />
 
     <Style x:Key="TiledExplorer" TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
