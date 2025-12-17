@@ -6,7 +6,6 @@ using System.Linq;
 using System.Windows.Data;
 using CUE4Parse.UE4.IO.Objects;
 using FModel.Extensions;
-using FModel.Settings;
 using FModel.ViewModels;
 
 namespace FModel.Views.Resources.Converters;
@@ -19,13 +18,6 @@ public class AnyItemMeetsConditionConverter : IValueConverter
     {
         if (value is not IEnumerable items || Conditions.Count == 0)
             return false;
-        if (!UserSettings.Default.FeaturePreviewNewAssetExplorer)
-        {
-            // actually this hints at a bigger problem, the legacy asset explorer relies on the new one for this converter
-            // because only this new one resolves assets, meaning that unresolved visible items would always return false here
-            // and they can be both unresolved and visible in the legacy asset explorer
-            return true;
-        }
 
         return items.OfType<GameFileViewModel>().Any(item => Conditions.All(c => c.Matches(item)));
     }
@@ -47,7 +39,9 @@ public class ItemCategoryCondition : IItemCondition
 
     public bool Matches(GameFileViewModel item)
     {
-        return item != null && item.AssetCategory.IsOfCategory(Category);
+        // TODO: Don't fallback to true here if asset is not resolved
+        // For this we need to add virtualization to the packages tab and resolve assets there as well
+        return item != null && item.AssetCategory.IsOfCategory(Category) || item.Resolved is EResolveCompute.None;
     }
 }
 

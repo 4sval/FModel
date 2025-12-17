@@ -50,7 +50,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
     private const int MaxPreviewSize = 128;
 
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
-    private EResolveCompute _resolved = EResolveCompute.None;
+    public EResolveCompute Resolved = EResolveCompute.None;
 
     public GameFile Asset { get; } = asset;
 
@@ -76,7 +76,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
         {
             if (SetProperty(ref _assetCategory, value))
             {
-                _resolved |= EResolveCompute.Category;
+                Resolved |= EResolveCompute.Category;
             }
         }
     }
@@ -89,7 +89,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
         {
             if (SetProperty(ref _previewImage, value))
             {
-                _resolved |= EResolveCompute.Preview;
+                Resolved |= EResolveCompute.Preview;
             }
         }
     }
@@ -108,7 +108,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
         {
             Log.Logger.Error(e, "Failed to resolve asset {AssetName} ({Resolver})", Asset.Path, resolve.ToStringBitfield());
 
-            _resolved = EResolveCompute.All;
+            Resolved = EResolveCompute.All;
             return Task.CompletedTask;
         }
     }
@@ -120,7 +120,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             resolve &= ~EResolveCompute.Preview;
         }
 
-        resolve &= ~_resolved;
+        resolve &= ~Resolved;
         if (resolve == EResolveCompute.None)
             return Task.CompletedTask;
 
@@ -136,14 +136,14 @@ public class GameFileViewModel(GameFile asset) : ViewModel
         {
             AssetCategory = EAssetCategory.World;
             ResolvedAssetType = "World";
-            _resolved |= EResolveCompute.Preview;
+            Resolved |= EResolveCompute.Preview;
             return Task.CompletedTask;
         }
         if (Asset.NameWithoutExtension.EndsWith("_BuiltData"))
         {
             AssetCategory = EAssetCategory.BuildData;
             ResolvedAssetType = "MapBuildDataRegistry";
-            _resolved |= EResolveCompute.Preview;
+            Resolved |= EResolveCompute.Preview;
             return Task.CompletedTask;
         }
 
@@ -257,7 +257,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                     }
                     break;
                 default:
-                    _resolved |= EResolveCompute.Preview;
+                    Resolved |= EResolveCompute.Preview;
                     break;
             }
         });
@@ -265,7 +265,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
 
     private Task ResolveByExtensionAsync(EResolveCompute resolve)
     {
-        _resolved |= EResolveCompute.Preview;
+        Resolved |= EResolveCompute.Preview;
         switch (Asset.Extension)
         {
             case "uproject":
@@ -312,7 +312,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             case "bmp":
             case "svg":
             {
-                _resolved |= ~EResolveCompute.Preview;
+                Resolved |= ~EResolveCompute.Preview;
                 AssetCategory = EAssetCategory.Texture;
                 if (!resolve.HasFlag(EResolveCompute.Preview))
                     break;
@@ -375,7 +375,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
     private CancellationTokenSource _previewCts;
     public void OnVisibleChanged(bool isVisible)
     {
-        if (!isVisible || _resolved == EResolveCompute.All)
+        if (!isVisible || Resolved == EResolveCompute.All)
             return;
 
         _previewCts?.Cancel();
