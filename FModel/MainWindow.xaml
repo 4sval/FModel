@@ -209,7 +209,7 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Column="0" Text="Preview New Explorer System" VerticalAlignment="Center" />
-                <CheckBox Grid.Column="1" Margin="5 2 5 0" Unchecked="FeaturePreviewOnUnchecked"
+                <CheckBox Grid.Column="1" Margin="5 2 5 0" Unchecked="FeaturePreviewOnUnchecked" KeyboardNavigation.TabNavigation="None" KeyboardNavigation.ControlTabNavigation="None"
                           IsChecked="{Binding FeaturePreviewNewAssetExplorer, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
                           Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"/>
             </Grid>
@@ -351,7 +351,6 @@
                             <TreeView Grid.Row="2"
                                       x:Name="AssetsFolderName"
                                       Style="{StaticResource AssetsFolderTreeView}"
-                                      SelectedItemChanged="OnAssetsTreeSelectedItemChanged"
                                       PreviewKeyDown="OnFoldersPreviewKeyDown"
                                       PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick">
                             </TreeView>
@@ -537,6 +536,7 @@
                                           Cursor="Hand"
                                           Margin="0, 0, 2, 0"
                                           Checked="OnPreviewTexturesToggled"
+                                          Focusable="False"
                                           IsChecked="{Binding PreviewTexturesAssetExplorer, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}">
                                 <ToggleButton.Style>
                                     <Style TargetType="ToggleButton" BasedOn="{StaticResource ModernToggleButtonStyle}">
@@ -562,7 +562,9 @@
                                           Height="32"
                                           Cursor="Hand"
                                           Margin="0, 0, 2, 0"
+                                          Checked="OnPreviewTexturesToggled"
                                           ToolTip="Assets Explorer"
+                                          Focusable="False"
                                           IsChecked="{Binding IsAssetsExplorerVisible, Mode=TwoWay}"
                                           Style="{StaticResource ModernToggleButtonStyle}">
                                 <Viewbox Width="16"
@@ -578,6 +580,7 @@
                                           Height="32"
                                           Cursor="Hand"
                                           ToolTip="File Properties"
+                                          Focusable="False"
                                           IsChecked="{Binding IsAssetsExplorerVisible, Converter={x:Static converters:InvertBooleanConverter.Instance}, Mode=TwoWay}"
                                           Style="{StaticResource ModernToggleButtonStyle}">
                                 <Viewbox Width="16"
@@ -604,7 +607,7 @@
                             <controls:CustomRichTextBox Grid.Column="0" Grid.ColumnSpan="3" x:Name="LogRtbName" Style="{StaticResource CustomRichTextBox}" />
                             <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Bottom" Margin="-5 -5 5 5">
                                 <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Open Output Folder" Padding="0,4,0,4"
-                                        Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Output_Directory">
+                                        Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Output_Directory" Focusable="False">
                                     <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                         <Canvas Width="24" Height="24">
                                             <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource FolderIcon}" />
@@ -612,7 +615,7 @@
                                     </Viewbox>
                                 </Button>
                                 <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Clear Logs" Padding="0,4,0,4"
-                                        Command="{Binding MenuCommand}" CommandParameter="ToolBox_Clear_Logs">
+                                        Command="{Binding MenuCommand}" CommandParameter="ToolBox_Clear_Logs" Focusable="False">
                                     <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                         <Canvas Width="24" Height="24">
                                             <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TrashIcon}"/>

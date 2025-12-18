@@ -38,12 +38,14 @@ public class FileToGeometryConverter : IMultiValueConverter
 
                 EAssetCategory.Material or EAssetCategory.MaterialEditorData => "MaterialIcon",
                 EAssetCategory.MaterialFunction => "MaterialFunctionIcon",
+                EAssetCategory.MaterialParameterCollection => "MaterialParameterCollectionIcon",
 
                 EAssetCategory.Animation => "AnimationIconAlt",
 
                 EAssetCategory.World => "WorldIcon",
                 EAssetCategory.BuildData => "MapIconAlt",
                 EAssetCategory.LevelSequence => "ClapperIcon",
+                EAssetCategory.Foliage => "FoliageIcon",
 
                 EAssetCategory.PhysicsAsset => "PhysicsIcon",
                 EAssetCategory.CurveBase => "CurveIcon",
@@ -88,7 +90,7 @@ public class FileToGeometryConverter : IMultiValueConverter
 
                 EAssetCategory.Texture => Brushes.MediumPurple,
 
-                EAssetCategory.Material or EAssetCategory.MaterialFunction => Brushes.BurlyWood,
+                EAssetCategory.Material or EAssetCategory.MaterialFunction or EAssetCategory.MaterialParameterCollection => Brushes.BurlyWood,
                 EAssetCategory.MaterialEditorData => Brushes.Yellow,
 
                 EAssetCategory.Animation => Brushes.Coral,
@@ -96,6 +98,7 @@ public class FileToGeometryConverter : IMultiValueConverter
                 EAssetCategory.World => Brushes.Orange,
                 EAssetCategory.BuildData => Brushes.Tomato,
                 EAssetCategory.LevelSequence => Brushes.Coral,
+                EAssetCategory.Foliage => Brushes.ForestGreen,
 
                 EAssetCategory.CurveBase => Brushes.HotPink,
 

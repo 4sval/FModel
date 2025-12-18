@@ -44,6 +44,7 @@ public partial class MainWindow
             }
             else if (LeftTabControl.SelectedIndex == 1 && AssetsFolderName.SelectedItem is TreeItem { Parent: TreeItem parent })
             {
+                AssetsFolderName.Focus();
                 parent.IsSelected = true;
             }
         }));
@@ -246,14 +247,6 @@ public partial class MainWindow
         if (sender is not TreeView { SelectedItem: TreeItem treeItem } || treeItem.Folders.Count > 0) return;
 
         _applicationView.SelectedLeftTabIndex++;
-    }
-
-    private void OnAssetsTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-    {
-        if (sender is not TreeView { SelectedItem: TreeItem }) return;
-
-        _applicationView.IsAssetsExplorerVisible = true;
-        _applicationView.SelectedLeftTabIndex = 1;
     }
 
     private void OnPreviewTexturesToggled(object sender, RoutedEventArgs e) => ItemContainerGenerator_StatusChanged(AssetsExplorer.ItemContainerGenerator, EventArgs.Empty);

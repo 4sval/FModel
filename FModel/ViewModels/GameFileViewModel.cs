@@ -15,6 +15,8 @@ using CUE4Parse.UE4.Assets.Exports.CriWare;
 using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.Engine.Font;
 using CUE4Parse.UE4.Assets.Exports.Fmod;
+using CUE4Parse.UE4.Assets.Exports.Foliage;
+using CUE4Parse.UE4.Assets.Exports.Internationalization;
 using CUE4Parse.UE4.Assets.Exports.LevelSequence;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Material.Editor;
@@ -36,7 +38,6 @@ using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Objects.UObject.Editor;
 using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Textures;
-using CUE4Parse.UE4.Assets.Exports.Internationalization;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -184,6 +185,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 UMaterialInterface => EAssetCategory.Material,
                 UMaterialInterfaceEditorOnlyData => EAssetCategory.MaterialEditorData,
                 UMaterialFunction => EAssetCategory.MaterialFunction,
+                UMaterialParameterCollection => EAssetCategory.MaterialParameterCollection,
 
                 UAnimationAsset => EAssetCategory.Animation,
                 USkeleton => EAssetCategory.Skeleton,
@@ -191,6 +193,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 UWorld => EAssetCategory.World,
                 UMapBuildDataRegistry => EAssetCategory.BuildData,
                 ULevelSequence => EAssetCategory.LevelSequence,
+                UFoliageType => EAssetCategory.Foliage,
 
                 UItemDefinitionBase => EAssetCategory.ItemDefinitionBase,
                 UDataAsset or UDataTable or UCurveTable or UStringTable => EAssetCategory.Data,
