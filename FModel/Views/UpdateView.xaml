@@ -103,12 +103,12 @@
                 <ItemsControl.Style>
                     <Style TargetType="ItemsControl" BasedOn="{StaticResource {x:Type ItemsControl}}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding CommitsView.Count}" Value="0">
+                            <DataTrigger Binding="{Binding Items.Count, RelativeSource={RelativeSource Self}, FallbackValue=0}" Value="0">
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate>
                                             <Grid>
-                                                <TextBlock Text="No commits found." FontWeight="SemiBold" TextAlignment="Center"
+                                                <TextBlock Text="No commits found" FontWeight="SemiBold" TextAlignment="Center"
                                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                                             </Grid>
                                         </ControlTemplate>

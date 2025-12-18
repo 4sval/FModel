@@ -110,7 +110,7 @@ public partial class MainWindow
 #if !DEBUG
         await _applicationView.CUE4Parse.InitInformation();
 #endif
-        
+
         await Task.WhenAll(
             _applicationView.CUE4Parse.VerifyConsoleVariables(),
             _applicationView.CUE4Parse.VerifyOnDemandArchives(),

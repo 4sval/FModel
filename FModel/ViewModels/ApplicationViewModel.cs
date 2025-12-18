@@ -223,32 +223,37 @@ public class ApplicationViewModel : ViewModel
     public static async Task InitVgmStream()
     {
         var vgmZipFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "vgmstream-win.zip");
-        if (File.Exists(vgmZipFilePath)) return;
+        var vgmFileInfo = new FileInfo(vgmZipFilePath);
 
-        await ApplicationService.ApiEndpointView.DownloadFileAsync("https://github.com/vgmstream/vgmstream/releases/latest/download/vgmstream-win.zip", vgmZipFilePath);
-        if (new FileInfo(vgmZipFilePath).Length > 0)
+        if (!vgmFileInfo.Exists || vgmFileInfo.LastWriteTimeUtc < DateTime.UtcNow.AddMonths(-4))
         {
-            var zipDir = Path.GetDirectoryName(vgmZipFilePath)!;
-            await using var zipFs = File.OpenRead(vgmZipFilePath);
-            using var zip = new ZipArchive(zipFs, ZipArchiveMode.Read);
+            await ApplicationService.ApiEndpointView.DownloadFileAsync("https://github.com/vgmstream/vgmstream/releases/latest/download/vgmstream-win.zip", vgmZipFilePath);
+            vgmFileInfo.Refresh();
 
-            foreach (var entry in zip.Entries)
+            if (vgmFileInfo.Length > 0)
             {
-                var entryPath = Path.Combine(zipDir, entry.FullName);
-                await using var entryFs = File.Create(entryPath);
-                await using var entryStream = entry.Open();
-                await entryStream.CopyToAsync(entryFs);
+                var zipDir = Path.GetDirectoryName(vgmZipFilePath)!;
+                await using var zipFs = File.OpenRead(vgmZipFilePath);
+                using var zip = new ZipArchive(zipFs, ZipArchiveMode.Read);
+
+                foreach (var entry in zip.Entries)
+                {
+                    var entryPath = Path.Combine(zipDir, entry.FullName);
+                    await using var entryFs = File.Create(entryPath);
+                    await using var entryStream = entry.Open();
+                    await entryStream.CopyToAsync(entryFs);
+                }
             }
-        }
-        else
-        {
-            FLogger.Append(ELog.Error, () => FLogger.Text("Could not download VgmStream", Constants.WHITE, true));
+            else
+            {
+                FLogger.Append(ELog.Error, () => FLogger.Text("Could not download VgmStream", Constants.WHITE, true));
+            }
         }
     }
 
     public static async Task InitImGuiSettings(bool forceDownload)
     {
-        var imgui = "imgui.ini";
+        const string imgui = "imgui.ini";
         var imguiPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", imgui);
 
         if (File.Exists(imgui)) File.Move(imgui, imguiPath, true);

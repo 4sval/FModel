@@ -92,9 +92,7 @@
                        TextAlignment="Center"
                        HorizontalAlignment="Center"
                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
-            <Rectangle Grid.Row="1"
-                       Height="6"
-                       Fill="Transparent" />
+
             <TextBlock Grid.Row="2"
                        Text="{Binding Folders.Count, StringFormat=Subfolders: {0}}"
                        FontSize="11"

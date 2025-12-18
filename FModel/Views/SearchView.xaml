@@ -126,12 +126,12 @@
                             <ListView.Style>
                                 <Style TargetType="ListView" BasedOn="{StaticResource {x:Type ListView}}">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SearchTab.SearchResultsView.Count}" Value="0">
+                                        <DataTrigger Binding="{Binding Items.Count, RelativeSource={RelativeSource Self}, FallbackValue=0}" Value="0">
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate>
                                                         <Grid>
-                                                            <TextBlock Text="No folder found in archives, make sure you loaded at least one" FontWeight="SemiBold" TextAlignment="Center"
+                                                            <TextBlock Text="No packages found matching the query" FontWeight="SemiBold" TextAlignment="Center"
                                                                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" Margin="0 10 0 0" />
                                                         </Grid>
                                                     </ControlTemplate>
@@ -494,7 +494,7 @@
                             <ListView.Style>
                                 <Style TargetType="ListView" BasedOn="{StaticResource {x:Type ListView}}">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding RefTab.SearchResultsView.Count}" Value="0">
+                                        <DataTrigger Binding="{Binding Items.Count, RelativeSource={RelativeSource Self}, FallbackValue=0}" Value="0">
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate>

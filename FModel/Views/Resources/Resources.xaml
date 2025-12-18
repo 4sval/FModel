@@ -142,7 +142,7 @@
             </Setter.Value>
         </Setter>
         <Style.Triggers>
-            <DataTrigger Binding="{Binding CUE4Parse.GameDirectory.DirectoryFilesView.Count}" Value="0">
+            <DataTrigger Binding="{Binding Items.Count, RelativeSource={RelativeSource Self}, FallbackValue=0}" Value="0">
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate>
@@ -200,7 +200,7 @@
             </Setter.Value>
         </Setter>
         <Style.Triggers>
-            <DataTrigger Binding="{Binding AudioPlayer.AudioFilesView.Count}" Value="0">
+            <DataTrigger Binding="{Binding Items.Count, RelativeSource={RelativeSource Self}, FallbackValue=0}" Value="0">
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate>
@@ -512,12 +512,12 @@
             </Setter.Value>
         </Setter>
         <Style.Triggers>
-            <DataTrigger Binding="{Binding CUE4Parse.AssetsFolder.FoldersView.Count, FallbackValue=0}" Value="0">
+            <DataTrigger Binding="{Binding Items.Count, RelativeSource={RelativeSource Self}, FallbackValue=0}" Value="0">
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="No folder found in archives, make sure you loaded at least one" FontWeight="SemiBold" TextAlignment="Center"
+                                <TextBlock Text="No folders found in archives, make sure you loaded at least one" FontWeight="SemiBold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>
@@ -578,12 +578,12 @@
             </Setter.Value>
         </Setter>
         <Style.Triggers>
-            <DataTrigger Binding="{Binding SelectedItem.AssetsList.Assets.Count, ElementName=AssetsFolderName, FallbackValue=0}" Value="0">
+            <DataTrigger Binding="{Binding Items.Count, RelativeSource={RelativeSource Self}, FallbackValue=0}" Value="0">
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="No package found in folder" FontWeight="SemiBold" TextAlignment="Center"
+                                <TextBlock Text="No packages found in folder" FontWeight="SemiBold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>

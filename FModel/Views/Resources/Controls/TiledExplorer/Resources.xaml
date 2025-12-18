@@ -6,6 +6,7 @@
                     xmlns:local="clr-namespace:FModel.Views.Resources.Controls.TiledExplorer"
                     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                     xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+                    xmlns:adonisConverters="clr-namespace:AdonisUI.Converters;assembly=AdonisUI"
                     x:Class="FModel.Views.Resources.Controls.TiledExplorer.ResourcesDictionary">
     <controls:TypeDataTemplateSelector x:Key="TemplateSelector" />
 
@@ -84,6 +85,25 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+
+        <Style.Triggers>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding ItemsSource, RelativeSource={RelativeSource Self}, Converter={x:Static adonisConverters:IsNullToBoolConverter.Instance}}" Value="False" />
+                    <Condition Binding="{Binding Items.Count, RelativeSource={RelativeSource Self}, FallbackValue=0}" Value="0" />
+                </MultiDataTrigger.Conditions>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Grid>
+                                <TextBlock Text="No folders or packages found" FontWeight="SemiBold" TextAlignment="Center"
+                                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </MultiDataTrigger>
+        </Style.Triggers>
     </Style>
 
     <DataTemplate x:Key="TiledFileDataTemplate" DataType="{x:Type vm:GameFileViewModel}">
