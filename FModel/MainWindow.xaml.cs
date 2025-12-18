@@ -31,30 +31,21 @@ public partial class MainWindow
         CommandBindings.Add(new CommandBinding(ApplicationCommands.Find, (_, _) => OnOpenAvalonFinder()));
         CommandBindings.Add(new CommandBinding(NavigationCommands.BrowseBack, (_, _) =>
         {
-            if (!UserSettings.Default.FeaturePreviewNewAssetExplorer)
-            {
-                if (LeftTabControl.SelectedIndex == 2)
-                {
-                    LeftTabControl.SelectedIndex = 1;
-                }
-                else if (LeftTabControl.SelectedIndex == 1 && AssetsFolderName.SelectedItem is TreeItem { Parent: TreeItem parent1 })
-                {
-                    parent1.IsSelected = true;
-                }
-
-                return;
-            }
-
-            if (!_applicationView.IsAssetsExplorerVisible)
+            if (UserSettings.Default.FeaturePreviewNewAssetExplorer && !_applicationView.IsAssetsExplorerVisible)
             {
                 // back browsing the json view will reopen the assets explorer
                 _applicationView.IsAssetsExplorerVisible = true;
                 return;
             }
 
-            if (AssetsFolderName.SelectedItem is TreeItem { Parent: TreeItem parent })
+            if (LeftTabControl.SelectedIndex == 2)
+            {
+                LeftTabControl.SelectedIndex = 1;
+            }
+            else if (LeftTabControl.SelectedIndex == 1 && AssetsFolderName.SelectedItem is TreeItem { Parent: TreeItem parent })
+            {
                 parent.IsSelected = true;
-
+            }
         }));
 
         DataContext = _applicationView;
@@ -366,6 +357,12 @@ public partial class MainWindow
         if (e.Key != Key.Enter || sender is not TreeView treeView || treeView.SelectedItem is not TreeItem folder)
             return;
 
+        if ((folder.IsExpanded || folder.Folders.Count == 0) && folder.AssetsList.Assets.Count > 0)
+        {
+            _applicationView.SelectedLeftTabIndex++;
+            return;
+        }
+
         var childFolder = folder;
         while (childFolder.Folders.Count == 1 && childFolder.AssetsList.Assets.Count == 0)
         {
@@ -375,9 +372,5 @@ public partial class MainWindow
 
         childFolder.IsExpanded = true;
         childFolder.IsSelected = true;
-        if (childFolder.Folders.Count == 0)
-        {
-            _applicationView.SelectedLeftTabIndex++;
-        }
     }
 }
