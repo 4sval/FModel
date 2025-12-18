@@ -58,6 +58,7 @@ public class FileToGeometryConverter : IMultiValueConverter
                     "txt" or "log" or "pem" => "TxtIcon",
                     "verse" => "VerseIcon",
                     "function" => "FunctionIcon",
+                    "xml" => "XmlIcon",
                     _ => "DataTableIcon"
                 },
 
@@ -106,6 +107,7 @@ public class FileToGeometryConverter : IMultiValueConverter
                     "locmeta" or "locres" => Brushes.CornflowerBlue,
                     "json5" or "json" => Brushes.LightGreen,
                     "bin" => Brushes.Yellow,
+                    "xml" => Brushes.LightGreen,
                     _ => Brushes.White
                 },
                 EAssetCategory.Audio => Brushes.MediumSeaGreen,

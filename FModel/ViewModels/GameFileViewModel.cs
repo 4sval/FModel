@@ -283,6 +283,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             case "txt":
             case "log":
             case "pem":
+            case "xml":
                 AssetCategory = EAssetCategory.Data;
                 break;
             case "wav":
