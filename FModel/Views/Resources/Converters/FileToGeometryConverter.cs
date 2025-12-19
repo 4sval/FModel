@@ -17,112 +17,69 @@ public class FileToGeometryConverter : IMultiValueConverter
 
         resolvedAssetType = resolvedAssetType.ToLowerInvariant();
 
+        var (geometry, brush) = category switch
+        {
+            EAssetCategory.Blueprint => ("BlueprintIcon", "BlueprintBrush"),
+            EAssetCategory.BlueprintGeneratedClass => ("BlueprintIcon", "BlueprintBrush"),
+            EAssetCategory.WidgetBlueprintGeneratedClass => ("BlueprintIcon", "BlueprintWidgetBrush"),
+            EAssetCategory.AnimBlueprintGeneratedClass => ("BlueprintIcon" , "BlueprintAnimBrush"),
+            EAssetCategory.RigVMBlueprintGeneratedClass => ("BlueprintIcon", "BlueprintRigVMBrush"),
+            EAssetCategory.UserDefinedEnum => ("BlueprintIcon", "UserDefinedEnumBrush"),
+            EAssetCategory.UserDefinedStruct => ("BlueprintIcon", "UserDefinedStructBrush"),
+            EAssetCategory.CookedMetaData => ("BlueprintIcon", "CookedMetaDataBrush"),
+
+            EAssetCategory.Texture => ("TextureIconAlt", "TextureBrush"),
+
+            EAssetCategory.StaticMesh => ("StaticMeshIconAlt", "NeutralBrush"),
+            EAssetCategory.SkeletalMesh => ("SkeletalMeshIconAlt", "NeutralBrush"),
+            EAssetCategory.Skeleton => ("SkeletonIcon", "NeutralBrush"),
+
+            EAssetCategory.Material => ("MaterialIcon", "MaterialBrush"),
+            EAssetCategory.MaterialEditorData => ("MaterialIcon", "MaterialEditorBrush"),
+            EAssetCategory.MaterialParameterCollection => ("MaterialParameterCollectionIcon", "MaterialBrush"),
+            EAssetCategory.MaterialFunction => ("MaterialFunctionIcon", "MaterialBrush"),
+
+            EAssetCategory.Animation => ("AnimationIconAlt", "AnimationBrush"),
+
+            EAssetCategory.World => ("WorldIcon", "WorldBrush"),
+            EAssetCategory.BuildData => ("MapIconAlt", "BuildDataBrush"),
+            EAssetCategory.LevelSequence => ("ClapperIcon", "LevelSequenceBrush"),
+            EAssetCategory.Foliage => ("FoliageIcon", "FoliageBrush"),
+
+            EAssetCategory.PhysicsAsset => ("PhysicsIcon", "NeutralBrush"),
+            EAssetCategory.CurveBase => ("CurveIcon", "CurveBrush"),
+            EAssetCategory.ItemDefinitionBase => ("DataTableIcon", "NeutralBrush"),
+
+            EAssetCategory.Audio => ("AudioIconAlt", "AudioBrush"),
+            EAssetCategory.Video => ("VideoIcon", "VideoBrush"),
+            EAssetCategory.Font => ("FontIcon", "NeutralBrush"),
+
+            EAssetCategory.Particle => ("ParticleIcon", "ParticleBrush"),
+
+            EAssetCategory.Data => resolvedAssetType switch
+            {
+                "uplugin" or "upluginmanifest" => ("PluginIcon", "PluginBrush"),
+                "uproject" or "uefnproject" => ("PluginIcon", "ProjectBrush"),
+                "ini" => ("ConfigIcon", "ConfigBrush"),
+                "locmeta" or "locres" => ("LocaleIcon", "LocalizationBrush"),
+                "lua" or "luac" => ("LuaIcon", "LuaBrush"),
+                "json5" or "json" => ("JsonIcon", "JsonXmlBrush"),
+                "txt" or "log" => ("TxtIcon", "NeutralBrush"),
+                "pem" => ("CertificateIcon", "NeutralBrush"),
+                "verse" => ("VerseIcon", "NeutralBrush"),
+                "function" => ("FunctionIcon", "NeutralBrush"),
+                "bin" => ("DataTableIcon", "BinaryBrush"),
+                "xml" => ("XmlIcon", "JsonXmlBrush"),
+                _ => ("DataTableIcon", "NeutralBrush")
+            },
+
+            _ => ("AssetIcon", "NeutralBrush")
+        };
+
         if (targetType == typeof(Geometry))
-        {
-            var resource = category switch
-            {
-                EAssetCategory.BlueprintGeneratedClass => "BlueprintIcon",
-                EAssetCategory.WidgetBlueprintGeneratedClass => "BlueprintIcon",
-                EAssetCategory.AnimBlueprintGeneratedClass => "BlueprintIcon",
-                EAssetCategory.RigVMBlueprintGeneratedClass => "BlueprintIcon",
-                EAssetCategory.Blueprint => "BlueprintIcon",
-                EAssetCategory.UserDefinedEnum => "BlueprintIcon",
-                EAssetCategory.UserDefinedStruct => "BlueprintIcon",
-                EAssetCategory.CookedMetaData => "BlueprintIcon",
-
-                EAssetCategory.StaticMesh => "StaticMeshIconAlt",
-                EAssetCategory.SkeletalMesh => "SkeletalMeshIconAlt",
-                EAssetCategory.Skeleton => "SkeletonIcon",
-
-                EAssetCategory.Texture => "TextureIconAlt",
-
-                EAssetCategory.Material or EAssetCategory.MaterialEditorData => "MaterialIcon",
-                EAssetCategory.MaterialFunction => "MaterialFunctionIcon",
-                EAssetCategory.MaterialParameterCollection => "MaterialParameterCollectionIcon",
-
-                EAssetCategory.Animation => "AnimationIconAlt",
-
-                EAssetCategory.World => "WorldIcon",
-                EAssetCategory.BuildData => "MapIconAlt",
-                EAssetCategory.LevelSequence => "ClapperIcon",
-                EAssetCategory.Foliage => "FoliageIcon",
-
-                EAssetCategory.PhysicsAsset => "PhysicsIcon",
-                EAssetCategory.CurveBase => "CurveIcon",
-                EAssetCategory.ItemDefinitionBase => "DataTableIcon",
-                EAssetCategory.Data => resolvedAssetType switch
-                {
-                    "uplugin" or "upluginmanifest" or "uproject" or "uefnproject" => "PluginIcon",
-                    "ini" => "ConfigIcon",
-                    "locmeta" or "locres" => "LocaleIcon",
-                    "lua" or "luac" => "LuaIcon",
-                    "json5" or "json" => "JsonIcon",
-                    "txt" or "log" or "pem" => "TxtIcon",
-                    "verse" => "VerseIcon",
-                    "function" => "FunctionIcon",
-                    "xml" => "XmlIcon",
-                    _ => "DataTableIcon"
-                },
-
-                EAssetCategory.Audio => "AudioIconAlt",
-                EAssetCategory.Video => "VideoIcon",
-                EAssetCategory.Font => "FontIcon",
-
-                EAssetCategory.Particle => "ParticleIcon",
-                _ => "AssetIcon"
-            };
-
-            return Application.Current.FindResource(resource) as Geometry;
-        }
-
+            return Application.Current.FindResource(geometry) as Geometry;
         if (targetType == typeof(Brush))
-        {
-            var brush = category switch
-            {
-                EAssetCategory.BlueprintGeneratedClass => Brushes.DodgerBlue,
-                EAssetCategory.WidgetBlueprintGeneratedClass => Brushes.DarkViolet,
-                EAssetCategory.AnimBlueprintGeneratedClass => Brushes.Crimson,
-                EAssetCategory.RigVMBlueprintGeneratedClass => Brushes.Teal,
-                EAssetCategory.Blueprint => Brushes.Yellow,
-                EAssetCategory.CookedMetaData => Brushes.Yellow,
-                EAssetCategory.UserDefinedEnum => Brushes.DarkGoldenrod,
-                EAssetCategory.UserDefinedStruct => Brushes.Tan,
-
-                EAssetCategory.Texture => Brushes.MediumPurple,
-
-                EAssetCategory.Material or EAssetCategory.MaterialFunction or EAssetCategory.MaterialParameterCollection => Brushes.BurlyWood,
-                EAssetCategory.MaterialEditorData => Brushes.Yellow,
-
-                EAssetCategory.Animation => Brushes.Coral,
-
-                EAssetCategory.World => Brushes.Orange,
-                EAssetCategory.BuildData => Brushes.Tomato,
-                EAssetCategory.LevelSequence => Brushes.Coral,
-                EAssetCategory.Foliage => Brushes.ForestGreen,
-
-                EAssetCategory.CurveBase => Brushes.HotPink,
-
-                EAssetCategory.Data => resolvedAssetType switch
-                {
-                    "uproject" or "uefnproject" => Brushes.DeepSkyBlue,
-                    "uplugin" or "upluginmanifest" => Brushes.GreenYellow,
-                    "ini" => Brushes.LightGray,
-                    "locmeta" or "locres" => Brushes.CornflowerBlue,
-                    "json5" or "json" => Brushes.LightGreen,
-                    "bin" => Brushes.Yellow,
-                    "xml" => Brushes.LightGreen,
-                    _ => Brushes.White
-                },
-                EAssetCategory.Audio => Brushes.MediumSeaGreen,
-                EAssetCategory.Video => Brushes.IndianRed,
-
-                EAssetCategory.Particle => Brushes.Gold,
-                
-                _ => Brushes.White
-            };
-
-            return brush;
-        }
+            return Application.Current.FindResource(brush) as Brush;
 
         return null;
     }
