@@ -15,13 +15,6 @@
             <Setter Property="Title" Value="Releases" />
         </Style>
     </adonisControls:AdonisWindow.Style>
-    <adonisControls:AdonisWindow.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Resources/Resources.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </adonisControls:AdonisWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -76,7 +69,7 @@
 
         <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="History" />
         <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <ItemsControl ItemsSource="{Binding CommitsView}">
+            <ItemsControl ItemsSource="{Binding CommitsView, IsAsync=True}">
                 <ItemsControl.GroupStyle>
                     <GroupStyle>
                         <GroupStyle.ContainerStyle>
@@ -107,6 +100,24 @@
                         <controls:CommitControl Margin="0 0 0 1" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
+                <ItemsControl.Style>
+                    <Style TargetType="ItemsControl" BasedOn="{StaticResource {x:Type ItemsControl}}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Items.Count, RelativeSource={RelativeSource Self}, FallbackValue=0}" Value="0">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate>
+                                            <Grid>
+                                                <TextBlock Text="No commits found" FontWeight="SemiBold" TextAlignment="Center"
+                                                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ItemsControl.Style>
             </ItemsControl>
         </ScrollViewer>
     </Grid>

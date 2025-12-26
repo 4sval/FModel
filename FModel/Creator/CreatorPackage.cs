@@ -33,6 +33,7 @@ public class CreatorPackage : IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TryConstructCreator([MaybeNullWhen(false)] out UCreator creator)
     {
+        // TODO: convert to a type based system
         switch (_exportType)
         {
             // Fortnite

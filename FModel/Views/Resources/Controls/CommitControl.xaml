@@ -4,13 +4,6 @@
              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              xmlns:controls="clr-namespace:FModel.Views.Resources.Controls">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Resources.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
     <Border BorderThickness="1" CornerRadius="0.5"
             BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer4BackgroundBrush}}">
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -42,22 +35,33 @@
 
                 <Grid Grid.Row="3">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="5"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="5"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <Ellipse Grid.Column="0">
-                        <Ellipse.Fill>
-                            <ImageBrush ImageSource="{Binding Author.AvatarUrl}" />
-                        </Ellipse.Fill>
-                    </Ellipse>
+                    <ItemsControl Grid.Column="0" ItemsSource="{Binding Authors}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Ellipse Width="16" Height="16" Margin="0,0,2,0">
+                                    <Ellipse.Fill>
+                                        <ImageBrush ImageSource="{Binding AvatarUrl}" />
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                     <TextBlock Grid.Column="2" FontSize="11">
                         <TextBlock.Text>
                             <MultiBinding StringFormat="{}{0} committed {1}">
-                                <Binding Path="Author.Login" />
+                                <Binding Path="AuthorNames" />
                                 <Binding Path="Commit.Author.Date" Converter="{x:Static converters:RelativeDateTimeConverter.Instance}" />
                             </MultiBinding>
                         </TextBlock.Text>
@@ -128,4 +132,3 @@
         </Grid>
     </Border>
 </UserControl>
-

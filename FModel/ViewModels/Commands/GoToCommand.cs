@@ -21,7 +21,7 @@ public class GoToCommand : ViewModelCommand<CustomDirectoriesViewModel>
 
     public TreeItem JumpTo(string directory)
     {
-        MainWindow.YesWeCats.LeftTabControl.SelectedIndex = 1; // folders tab
+        _applicationView.SelectedLeftTabIndex = 1; // folders tab
         var root = _applicationView.CUE4Parse.AssetsFolder.Folders;
         if (root is not { Count: > 0 }) return null;
 

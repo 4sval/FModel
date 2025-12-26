@@ -1,4 +1,5 @@
-﻿using System.Collections;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -18,8 +19,16 @@ public class CopyCommand : ViewModelCommand<ApplicationViewModel>
         if (parameter is not object[] parameters || parameters[0] is not string trigger)
             return;
 
-        var entries = ((IList) parameters[1]).Cast<GameFile>().ToArray();
-        if (!entries.Any()) return;
+        var entries = (parameters[1] as IEnumerable)?.OfType<object>()
+            .SelectMany(item => item switch
+            {
+                GameFile gf => new[] { gf },
+                GameFileViewModel gvm => new[] { gvm.Asset },
+                _ => []
+            }) ?? [];
+
+        if (!entries.Any())
+            return;
 
         var sb = new StringBuilder();
         switch (trigger)

@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
+using CUE4Parse.UE4.Assets.Exports.Material;
+using CUE4Parse.UE4.Assets.Exports.Nanite;
+using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Animations;
-using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
 using CUE4Parse_Conversion.UEFormat.Enums;
-using CUE4Parse.UE4.Assets.Exports.Material;
-using CUE4Parse.UE4.Assets.Exports.Nanite;
 using FModel.Framework;
 using FModel.ViewModels;
 using FModel.ViewModels.ApiEndpoints.Models;
@@ -307,6 +307,13 @@ namespace FModel.Settings
             set => SetProperty(ref _dirRightTab, value);
         }
 
+        private Hotkey _switchAssetExplorer = new(Key.Z);
+        public Hotkey SwitchAssetExplorer
+        {
+            get => _switchAssetExplorer;
+            set => SetProperty(ref _switchAssetExplorer, value);
+        }
+
         private Hotkey _assetLeftTab = new(Key.Q);
         public Hotkey AssetLeftTab
         {
@@ -515,6 +522,20 @@ namespace FModel.Settings
         {
             get => _saveHdrTexturesAsHdr;
             set => SetProperty(ref _saveHdrTexturesAsHdr, value);
+        }
+
+        private bool _featurePreviewNewAssetExplorer = true;
+        public bool FeaturePreviewNewAssetExplorer
+        {
+            get => _featurePreviewNewAssetExplorer;
+            set => SetProperty(ref _featurePreviewNewAssetExplorer, value);
+        }
+
+        private bool _previewTexturesAssetExplorer = true;
+        public bool PreviewTexturesAssetExplorer
+        {
+            get => _previewTexturesAssetExplorer;
+            set => SetProperty(ref _previewTexturesAssetExplorer, value);
         }
     }
 }

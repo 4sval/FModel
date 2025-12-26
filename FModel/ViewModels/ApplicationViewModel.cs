@@ -11,6 +11,7 @@ using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.VirtualFileSystem;
+using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -43,6 +44,32 @@ public class ApplicationViewModel : ViewModel
         private init => SetProperty(ref _status, value);
     }
 
+    public IEnumerable<EAssetCategory> Categories { get; } = AssetCategoryExtensions.GetBaseCategories();
+
+    private bool _isAssetsExplorerVisible;
+    public bool IsAssetsExplorerVisible
+    {
+        get => _isAssetsExplorerVisible;
+        set
+        {
+            if (value && !UserSettings.Default.FeaturePreviewNewAssetExplorer)
+                return;
+
+            SetProperty(ref _isAssetsExplorerVisible, value);
+        }
+    }
+
+    private int _selectedLeftTabIndex;
+    public int SelectedLeftTabIndex
+    {
+        get => _selectedLeftTabIndex;
+        set
+        {
+            if (value is < 0 or > 2) return;
+            SetProperty(ref _selectedLeftTabIndex, value);
+        }
+    }
+
     public RightClickMenuCommand RightClickMenuCommand => _rightClickMenuCommand ??= new RightClickMenuCommand(this);
     private RightClickMenuCommand _rightClickMenuCommand;
     public MenuCommand MenuCommand => _menuCommand ??= new MenuCommand(this);
@@ -50,7 +77,7 @@ public class ApplicationViewModel : ViewModel
     public CopyCommand CopyCommand => _copyCommand ??= new CopyCommand(this);
     private CopyCommand _copyCommand;
 
-    public string InitialWindowTitle => $"FModel ({Constants.APP_SHORT_COMMIT_ID})";
+    public string InitialWindowTitle => $"FModel ({Constants.APP_SHORT_COMMIT_ID} - {Constants.APP_BUILD_DATE:MMM d, yyyy})";
     public string GameDisplayName => CUE4Parse.Provider.GameDisplayName ?? "Unknown";
     public string TitleExtra => $"({UserSettings.Default.CurrentDir.UeVersion}){(Build != EBuildKind.Release ? $" ({Build})" : "")}";
 
@@ -196,32 +223,37 @@ public class ApplicationViewModel : ViewModel
     public static async Task InitVgmStream()
     {
         var vgmZipFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "vgmstream-win.zip");
-        if (File.Exists(vgmZipFilePath)) return;
+        var vgmFileInfo = new FileInfo(vgmZipFilePath);
 
-        await ApplicationService.ApiEndpointView.DownloadFileAsync("https://github.com/vgmstream/vgmstream/releases/latest/download/vgmstream-win.zip", vgmZipFilePath);
-        if (new FileInfo(vgmZipFilePath).Length > 0)
+        if (!vgmFileInfo.Exists || vgmFileInfo.LastWriteTimeUtc < DateTime.UtcNow.AddMonths(-4))
         {
-            var zipDir = Path.GetDirectoryName(vgmZipFilePath)!;
-            await using var zipFs = File.OpenRead(vgmZipFilePath);
-            using var zip = new ZipArchive(zipFs, ZipArchiveMode.Read);
+            await ApplicationService.ApiEndpointView.DownloadFileAsync("https://github.com/vgmstream/vgmstream/releases/latest/download/vgmstream-win.zip", vgmZipFilePath);
+            vgmFileInfo.Refresh();
 
-            foreach (var entry in zip.Entries)
+            if (vgmFileInfo.Length > 0)
             {
-                var entryPath = Path.Combine(zipDir, entry.FullName);
-                await using var entryFs = File.Create(entryPath);
-                await using var entryStream = entry.Open();
-                await entryStream.CopyToAsync(entryFs);
+                var zipDir = Path.GetDirectoryName(vgmZipFilePath)!;
+                await using var zipFs = File.OpenRead(vgmZipFilePath);
+                using var zip = new ZipArchive(zipFs, ZipArchiveMode.Read);
+
+                foreach (var entry in zip.Entries)
+                {
+                    var entryPath = Path.Combine(zipDir, entry.FullName);
+                    await using var entryFs = File.Create(entryPath);
+                    await using var entryStream = entry.Open();
+                    await entryStream.CopyToAsync(entryFs);
+                }
             }
-        }
-        else
-        {
-            FLogger.Append(ELog.Error, () => FLogger.Text("Could not download VgmStream", Constants.WHITE, true));
+            else
+            {
+                FLogger.Append(ELog.Error, () => FLogger.Text("Could not download VgmStream", Constants.WHITE, true));
+            }
         }
     }
 
     public static async Task InitImGuiSettings(bool forceDownload)
     {
-        var imgui = "imgui.ini";
+        const string imgui = "imgui.ini";
         var imguiPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", imgui);
 
         if (File.Exists(imgui)) File.Move(imgui, imguiPath, true);
@@ -234,7 +266,7 @@ public class ApplicationViewModel : ViewModel
         }
     }
 
-    public static async ValueTask InitOodle()
+    public static async Task InitOodle()
     {
         if (File.Exists(OodleHelper.OODLE_DLL_NAME_OLD))
         {
@@ -245,7 +277,11 @@ public class ApplicationViewModel : ViewModel
             catch { /* ignored */}
         }
 
-        var oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_DLL_NAME);
+        var oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_DLL_NAME_OLD);
+        if (!File.Exists(oodlePath))
+        {
+            oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_DLL_NAME);
+        }
 
         if (!File.Exists(oodlePath))
         {
@@ -259,7 +295,7 @@ public class ApplicationViewModel : ViewModel
         OodleHelper.Initialize(oodlePath);
     }
 
-    public static async ValueTask InitZlib()
+    public static async Task InitZlib()
     {
         var zlibPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", ZlibHelper.DLL_NAME);
         var zlibFileInfo = new FileInfo(zlibPath);
