@@ -10,17 +10,17 @@ jobs:
 
     steps:
       - name: GIT Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: 'recursive'
 
       - name: .NET 8 Setup
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '8.0.x'
 
       - name: .NET Restore
-        run: dotnet restore FModel
+        run: dotnet restore "./FModel/FModel.slnx"
 
       - name: .NET Publish
         run: dotnet publish "./FModel/FModel.csproj" -c Release --no-restore --no-self-contained -r win-x64 -f net8.0-windows -o "./FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false
@@ -33,7 +33,7 @@ jobs:
           path: ./FModel/bin/Publish/FModel.exe
 
       - name: Edit QA Artifact
-        uses: ncipollo/release-action@v1.14.0
+        uses: ncipollo/release-action@v1.20.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: 'FModel QA Testing'
@@ -51,13 +51,13 @@ jobs:
 
       - name: FModel Auth
         id: fmodel_auth
-        uses: fjogeleit/http-request-action@v1.15.5
+        uses: fjogeleit/http-request-action@v1.16.6
         with:
           url: "https://api.fmodel.app/v1/oauth/token"
           data: '{"username": "${{ secrets.API_USERNAME }}", "password": "${{ secrets.API_PASSWORD }}"}'
 
       - name: FModel Deploy Build
-        uses: fjogeleit/http-request-action@v1.15.5
+        uses: fjogeleit/http-request-action@v1.16.6
         with:
           url: "https://api.fmodel.app/v1/infos/${{ secrets.QA_ID }}"
           method: "PATCH"

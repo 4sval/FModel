@@ -55,8 +55,9 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
 #endif
         _applicationView.CUE4Parse.AssetsFolder.Folders.Clear();
         _applicationView.CUE4Parse.SearchVm.SearchResults.Clear();
-        MainWindow.YesWeCats.LeftTabControl.SelectedIndex = 1; // folders tab
-        Helper.CloseWindow<AdonisWindow>("Search View"); // close search window if opened
+        _applicationView.SelectedLeftTabIndex = 1; // folders tab
+        _applicationView.IsAssetsExplorerVisible = true;
+        Helper.CloseWindow<AdonisWindow>("Search For Packages"); // close search window if opened
 
         await Task.WhenAll(
             _applicationView.CUE4Parse.LoadLocalizedResources(), // load locres if not already loaded,
@@ -70,7 +71,11 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
                     case ELoadingMode.Multiple:
                     {
                         var l = (IList) parameter;
-                        if (l.Count < 1) return;
+                        if (l.Count == 0)
+                        {
+                            UserSettings.Default.LoadingMode = ELoadingMode.All;
+                            goto case ELoadingMode.All;
+                        }
 
                         var directoryFilesToShow = l.Cast<FileItem>();
                         FilterDirectoryFilesToDisplay(cancellationToken, directoryFilesToShow);

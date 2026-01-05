@@ -69,6 +69,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using Serilog;
 using SkiaSharp;
+using Svg.Skia;
 using UE4Config.Parsing;
 using Application = System.Windows.Application;
 using FGuid = CUE4Parse.UE4.Objects.Core.Misc.FGuid;
@@ -133,6 +134,7 @@ public class CUE4ParseViewModel : ViewModel
     public GameDirectoryViewModel GameDirectory { get; }
     public AssetsFolderViewModel AssetsFolder { get; }
     public SearchViewModel SearchVm { get; }
+    public SearchViewModel RefVm { get; }
     public TabControlViewModel TabControl { get; }
     public ConfigIni IoStoreOnDemand { get; }
     private Lazy<WwiseProvider> _wwiseProviderLazy;
@@ -196,6 +198,7 @@ public class CUE4ParseViewModel : ViewModel
         GameDirectory = new GameDirectoryViewModel();
         AssetsFolder = new AssetsFolderViewModel();
         SearchVm = new SearchViewModel();
+        RefVm = new SearchViewModel();
         TabControl = new TabControlViewModel();
         IoStoreOnDemand = new ConfigIni(nameof(IoStoreOnDemand));
     }
@@ -320,7 +323,7 @@ public class CUE4ParseViewModel : ViewModel
 
         AssetsFolder.Folders.Clear();
         SearchVm.SearchResults.Clear();
-        Helper.CloseWindow<AdonisWindow>("Search View");
+        Helper.CloseWindow<AdonisWindow>("Search For Packages");
         Provider.UnloadNonStreamedVfs();
         GC.Collect();
     }
@@ -554,7 +557,7 @@ public class CUE4ParseViewModel : ViewModel
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
-                action(entry);
+                action(entry.Asset);
             }
             catch
             {
@@ -570,7 +573,7 @@ public class CUE4ParseViewModel : ViewModel
         Parallel.ForEach(folder.AssetsList.Assets, entry =>
         {
             cancellationToken.ThrowIfCancellationRequested();
-            ExportData(entry, false);
+            ExportData(entry.Asset, false);
         });
 
         foreach (var f in folder.Folders) ExportFolder(cancellationToken, f);
@@ -596,6 +599,7 @@ public class CUE4ParseViewModel : ViewModel
 
     public void Extract(CancellationToken cancellationToken, GameFile entry, bool addNewTab = false, EBulkType bulk = EBulkType.None)
     {
+        ApplicationService.ApplicationView.IsAssetsExplorerVisible = false;
         Log.Information("User DOUBLE-CLICKED to extract '{FullPath}'", entry.Path);
 
         if (addNewTab && TabControl.CanAddTabs) TabControl.AddTab(entry);
@@ -851,15 +855,22 @@ public class CUE4ParseViewModel : ViewModel
             {
                 var data = Provider.SaveAsset(entry);
                 using var stream = new MemoryStream(data) { Position = 0 };
-                var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(512, 512));
+                var svg = new SKSvg();
                 svg.Load(stream);
 
-                var bitmap = new SKBitmap(512, 512);
-                using (var canvas = new SKCanvas(bitmap))
-                using (var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.Medium })
-                {
-                    canvas.DrawPicture(svg.Picture, paint);
-                }
+                int size = 512;
+                var bitmap = new SKBitmap(size, size);
+                using var canvas = new SKCanvas(bitmap);
+                canvas.Clear(SKColors.Transparent);
+
+                if (svg.Picture == null)
+                    break;
+
+                var bounds = svg.Picture.CullRect;
+                float scale = Math.Min(size / bounds.Width, size / bounds.Height);
+                canvas.Scale(scale);
+                canvas.Translate(-bounds.Left, -bounds.Top);
+                canvas.DrawPicture(svg.Picture);
 
                 TabControl.SelectedTab.AddImage(entry.NameWithoutExtension, false, bitmap, saveTextures, updateUi);
 
@@ -999,15 +1010,23 @@ public class CUE4ParseViewModel : ViewModel
                 var data = svgasset.GetOrDefault<byte[]>("SvgData");
                 var sourceFile = svgasset.GetOrDefault<string>("SourceFile");
                 using var stream = new MemoryStream(data) { Position = 0 };
-                var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(size, size));
+
+                var svg = new SKSvg();
                 svg.Load(stream);
 
+                if (svg.Picture == null)
+                    return false;
+
+                var b = svg.Picture.CullRect;
+                float s = Math.Min(size / b.Width, size / b.Height);
+
                 var bitmap = new SKBitmap(size, size);
-                using (var canvas = new SKCanvas(bitmap))
-                using (var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.Medium })
-                {
-                    canvas.DrawPicture(svg.Picture, paint);
-                }
+                using var canvas = new SKCanvas(bitmap);
+                using var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.Medium };
+
+                canvas.Scale(s);
+                canvas.Translate(-b.Left, -b.Top);
+                canvas.DrawPicture(svg.Picture, paint);
 
                 if (saveTextures)
                 {
@@ -1167,6 +1186,8 @@ public class CUE4ParseViewModel : ViewModel
 
     public void ShowMetadata(GameFile entry)
     {
+        ApplicationService.ApplicationView.IsAssetsExplorerVisible = false;
+
         var package = Provider.LoadPackage(entry);
 
         if (TabControl.CanAddTabs) TabControl.AddTab(entry);
@@ -1178,8 +1199,22 @@ public class CUE4ParseViewModel : ViewModel
         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(package, Formatting.Indented), false, false);
     }
 
+    public void FindReferences(GameFile entry)
+    {
+        var refs = Provider.ScanForPackageRefs(entry);
+        Application.Current.Dispatcher.Invoke(delegate
+        {
+            var refView = Helper.GetWindow<SearchView>("Search For Packages", () => new SearchView().Show());
+            refView.ChangeCollection(ESearchViewTab.RefView, refs, entry);
+            refView.FocusTab(ESearchViewTab.RefView);
+        });
+    }
+
+
     public void Decompile(GameFile entry)
     {
+        ApplicationService.ApplicationView.IsAssetsExplorerVisible = false;
+
         if (TabControl.CanAddTabs) TabControl.AddTab(entry);
         else TabControl.SelectedTab.SoftReset(entry);
 

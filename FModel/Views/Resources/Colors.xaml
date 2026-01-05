@@ -1,0 +1,35 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="NeutralBrush" Color="White" />
+
+    <SolidColorBrush x:Key="BlueprintBrush" Color="DodgerBlue" />
+    <SolidColorBrush x:Key="BlueprintWidgetBrush" Color="DarkViolet" />
+    <SolidColorBrush x:Key="BlueprintAnimBrush" Color="Crimson" />
+    <SolidColorBrush x:Key="BlueprintRigVMBrush" Color="Teal" />
+
+    <SolidColorBrush x:Key="CookedMetaDataBrush" Color="Yellow" />
+    <SolidColorBrush x:Key="UserDefinedEnumBrush" Color="DarkGoldenrod" />
+    <SolidColorBrush x:Key="UserDefinedStructBrush" Color="Tan" />
+    
+    <SolidColorBrush x:Key="MaterialBrush" Color="BurlyWood" />
+    <SolidColorBrush x:Key="MaterialEditorBrush" Color="Yellow" />
+
+    <SolidColorBrush x:Key="BinaryBrush" Color="Yellow" />
+    <SolidColorBrush x:Key="TextureBrush" Color="MediumPurple" />
+    <SolidColorBrush x:Key="ConfigBrush" Color="LightSlateGray" />
+    <SolidColorBrush x:Key="AudioBrush" Color="MediumSeaGreen" />
+    <SolidColorBrush x:Key="VideoBrush" Color="IndianRed" />
+    <SolidColorBrush x:Key="DataTableBrush" Color="SteelBlue" />
+    <SolidColorBrush x:Key="CurveBrush" Color="HotPink" />
+    <SolidColorBrush x:Key="PluginBrush" Color="GreenYellow" />
+    <SolidColorBrush x:Key="ProjectBrush" Color="DeepSkyBlue" />
+    <SolidColorBrush x:Key="LocalizationBrush" Color="CornflowerBlue" />
+    <SolidColorBrush x:Key="WorldBrush" Color="Orange" />
+    <SolidColorBrush x:Key="BuildDataBrush" Color="Tomato" />
+    <SolidColorBrush x:Key="LevelSequenceBrush" Color="Coral" />
+    <SolidColorBrush x:Key="FoliageBrush" Color="ForestGreen" />
+    <SolidColorBrush x:Key="ParticleBrush" Color="Gold" />
+    <SolidColorBrush x:Key="AnimationBrush" Color="Coral" />
+    <SolidColorBrush x:Key="LuaBrush" Color="DarkBlue" />
+    <SolidColorBrush x:Key="JsonXmlBrush" Color="LightGreen" />
+</ResourceDictionary>

@@ -11,13 +11,6 @@
             <Setter Property="Title" Value="About" />
         </Style>
     </adonisControls:AdonisWindow.Style>
-    <adonisControls:AdonisWindow.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Resources/Resources.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </adonisControls:AdonisWindow.Resources>
     <StackPanel Margin="30 10">
         <StackPanel HorizontalAlignment="Center" Margin="0 0 0 30">
             <TextBlock Text="{Binding Source={x:Static local:Constants.APP_VERSION}, StringFormat={}FModel {0}}" FontSize="15" FontWeight="500" Foreground="#9DA3DD" FontStretch="Expanded" />

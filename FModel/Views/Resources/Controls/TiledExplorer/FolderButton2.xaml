@@ -1,0 +1,110 @@
+<UserControl x:Class="FModel.Views.Resources.Controls.TiledExplorer.FolderButton2"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" d:DesignWidth="128" d:DesignHeight="192"
+             d:DataContext="{d:DesignInstance Type=vm:TreeItem, IsDesignTimeCreatable=False}"
+             xmlns:vm="clr-namespace:FModel.ViewModels"
+             xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+             Width="128" Height="192"
+             Padding="5"
+             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}">
+    <Grid VerticalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="2" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Viewbox Grid.Row="0" Height="96" VerticalAlignment="Center">
+            <Canvas Width="128" Height="128">
+                <Canvas.Resources>
+                    <LinearGradientBrush x:Key="FolderTabGradient"
+                                         StartPoint="0,0"
+                                         EndPoint="0,1">
+                        <GradientStop Color="#FFE8C480"
+                                      Offset="0" />
+                        <GradientStop Color="#FFD9AA63"
+                                      Offset="1" />
+                    </LinearGradientBrush>
+
+                    <LinearGradientBrush x:Key="FolderBodyGradient"
+                                         StartPoint="0,0"
+                                         EndPoint="0,1">
+                        <GradientStop Color="#FFF3D9A4"
+                                      Offset="0" />
+                        <GradientStop Color="#FFE5BD77"
+                                      Offset="1" />
+                    </LinearGradientBrush>
+
+                    <SolidColorBrush x:Key="FolderOutlineBrush"
+                                     Color="#D8A360" />
+                </Canvas.Resources>
+
+                <Path Fill="{StaticResource FolderTabGradient}"
+                      Stroke="{StaticResource FolderOutlineBrush}"
+                      StrokeThickness="2"
+                      Data="M20 34 H54 L62 46 H108 C112 46 115 49 115 53 V60 H13 V45 C13 39 16 34 20 34 Z" />
+
+                <Path Fill="{StaticResource FolderBodyGradient}"
+                      Stroke="{StaticResource FolderOutlineBrush}"
+                      StrokeThickness="2"
+                      Data="M13 60 H115 V104 C115 110 110 115 104 115 H24  C18 115 13 110 13 104 Z" />
+
+                <Ellipse Canvas.Left="90" Canvas.Top="90" Width="36" Height="36"
+                         Opacity="0.95" Stroke="#b28c53" StrokeThickness="1.5"
+                         Fill="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
+                         Visibility="{Binding Visibility, ElementName=HintIcon}" />
+
+                <Path x:Name="HintIcon" Canvas.Left="98" Canvas.Top="98" Width="20" Height="20" Stretch="Uniform"
+                      Data="{Binding Header, Converter={x:Static converters:FolderToGeometryConverter.Instance}}"
+                      Fill="{Binding Header, Converter={x:Static converters:FolderToGeometryConverter.Instance}}">
+                    <Path.Style>
+                        <Style TargetType="Path">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Data, RelativeSource={RelativeSource Self}}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Path.Style>
+                </Path>
+            </Canvas>
+        </Viewbox>
+
+        <Grid Grid.Row="2"
+              Margin="0 10 0 0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="6" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0"
+                       Text="{Binding Header, FallbackValue=Folder Name}"
+                       FontSize="13"
+                       TextWrapping="NoWrap"
+                       TextTrimming="CharacterEllipsis"
+                       FontWeight="DemiBold"
+                       TextAlignment="Center"
+                       HorizontalAlignment="Center"
+                       Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+
+            <TextBlock Grid.Row="2"
+                       Text="{Binding Folders.Count, StringFormat=Subfolders: {0}}"
+                       FontSize="11"
+                       HorizontalAlignment="Center"
+                       Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                       Opacity="0.8" />
+            <TextBlock Grid.Row="3"
+                       Text="{Binding AssetsList.Assets.Count, StringFormat=Assets: {0}}"
+                       FontSize="11"
+                       HorizontalAlignment="Center"
+                       Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                       Opacity="0.8" />
+        </Grid>
+    </Grid>
+</UserControl>

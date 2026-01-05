@@ -1,0 +1,41 @@
+<UserControl x:Class="FModel.Views.Resources.Controls.Inputs.SearchTextBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignWidth="300"
+             x:Name="Root"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+             xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0" ZIndex="1" HorizontalAlignment="Left" Margin="5 2 0 0">
+            <Viewbox Width="16" Height="16">
+                <Canvas Width="24" Height="24">
+                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SearchIcon}" />
+                </Canvas>
+            </Viewbox>
+        </Grid>
+
+        <TextBox x:Name="TextBox" Grid.Column="0" Grid.ColumnSpan="2" AcceptsTab="False" AcceptsReturn="False"
+                 Text="{Binding Text, ElementName=Root, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 Padding="25 0 0 0" HorizontalAlignment="Stretch"
+                 adonisExtensions:WatermarkExtension.Watermark="{Binding Watermark, ElementName=Root}" />
+
+        <Button Grid.Column="1" ToolTip="Clear Search Filter" Padding="5"
+                Click="OnClearButtonClick"
+                Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}">
+            <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
+                <Canvas Width="24" Height="24">
+                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                          Data="{StaticResource BackspaceIcon}"/>
+                </Canvas>
+            </Viewbox>
+        </Button>
+    </Grid>
+</UserControl>

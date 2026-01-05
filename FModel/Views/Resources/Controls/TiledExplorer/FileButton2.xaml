@@ -1,0 +1,81 @@
+﻿<UserControl x:Class="FModel.Views.Resources.Controls.TiledExplorer.FileButton2"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" d:DesignWidth="128" d:DesignHeight="192"
+             d:DataContext="{d:DesignInstance Type=vm:GameFileViewModel, IsDesignTimeCreatable=False}"
+
+             xmlns:vm="clr-namespace:FModel.ViewModels"
+             xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+             Width="128" Height="192"
+             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer4BackgroundBrush}}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="2" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Height="128" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}">
+            <Image Stretch="Uniform" Source="{Binding PreviewImage}" />
+            <Path x:Name="FallbackIcon" Width="64" Stretch="Uniform">
+                <Path.Style>
+                    <Style TargetType="{x:Type Path}">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding PreviewImage}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Path.Style>
+                <Path.Data>
+                    <MultiBinding Converter="{x:Static converters:FileToGeometryConverter.Instance}">
+                        <Binding Path="AssetCategory" />
+                        <Binding Path="ResolvedAssetType" />
+                    </MultiBinding>
+                </Path.Data>
+                <Path.Fill>
+                    <MultiBinding Converter="{x:Static converters:FileToGeometryConverter.Instance}">
+                        <Binding Path="AssetCategory" />
+                        <Binding Path="ResolvedAssetType" />
+                    </MultiBinding>
+                </Path.Fill>
+            </Path>
+        </Grid>
+
+        <Rectangle Grid.Row="1" Fill="{Binding Fill, ElementName=FallbackIcon, FallbackValue=Red}" />
+
+        <Grid Grid.Row="2" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Text="{Binding Asset.NameWithoutExtension, FallbackValue=Asset Name}"
+                       FontSize="13" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" FontWeight="DemiBold"
+                       TextAlignment="Left" HorizontalAlignment="Left" VerticalAlignment="Top"
+                       Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="5" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="{Binding ResolvedAssetType, FallbackValue=Asset Type}"
+                           FontSize="9" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" FontWeight="Normal"
+                           TextAlignment="Left" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+
+                <TextBlock Grid.Column="2" Text="{Binding Asset.Size, Converter={x:Static converters:SizeToStringConverter.Instance}, FallbackValue=0 B}"
+                           FontSize="9" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" FontWeight="Normal"
+                           TextAlignment="Right" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

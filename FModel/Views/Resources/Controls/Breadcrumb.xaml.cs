@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -10,7 +10,7 @@ namespace FModel.Views.Resources.Controls;
 
 public partial class Breadcrumb
 {
-    private const string _NAVIGATE_NEXT = "M9.31 6.71c-.39.39-.39 1.02 0 1.41L13.19 12l-3.88 3.88c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l4.59-4.59c.39-.39.39-1.02 0-1.41L10.72 6.7c-.38-.38-1.02-.38-1.41.01z";
+    private const string NavigateNext = "M9.31 6.71c-.39.39-.39 1.02 0 1.41L13.19 12l-3.88 3.88c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l4.59-4.59c.39-.39.39-1.02 0-1.41L10.72 6.7c-.38-.38-1.02-.38-1.41.01z";
 
     public Breadcrumb()
     {
@@ -25,17 +25,27 @@ public partial class Breadcrumb
         var folders = pathAtThisPoint.Split('/');
         for (var i = 0; i < folders.Length; i++)
         {
-            var textBlock = new TextBlock
+            var border = new Border
             {
-                Text = folders[i],
+                BorderThickness = new Thickness(1),
+                BorderBrush = Brushes.Transparent,
                 Background = Brushes.Transparent,
+                Padding = new Thickness(6, 3, 6, 3),
                 Cursor = Cursors.Hand,
                 Tag = i + 1,
-                Margin = new Thickness(0, 3, 0, 0)
+                IsEnabled = i < folders.Length - 1,
+                Child = new TextBlock
+                {
+                    Text = folders[i],
+                    VerticalAlignment = VerticalAlignment.Center
+                }
             };
-            textBlock.MouseUp += OnMouseClick;
 
-            InMeDaddy.Children.Add(textBlock);
+            border.MouseEnter += OnMouseEnter;
+            border.MouseLeave += OnMouseLeave;
+            border.MouseUp += OnMouseClick;
+
+            InMeDaddy.Children.Add(border);
             if (i >= folders.Length - 1) continue;
 
             InMeDaddy.Children.Add(new Viewbox
@@ -52,7 +62,8 @@ public partial class Breadcrumb
                         new Path
                         {
                             Fill = Brushes.White,
-                            Data = Geometry.Parse(_NAVIGATE_NEXT)
+                            Data = Geometry.Parse(NavigateNext),
+                            Opacity = 0.6
                         }
                     }
                 }
@@ -60,9 +71,27 @@ public partial class Breadcrumb
         }
     }
 
+    private void OnMouseEnter(object sender, MouseEventArgs e)
+    {
+        if (sender is Border border)
+        {
+            border.BorderBrush = new SolidColorBrush(Color.FromRgb(127, 127, 144));
+            border.Background = new SolidColorBrush(Color.FromRgb(72, 73, 92));
+        }
+    }
+
+    private void OnMouseLeave(object sender, MouseEventArgs e)
+    {
+        if (sender is Border border)
+        {
+            border.BorderBrush = Brushes.Transparent;
+            border.Background = Brushes.Transparent;
+        }
+    }
+
     private void OnMouseClick(object sender, MouseButtonEventArgs e)
     {
-        if (sender is not TextBlock { DataContext: string pathAtThisPoint, Tag: int index }) return;
+        if (sender is not Border { DataContext: string pathAtThisPoint, Tag: int index }) return;
 
         var directory = string.Join('/', pathAtThisPoint.Split('/').Take(index));
         if (pathAtThisPoint.Equals(directory)) return;

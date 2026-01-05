@@ -34,6 +34,11 @@ public class FLogger : ITextFormatter
     private static readonly BrushConverter _brushConverter = new();
     private static int _previous;
 
+    private const string _at = "   at ";
+    private const char _dot = '.';
+    private const char _colon = ':';
+    private const string _gray = "#999";
+
     public static void Append(ELog type, Action job)
     {
         Application.Current.Dispatcher.Invoke(delegate
@@ -56,6 +61,45 @@ public class FLogger : ITextFormatter
 
             job();
         }, DispatcherPriority.Background);
+    }
+
+    public static void Append(Exception e)
+    {
+        Append(ELog.Error, () =>
+        {
+            if ((e.InnerException ?? e) is { TargetSite.DeclaringType: not null } exception)
+            {
+                if (exception.TargetSite.ToString() == "CUE4Parse.FileProvider.GameFile get_Item(System.String)")
+                {
+                    Text(e.Message, Constants.WHITE, true);
+                }
+                else
+                {
+                    var t = exception.GetType();
+                    Text(t.Namespace + _dot, Constants.GRAY);
+                    Text(t.Name, Constants.WHITE);
+                    Text(_colon + " ", Constants.GRAY);
+                    Text(exception.Message, Constants.RED, true);
+
+                    Text(_at, _gray);
+                    Text(exception.TargetSite.DeclaringType.FullName + _dot, Constants.GRAY);
+                    Text(exception.TargetSite.Name, Constants.YELLOW);
+
+                    var p = exception.TargetSite.GetParameters();
+                    var parameters = new string[p.Length];
+                    for (int i = 0; i < parameters.Length; i++)
+                    {
+                        parameters[i] = p[i].ParameterType.Name + " " + p[i].Name;
+                    }
+
+                    Text("(" + string.Join(", ", parameters) + ")", Constants.GRAY, true);
+                }
+            }
+            else
+            {
+                Text(e.Message, Constants.WHITE, true);
+            }
+        });
     }
 
     public static void Text(string message, string color, bool newLine = false)
