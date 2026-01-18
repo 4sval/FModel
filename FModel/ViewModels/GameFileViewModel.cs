@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CUE4Parse.FileProvider.Objects;
+using CUE4Parse.GameTypes.DPA.UE4.Assets.Exports.Wwise;
 using CUE4Parse.GameTypes.FN.Assets.Exports.DataAssets;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports.Animation;
@@ -200,7 +201,8 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 UCurveBase => EAssetCategory.CurveBase,
 
                 UWwiseAssetLibrary or USoundBase or UAkMediaAssetData or UAtomWaveBank or USoundAtomCue
-                    or UAtomCueSheet or USoundAtomCueSheet or UFMODBank or UFMODEvent or UAkAudioType => EAssetCategory.Audio,
+                    or UAtomCueSheet or USoundAtomCueSheet or UFMODBank or UFMODEvent or UAkAudioType
+                    or UExternalSource or UExternalSourceBank => EAssetCategory.Audio,
                 UFileMediaSource => EAssetCategory.Video,
                 UFont or UFontFace => EAssetCategory.Font,
 

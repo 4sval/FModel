@@ -19,6 +19,7 @@ using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.GameTypes.Aion2.Objects;
 using CUE4Parse.GameTypes.AshEchoes.FileProvider;
+using CUE4Parse.GameTypes.DPA.UE4.Assets.Exports.Wwise;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
 using CUE4Parse.MappingsProvider;
 using CUE4Parse.UE4.AssetRegistry;
@@ -1059,6 +1060,13 @@ public class CUE4ParseViewModel : ViewModel
                 }
 
                 TabControl.SelectedTab.AddImage(sourceFile.SubstringAfterLast('/'), false, bitmap, false, updateUi);
+                return false;
+            }
+            // The Dark Pictures Anthology: House of Ashes
+            case UExternalSource when (isNone || saveAudio) && pointer.Object.Value is UExternalSource externalSource:
+            {
+                var audioName = Path.GetFileNameWithoutExtension(externalSource.ExternalSourcePath);
+                SaveAndPlaySound(audioName, "wem", externalSource.Data?.WemFile ?? [], saveAudio);
                 return false;
             }
             case UAkAudioEvent when (isNone || saveAudio) && pointer.Object.Value is UAkAudioEvent audioEvent:
