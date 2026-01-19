@@ -14,17 +14,35 @@ public class AnyItemMeetsConditionConverter : IValueConverter
 {
     public Collection<IItemCondition> Conditions { get; } = [];
 
+    /// <summary>
+    /// Determines how multiple conditions are evaluated. Default is 'And'.
+    /// </summary>
+    public EConditionMode ConditionMode { get; set; } = EConditionMode.And;
+
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         if (value is not IEnumerable items || Conditions.Count == 0)
             return false;
 
-        return items.OfType<GameFileViewModel>().Any(item => Conditions.All(c => c.Matches(item)));
+        Func<GameFileViewModel, bool> predicate = ConditionMode switch
+        {
+            EConditionMode.And => item => Conditions.All(condition => condition.Matches(item)),
+            EConditionMode.Or => item => Conditions.Any(condition => condition.Matches(item)),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        return items.OfType<GameFileViewModel>().Any(predicate);
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
         throw new NotImplementedException();
+    }
+
+    public enum EConditionMode
+    {
+        And,
+        Or
     }
 }
 
@@ -39,7 +57,16 @@ public class ItemCategoryCondition : IItemCondition
 
     public bool Matches(GameFileViewModel item)
     {
-        return item != null && item.AssetCategory.IsOfCategory(Category);
+        if (item == null) return false;
+
+        // if the specified category is a base category, check if the item's category is derived from it
+        if (Category.IsBaseCategory())
+        {
+            return item.AssetCategory.IsOfCategory(Category);
+        }
+
+        // if the specified category is a targeted non-base category, check for exact match
+        return item.AssetCategory == Category;
     }
 }
 
