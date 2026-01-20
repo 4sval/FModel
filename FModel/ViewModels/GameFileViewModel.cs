@@ -225,8 +225,8 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                     if (!resolve.HasFlag(EResolveCompute.Preview))
                         break;
 
-                    if (pointer.Object.Value is UTexture2DArray textureArray && textureArray.GetFirstMip()?.SizeZ > 1)
-                        NumTextures = textureArray.GetFirstMip().SizeZ;
+                    if (pointer.Object.Value is UTexture2DArray textureArray && textureArray.GetFirstMip() is { SizeZ: > 1 } firstMip)
+                        NumTextures = firstMip.SizeZ;
 
                     var img = texture.Decode(MaxPreviewSize, UserSettings.Default.CurrentDir.TexturePlatform);
                     if (img != null)
