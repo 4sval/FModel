@@ -114,4 +114,29 @@
         <local:FolderButton2 ContextMenu="{StaticResource FolderContextMenu}" />
     </DataTemplate>
 
+    <DataTemplate x:Key="TextureNumTemplate">
+        <Border VerticalAlignment="Top"
+                HorizontalAlignment="Right"
+                Margin="4"
+                Padding="6,2"
+                CornerRadius="3"
+                Opacity="0.85"
+                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding}"
+                           Foreground="White"
+                           FontSize="11"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center"
+                           Margin="0,0,5,0" />
+                <Path Data="{StaticResource TextureIcon}"
+                      Fill="White"
+                      Width="12"
+                      Height="12"
+                      Stretch="Uniform"
+                      VerticalAlignment="Center" />
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
 </ResourceDictionary>

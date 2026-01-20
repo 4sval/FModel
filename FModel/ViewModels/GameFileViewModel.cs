@@ -95,6 +95,13 @@ public class GameFileViewModel(GameFile asset) : ViewModel
         }
     }
 
+    private int _numTextures = 0;
+    public int NumTextures
+    {
+        get => _numTextures;
+        private set => SetProperty(ref _numTextures, value);
+    }
+
     public Task ExtractAsync()
         => ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
             _applicationView.CUE4Parse.ExtractSelected(cancellationToken, [Asset]));
@@ -217,6 +224,9 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 {
                     if (!resolve.HasFlag(EResolveCompute.Preview))
                         break;
+
+                    if (pointer.Object.Value is UTexture2DArray textureArray && textureArray.GetFirstMip()?.SizeZ > 1)
+                        NumTextures = textureArray.GetFirstMip().SizeZ;
 
                     var img = texture.Decode(MaxPreviewSize, UserSettings.Default.CurrentDir.TexturePlatform);
                     if (img != null)

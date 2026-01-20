@@ -535,39 +535,15 @@
                             <ToggleButton Width="32"
                                           Height="32"
                                           Cursor="Hand"
-                                          Margin="0, 0, 2, 0"
+                                          Margin="0,0,2,0"
                                           Checked="OnPreviewTexturesToggled"
-                                          Focusable="False"
-                                          IsChecked="{Binding PreviewTexturesAssetExplorer, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}">
-                                <ToggleButton.Style>
-                                    <Style TargetType="ToggleButton" BasedOn="{StaticResource ModernToggleButtonStyle}">
-                                        <Setter Property="ToolTip" Value="Preview Textures (OFF)" />
-                                        <Style.Triggers>
-                                            <Trigger Property="IsChecked" Value="True">
-                                                <Setter Property="Background" Value="MediumPurple" />
-                                                <Setter Property="ToolTip" Value="Preview Textures (ON)" />
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ToggleButton.Style>
-                                <Viewbox Width="16"
-                                         Height="16">
-                                    <Canvas Width="24"
-                                            Height="24">
-                                        <Path Data="{StaticResource TextureIconAlt}"
-                                              Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
-                                    </Canvas>
-                                </Viewbox>
-                            </ToggleButton>
-                            <ToggleButton Width="32"
-                                          Height="32"
-                                          Cursor="Hand"
-                                          Margin="0, 0, 2, 0"
-                                          Checked="OnPreviewTexturesToggled"
-                                          ToolTip="Assets Explorer"
                                           Focusable="False"
                                           IsChecked="{Binding IsAssetsExplorerVisible, Mode=TwoWay}"
                                           Style="{StaticResource ModernToggleButtonStyle}">
+                                <ToggleButton.ToolTip>
+                                    <ToolTip Content="{Binding SwitchAssetExplorer, Source={x:Static settings:UserSettings.Default}}"
+                                             ContentStringFormat="Assets Explorer ({0})" />
+                                </ToggleButton.ToolTip>
                                 <Viewbox Width="16"
                                          Height="16">
                                     <Canvas Width="24"
@@ -580,15 +556,50 @@
                             <ToggleButton Width="32"
                                           Height="32"
                                           Cursor="Hand"
-                                          ToolTip="File Properties"
+                                          Margin="0,0,2,0"
                                           Focusable="False"
                                           IsChecked="{Binding IsAssetsExplorerVisible, Converter={x:Static converters:InvertBooleanConverter.Instance}, Mode=TwoWay}"
                                           Style="{StaticResource ModernToggleButtonStyle}">
+                                <ToggleButton.ToolTip>
+                                    <ToolTip Content="{Binding SwitchAssetExplorer, Source={x:Static settings:UserSettings.Default}}"
+                                             ContentStringFormat="File Properties ({0})" />
+                                </ToggleButton.ToolTip>
                                 <Viewbox Width="16"
                                          Height="16">
                                     <Canvas Width="24"
                                             Height="24">
                                         <Path Data="{StaticResource AssetIcon}"
+                                              Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                                    </Canvas>
+                                </Viewbox>
+                            </ToggleButton>
+                            <ToggleButton Width="32"
+                                          Height="32"
+                                          Cursor="Hand"
+                                          Checked="OnPreviewTexturesToggled"
+                                          Focusable="False"
+                                          IsChecked="{Binding PreviewTexturesAssetExplorer, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}">
+                                <ToggleButton.Style>
+                                    <Style TargetType="ToggleButton"
+                                           BasedOn="{StaticResource ModernToggleButtonStyle}">
+                                        <Setter Property="ToolTip"
+                                                Value="Preview Textures (OFF)" />
+                                        <Style.Triggers>
+                                            <Trigger Property="IsChecked"
+                                                     Value="True">
+                                                <Setter Property="Background"
+                                                        Value="MediumPurple" />
+                                                <Setter Property="ToolTip"
+                                                        Value="Preview Textures (ON)" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ToggleButton.Style>
+                                <Viewbox Width="16"
+                                         Height="16">
+                                    <Canvas Width="24"
+                                            Height="24">
+                                        <Path Data="{StaticResource TextureIconAlt}"
                                               Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
                                     </Canvas>
                                 </Viewbox>
