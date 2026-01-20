@@ -1976,4 +1976,79 @@
         </Setter>
     </Style>
 
+    <Style x:Key="AssetsExplorerToggleButtonStyle"
+           TargetType="ToggleButton">
+        <Setter Property="Background"
+                Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
+        <Setter Property="BorderThickness"
+                Value="1" />
+        <Setter Property="Padding"
+                Value="4" />
+        <Setter Property="ToolTip">
+            <Setter.Value>
+                <ToolTip Content="{Binding SwitchAssetExplorer, Source={x:Static settings:UserSettings.Default}}"
+                         ContentStringFormat="Assets Explorer ({0})" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8">
+                        <Viewbox Width="18"
+                                 Height="18">
+                            <Canvas Width="24"
+                                    Height="24">
+                                <Path x:Name="IconPath"
+                                      Data="{StaticResource FolderIconAlt}"
+                                      Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                            </Canvas>
+                        </Viewbox>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked"
+                                 Value="True">
+                            <Setter TargetName="IconPath"
+                                    Property="Data"
+                                    Value="{StaticResource FolderIconAlt}" />
+                            <Setter Property="Background"
+                                    Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked"
+                                 Value="False">
+                            <Setter TargetName="IconPath"
+                                    Property="Data"
+                                    Value="{StaticResource AssetIcon}" />
+                            <Setter Property="Background"
+                                    Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked"
+                                 Value="False">
+                            <Setter TargetName="IconPath"
+                                    Property="Data"
+                                    Value="{StaticResource AssetIcon}" />
+                            <Setter Property="Background"
+                                    Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
+                            <Setter Property="ToolTip">
+                                <Setter.Value>
+                                    <ToolTip Content="{Binding SwitchAssetExplorer, Source={x:Static settings:UserSettings.Default}}"
+                                             ContentStringFormat="File Properties ({0})" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter Property="Background"
+                                    Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>
