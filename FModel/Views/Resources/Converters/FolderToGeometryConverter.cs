@@ -39,6 +39,7 @@ public class FolderToGeometryConverter : IValueConverter
             "locale" or "localization" or "l10n" => ("LocaleIcon", "LocalizationBrush"),
             "skeleton" or "skeletons" => ("SkeletonIcon", "NeutralBrush"),
             "certificate" or "certificates" => ("CertificateIcon", "NeutralBrush"),
+            "fonts" or "font" => ("FontIcon", "NeutralBrush"),
             _ => (null, "NeutralBrush"),
         };
 
