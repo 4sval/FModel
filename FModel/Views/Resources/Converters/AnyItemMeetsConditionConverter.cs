@@ -51,6 +51,16 @@ public interface IItemCondition
     bool Matches(GameFileViewModel item);
 }
 
+public class ItemActionCondition : IItemCondition
+{
+    public EBulkType Action { get; set; }
+
+    public bool Matches(GameFileViewModel item)
+    {
+        return item != null && item.AssetActions.HasFlag(Action);
+    }
+}
+
 public class ItemCategoryCondition : IItemCondition
 {
     public EAssetCategory Category { get; set; }

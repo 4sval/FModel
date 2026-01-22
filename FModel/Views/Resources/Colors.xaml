@@ -10,9 +10,14 @@
     <SolidColorBrush x:Key="CookedMetaDataBrush" Color="Yellow" />
     <SolidColorBrush x:Key="UserDefinedEnumBrush" Color="DarkGoldenrod" />
     <SolidColorBrush x:Key="UserDefinedStructBrush" Color="Tan" />
-    
+
+    <SolidColorBrush x:Key="CustomizableObjectBrush" Color="DarkRed" />
+    <SolidColorBrush x:Key="NaniteDisplacedMeshBrush" Color="ForestGreen" />
+
     <SolidColorBrush x:Key="MaterialBrush" Color="BurlyWood" />
     <SolidColorBrush x:Key="MaterialEditorBrush" Color="Yellow" />
+
+    <SolidColorBrush x:Key="RigBrush" Color="YellowGreen" />
 
     <SolidColorBrush x:Key="BinaryBrush" Color="Yellow" />
     <SolidColorBrush x:Key="TextureBrush" Color="MediumPurple" />
