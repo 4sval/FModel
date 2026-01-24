@@ -10,7 +10,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+
 using AdonisUI.Controls;
+
 using CUE4Parse;
 using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
@@ -51,11 +53,14 @@ using CUE4Parse.UE4.Shaders;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
 using CUE4Parse.Utils;
+
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
+
 using EpicManifestParser;
 using EpicManifestParser.UE;
 using EpicManifestParser.ZlibngDotNetDecompressor;
+
 using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;
@@ -64,14 +69,21 @@ using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
 using FModel.Views.Snooper;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+
 using Serilog;
+
 using SkiaSharp;
+
 using Svg.Skia;
+
 using UE4Config.Parsing;
+
 using Application = System.Windows.Application;
 using FGuid = CUE4Parse.UE4.Objects.Core.Misc.FGuid;
 
