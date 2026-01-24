@@ -157,9 +157,10 @@
             <MenuItem.IsEnabled>
                 <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
                     <Binding.Converter>
-                        <converters:AnyItemMeetsConditionConverter>
+                        <converters:AnyItemMeetsConditionConverter ConditionMode="Or">
                             <converters:AnyItemMeetsConditionConverter.Conditions>
                                 <converters:ItemCategoryCondition Category="Texture" />
+                                <converters:ItemCategoryCondition Category="ItemDefinitionBase" />
                             </converters:AnyItemMeetsConditionConverter.Conditions>
                         </converters:AnyItemMeetsConditionConverter>
                     </Binding.Converter>
