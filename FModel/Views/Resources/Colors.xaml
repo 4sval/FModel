@@ -22,7 +22,10 @@
     <SolidColorBrush x:Key="BinaryBrush" Color="Yellow" />
     <SolidColorBrush x:Key="TextureBrush" Color="MediumPurple" />
     <SolidColorBrush x:Key="ConfigBrush" Color="LightSlateGray" />
+    
     <SolidColorBrush x:Key="AudioBrush" Color="MediumSeaGreen" />
+    <SolidColorBrush x:Key="SoundBankBrush" Color="Aquamarine" />
+    
     <SolidColorBrush x:Key="VideoBrush" Color="IndianRed" />
     <SolidColorBrush x:Key="DataTableBrush" Color="SteelBlue" />
     <SolidColorBrush x:Key="CurveBrush" Color="HotPink" />

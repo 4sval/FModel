@@ -21,7 +21,8 @@ public class FolderToGeometryConverter : IValueConverter
         {
             "textures" or "texture" or "ui" or "icons" or "umgassets" or "hud" or "hdri" or "tex" => ("TextureIconAlt", "TextureBrush"),
             "config" or "tags" => ("ConfigIcon", "ConfigBrush"),
-            "audio" or "wwiseaudio" or "wwise" or "fmod" or "soundbanks" or "banks" or "sound" or "sounds" or "cue" => ("AudioIconAlt", "AudioBrush"),
+            "audio" or "wwiseaudio" or "wwise" or "fmod" or "sound" or "sounds" or "cue" => ("AudioIconAlt", "AudioBrush"),
+            "soundbanks" or "banks" => ("AudioIconAlt", "SoundBankBrush"),
             "movies" or "video" or "videos" or "cinematics" => ("VideoIcon", "VideoBrush"),
             "data" or "datatable" or "datatables" => ("DataTableIcon", "DataTableBrush"),
             "curves" => ("CurveIcon", "CurveBrush"),

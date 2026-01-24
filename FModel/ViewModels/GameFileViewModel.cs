@@ -6,8 +6,9 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CUE4Parse.FileProvider.Objects;
-using CUE4Parse.GameTypes.DPA.UE4.Assets.Exports.Wwise;
 using CUE4Parse.GameTypes.FN.Assets.Exports.DataAssets;
+using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
+using CUE4Parse.GameTypes.SMG.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
@@ -228,11 +229,14 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 UObjectRedirector => (EAssetCategory.ObjectRedirector, EBulkType.None),
                 UPhysicalMaterial => (EAssetCategory.PhysicalMaterial, EBulkType.None),
 
-                UWwiseAssetLibrary or USoundBase or UAkMediaAssetData or UAtomWaveBank or USoundAtomCue
-                    or UAtomCueSheet or USoundAtomCueSheet or UFMODBank or UFMODEvent or UAkAudioType
+                UFMODBank or UAkAudioBank or UAtomWaveBank => (EAssetCategory.SoundBank, EBulkType.Audio),
+
+                UWwiseAssetLibrary or USoundBase or UAkMediaAssetData or USoundAtomCue
+                    or UAtomCueSheet or USoundAtomCueSheet or UFMODEvent or UAkAudioType
                     or UExternalSource or UExternalSourceBank => (EAssetCategory.Audio, EBulkType.Audio),
+
                 UFileMediaSource => (EAssetCategory.Video, EBulkType.None),
-                UFont or UFontFace => (EAssetCategory.Font, EBulkType.None),
+                UFont or UFontFace or USMGLocaleFontUMG => (EAssetCategory.Font, EBulkType.None),
 
                 UNiagaraSystem or UNiagaraScriptBase or UParticleSystem => (EAssetCategory.Particle, EBulkType.None),
 
@@ -323,17 +327,20 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 AssetCategory = EAssetCategory.Data;
                 break;
             case "wav":
-            case "bank":
-            case "bnk":
-            case "pck":
-            case "awb":
-            case "acb":
+            case "awb": // This is technically soundbank and should be below but I want it to be distinguishable from "acb"
             case "xvag":
             case "flac":
             case "at9":
             case "wem":
             case "ogg":
                 AssetCategory = EAssetCategory.Audio;
+                AssetActions = EBulkType.Audio;
+                break;
+            case "acb":
+            case "bank":
+            case "bnk":
+            case "pck":
+                AssetCategory = EAssetCategory.SoundBank;
                 AssetActions = EBulkType.Audio;
                 break;
             case "ufont":

@@ -152,5 +152,6 @@ public enum EAssetCategory : uint
         Audio = Media + 1,
         Video = Media + 2,
         Font = Media + 3,
+        SoundBank = Media + 4,
     Particle = AssetCategoryExtensions.CategoryBase + (9 << 16),
 }

@@ -19,7 +19,7 @@ using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.GameTypes.Aion2.Objects;
 using CUE4Parse.GameTypes.AshEchoes.FileProvider;
-using CUE4Parse.GameTypes.DPA.UE4.Assets.Exports.Wwise;
+using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
 using CUE4Parse.MappingsProvider;
 using CUE4Parse.UE4.AssetRegistry;
@@ -297,7 +297,7 @@ public class CUE4ParseViewModel : ViewModel
             }
 
             Provider.Initialize();
-            _wwiseProviderLazy = new Lazy<WwiseProvider>(() => new WwiseProvider(Provider, UserSettings.Default.WwiseMaxBnkPrefetch));
+            _wwiseProviderLazy = new Lazy<WwiseProvider>(() => new WwiseProvider(Provider, UserSettings.Default.GameDirectory, UserSettings.Default.WwiseMaxBnkPrefetch));
             _fmodProviderLazy = new Lazy<FModProvider>(() => new FModProvider(Provider, UserSettings.Default.GameDirectory));
             _criWareProviderLazy = new Lazy<CriWareProvider>(() => new CriWareProvider(Provider, UserSettings.Default.GameDirectory));
             Log.Information($"{Provider.Versions.Game} ({Provider.Versions.Platform}) | Archives: x{Provider.UnloadedVfs.Count} | AES: x{Provider.RequiredKeys.Count} | Loose Files: x{Provider.Files.Count}");

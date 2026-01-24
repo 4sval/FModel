@@ -57,6 +57,8 @@ public class FileToGeometryConverter : IMultiValueConverter
             EAssetCategory.PhysicalMaterial => ("MaterialIcon", "NeutralBrush"),
 
             EAssetCategory.Audio => ("AudioIconAlt", "AudioBrush"),
+            EAssetCategory.SoundBank => ("AudioIconAlt", "SoundBankBrush"),
+
             EAssetCategory.Video => ("VideoIcon", "VideoBrush"),
             EAssetCategory.Font => ("FontIcon", "NeutralBrush"),
 
