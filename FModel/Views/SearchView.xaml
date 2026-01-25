@@ -197,7 +197,7 @@
                                             </Viewbox>
                                         </MenuItem.Icon>
                                         <MenuItem.IsEnabled>
-                                            <Binding Path="PlacementTarget.DataContext" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
+                                            <Binding Path="PlacementTarget.SelectedItem" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
                                                 <Binding.Converter>
                                                     <converters:GameFileMeetsConditionConverter>
                                                         <converters:GameFileMeetsConditionConverter.Conditions>
