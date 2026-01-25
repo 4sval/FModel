@@ -235,11 +235,12 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 UObjectRedirector => (EAssetCategory.ObjectRedirector, EBulkType.None),
                 UPhysicalMaterial => (EAssetCategory.PhysicalMaterial, EBulkType.None),
 
+                USoundAtomCue or UAkAudioEvent or USoundCue or UFMODEvent => (EAssetCategory.AudioEvent, EBulkType.Audio),
+
                 UFMODBank or UAkAudioBank or UAtomWaveBank => (EAssetCategory.SoundBank, EBulkType.Audio),
 
-                UWwiseAssetLibrary or USoundBase or UAkMediaAssetData or USoundAtomCue
-                    or UAtomCueSheet or USoundAtomCueSheet or UFMODEvent or UAkAudioType
-                    or UExternalSource or UExternalSourceBank => (EAssetCategory.Audio, EBulkType.Audio),
+                UWwiseAssetLibrary or USoundBase or UAkMediaAssetData or UAtomCueSheet
+                    or USoundAtomCueSheet or UAkAudioType or UExternalSource or UExternalSourceBank => (EAssetCategory.Audio, EBulkType.Audio),
 
                 UFileMediaSource => (EAssetCategory.Video, EBulkType.None),
                 UFont or UFontFace or USMGLocaleFontUMG => (EAssetCategory.Font, EBulkType.None),
@@ -331,6 +332,9 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             case "pem":
             case "xml":
                 AssetCategory = EAssetCategory.Data;
+                break;
+            case "ushaderbytecode":
+                AssetCategory = EAssetCategory.ByteCode;
                 break;
             case "wav":
             case "awb": // This is technically soundbank and should be below but I want it to be distinguishable from "acb"

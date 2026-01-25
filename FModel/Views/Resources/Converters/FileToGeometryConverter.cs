@@ -58,6 +58,7 @@ public class FileToGeometryConverter : IMultiValueConverter
 
             EAssetCategory.Audio => ("AudioIconAlt", "AudioBrush"),
             EAssetCategory.SoundBank => ("AudioIconAlt", "SoundBankBrush"),
+            EAssetCategory.AudioEvent => ("AudioIconAlt", "AudioEventBrush"),
 
             EAssetCategory.Video => ("VideoIcon", "VideoBrush"),
             EAssetCategory.Font => ("FontIcon", "NeutralBrush"),
@@ -80,6 +81,8 @@ public class FileToGeometryConverter : IMultiValueConverter
                 "xml" => ("XmlIcon", "JsonXmlBrush"),
                 _ => ("DataTableIcon", "NeutralBrush")
             },
+
+            EAssetCategory.ByteCode => ("CodeIcon", "CodeBrush"),
 
             _ => ("AssetIcon", "NeutralBrush")
         };

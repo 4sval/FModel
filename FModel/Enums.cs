@@ -148,10 +148,12 @@ public enum EAssetCategory : uint
         PhysicsAsset = Data + 3,
         ObjectRedirector = Data + 4,
         PhysicalMaterial = Data + 5,
+        ByteCode = Data + 6,
     Media = AssetCategoryExtensions.CategoryBase + (8 << 16),
         Audio = Media + 1,
         Video = Media + 2,
         Font = Media + 3,
         SoundBank = Media + 4,
+        AudioEvent = Media + 5,
     Particle = AssetCategoryExtensions.CategoryBase + (9 << 16),
 }
