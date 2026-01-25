@@ -75,6 +75,7 @@ public partial class ResourcesDictionary
             listBox.ContextMenu = null;
             item.Dispatcher.BeginInvoke(new Action(() =>
             {
+                contextMenu.DataContext = listBox.DataContext;
                 listBox.ContextMenu = contextMenu;
                 contextMenu.PlacementTarget = listBox;
                 contextMenu.IsOpen = true;
