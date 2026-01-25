@@ -237,7 +237,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
 
                 USoundAtomCue or UAkAudioEvent or USoundCue or UFMODEvent => (EAssetCategory.AudioEvent, EBulkType.Audio),
 
-                UFMODBank or UAkAudioBank or UAtomWaveBank => (EAssetCategory.SoundBank, EBulkType.Audio),
+                UFMODBank or UAkAudioBank or UAtomWaveBank or UAkInitBank => (EAssetCategory.SoundBank, EBulkType.Audio),
 
                 UWwiseAssetLibrary or USoundBase or UAkMediaAssetData or UAtomCueSheet
                     or USoundAtomCueSheet or UAkAudioType or UExternalSource or UExternalSourceBank => (EAssetCategory.Audio, EBulkType.Audio),

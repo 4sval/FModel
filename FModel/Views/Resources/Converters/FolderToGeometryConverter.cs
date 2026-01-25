@@ -23,7 +23,7 @@ public class FolderToGeometryConverter : IValueConverter
             "config" or "tags" => ("ConfigIcon", "ConfigBrush"),
             "audio" or "wwiseaudio" or "wwise" or "fmod" or "sound" or "sounds" or "cue" => ("AudioIconAlt", "AudioBrush"),
             "soundbanks" or "banks" => ("AudioIconAlt", "SoundBankBrush"),
-            "audioevent" or "audioevents" or "events" => ("AudioIconAlt", "AudioEventBrush"),
+            "audioevent" or "audioevents" => ("AudioIconAlt", "AudioEventBrush"),
             "movies" or "video" or "videos" or "cinematics" => ("VideoIcon", "VideoBrush"),
             "data" or "datatable" or "datatables" => ("DataTableIcon", "DataTableBrush"),
             "curves" => ("CurveIcon", "CurveBrush"),
