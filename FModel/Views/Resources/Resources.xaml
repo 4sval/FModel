@@ -215,25 +215,48 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="AssetsFolderTreeView" TargetType="TreeView" BasedOn="{StaticResource {x:Type TreeView}}">
-        <Setter Property="ItemsSource" Value="{Binding CUE4Parse.AssetsFolder.FoldersView, IsAsync=True}" />
-        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode" Value="NeverExpand"/>
-        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement" Value="Docked"/>
-        <Setter Property="adonisExtensions:ScrollViewerExtension.HorizontalScrollBarExpansionMode" Value="NeverExpand"/>
-        <Setter Property="adonisExtensions:ScrollViewerExtension.HorizontalScrollBarPlacement" Value="Docked"/>
-        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Style x:Key="AssetsFolderTreeView"
+           TargetType="TreeView"
+           BasedOn="{StaticResource {x:Type TreeView}}">
+        <Setter Property="ItemsSource"
+                Value="{Binding CUE4Parse.AssetsFolder.FoldersView, IsAsync=True}" />
+        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode"
+                Value="NeverExpand" />
+        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement"
+                Value="Docked" />
+        <Setter Property="adonisExtensions:ScrollViewerExtension.HorizontalScrollBarExpansionMode"
+                Value="NeverExpand" />
+        <Setter Property="adonisExtensions:ScrollViewerExtension.HorizontalScrollBarPlacement"
+                Value="Docked" />
+        <Setter Property="HorizontalContentAlignment"
+                Value="Stretch" />
         <Setter Property="ItemTemplate">
             <Setter.Value>
                 <HierarchicalDataTemplate ItemsSource="{Binding FoldersView, IsAsync=True}">
                     <StackPanel Orientation="Horizontal">
-                        <Image x:Name="TreeImage" Source="/FModel;component/Resources/folder.png"
-                               Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3.5 0" />
-                        <Border x:Name="TreeBadge" CornerRadius="5" Height="10" MinWidth="10" Background="#705542"
-                                Margin="-10.5 0 4.5 0" VerticalAlignment="Bottom">
-                            <TextBlock Text="{Binding AssetsList.Assets.Count}" Margin="2.5 0 2.5 0" Padding="1 0 0 0"
-                                       FontSize="7" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"  />
+                        <Image x:Name="TreeImage"
+                               Source="/FModel;component/Resources/folder.png"
+                               Width="16"
+                               Height="16"
+                               HorizontalAlignment="Center"
+                               Margin="0 0 3.5 0" />
+                        <Border x:Name="TreeBadge"
+                                CornerRadius="5"
+                                Height="10"
+                                MinWidth="10"
+                                Background="#705542"
+                                Margin="-10.5 0 4.5 0"
+                                VerticalAlignment="Bottom">
+                            <TextBlock Text="{Binding AssetsList.Assets.Count}"
+                                       Margin="2.5 0 2.5 0"
+                                       Padding="1 0 0 0"
+                                       FontSize="7"
+                                       Foreground="White"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center" />
                         </Border>
-                        <TextBlock Text="{Binding Header}" HorizontalAlignment="Left">
+                        <TextBlock Text="{Binding Header}"
+                                   HorizontalAlignment="Left">
                             <TextBlock.ToolTip>
                                 <ToolTip>
                                     <TextBlock>
@@ -250,119 +273,233 @@
                         </TextBlock>
                     </StackPanel>
                     <HierarchicalDataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding FoldersView.Count}" Value="0">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/empty_folder.png" />
+                        <DataTrigger Binding="{Binding FoldersView.Count}"
+                                     Value="0">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/empty_folder.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding AssetsList.Assets.Count}" Value="0">
-                            <Setter TargetName="TreeBadge" Property="Visibility" Value="Collapsed" />
+                        <DataTrigger Binding="{Binding AssetsList.Assets.Count}"
+                                     Value="0">
+                            <Setter TargetName="TreeBadge"
+                                    Property="Visibility"
+                                    Value="Collapsed" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Config">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/gear.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Config">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/gear.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Plugins">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/puzzle.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Plugins">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/puzzle.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Windows">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/windows.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Windows">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/windows.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Android">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/android.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Android">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/android.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="IOS">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/apple.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="IOS">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/apple.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Mac">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/apple.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Mac">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/apple.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Linux">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/linux.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Linux">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/linux.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="LinuxAArch64">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/linux.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="LinuxAArch64">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/linux.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Unix">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/unix.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Unix">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/unix.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Weapons">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/weapon.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Weapons">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/weapon.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Localization">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/localization.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Localization">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/localization.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Internationalization">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/localization.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Internationalization">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/localization.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="UI">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/ui.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="UI">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/ui.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Sounds">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/sound.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Sounds">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/sound.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="2dAssets">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/texture.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="2dAssets">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/texture.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Textures">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/texture.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Textures">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/texture.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Engine">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/engine.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Engine">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/engine.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="EngineContent">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/engine.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="EngineContent">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/engine.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Platforms">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/pc.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Platforms">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/pc.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Fortnite">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/fortnite.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Fortnite">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/fortnite.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="FortniteGame">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/fortnitebr.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="FortniteGame">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/fortnitebr.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="WorldExplorers">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/battlebreakers.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="WorldExplorers">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/battlebreakers.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="OakGame">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/borderlands.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="OakGame">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/borderlands.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="ShooterGame">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/valorant.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="ShooterGame">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/valorant.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="RogueCompany">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/roguecompany.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="RogueCompany">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/roguecompany.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="g3">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/spellbreak.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="g3">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/spellbreak.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="SwGame">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/fallenorder.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="SwGame">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/fallenorder.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Prospect">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/thecycle.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Prospect">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/thecycle.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Materials">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/materialicon.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Materials">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/materialicon.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header, Converter={x:Static converters:CaseInsensitiveStringEqualsConverter.Instance}, ConverterParameter='Blueprints'}" Value="True">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/blueprint.png" />
+                        <DataTrigger Binding="{Binding Header, Converter={x:Static converters:CaseInsensitiveStringEqualsConverter.Instance}, ConverterParameter='Blueprints'}"
+                                     Value="True">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/blueprint.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Cinematics">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/cinematics.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Cinematics">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/cinematics.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Movies">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/cinematics.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Movies">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/cinematics.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Audio">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/sound.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Audio">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/sound.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Creative">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/creative.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Creative">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/creative.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header}" Value="Athena">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/athena.png" />
+                        <DataTrigger Binding="{Binding Header}"
+                                     Value="Athena">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/athena.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Header, Converter={x:Static converters:CaseInsensitiveStringEqualsConverter.Instance}, ConverterParameter='StateOfDecay2'}" Value="True">
-                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/stateofdecay2.png" />
+                        <DataTrigger Binding="{Binding Header, Converter={x:Static converters:CaseInsensitiveStringEqualsConverter.Instance}, ConverterParameter='StateOfDecay2'}"
+                                     Value="True">
+                            <Setter TargetName="TreeImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/stateofdecay2.png" />
                         </DataTrigger>
                     </HierarchicalDataTemplate.Triggers>
                 </HierarchicalDataTemplate>
@@ -370,25 +507,32 @@
         </Setter>
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
-                <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource TreeViewItemStyle}">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                    <Setter Property="ContextMenu" Value="{StaticResource FolderContextMenu}" />
-                    <Setter Property="controls:TreeViewItemBehavior.IsBroughtIntoViewWhenSelected" Value="True"/>
-                    <Setter Property="Padding" Value="5 3" />
+                <Style TargetType="{x:Type TreeViewItem}"
+                       BasedOn="{StaticResource TreeViewItemStyle}">
+                    <Setter Property="HorizontalContentAlignment"
+                            Value="Stretch" />
+                    <Setter Property="IsSelected"
+                            Value="{Binding IsSelected, Mode=TwoWay}" />
+                    <Setter Property="IsExpanded"
+                            Value="{Binding IsExpanded, Mode=TwoWay}" />
+                    <Setter Property="ContextMenu"
+                            Value="{StaticResource FolderContextMenu}" />
+                    <Setter Property="controls:TreeViewItemBehavior.IsBroughtIntoViewWhenSelected"
+                            Value="True" />
+                    <Setter Property="Padding"
+                            Value="5 3" />
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="TreeViewItem">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition/>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition />
                                     </Grid.RowDefinitions>
 
                                     <Border x:Name="Border"
@@ -398,7 +542,7 @@
                                             Background="{TemplateBinding Background}"
                                             BorderBrush="{TemplateBinding BorderBrush}"
                                             BorderThickness="{TemplateBinding BorderThickness}"
-                                            CornerRadius="{TemplateBinding adonisExtensions:CornerRadiusExtension.CornerRadius}"/>
+                                            CornerRadius="{TemplateBinding adonisExtensions:CornerRadiusExtension.CornerRadius}" />
 
                                     <Border x:Name="SpotlightLayer"
                                             Grid.Row="0"
@@ -409,7 +553,7 @@
                                             BorderThickness="{TemplateBinding BorderThickness}"
                                             CornerRadius="{TemplateBinding adonisExtensions:CornerRadiusExtension.CornerRadius}"
                                             adonisExtensions:CursorSpotlightExtension.MouseEventSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=TreeViewItem}}"
-                                            SnapsToDevicePixels="False"/>
+                                            SnapsToDevicePixels="False" />
 
                                     <ToggleButton x:Name="Expander"
                                                   Grid.Row="0"
@@ -425,9 +569,13 @@
                                         <ToggleButton.Template>
                                             <ControlTemplate TargetType="ToggleButton">
                                                 <Border Background="Transparent">
-                                                    <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
-                                                        <Canvas Width="24" Height="24">
-                                                            <Path Fill="{TemplateBinding Foreground}" Data="{StaticResource ArrowIcon}"/>
+                                                    <Viewbox Width="16"
+                                                             Height="16"
+                                                             HorizontalAlignment="Center">
+                                                        <Canvas Width="24"
+                                                                Height="24">
+                                                            <Path Fill="{TemplateBinding Foreground}"
+                                                                  Data="{StaticResource ArrowIcon}" />
                                                         </Canvas>
                                                     </Viewbox>
                                                 </Border>
@@ -435,15 +583,16 @@
                                         </ToggleButton.Template>
                                         <ToggleButton.Margin>
                                             <MultiBinding Converter="{x:Static adonisConverters:ValuesToThicknessConverter.Instance}">
-                                                <Binding Path="Padding.Left" RelativeSource="{RelativeSource TemplatedParent}"/>
-                                                <Binding Source="0"/>
-                                                <Binding Source="8"/>
-                                                <Binding Source="0"/>
+                                                <Binding Path="Padding.Left"
+                                                         RelativeSource="{RelativeSource TemplatedParent}" />
+                                                <Binding Source="0" />
+                                                <Binding Source="8" />
+                                                <Binding Source="0" />
                                             </MultiBinding>
                                         </ToggleButton.Margin>
                                         <ToggleButton.RenderTransform>
                                             <RotateTransform x:Name="ExpanderRotateTransform"
-                                                             Angle="-90"/>
+                                                             Angle="-90" />
                                         </ToggleButton.RenderTransform>
                                     </ToggleButton>
 
@@ -459,9 +608,12 @@
                                                         <system:Double>-5</system:Double>
                                                     </Binding.Source>
                                                 </Binding>
-                                                <Binding Path="Padding.Top" RelativeSource="{RelativeSource TemplatedParent}"/>
-                                                <Binding Path="Padding.Right" RelativeSource="{RelativeSource TemplatedParent}"/>
-                                                <Binding Path="Padding.Bottom" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                                <Binding Path="Padding.Top"
+                                                         RelativeSource="{RelativeSource TemplatedParent}" />
+                                                <Binding Path="Padding.Right"
+                                                         RelativeSource="{RelativeSource TemplatedParent}" />
+                                                <Binding Path="Padding.Bottom"
+                                                         RelativeSource="{RelativeSource TemplatedParent}" />
                                             </MultiBinding>
                                         </ContentPresenter.Margin>
                                     </ContentPresenter>
@@ -469,22 +621,26 @@
                                     <ItemsPresenter x:Name="ItemsHost"
                                                     Grid.Row="1"
                                                     Grid.Column="1"
-                                                    Grid.ColumnSpan="2"/>
+                                                    Grid.ColumnSpan="2" />
                                 </Grid>
                                 <ControlTemplate.Triggers>
 
-                                    <Trigger Property="IsExpanded" Value="False">
-                                        <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
+                                    <Trigger Property="IsExpanded"
+                                             Value="False">
+                                        <Setter TargetName="ItemsHost"
+                                                Property="Visibility"
+                                                Value="Collapsed" />
                                     </Trigger>
 
-                                    <Trigger Property="IsExpanded" Value="True">
+                                    <Trigger Property="IsExpanded"
+                                             Value="True">
                                         <Trigger.EnterActions>
                                             <BeginStoryboard>
                                                 <Storyboard>
                                                     <DoubleAnimation Storyboard.TargetProperty="Angle"
                                                                      Storyboard.TargetName="ExpanderRotateTransform"
                                                                      Duration="00:00:0.2"
-                                                                     To="-45"/>
+                                                                     To="-45" />
                                                 </Storyboard>
                                             </BeginStoryboard>
                                         </Trigger.EnterActions>
@@ -494,14 +650,17 @@
                                                     <DoubleAnimation Storyboard.TargetProperty="Angle"
                                                                      Storyboard.TargetName="ExpanderRotateTransform"
                                                                      Duration="00:00:0.2"
-                                                                     From="-45"/>
+                                                                     From="-45" />
                                                 </Storyboard>
                                             </BeginStoryboard>
                                         </Trigger.ExitActions>
                                     </Trigger>
 
-                                    <Trigger Property="HasItems" Value="False">
-                                        <Setter TargetName="Expander" Property="Visibility" Value="Hidden"/>
+                                    <Trigger Property="HasItems"
+                                             Value="False">
+                                        <Setter TargetName="Expander"
+                                                Property="Visibility"
+                                                Value="Hidden" />
                                     </Trigger>
 
                                 </ControlTemplate.Triggers>
@@ -512,78 +671,15 @@
             </Setter.Value>
         </Setter>
         <Style.Triggers>
-            <DataTrigger Binding="{Binding Items.Count, RelativeSource={RelativeSource Self}, FallbackValue=0}" Value="0">
+            <DataTrigger Binding="{Binding Items.Count, RelativeSource={RelativeSource Self}, FallbackValue=0}"
+                         Value="0">
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="No folders found in archives, make sure you loaded at least one" FontWeight="SemiBold" TextAlignment="Center"
-                                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
-                            </Grid>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </DataTrigger>
-        </Style.Triggers>
-    </Style>
-
-    <Style x:Key="AssetsListBox" TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
-        <Setter Property="ItemsSource" Value="{Binding SelectedItem.AssetsList.AssetsView, ElementName=AssetsFolderName, IsAsync=True}" />
-        <Setter Property="SelectionMode" Value="Extended" />
-        <Setter Property="ContextMenu" Value="{StaticResource FileContextMenu}" />
-        <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
-        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
-        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode" Value="NeverExpand"/>
-        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement" Value="Docked"/>
-        <Setter Property="adonisExtensions:ScrollViewerExtension.HorizontalScrollBarExpansionMode" Value="NeverExpand"/>
-        <Setter Property="adonisExtensions:ScrollViewerExtension.HorizontalScrollBarPlacement" Value="Docked"/>
-        <Setter Property="ItemTemplate">
-            <Setter.Value>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-
-                        <Image x:Name="ListImage" Source="/FModel;component/Resources/unknown_asset.png"
-                               Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3 0" />
-                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Asset.Name}" />
-                    </Grid>
-                    <DataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding Asset.Extension}" Value="uasset">
-                            <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset.png" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Asset.Extension}" Value="ini">
-                            <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset_ini.png" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Asset.Extension}" Value="png">
-                            <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset_png.png" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Asset.Extension}" Value="psd">
-                            <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset_psd.png" />
-                        </DataTrigger>
-                    </DataTemplate.Triggers>
-                </DataTemplate>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="ItemContainerStyle">
-            <Setter.Value>
-                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="Padding" Value="5 3" />
-                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                    <Setter Property="controls:ListBoxItemBehavior.IsBroughtIntoViewWhenSelected" Value="True" />
-                </Style>
-            </Setter.Value>
-        </Setter>
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding Items.Count, RelativeSource={RelativeSource Self}, FallbackValue=0}" Value="0">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate>
-                            <Grid>
-                                <TextBlock Text="No packages found in folder" FontWeight="SemiBold" TextAlignment="Center"
+                                <TextBlock Text="No folders found in archives, make sure you loaded at least one"
+                                           FontWeight="SemiBold"
+                                           TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>
@@ -1964,6 +2060,81 @@
                                  Value="True">
                             <Setter Property="Background"
                                     Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter Property="Background"
+                                    Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="AssetsExplorerToggleButtonStyle"
+           TargetType="ToggleButton">
+        <Setter Property="Background"
+                Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
+        <Setter Property="BorderThickness"
+                Value="1" />
+        <Setter Property="Padding"
+                Value="4" />
+        <Setter Property="ToolTip">
+            <Setter.Value>
+                <ToolTip Content="{Binding SwitchAssetExplorer, Source={x:Static settings:UserSettings.Default}}"
+                         ContentStringFormat="Assets Explorer ({0})" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8">
+                        <Viewbox Width="18"
+                                 Height="18">
+                            <Canvas Width="24"
+                                    Height="24">
+                                <Path x:Name="IconPath"
+                                      Data="{StaticResource FolderIconAlt}"
+                                      Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                            </Canvas>
+                        </Viewbox>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked"
+                                 Value="True">
+                            <Setter TargetName="IconPath"
+                                    Property="Data"
+                                    Value="{StaticResource FolderIconAlt}" />
+                            <Setter Property="Background"
+                                    Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked"
+                                 Value="False">
+                            <Setter TargetName="IconPath"
+                                    Property="Data"
+                                    Value="{StaticResource AssetIcon}" />
+                            <Setter Property="Background"
+                                    Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked"
+                                 Value="False">
+                            <Setter TargetName="IconPath"
+                                    Property="Data"
+                                    Value="{StaticResource AssetIcon}" />
+                            <Setter Property="Background"
+                                    Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
+                            <Setter Property="ToolTip">
+                                <Setter.Value>
+                                    <ToolTip Content="{Binding SwitchAssetExplorer, Source={x:Static settings:UserSettings.Default}}"
+                                             ContentStringFormat="File Properties ({0})" />
+                                </Setter.Value>
+                            </Setter>
                         </Trigger>
                         <Trigger Property="IsMouseOver"
                                  Value="True">

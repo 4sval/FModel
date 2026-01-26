@@ -21,7 +21,9 @@ public class FolderToGeometryConverter : IValueConverter
         {
             "textures" or "texture" or "ui" or "icons" or "umgassets" or "hud" or "hdri" or "tex" => ("TextureIconAlt", "TextureBrush"),
             "config" or "tags" => ("ConfigIcon", "ConfigBrush"),
-            "audio" or "wwiseaudio" or "wwise" or "fmod" or "soundbanks" or "banks" or "sound" or "sounds" or "cue" => ("AudioIconAlt", "AudioBrush"),
+            "audio" or "wwiseaudio" or "wwise" or "fmod" or "sound" or "sounds" or "cue" => ("AudioIconAlt", "AudioBrush"),
+            "soundbanks" or "banks" => ("AudioIconAlt", "SoundBankBrush"),
+            "audioevent" or "audioevents" => ("AudioIconAlt", "AudioEventBrush"),
             "movies" or "video" or "videos" or "cinematics" => ("VideoIcon", "VideoBrush"),
             "data" or "datatable" or "datatables" => ("DataTableIcon", "DataTableBrush"),
             "curves" => ("CurveIcon", "CurveBrush"),
@@ -39,6 +41,7 @@ public class FolderToGeometryConverter : IValueConverter
             "locale" or "localization" or "l10n" => ("LocaleIcon", "LocalizationBrush"),
             "skeleton" or "skeletons" => ("SkeletonIcon", "NeutralBrush"),
             "certificate" or "certificates" => ("CertificateIcon", "NeutralBrush"),
+            "fonts" or "font" => ("FontIcon", "NeutralBrush"),
             _ => (null, "NeutralBrush"),
         };
 

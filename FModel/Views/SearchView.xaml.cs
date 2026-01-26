@@ -43,9 +43,6 @@ public partial class SearchView
 
     public void FocusTab(ESearchViewTab view)
     {
-        if (_currentTab == view)
-            return;
-
         _currentTab = view;
         SearchTabControl.SelectedIndex = view switch
         {
@@ -53,6 +50,7 @@ public partial class SearchView
             ESearchViewTab.RefView => 1,
             _ => SearchTabControl.SelectedIndex
         };
+        WindowState = WindowState.Normal;
         CurrentTextBox?.Focus();
         CurrentTextBox?.SelectAll();
     }

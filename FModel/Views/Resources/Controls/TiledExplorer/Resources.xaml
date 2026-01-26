@@ -34,6 +34,7 @@
                     <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
 
                     <EventSetter Event="MouseDoubleClick" Handler="OnMouseDoubleClick" />
+                    <EventSetter Event="PreviewMouseRightButtonDown" Handler="OnPreviewMouseRightButtonDown" />
 
                     <Setter Property="Template">
                         <Setter.Value>
@@ -113,5 +114,98 @@
     <DataTemplate x:Key="TiledFolderDataTemplate" DataType="{x:Type vm:TreeItem}">
         <local:FolderButton2 ContextMenu="{StaticResource FolderContextMenu}" />
     </DataTemplate>
+
+    <DataTemplate x:Key="TextureNumTemplate">
+        <Border VerticalAlignment="Top"
+                HorizontalAlignment="Right"
+                Margin="4"
+                Padding="6,2"
+                CornerRadius="3"
+                Opacity="0.85"
+                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding}"
+                           Foreground="White"
+                           FontSize="11"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center"
+                           Margin="0,0,5,0" />
+                <Path Data="{StaticResource TextureIcon}"
+                      Fill="White"
+                      Width="12"
+                      Height="12"
+                      Stretch="Uniform"
+                      VerticalAlignment="Center" />
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <Style x:Key="AssetsListBox" TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
+        <Setter Property="ItemsSource" Value="{Binding SelectedItem.AssetsList.AssetsView, ElementName=AssetsFolderName, IsAsync=True}" />
+        <Setter Property="SelectionMode" Value="Extended" />
+        <Setter Property="ContextMenu" Value="{StaticResource FileContextMenu}" />
+        <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
+        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
+        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode" Value="NeverExpand"/>
+        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement" Value="Docked"/>
+        <Setter Property="adonisExtensions:ScrollViewerExtension.HorizontalScrollBarExpansionMode" Value="NeverExpand"/>
+        <Setter Property="adonisExtensions:ScrollViewerExtension.HorizontalScrollBarPlacement" Value="Docked"/>
+        <Setter Property="ItemTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Image x:Name="ListImage" Source="/FModel;component/Resources/unknown_asset.png"
+                               Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3 0" />
+                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Asset.Name}" />
+                    </Grid>
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Asset.Extension}" Value="uasset">
+                            <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Asset.Extension}" Value="ini">
+                            <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset_ini.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Asset.Extension}" Value="png">
+                            <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset_png.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Asset.Extension}" Value="psd">
+                            <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset_psd.png" />
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Padding" Value="5 3" />
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    <Setter Property="controls:ListBoxItemBehavior.IsBroughtIntoViewWhenSelected" Value="True" />
+
+                    <EventSetter Event="PreviewMouseRightButtonDown" Handler="OnPreviewMouseRightButtonDown" />
+                </Style>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Items.Count, RelativeSource={RelativeSource Self}, FallbackValue=0}" Value="0">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Grid>
+                                <TextBlock Text="No packages found in folder" FontWeight="SemiBold" TextAlignment="Center"
+                                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
 
 </ResourceDictionary>

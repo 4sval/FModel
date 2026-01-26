@@ -86,7 +86,7 @@
                     <Binding.Converter>
                         <converters:AnyItemMeetsConditionConverter>
                             <converters:AnyItemMeetsConditionConverter.Conditions>
-                                <converters:ItemCategoryCondition Category="Blueprint" />
+                                <converters:ItemActionCondition Action="Code" />
                             </converters:AnyItemMeetsConditionConverter.Conditions>
                         </converters:AnyItemMeetsConditionConverter>
                     </Binding.Converter>
@@ -157,10 +157,9 @@
             <MenuItem.IsEnabled>
                 <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
                     <Binding.Converter>
-                        <converters:AnyItemMeetsConditionConverter ConditionMode="Or">
+                        <converters:AnyItemMeetsConditionConverter>
                             <converters:AnyItemMeetsConditionConverter.Conditions>
-                                <converters:ItemCategoryCondition Category="Texture" />
-                                <converters:ItemCategoryCondition Category="ItemDefinitionBase" />
+                                <converters:ItemActionCondition Action="Textures" />
                             </converters:AnyItemMeetsConditionConverter.Conditions>
                         </converters:AnyItemMeetsConditionConverter>
                     </Binding.Converter>
@@ -186,7 +185,7 @@
                     <Binding.Converter>
                         <converters:AnyItemMeetsConditionConverter>
                             <converters:AnyItemMeetsConditionConverter.Conditions>
-                                <converters:ItemCategoryCondition Category="Mesh" />
+                                <converters:ItemActionCondition Action="Meshes" />
                             </converters:AnyItemMeetsConditionConverter.Conditions>
                         </converters:AnyItemMeetsConditionConverter>
                     </Binding.Converter>
@@ -212,7 +211,7 @@
                     <Binding.Converter>
                         <converters:AnyItemMeetsConditionConverter>
                             <converters:AnyItemMeetsConditionConverter.Conditions>
-                                <converters:ItemCategoryCondition Category="Animation" />
+                                <converters:ItemActionCondition Action="Animations" />
                             </converters:AnyItemMeetsConditionConverter.Conditions>
                         </converters:AnyItemMeetsConditionConverter>
                     </Binding.Converter>
@@ -238,7 +237,7 @@
                     <Binding.Converter>
                         <converters:AnyItemMeetsConditionConverter>
                             <converters:AnyItemMeetsConditionConverter.Conditions>
-                                <converters:ItemCategoryCondition Category="Audio" />
+                                <converters:ItemActionCondition Action="Audio" />
                             </converters:AnyItemMeetsConditionConverter.Conditions>
                         </converters:AnyItemMeetsConditionConverter>
                     </Binding.Converter>

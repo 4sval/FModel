@@ -32,25 +32,34 @@ public class FileToGeometryConverter : IMultiValueConverter
 
             EAssetCategory.StaticMesh => ("StaticMeshIconAlt", "NeutralBrush"),
             EAssetCategory.SkeletalMesh => ("SkeletalMeshIconAlt", "NeutralBrush"),
-            EAssetCategory.Skeleton => ("SkeletonIcon", "NeutralBrush"),
+            EAssetCategory.CustomizableObject => ("StaticMeshIconAlt", "CustomizableObjectBrush"),
+            EAssetCategory.NaniteDisplacedMesh => ("StaticMeshIconAlt", "NaniteDisplacedMeshBrush"),
 
             EAssetCategory.Material => ("MaterialIcon", "MaterialBrush"),
             EAssetCategory.MaterialEditorData => ("MaterialIcon", "MaterialEditorBrush"),
             EAssetCategory.MaterialParameterCollection => ("MaterialParameterCollectionIcon", "MaterialBrush"),
             EAssetCategory.MaterialFunction => ("MaterialFunctionIcon", "MaterialBrush"),
+            EAssetCategory.MaterialFunctionEditorData => ("MaterialFunctionIcon", "MaterialEditorBrush"),
 
             EAssetCategory.Animation => ("AnimationIconAlt", "AnimationBrush"),
+            EAssetCategory.Skeleton => ("SkeletonIcon", "NeutralBrush"),
+            EAssetCategory.Rig => ("AnimationIconAlt", "NeutralBrush"),
 
             EAssetCategory.World => ("WorldIcon", "WorldBrush"),
             EAssetCategory.BuildData => ("MapIconAlt", "BuildDataBrush"),
             EAssetCategory.LevelSequence => ("ClapperIcon", "LevelSequenceBrush"),
             EAssetCategory.Foliage => ("FoliageIcon", "FoliageBrush"),
 
-            EAssetCategory.PhysicsAsset => ("PhysicsIcon", "NeutralBrush"),
-            EAssetCategory.CurveBase => ("CurveIcon", "CurveBrush"),
             EAssetCategory.ItemDefinitionBase => ("DataTableIcon", "NeutralBrush"),
+            EAssetCategory.CurveBase => ("CurveIcon", "CurveBrush"),
+            EAssetCategory.PhysicsAsset => ("PhysicsIcon", "NeutralBrush"),
+            EAssetCategory.ObjectRedirector => ("RedirectorIcon", "ConfigBrush"),
+            EAssetCategory.PhysicalMaterial => ("MaterialIcon", "NeutralBrush"),
 
             EAssetCategory.Audio => ("AudioIconAlt", "AudioBrush"),
+            EAssetCategory.SoundBank => ("AudioIconAlt", "SoundBankBrush"),
+            EAssetCategory.AudioEvent => ("AudioIconAlt", "AudioEventBrush"),
+
             EAssetCategory.Video => ("VideoIcon", "VideoBrush"),
             EAssetCategory.Font => ("FontIcon", "NeutralBrush"),
 
@@ -72,6 +81,8 @@ public class FileToGeometryConverter : IMultiValueConverter
                 "xml" => ("XmlIcon", "JsonXmlBrush"),
                 _ => ("DataTableIcon", "NeutralBrush")
             },
+
+            EAssetCategory.ByteCode => ("CodeIcon", "CodeBrush"),
 
             _ => ("AssetIcon", "NeutralBrush")
         };

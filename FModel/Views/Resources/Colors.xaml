@@ -10,14 +10,23 @@
     <SolidColorBrush x:Key="CookedMetaDataBrush" Color="Yellow" />
     <SolidColorBrush x:Key="UserDefinedEnumBrush" Color="DarkGoldenrod" />
     <SolidColorBrush x:Key="UserDefinedStructBrush" Color="Tan" />
-    
+
+    <SolidColorBrush x:Key="CustomizableObjectBrush" Color="DarkRed" />
+    <SolidColorBrush x:Key="NaniteDisplacedMeshBrush" Color="ForestGreen" />
+
     <SolidColorBrush x:Key="MaterialBrush" Color="BurlyWood" />
     <SolidColorBrush x:Key="MaterialEditorBrush" Color="Yellow" />
+
+    <SolidColorBrush x:Key="RigBrush" Color="YellowGreen" />
 
     <SolidColorBrush x:Key="BinaryBrush" Color="Yellow" />
     <SolidColorBrush x:Key="TextureBrush" Color="MediumPurple" />
     <SolidColorBrush x:Key="ConfigBrush" Color="LightSlateGray" />
+    
     <SolidColorBrush x:Key="AudioBrush" Color="MediumSeaGreen" />
+    <SolidColorBrush x:Key="SoundBankBrush" Color="DarkSeaGreen" />
+    <SolidColorBrush x:Key="AudioEventBrush" Color="DarkTurquoise" />
+
     <SolidColorBrush x:Key="VideoBrush" Color="IndianRed" />
     <SolidColorBrush x:Key="DataTableBrush" Color="SteelBlue" />
     <SolidColorBrush x:Key="CurveBrush" Color="HotPink" />
@@ -32,4 +41,5 @@
     <SolidColorBrush x:Key="AnimationBrush" Color="Coral" />
     <SolidColorBrush x:Key="LuaBrush" Color="DarkBlue" />
     <SolidColorBrush x:Key="JsonXmlBrush" Color="LightGreen" />
+    <SolidColorBrush x:Key="CodeBrush" Color="SandyBrown" />
 </ResourceDictionary>

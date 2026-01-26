@@ -44,6 +44,26 @@
                     </MultiBinding>
                 </Path.Fill>
             </Path>
+            <ContentPresenter Content="{Binding NumTextures}">
+                <ContentPresenter.Style>
+                    <Style TargetType="ContentPresenter">
+                        <Setter Property="ContentTemplate"
+                                Value="{StaticResource TextureNumTemplate}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Content, RelativeSource={RelativeSource Self}}"
+                                         Value="0">
+                                <Setter Property="Visibility"
+                                        Value="Collapsed" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Content, RelativeSource={RelativeSource Self}}"
+                                         Value="{x:Null}">
+                                <Setter Property="Visibility"
+                                        Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentPresenter.Style>
+            </ContentPresenter>
         </Grid>
 
         <Rectangle Grid.Row="1" Fill="{Binding Fill, ElementName=FallbackIcon, FallbackValue=Red}" />
