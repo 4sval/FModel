@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using AdonisUI.Controls;
 using System.Collections.Generic;
 using System.Threading;

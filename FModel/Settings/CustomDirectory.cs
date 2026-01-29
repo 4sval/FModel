@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FModel.Framework;
 
 namespace FModel.Settings;

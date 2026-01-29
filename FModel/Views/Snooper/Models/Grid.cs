@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Numerics;
 using FModel.Views.Snooper.Buffers;
 using FModel.Views.Snooper.Shading;

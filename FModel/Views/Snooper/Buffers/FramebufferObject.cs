@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using FModel.Views.Snooper.Shading;
 using OpenTK.Graphics.OpenGL4;
 

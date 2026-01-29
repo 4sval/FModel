@@ -1,4 +1,4 @@
-﻿namespace FModel.Views.Resources.Controls;
+namespace FModel.Views.Resources.Controls;
 
 public partial class ImagePopout
 {

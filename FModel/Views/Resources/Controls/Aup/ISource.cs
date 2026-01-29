@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using FModel.ViewModels;
 
 namespace FModel.Views.Resources.Controls.Aup;

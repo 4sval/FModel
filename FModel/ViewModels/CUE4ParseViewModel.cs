@@ -218,8 +218,17 @@ public class CUE4ParseViewModel : ViewModel
 
     public async Task Initialize()
     {
+        await _apiEndpointView.EpicApi.VerifyAuth(CancellationToken.None);
         await _threadWorkerView.Begin(cancellationToken =>
         {
+            Provider.OnDemandOptions = new IoStoreOnDemandOptions
+            {
+                ChunkHostUri = new Uri("https://download.epicgames.com/", UriKind.Absolute),
+                ChunkCacheDirectory = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data")),
+                Authorization = new AuthenticationHeaderValue("Bearer", UserSettings.Default.LastAuthResponse.AccessToken),
+                Timeout = TimeSpan.FromSeconds(30)
+            };
+
             switch (Provider)
             {
                 case StreamedFileProvider p:
@@ -478,14 +487,7 @@ public class CUE4ParseViewModel : ViewModel
             var ioStoreOnDemandPath = Path.Combine(UserSettings.Default.GameDirectory, "..\\..\\..\\Cloud", inst[0].Value.SubstringAfterLast("/").SubstringBefore("\""));
             if (!File.Exists(ioStoreOnDemandPath)) return;
 
-            await _apiEndpointView.EpicApi.VerifyAuth(CancellationToken.None);
-            await Provider.RegisterVfs(new IoChunkToc(ioStoreOnDemandPath), new IoStoreOnDemandOptions
-            {
-                ChunkBaseUri = new Uri("https://download.epicgames.com/ias/fortnite/", UriKind.Absolute),
-                ChunkCacheDirectory = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data")),
-                Authorization = new AuthenticationHeaderValue("Bearer", UserSettings.Default.LastAuthResponse.AccessToken),
-                Timeout = TimeSpan.FromSeconds(30)
-            });
+            await Provider.RegisterVfsAsync(new IoChunkToc(ioStoreOnDemandPath));
             var onDemandCount = await Provider.MountAsync();
             FLogger.Append(ELog.Information, () =>
                 FLogger.Text($"{onDemandCount} on-demand archive{(onDemandCount > 1 ? "s" : "")} streamed via epicgames.com", Constants.WHITE, true));

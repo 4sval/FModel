@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using HarfBuzzSharp;
 using SkiaSharp;
 using SkiaSharp.HarfBuzz;

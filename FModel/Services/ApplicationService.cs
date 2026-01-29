@@ -1,4 +1,4 @@
-﻿using FModel.ViewModels;
+using FModel.ViewModels;
 
 namespace FModel.Services
 {

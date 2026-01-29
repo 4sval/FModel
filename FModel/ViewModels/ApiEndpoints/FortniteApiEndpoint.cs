@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using FModel.ViewModels.ApiEndpoints.Models;
 using RestSharp;
 using System.Threading.Tasks;

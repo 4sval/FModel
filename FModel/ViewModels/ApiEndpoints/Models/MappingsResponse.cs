@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using J = Newtonsoft.Json.JsonPropertyAttribute;
 using I = Newtonsoft.Json.JsonIgnoreAttribute;
 

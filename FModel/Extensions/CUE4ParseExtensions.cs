@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.Assets;

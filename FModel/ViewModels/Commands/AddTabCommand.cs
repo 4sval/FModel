@@ -1,4 +1,4 @@
-﻿using FModel.Framework;
+using FModel.Framework;
 
 namespace FModel.ViewModels.Commands;
 

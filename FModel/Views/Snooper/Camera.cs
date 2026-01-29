@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Numerics;
 using CUE4Parse.UE4.Objects.Core.Math;
 using FModel.Settings;

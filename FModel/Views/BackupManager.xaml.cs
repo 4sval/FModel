@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using FModel.ViewModels;
 
 namespace FModel.Views;

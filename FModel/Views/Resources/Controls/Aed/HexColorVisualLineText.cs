@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
 using ICSharpCode.AvalonEdit.Rendering;

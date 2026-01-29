@@ -1,4 +1,4 @@
-﻿using AdonisUI.Controls;
+using AdonisUI.Controls;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Views.Resources.Controls;

@@ -1,4 +1,4 @@
-﻿namespace FModel.Framework;
+namespace FModel.Framework;
 
 public class FStatus : ViewModel
 {

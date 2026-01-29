@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Windows.Input;
 
 namespace FModel.Framework;

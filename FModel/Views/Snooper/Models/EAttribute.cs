@@ -1,4 +1,4 @@
-﻿namespace FModel.Views.Snooper.Models;
+namespace FModel.Views.Snooper.Models;
 
 public enum EAttribute
 {

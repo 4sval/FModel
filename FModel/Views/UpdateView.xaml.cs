@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using FModel.ViewModels;
 using FModel.Views.Resources.Controls;
 

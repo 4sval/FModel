@@ -1,4 +1,4 @@
-﻿using RestSharp;
+using RestSharp;
 using RestSharp.Interceptors;
 
 namespace FModel.ViewModels.ApiEndpoints;
