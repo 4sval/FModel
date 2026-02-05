@@ -48,7 +48,7 @@ public class BackupManagerViewModel : ViewModel
     {
         await _threadWorkerView.Begin(cancellationToken =>
         {
-            var backups = _apiEndpointView.FModelApi.GetBackups(cancellationToken, _gameName);
+            var backups = _apiEndpointView.DillyApi.GetBackups(cancellationToken); // gamename is useless here
             if (backups == null) return;
 
             Application.Current.Dispatcher.Invoke(() =>
