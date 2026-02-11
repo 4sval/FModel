@@ -14,6 +14,19 @@ public class DillyApiEndpoint : AbstractApiProvider
 
     public DillyApiEndpoint(RestClient client) : base(client) { }
 
+    public async Task<Backup[]> GetBackupsAsync(CancellationToken token)
+    {
+        var request = new FRestRequest($"https://export-service-new.dillyapis.com/v1/backups");
+        var response = await _client.ExecuteAsync<Backup[]>(request, token).ConfigureAwait(false);
+        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
+        return response.Data;
+    }
+
+    public Backup[] GetBackups(CancellationToken token)
+    {
+        return _backups ??= GetBackupsAsync(token).GetAwaiter().GetResult();
+    }
+
     public async Task<IDictionary<string, IDictionary<string, string>>> GetHotfixesAsync(CancellationToken token, string language = "en")
     {
         var request = new FRestRequest("https://api.fortniteapi.com/v1/cloudstorage/hotfixes")
@@ -29,18 +42,5 @@ public class DillyApiEndpoint : AbstractApiProvider
     public IDictionary<string, IDictionary<string, string>> GetHotfixes(CancellationToken token, string language = "en")
     {
         return GetHotfixesAsync(token, language).GetAwaiter().GetResult();
-    }
-
-    public async Task<Backup[]> GetBackupsAsync(CancellationToken token)
-    {
-        var request = new FRestRequest($"https://api.fortniteapi.com/v1/backups");
-        var response = await _client.ExecuteAsync<Backup[]>(request, token).ConfigureAwait(false);
-        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
-        return response.Data;
-    }
-
-    public Backup[] GetBackups(CancellationToken token)
-    {
-        return _backups ??= GetBackupsAsync(token).GetAwaiter().GetResult();
     }
 }
