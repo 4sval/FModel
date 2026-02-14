@@ -24,6 +24,8 @@ using CUE4Parse.GameTypes.AoC.Objects;
 using CUE4Parse.GameTypes.AshEchoes.FileProvider;
 using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
+using CUE4Parse.GameTypes.Borderlands4.Assets.Exports;
+using CUE4Parse.GameTypes.Borderlands4.Wwise;
 using CUE4Parse.MappingsProvider;
 using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets;
@@ -1210,6 +1212,37 @@ public class CUE4ParseViewModel : ViewModel
                         }
                     }
                 }
+                return false;
+            }
+            // Borderlands 4
+            case UFaceFXAnimSet when (isNone || saveAudio) && pointer.Object.Value is UFaceFXAnimSet faceFXAnimSet:
+            {
+                if (Provider.Versions.Game is not EGame.GAME_Borderlands4)
+                    return false;
+
+                foreach (var faceFXAnimData in faceFXAnimSet.FaceFXAnimDataList)
+                {
+                    var extractedSounds = WwiseProvider.ExtractAudioEventBorderlands4(faceFXAnimData.ID.Name, false);
+                    foreach (var sound in extractedSounds)
+                    {
+                        SaveAndPlaySound(sound.OutputPath, sound.Extension, sound.Data, saveAudio);
+                    }
+                }
+
+                return false;
+            }
+            // Borderlands 4
+            case UGbxGraphAsset when (isNone || saveAudio) && pointer.Object.Value is UGbxGraphAsset gbxGraphAsset:
+            {
+                foreach (var (eventName, useSoundTag) in GbxAudioUtil.GetAndClearEvents())
+                {
+                    var extractedSounds = WwiseProvider.ExtractAudioEventBorderlands4(eventName, useSoundTag);
+                    foreach (var sound in extractedSounds)
+                    {
+                        SaveAndPlaySound(sound.OutputPath, sound.Extension, sound.Data, saveAudio);
+                    }
+                }
+
                 return false;
             }
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:

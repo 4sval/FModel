@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 using CUE4Parse.FileProvider.Objects;
+using CUE4Parse.GameTypes.Borderlands4.Assets.Exports;
 using CUE4Parse.GameTypes.FN.Assets.Exports.DataAssets;
 using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
 using CUE4Parse.GameTypes.SMG.UE4.Assets.Objects;
@@ -42,6 +43,7 @@ using CUE4Parse.UE4.Objects.PhysicsEngine;
 using CUE4Parse.UE4.Objects.RigVM;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Objects.UObject.Editor;
+using CUE4Parse.UE4.Versions;
 using CUE4Parse.Utils;
 
 using CUE4Parse_Conversion.Textures;
@@ -249,6 +251,10 @@ public class GameFileViewModel(GameFile asset) : ViewModel
 
                 UNiagaraSystem or UNiagaraScriptBase or UParticleSystem => (EAssetCategory.Particle, EBulkType.None),
 
+                // Game specific assets below
+                UGbxGraphAsset => (EAssetCategory.Borderlands4, EBulkType.Audio), // Borderlands 4
+                UFaceFXAnimSet when _applicationView.CUE4Parse?.Provider.Versions.Game is EGame.GAME_Borderlands4 => (EAssetCategory.Borderlands4, EBulkType.Audio), // Borderlands 4
+
                 _ => (EAssetCategory.All, EBulkType.None),
             };
 
@@ -333,6 +339,12 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             case "log":
             case "pem":
             case "xml":
+            case "gitignore":
+            case "html":
+            case "css":
+            case "js":
+            case "data":
+            case "csv":
                 AssetCategory = EAssetCategory.Data;
                 break;
             case "ushaderbytecode":
