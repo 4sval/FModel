@@ -792,7 +792,7 @@ public class CUE4ParseViewModel : ViewModel
                 var directory = Path.GetDirectoryName(entry.Path) ?? "/FMOD/Desktop/";
                 foreach (var sound in extractedSounds)
                 {
-                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
+                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio, updateUi);
                 }
 
                 break;
@@ -807,7 +807,7 @@ public class CUE4ParseViewModel : ViewModel
                 var medias = WwiseProvider.ExtractBankSounds(wwise);
                 foreach (var media in medias)
                 {
-                    SaveAndPlaySound(media.OutputPath, media.Extension, media.Data, saveAudio);
+                    SaveAndPlaySound(media.OutputPath, media.Extension, media.Data, saveAudio, updateUi);
                 }
 
                 break;
@@ -823,7 +823,7 @@ public class CUE4ParseViewModel : ViewModel
                 var extractedSounds = CriWareProvider.ExtractCriWareSounds(awbReader, archive.Name);
                 foreach (var sound in extractedSounds)
                 {
-                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
+                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio, updateUi);
                 }
 
                 break;
@@ -839,7 +839,7 @@ public class CUE4ParseViewModel : ViewModel
                 var extractedSounds = CriWareProvider.ExtractCriWareSounds(acbReader, archive.Name);
                 foreach (var sound in extractedSounds)
                 {
-                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
+                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio, updateUi);
                 }
 
                 break;
@@ -854,7 +854,7 @@ public class CUE4ParseViewModel : ViewModel
                 // todo: CSCore.MediaFoundation.MediaFoundationException The byte stream type of the given URL is unsupported. case "aif":
             {
                 var data = Provider.SaveAsset(entry);
-                SaveAndPlaySound(entry.PathWithoutExtension, entry.Extension, data, saveAudio);
+                SaveAndPlaySound(entry.PathWithoutExtension, entry.Extension, data, saveAudio, updateUi);
 
                 break;
             }
@@ -1114,7 +1114,7 @@ public class CUE4ParseViewModel : ViewModel
             case UExternalSource when (isNone || saveAudio) && pointer.Object.Value is UExternalSource externalSource:
             {
                 var audioName = Path.GetFileNameWithoutExtension(externalSource.ExternalSourcePath);
-                SaveAndPlaySound(audioName, "wem", externalSource.Data?.WemFile ?? [], saveAudio);
+                SaveAndPlaySound(audioName, "wem", externalSource.Data?.WemFile ?? [], saveAudio, updateUi);
                 return false;
             }
             case UAkAudioEvent when (isNone || saveAudio) && pointer.Object.Value is UAkAudioEvent audioEvent:
@@ -1122,7 +1122,7 @@ public class CUE4ParseViewModel : ViewModel
                 var extractedSounds = WwiseProvider.ExtractAudioEventSounds(audioEvent);
                 foreach (var sound in extractedSounds)
                 {
-                    SaveAndPlaySound(sound.OutputPath, sound.Extension, sound.Data, saveAudio);
+                    SaveAndPlaySound(sound.OutputPath, sound.Extension, sound.Data, saveAudio, updateUi);
                 }
                 return false;
             }
@@ -1132,7 +1132,7 @@ public class CUE4ParseViewModel : ViewModel
                 var directory = Path.GetDirectoryName(fmodEvent.Owner?.Name) ?? "/FMOD/Desktop/";
                 foreach (var sound in extractedSounds)
                 {
-                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
+                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio, updateUi);
                 }
                 return false;
             }
@@ -1142,7 +1142,7 @@ public class CUE4ParseViewModel : ViewModel
                 var directory = Path.GetDirectoryName(fmodBank.Owner?.Name) ?? "/FMOD/Desktop/";
                 foreach (var sound in extractedSounds)
                 {
-                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
+                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio, updateUi);
                 }
                 return false;
             }
@@ -1161,7 +1161,7 @@ public class CUE4ParseViewModel : ViewModel
                 directory = Path.GetDirectoryName(atomObject.Owner.Provider.FixPath(directory));
                 foreach (var sound in extractedSounds)
                 {
-                    SaveAndPlaySound(Path.Combine(directory, sound.Name).Replace("\\", "/"), sound.Extension, sound.Data, saveAudio);
+                    SaveAndPlaySound(Path.Combine(directory, sound.Name).Replace("\\", "/"), sound.Extension, sound.Data, saveAudio, updateUi);
                 }
                 return false;
             }
@@ -1181,7 +1181,7 @@ public class CUE4ParseViewModel : ViewModel
                     return false;
                 }
 
-                SaveAndPlaySound(TabControl.SelectedTab.Entry.PathWithoutExtension.Replace('\\', '/'), audioFormat, data, saveAudio);
+                SaveAndPlaySound(TabControl.SelectedTab.Entry.PathWithoutExtension.Replace('\\', '/'), audioFormat, data, saveAudio, updateUi);
                 return false;
             }
             case UAkMediaAsset when (isNone || saveAudio) && pointer.Object.Value is UAkMediaAsset akMediaAsset:
@@ -1192,7 +1192,7 @@ public class CUE4ParseViewModel : ViewModel
                     var shouldDecompress = UserSettings.Default.CompressedAudioMode is ECompressedAudio.PlayDecompressed;
                     akMediaAssetData.Decode(shouldDecompress, out var audioFormat, out var data);
 
-                    SaveAndPlaySound(audioName, audioFormat, data, saveAudio);
+                    SaveAndPlaySound(audioName, audioFormat, data, saveAudio, updateUi);
                 }
                 return false;
             }
@@ -1208,7 +1208,7 @@ public class CUE4ParseViewModel : ViewModel
                             var audioName = akMediaAsset.MediaName ?? $"{akAudioEventData.Outer.Name} ({akMediaAsset.ID})";
                             akMediaAssetData.Decode(shouldDecompress, out var audioFormat, out var data);
 
-                            SaveAndPlaySound(audioName, audioFormat, data, saveAudio);
+                            SaveAndPlaySound(audioName, audioFormat, data, saveAudio, updateUi);
                         }
                     }
                 }
@@ -1379,7 +1379,7 @@ public class CUE4ParseViewModel : ViewModel
         TabControl.SelectedTab.SetDocumentText(cpp, false, false);
     }
 
-    private void SaveAndPlaySound(string fullPath, string ext, byte[] data, bool isBulk)
+    private void SaveAndPlaySound(string fullPath, string ext, byte[] data, bool isBulk, bool updateUi)
     {
         if (fullPath.StartsWith('/')) fullPath = fullPath[1..];
         var savedAudioPath = Path.Combine(UserSettings.Default.AudioDirectory,
@@ -1389,9 +1389,28 @@ public class CUE4ParseViewModel : ViewModel
         {
             Directory.CreateDirectory(savedAudioPath.SubstringBeforeLast('/'));
             using var stream = new FileStream(savedAudioPath, FileMode.Create, FileAccess.Write);
-            using var writer = new BinaryWriter(stream);
-            writer.Write(data);
-            writer.Flush();
+            using (var writer = new BinaryWriter(stream))
+            {
+                writer.Write(data);
+                writer.Flush();
+            }
+
+            if (UserSettings.Default.ConvertAudioOnBulkExport)
+            {
+                AudioPlayerViewModel.TryConvert(savedAudioPath, data, out string wavFilePath);
+                savedAudioPath = wavFilePath;
+            }
+
+            Log.Information("Successfully saved {FilePath}", savedAudioPath);
+            if (updateUi)
+            {
+                FLogger.Append(ELog.Information, () =>
+                {
+                    FLogger.Text("Successfully saved ", Constants.WHITE);
+                    FLogger.Link(Path.GetFileName(savedAudioPath), savedAudioPath, true);
+                });
+            }
+
             return;
         }
 
