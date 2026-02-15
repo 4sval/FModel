@@ -314,7 +314,8 @@ public class GameFileViewModel(GameFile asset) : ViewModel
     private Task ResolveByExtensionAsync(EResolveCompute resolve)
     {
         Resolved |= EResolveCompute.Preview;
-        switch (Asset.Extension)
+        var lowercaseExtension = Asset.Extension.ToLowerInvariant();
+        switch (lowercaseExtension)
         {
             case "uproject":
             case "uefnproject":
@@ -381,7 +382,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                     stream.Position = 0;
 
                     SKBitmap bitmap;
-                    if (Asset.Extension == "svg")
+                    if (lowercaseExtension == "svg")
                     {
                         var svg = new SKSvg();
                         svg.Load(stream);
@@ -403,7 +404,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                         bitmap = SKBitmap.Decode(stream);
                     }
 
-                    using var image = bitmap.Encode(Asset.Extension == "jpg" ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
+                    using var image = bitmap.Encode(lowercaseExtension == "jpg" ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
                     SetPreviewImage(image);
 
                     bitmap.Dispose();
