@@ -655,7 +655,7 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
     }
 
     private bool TryConvert(out string wavFilePath) => TryConvert(SelectedAudioFile.FilePath, SelectedAudioFile.Data, out wavFilePath);
-    private bool TryConvert(string inputFilePath, byte[] inputFileData, out string wavFilePath)
+    public static bool TryConvert(string inputFilePath, byte[] inputFileData, out string wavFilePath)
     {
         wavFilePath = string.Empty;
         var vgmFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "test.exe");
