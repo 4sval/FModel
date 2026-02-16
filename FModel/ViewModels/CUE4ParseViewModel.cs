@@ -1225,7 +1225,7 @@ public class CUE4ParseViewModel : ViewModel
                     var extractedSounds = WwiseProvider.ExtractAudioEventBorderlands4(faceFXAnimData.ID.Name, false);
                     foreach (var sound in extractedSounds)
                     {
-                        SaveAndPlaySound(sound.OutputPath, sound.Extension, sound.Data, saveAudio);
+                        SaveAndPlaySound(sound.OutputPath, sound.Extension, sound.Data, saveAudio, updateUi);
                     }
                 }
 
@@ -1239,7 +1239,7 @@ public class CUE4ParseViewModel : ViewModel
                     var extractedSounds = WwiseProvider.ExtractAudioEventBorderlands4(eventName, useSoundTag);
                     foreach (var sound in extractedSounds)
                     {
-                        SaveAndPlaySound(sound.OutputPath, sound.Extension, sound.Data, saveAudio);
+                        SaveAndPlaySound(sound.OutputPath, sound.Extension, sound.Data, saveAudio, updateUi);
                     }
                 }
 
