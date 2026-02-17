@@ -12,6 +12,8 @@ using FModel.ViewModels;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
 using ICSharpCode.AvalonEdit.Editing;
+using MessageBox = AdonisUI.Controls.MessageBox;
+using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 
 namespace FModel;
 
@@ -84,6 +86,28 @@ public partial class MainWindow
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
+        var exeDir = AppContext.BaseDirectory;
+        if (exeDir.Contains(".zip"))
+        {
+            var owner = Application.Current?.MainWindow;
+
+            if (owner != null)
+            {
+                owner.Topmost = true;
+                owner.Activate();
+            }
+
+            MessageBox.Show(
+                owner,
+                "Please extract FModel from the ZIP before running.",
+                "Fatal Error",
+                AdonisUI.Controls.MessageBoxButton.OK,
+                MessageBoxImage.Error
+            );
+
+            Environment.Exit(1);
+        }
+
         var newOrUpdated = UserSettings.Default.ShowChangelog;
 #if !DEBUG
         ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(true);
