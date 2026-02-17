@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using Serilog.Sinks.SystemConsole.Themes;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
+using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 
 namespace FModel;
@@ -33,6 +34,27 @@ public partial class App
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        var exeDir = AppContext.BaseDirectory;
+        if (exeDir.Contains(".zip"))
+        {
+            var owner = Current?.MainWindow;
+
+            if (owner != null)
+            {
+                owner.Topmost = true;
+                owner.Activate();
+            }
+
+            MessageBox.Show(
+                owner,
+                "Please extract FModel from the ZIP before running.",
+                "Fatal Error",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error
+            );
+
+            Environment.Exit(1);
+        }
 #if DEBUG
         AttachConsole(-1);
 #endif
