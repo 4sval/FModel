@@ -13,6 +13,7 @@ using FModel.Views;
 using FModel.Views.Resources.Controls;
 using ICSharpCode.AvalonEdit.Editing;
 using MessageBox = AdonisUI.Controls.MessageBox;
+using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 
 namespace FModel;
@@ -101,7 +102,7 @@ public partial class MainWindow
                 owner,
                 "Please extract FModel from the ZIP before running.",
                 "Fatal Error",
-                AdonisUI.Controls.MessageBoxButton.OK,
+                MessageBoxButton.OK,
                 MessageBoxImage.Error
             );
 
