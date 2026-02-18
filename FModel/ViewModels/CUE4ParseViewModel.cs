@@ -780,7 +780,7 @@ public class CUE4ParseViewModel : ViewModel
             case "bank":
             {
                 var archive = entry.CreateReader();
-                if (!FModProvider.TryLoadBank(archive, entry.NameWithoutExtension, out var fmodReader))
+                if (!FmodProvider.TryLoadBank(archive, entry.NameWithoutExtension, out var fmodReader))
                 {
                     Log.Error($"Failed to load FMOD bank {entry.Path}");
                     break;
