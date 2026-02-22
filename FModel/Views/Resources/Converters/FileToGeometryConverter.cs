@@ -89,7 +89,7 @@ public class FileToGeometryConverter : IMultiValueConverter
 
             EAssetCategory.ByteCode => ("CodeIcon", "CodeBrush"),
 
-            EAssetCategory.Borderlands4 => ("BorderlandsIcon", "BorderlandsBrush"),
+            EAssetCategory.Borderlands => ("BorderlandsIcon", "BorderlandsBrush"),
 
             _ => ("AssetIcon", "NeutralBrush")
         };

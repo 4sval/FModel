@@ -19,6 +19,7 @@ public class FolderToGeometryConverter : IValueConverter
 
         var (geometry, brush) = folderName switch
         {
+            "ai" => ("AIIcon", "AIBrush"),
             "textures" or "texture" or "ui" or "icons" or "umgassets" or "hud" or "hdri" or "tex" => ("TextureIconAlt", "TextureBrush"),
             "config" or "tags" => ("ConfigIcon", "ConfigBrush"),
             "audio" or "wwiseaudio" or "wwise" or "fmod" or "sound" or "sounds" or "cue" => ("AudioIconAlt", "AudioBrush"),
