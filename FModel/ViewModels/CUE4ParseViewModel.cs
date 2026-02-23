@@ -1419,7 +1419,18 @@ public class CUE4ParseViewModel : ViewModel
             if (UserSettings.Default.ConvertAudioOnBulkExport)
             {
                 AudioPlayerViewModel.TryConvert(savedAudioPath, data, out string wavFilePath);
-                savedAudioPath = wavFilePath;
+                if (!string.IsNullOrEmpty(wavFilePath))
+                {
+                    savedAudioPath = wavFilePath;
+                }
+                else
+                {
+                    FLogger.Append(ELog.Error, () =>
+                    {
+                        FLogger.Text("Failed to convert audio to WAV format, aborting extraction.", Constants.WHITE, true);
+                    });
+                    return;
+                }
             }
 
             Log.Information("Successfully saved {FilePath}", savedAudioPath);
