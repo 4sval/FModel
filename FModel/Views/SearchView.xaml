@@ -5,6 +5,7 @@
                              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
                              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+                             xmlns:settings="clr-namespace:FModel.Settings"
                              WindowStartupLocation="CenterScreen" ResizeMode="CanResize" ShowInTaskbar="True"
                              IconVisibility="Collapsed" KeyDown="OnWindowKeyDown" StateChanged="OnStateChanged"
                              Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.75'}"
@@ -161,6 +162,26 @@
                                             </Viewbox>
                                         </MenuItem.Icon>
                                     </MenuItem>
+                                    <MenuItem Header="Show Metadata" Command="{Binding TabCommand}"  CommandParameter="Assets_Show_Metadata">
+                                        <MenuItem.Icon>
+                                            <Viewbox Width="16" Height="16">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                        </MenuItem.Icon>
+                                        <MenuItem.IsEnabled>
+                                            <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
+                                                <Binding.Converter>
+                                                    <converters:AnyItemMeetsConditionConverter>
+                                                        <converters:AnyItemMeetsConditionConverter.Conditions>
+                                                            <converters:ItemIsUePackageCondition />
+                                                        </converters:AnyItemMeetsConditionConverter.Conditions>
+                                                    </converters:AnyItemMeetsConditionConverter>
+                                                </Binding.Converter>
+                                            </Binding>
+                                        </MenuItem.IsEnabled>
+                                    </MenuItem>
                                     <MenuItem Header="Find References" Click="OnFindRefs">
                                         <MenuItem.Icon>
                                             <Viewbox Width="16" Height="16">
@@ -196,6 +217,15 @@
                                                 </Canvas>
                                             </Viewbox>
                                         </MenuItem.Icon>
+                                        <MenuItem.Style>
+                                            <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ShowDecompileOption, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </MenuItem.Style>
                                         <MenuItem.IsEnabled>
                                             <Binding Path="PlacementTarget.SelectedItem" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
                                                 <Binding.Converter>
