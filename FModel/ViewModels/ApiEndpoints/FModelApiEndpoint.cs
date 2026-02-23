@@ -26,7 +26,6 @@ public class FModelApiEndpoint : AbstractApiProvider
     private News _news;
     private Info _infos;
     private Donator[] _donators;
-    private Backup[] _backups;
     private Game _game;
     private readonly IDictionary<string, CommunityDesign> _communityDesigns = new Dictionary<string, CommunityDesign>();
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
@@ -58,19 +57,6 @@ public class FModelApiEndpoint : AbstractApiProvider
     public Donator[] GetDonators()
     {
         return _donators ??= GetDonatorsAsync().GetAwaiter().GetResult();
-    }
-
-    public async Task<Backup[]> GetBackupsAsync(CancellationToken token, string gameName)
-    {
-        var request = new FRestRequest($"https://api.fmodel.app/v1/backups/{gameName}");
-        var response = await _client.ExecuteAsync<Backup[]>(request, token).ConfigureAwait(false);
-        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
-        return response.Data;
-    }
-
-    public Backup[] GetBackups(CancellationToken token, string gameName)
-    {
-        return _backups ??= GetBackupsAsync(token, gameName).GetAwaiter().GetResult();
     }
 
     public async Task<Game> GetGamesAsync(CancellationToken token, string gameName)

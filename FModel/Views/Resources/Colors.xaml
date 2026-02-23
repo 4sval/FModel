@@ -42,4 +42,12 @@
     <SolidColorBrush x:Key="LuaBrush" Color="DarkBlue" />
     <SolidColorBrush x:Key="JsonXmlBrush" Color="LightGreen" />
     <SolidColorBrush x:Key="CodeBrush" Color="SandyBrown" />
+    <SolidColorBrush x:Key="HtmlBrush" Color="Tomato" />
+    <SolidColorBrush x:Key="JavaScriptBrush" Color="Yellow" />
+    <SolidColorBrush x:Key="CssBrush" Color="MediumPurple" />
+    <SolidColorBrush x:Key="GitBrush" Color="Coral" />
+    <SolidColorBrush x:Key="CsvBrush" Color="ForestGreen" />
+
+    <!-- For specific games -->
+    <SolidColorBrush x:Key="BorderlandsBrush" Color="Yellow"></SolidColorBrush>
 </ResourceDictionary>

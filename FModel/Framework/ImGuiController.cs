@@ -66,9 +66,19 @@ public class ImGuiController : IDisposable
             var iniFileNamePtr = Marshal.StringToCoTaskMemUTF8(Path.Combine(UserSettings.Default.OutputDirectory, ".data", "imgui.ini"));
             io.NativePtr->IniFilename = (byte*)iniFileNamePtr;
         }
-        FontNormal = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 16 * DpiScale);
-        FontBold = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeuib.ttf", 16 * DpiScale);
-        FontSemiBold = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\seguisb.ttf", 16 * DpiScale);
+        
+        // If not found, Fallback to default ImGui Font
+        var normalPath   = @"C:\Windows\Fonts\segoeui.ttf";
+        var boldPath     = @"C:\Windows\Fonts\segoeuib.ttf";
+        var semiBoldPath = @"C:\Windows\Fonts\seguisb.ttf";
+
+        if (File.Exists(normalPath))
+            FontNormal = io.Fonts.AddFontFromFileTTF(normalPath, 16 * DpiScale);
+        if (File.Exists(boldPath))
+            FontBold = io.Fonts.AddFontFromFileTTF(boldPath, 16 * DpiScale);
+        if (File.Exists(semiBoldPath))
+            FontSemiBold = io.Fonts.AddFontFromFileTTF(semiBoldPath, 16 * DpiScale);
+
         io.Fonts.AddFontDefault();
         io.Fonts.Build();          // Build font atlas
 

@@ -2,18 +2,34 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FModel.Framework;
+using FModel.ViewModels.ApiEndpoints.Models;
 using RestSharp;
 using Serilog;
 
 namespace FModel.ViewModels.ApiEndpoints;
 
-public class FortniteCentralApiEndpoint : AbstractApiProvider
+public class DillyApiEndpoint : AbstractApiProvider
 {
-    public FortniteCentralApiEndpoint(RestClient client) : base(client) { }
+    private Backup[] _backups;
+
+    public DillyApiEndpoint(RestClient client) : base(client) { }
+
+    public async Task<Backup[]> GetBackupsAsync(CancellationToken token)
+    {
+        var request = new FRestRequest($"https://export-service-new.dillyapis.com/v1/backups");
+        var response = await _client.ExecuteAsync<Backup[]>(request, token).ConfigureAwait(false);
+        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
+        return response.Data;
+    }
+
+    public Backup[] GetBackups(CancellationToken token)
+    {
+        return _backups ??= GetBackupsAsync(token).GetAwaiter().GetResult();
+    }
 
     public async Task<IDictionary<string, IDictionary<string, string>>> GetHotfixesAsync(CancellationToken token, string language = "en")
     {
-        var request = new FRestRequest("https://fortnitecentral.genxgames.gg/api/v1/hotfixes")
+        var request = new FRestRequest("https://api.fortniteapi.com/v1/cloudstorage/hotfixes")
         {
             Interceptors = [_interceptor]
         };

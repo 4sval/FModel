@@ -48,13 +48,13 @@ public class BackupManagerViewModel : ViewModel
     {
         await _threadWorkerView.Begin(cancellationToken =>
         {
-            var backups = _apiEndpointView.FModelApi.GetBackups(cancellationToken, _gameName);
+            var backups = _apiEndpointView.DillyApi.GetBackups(cancellationToken);
             if (backups == null) return;
 
             Application.Current.Dispatcher.Invoke(() =>
             {
                 foreach (var backup in backups) Backups.Add(backup);
-                SelectedBackup = Backups.LastOrDefault();
+                SelectedBackup = Backups.FirstOrDefault();
             });
         });
     }
@@ -93,7 +93,7 @@ public class BackupManagerViewModel : ViewModel
         await _threadWorkerView.Begin(_ =>
         {
             var fullPath = Path.Combine(Path.Combine(UserSettings.Default.OutputDirectory, "Backups"), SelectedBackup.FileName);
-            _apiEndpointView.DownloadFile(SelectedBackup.DownloadUrl, fullPath);
+            _apiEndpointView.DownloadFile(SelectedBackup.Url, fullPath);
             SaveCheck(fullPath, SelectedBackup.FileName, "downloaded", "download");
         });
     }

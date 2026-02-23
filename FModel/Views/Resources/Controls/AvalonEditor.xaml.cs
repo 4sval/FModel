@@ -27,7 +27,7 @@ public partial class AvalonEditor
     private readonly Dictionary<string, NavigationList<int>> _savedCarets = new();
     private NavigationList<int> _caretsOffsets
     {
-        get => MyAvalonEditor.Document != null
+        get => MyAvalonEditor.Document != null && MyAvalonEditor.Document.FileName != null
             ? _savedCarets.GetOrAdd(MyAvalonEditor.Document.FileName, () => new NavigationList<int>())
             : new NavigationList<int>();
     }

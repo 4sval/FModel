@@ -65,7 +65,7 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
                 Process.Start(new ProcessStartInfo { FileName = Constants.DISCORD_LINK, UseShellExecute = true });
                 break;
             case "ToolBox_Clear_Logs":
-                FLogger.Logger.Text = string.Empty;
+                FLogger.ClearLogs();
                 break;
             case "ToolBox_Open_Output_Directory":
                 Process.Start(new ProcessStartInfo { FileName = UserSettings.Default.OutputDirectory, UseShellExecute = true });

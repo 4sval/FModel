@@ -268,31 +268,15 @@ public class ApplicationViewModel : ViewModel
 
     public static async Task InitOodle()
     {
-        if (File.Exists(OodleHelper.OODLE_DLL_NAME_OLD))
-        {
-            try
-            {
-                File.Delete(OodleHelper.OODLE_DLL_NAME_OLD);
-            }
-            catch { /* ignored */}
-        }
-
-        var oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_DLL_NAME_OLD);
+        var oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_NAME_OLD);
         if (!File.Exists(oodlePath))
         {
-            oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_DLL_NAME);
-        }
-
-        if (!File.Exists(oodlePath))
-        {
-            if (!await OodleHelper.DownloadOodleDllAsync(oodlePath))
-            {
-                FLogger.Append(ELog.Error, () => FLogger.Text("Failed to download Oodle", Constants.WHITE, true));
-                return;
-            }
+            oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_NAME_CURRENT);
         }
 
         OodleHelper.Initialize(oodlePath);
+        if (OodleHelper.Instance is null)
+            FLogger.Append(ELog.Error, () => FLogger.Text("Failed to download Oodle", Constants.WHITE, true));
     }
 
     public static async Task InitZlib()

@@ -266,6 +266,13 @@ namespace FModel.Settings
             set => SetProperty(ref _readShaderMaps, value);
         }
 
+        private bool _convertAudioOnBulkExport;
+        public bool ConvertAudioOnBulkExport
+        {
+            get => _convertAudioOnBulkExport;
+            set => SetProperty(ref _convertAudioOnBulkExport, value);
+        }
+
         private IDictionary<string, DirectorySettings> _perDirectory = new Dictionary<string, DirectorySettings>();
         public IDictionary<string, DirectorySettings> PerDirectory
         {

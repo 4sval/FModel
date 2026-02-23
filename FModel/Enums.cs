@@ -156,4 +156,6 @@ public enum EAssetCategory : uint
         SoundBank = Media + 4,
         AudioEvent = Media + 5,
     Particle = AssetCategoryExtensions.CategoryBase + (9 << 16),
+    GameSpecific = AssetCategoryExtensions.CategoryBase + (10 << 16),
+        Borderlands4 = GameSpecific + 1,
 }
