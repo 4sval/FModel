@@ -1423,7 +1423,7 @@ public class CUE4ParseViewModel : ViewModel
                 {
                     savedAudioPath = wavFilePath;
                 }
-                else
+                else if (updateUi)
                 {
                     FLogger.Append(ELog.Error, () =>
                     {
