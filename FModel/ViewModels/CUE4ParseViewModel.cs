@@ -49,6 +49,7 @@ using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Localization;
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Objects.Engine;
+using CUE4Parse.UE4.Objects.Engine.Animation;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Objects.UObject.Editor;
 using CUE4Parse.UE4.Oodle.Objects;
@@ -1264,6 +1265,21 @@ public class CUE4ParseViewModel : ViewModel
                 }
 
                 return false;
+            }
+            case UAnimBlueprintGeneratedClass when isNone:
+            {
+                var graphVm = AnimGraphViewModel.ExtractFromPackage(pkg);
+                if (graphVm.Nodes.Count > 0)
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        Helper.OpenWindow<AnimGraphViewer>("Animation Blueprint Graph Viewer", () =>
+                        {
+                            new AnimGraphViewer(graphVm).Show();
+                        });
+                    });
+                }
+                return true;
             }
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:
             case UBlueprintGeneratedClass when isNone && UserSettings.Default.PreviewWorlds && TabControl.SelectedTab.ParentExportType switch
