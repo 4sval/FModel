@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,7 +16,6 @@ public partial class AnimGraphViewer
     private const double NodeWidth = 200;
     private const double NodeHeaderHeight = 28;
     private const double PinRowHeight = 22;
-    private const double PinRadius = 6;
     private const double NodeCornerRadius = 4;
     private const double ScaleFactor = 0.6;
 
