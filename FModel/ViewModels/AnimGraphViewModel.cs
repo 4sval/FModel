@@ -100,7 +100,8 @@ public class AnimGraphViewModel
                     if (linkedRef == null) continue;
 
                     // Resolve the owning node of the linked pin
-                    var linkedNodeObj = linkedRef.OwningNode.ResolvedObject?.Object?.Value;
+                    var resolvedObject = linkedRef.OwningNode.ResolvedObject;
+                    var linkedNodeObj = resolvedObject?.Object?.Value;
                     if (linkedNodeObj == null || !nodeMap.TryGetValue(linkedNodeObj, out var targetNode)) continue;
 
                     // Only add connection from output to input to avoid duplicates

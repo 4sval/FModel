@@ -62,12 +62,6 @@ public partial class AnimGraphViewer
         // Auto-layout nodes that have 0,0 positions
         AutoLayoutZeroPositionNodes();
 
-        // Draw connections first (behind nodes)
-        foreach (var conn in _viewModel.Connections)
-        {
-            DrawConnection(conn);
-        }
-
         // Draw nodes on top
         foreach (var node in _viewModel.Nodes)
         {
@@ -223,11 +217,6 @@ public partial class AnimGraphViewer
         };
     }
 
-    private void DrawConnection(AnimGraphConnection conn)
-    {
-        // Placeholder - actual lines drawn after node layout
-    }
-
     private void DrawConnectionLine(AnimGraphConnection conn)
     {
         var sourceKey = (conn.SourceNode, conn.SourcePinName, EEdGraphPinDirection.EGPD_Output);
@@ -356,7 +345,7 @@ public partial class AnimGraphViewer
         TranslateTransform.X = pos.X * (1 - factor) + TranslateTransform.X * factor;
         TranslateTransform.Y = pos.Y * (1 - factor) + TranslateTransform.Y * factor;
 
-        // Prevent ScaleX from going through the roof causing WPF layout issues
+        // Prevent ScaleX from exceeding limits that would cause WPF layout issues
         ScaleTransform.ScaleX = Math.Clamp(ScaleTransform.ScaleX, 0.05, 5.0);
         ScaleTransform.ScaleY = Math.Clamp(ScaleTransform.ScaleY, 0.05, 5.0);
 
