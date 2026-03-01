@@ -51,7 +51,7 @@ public partial class App
         var createMe = false;
         if (!Directory.Exists(UserSettings.Default.OutputDirectory))
         {
-            var currentDir = Directory.GetCurrentDirectory();
+            var currentDir = AppContext.BaseDirectory;
             try
             {
                 var outputDir = Directory.CreateDirectory(Path.Combine(currentDir, "Output"));

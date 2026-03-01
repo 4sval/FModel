@@ -252,6 +252,13 @@ namespace FModel.Settings
             set => SetProperty(ref _imageMergerMargin, value);
         }
 
+        private bool _canExportRawData;
+        public bool CanExportRawData
+        {
+            get => _canExportRawData;
+            set => SetProperty(ref _canExportRawData, value);
+        }
+
         private bool _readScriptData;
         public bool ReadScriptData
         {

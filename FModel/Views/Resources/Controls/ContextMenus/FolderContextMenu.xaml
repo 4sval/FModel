@@ -1,12 +1,14 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                    xmlns:settings="clr-namespace:FModel.Settings"
                     xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
                     x:Class="FModel.Views.Resources.Controls.ContextMenus.FolderContextMenuDictionary">
     <ContextMenu x:Key="FolderContextMenu" x:Shared="False"
                  Opened="FolderContextMenu_OnOpened">
         <MenuItem Header="Export Folder's Packages Raw Data (.uasset)"
-                  Command="{Binding RightClickMenuCommand}">
+                  Command="{Binding RightClickMenuCommand}"
+                  Visibility="{Binding CanExportRawData, Source={x:Static settings:UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                     <Binding Source="Folders_Export_Data" />

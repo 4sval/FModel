@@ -51,7 +51,7 @@ public class Animation : IDisposable
             EndTime = Sequences[i].EndTime;
         }
 
-        TotalElapsedTime = animSet.TotalAnimTime;
+        TotalElapsedTime = EndTime;
         if (Sequences.Length > 0)
             StartTime = Sequences[0].StartTime;
     }
@@ -68,7 +68,7 @@ public class Animation : IDisposable
             var sequence = Sequences[i];
             if (elapsedTime <= sequence.EndTime && elapsedTime >= sequence.StartTime)
             {
-                Framing[i] = (elapsedTime - sequence.StartTime) / sequence.TimePerFrame;
+                Framing[i] = (elapsedTime - sequence.StartTime) * sequence.RateScale / sequence.SecondsPerFrame;
             }
             else Framing.Remove(i);
         }

@@ -7,24 +7,26 @@ namespace FModel.Views.Snooper.Animations;
 public class Sequence
 {
     public readonly string Name;
+    public readonly float RateScale;
     public readonly float StartTime;
     public readonly float Duration;
     public readonly float EndTime;
     public readonly int EndFrame;
     public readonly int LoopingCount;
     public readonly bool IsAdditive;
-    public readonly float TimePerFrame;
+    public readonly float SecondsPerFrame;
 
     public Sequence(CAnimSequence sequence)
     {
         Name = sequence.Name;
+        RateScale = sequence.OriginalSequence.RateScale;
         StartTime = sequence.StartPos;
         Duration = sequence.AnimEndTime;
-        EndTime = StartTime + Duration;
+        EndTime = StartTime + Duration / RateScale;
         EndFrame = sequence.NumFrames;
         LoopingCount = sequence.LoopingCount;
         IsAdditive = sequence.IsAdditive;
-        TimePerFrame = Duration / EndFrame;
+        SecondsPerFrame = Duration / EndFrame;
     }
 
     public void DrawSequence(ImDrawListPtr drawList, ImFontPtr fontPtr, float x, Vector2 p2, Vector2 timeStep, Vector2 timeRatio, float t, bool animSelected)
