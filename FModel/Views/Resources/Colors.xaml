@@ -25,7 +25,7 @@
     
     <SolidColorBrush x:Key="AudioBrush" Color="MediumSeaGreen" />
     <SolidColorBrush x:Key="SoundBankBrush" Color="DarkSeaGreen" />
-    <SolidColorBrush x:Key="AudioEventBrush" Color="DarkTurquoise" />
+    <SolidColorBrush x:Key="AudioEventBrush" Color="LightSeaGreen" />
 
     <SolidColorBrush x:Key="VideoBrush" Color="IndianRed" />
     <SolidColorBrush x:Key="DataTableBrush" Color="SteelBlue" />
@@ -47,6 +47,7 @@
     <SolidColorBrush x:Key="CssBrush" Color="MediumPurple" />
     <SolidColorBrush x:Key="GitBrush" Color="Coral" />
     <SolidColorBrush x:Key="CsvBrush" Color="ForestGreen" />
+    <SolidColorBrush x:Key="AIBrush" Color="LightGray" />
 
     <!-- For specific games -->
     <SolidColorBrush x:Key="BorderlandsBrush" Color="Yellow"></SolidColorBrush>

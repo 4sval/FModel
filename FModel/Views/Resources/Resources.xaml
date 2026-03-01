@@ -13,8 +13,6 @@
                     xmlns:adonisConverters="clr-namespace:AdonisUI.Converters;assembly=AdonisUI"
                     xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                     xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI">
-    <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-
     <Style x:Key="TabItemFillSpace" TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
         <Setter Property="Width">
             <Setter.Value>
@@ -928,7 +926,8 @@
                                     </MenuItem.IsEnabled>
                                 </MenuItem>
                                 <Separator />
-                                <MenuItem Command="{Binding TabCommand}" CommandParameter="Asset_Export_Data">
+                                <MenuItem Command="{Binding TabCommand}" CommandParameter="Asset_Export_Data"
+                                          Visibility="{Binding CanExportRawData, Source={x:Static settings:UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}">
                                     <MenuItem.Header>
                                         <TextBlock Text="{Binding Entry.Extension, FallbackValue='Export Raw Data', StringFormat='Export Raw Data (.{0})'}" />
                                     </MenuItem.Header>
