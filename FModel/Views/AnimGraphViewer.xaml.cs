@@ -6,7 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using CUE4Parse.UE4.Objects.Engine.EdGraph;
 using FModel.ViewModels;
 
 namespace FModel.Views;
@@ -17,12 +16,11 @@ public partial class AnimGraphViewer
     private const double NodeHeaderHeight = 28;
     private const double PinRowHeight = 22;
     private const double NodeCornerRadius = 4;
-    private const double ScaleFactor = 0.6;
 
     private readonly AnimGraphViewModel _viewModel;
     private readonly Dictionary<AnimGraphNode, Point> _nodePositions = new();
     private readonly Dictionary<AnimGraphNode, (Border border, double width, double height)> _nodeVisuals = new();
-    private readonly Dictionary<(AnimGraphNode node, string pinName, EEdGraphPinDirection dir), Point> _pinPositions = new();
+    private readonly Dictionary<(AnimGraphNode node, string pinName, bool isOutput), Point> _pinPositions = new();
 
     private bool _isPanning;
     private Point _lastMousePos;
@@ -51,10 +49,10 @@ public partial class AnimGraphViewer
         _nodeVisuals.Clear();
         _pinPositions.Clear();
 
-        // Calculate positions from UE node coordinates
+        // Use positions from the view model (auto-layout grid positions)
         foreach (var node in _viewModel.Nodes)
         {
-            _nodePositions[node] = new Point(node.NodePosX * ScaleFactor, node.NodePosY * ScaleFactor);
+            _nodePositions[node] = new Point(node.NodePosX, node.NodePosY);
         }
 
         // Auto-layout nodes that have 0,0 positions
@@ -66,8 +64,7 @@ public partial class AnimGraphViewer
             DrawNode(node);
         }
 
-        // Update connection lines with actual pin positions
-        GraphCanvas.Children.OfType<Path>().ToList().ForEach(p => GraphCanvas.Children.Remove(p));
+        // Draw connection lines with actual pin positions
         foreach (var conn in _viewModel.Connections)
         {
             DrawConnectionLine(conn);
@@ -95,8 +92,8 @@ public partial class AnimGraphViewer
     private void DrawNode(AnimGraphNode node)
     {
         var pos = _nodePositions[node];
-        var inputPins = node.Pins.Where(p => p.Direction == EEdGraphPinDirection.EGPD_Input).ToList();
-        var outputPins = node.Pins.Where(p => p.Direction == EEdGraphPinDirection.EGPD_Output).ToList();
+        var inputPins = node.Pins.Where(p => !p.IsOutput).ToList();
+        var outputPins = node.Pins.Where(p => p.IsOutput).ToList();
         var maxPins = Math.Max(inputPins.Count, outputPins.Count);
         var nodeHeight = NodeHeaderHeight + Math.Max(maxPins, 1) * PinRowHeight + 8;
 
@@ -177,13 +174,13 @@ public partial class AnimGraphViewer
         for (var i = 0; i < inputPins.Count; i++)
         {
             var pinPos = new Point(pos.X, pos.Y + NodeHeaderHeight + 4 + i * PinRowHeight + PinRowHeight / 2);
-            _pinPositions[(node, inputPins[i].PinName, EEdGraphPinDirection.EGPD_Input)] = pinPos;
+            _pinPositions[(node, inputPins[i].PinName, false)] = pinPos;
         }
 
         for (var i = 0; i < outputPins.Count; i++)
         {
             var pinPos = new Point(pos.X + NodeWidth, pos.Y + NodeHeaderHeight + 4 + i * PinRowHeight + PinRowHeight / 2);
-            _pinPositions[(node, outputPins[i].PinName, EEdGraphPinDirection.EGPD_Output)] = pinPos;
+            _pinPositions[(node, outputPins[i].PinName, true)] = pinPos;
         }
 
         // Add tooltip
@@ -217,8 +214,8 @@ public partial class AnimGraphViewer
 
     private void DrawConnectionLine(AnimGraphConnection conn)
     {
-        var sourceKey = (conn.SourceNode, conn.SourcePinName, EEdGraphPinDirection.EGPD_Output);
-        var targetKey = (conn.TargetNode, conn.TargetPinName, EEdGraphPinDirection.EGPD_Input);
+        var sourceKey = (conn.SourceNode, conn.SourcePinName, true);
+        var targetKey = (conn.TargetNode, conn.TargetPinName, false);
 
         if (!_pinPositions.TryGetValue(sourceKey, out var startPos))
         {
@@ -263,8 +260,12 @@ public partial class AnimGraphViewer
     private static string GetNodeDisplayName(AnimGraphNode node)
     {
         var type = node.ExportType;
-        // Clean up common prefixes
-        if (type.StartsWith("AnimGraphNode_"))
+        // Clean up common prefixes for display
+        if (type.StartsWith("FAnimNode_"))
+            type = type["FAnimNode_".Length..];
+        else if (type.StartsWith("AnimNode_"))
+            type = type["AnimNode_".Length..];
+        else if (type.StartsWith("AnimGraphNode_"))
             type = type["AnimGraphNode_".Length..];
         else if (type.StartsWith("K2Node_"))
             type = type["K2Node_".Length..];
@@ -279,11 +280,13 @@ public partial class AnimGraphViewer
     {
         return exportType switch
         {
-            _ when exportType.Contains("AnimGraphNode") => new SolidColorBrush(Color.FromRgb(0, 120, 80)),
-            _ when exportType.Contains("K2Node") => new SolidColorBrush(Color.FromRgb(60, 60, 160)),
-            _ when exportType.Contains("State") => new SolidColorBrush(Color.FromRgb(140, 60, 20)),
+            _ when exportType.Contains("StateMachine") => new SolidColorBrush(Color.FromRgb(140, 60, 20)),
             _ when exportType.Contains("Transition") => new SolidColorBrush(Color.FromRgb(140, 120, 0)),
-            _ when exportType.Contains("Result") => new SolidColorBrush(Color.FromRgb(120, 40, 40)),
+            _ when exportType.Contains("BlendSpace") => new SolidColorBrush(Color.FromRgb(60, 60, 160)),
+            _ when exportType.Contains("Blend") => new SolidColorBrush(Color.FromRgb(80, 80, 160)),
+            _ when exportType.Contains("Sequence") => new SolidColorBrush(Color.FromRgb(0, 120, 120)),
+            _ when exportType.Contains("Result") || exportType.Contains("Root") => new SolidColorBrush(Color.FromRgb(120, 40, 40)),
+            _ when exportType.Contains("AnimNode") || exportType.Contains("FAnimNode") => new SolidColorBrush(Color.FromRgb(0, 120, 80)),
             _ => new SolidColorBrush(Color.FromRgb(70, 70, 90))
         };
     }
@@ -317,14 +320,20 @@ public partial class AnimGraphViewer
         if (!string.IsNullOrEmpty(node.NodeComment))
             lines.Add($"Comment: {node.NodeComment}");
 
-        lines.Add($"Input Pins: {node.Pins.Count(p => p.Direction == EEdGraphPinDirection.EGPD_Input)}");
-        lines.Add($"Output Pins: {node.Pins.Count(p => p.Direction == EEdGraphPinDirection.EGPD_Output)}");
+        lines.Add($"Input Pins: {node.Pins.Count(p => !p.IsOutput)}");
+        lines.Add($"Output Pins: {node.Pins.Count(p => p.IsOutput)}");
 
         foreach (var pin in node.Pins)
         {
-            var dir = pin.Direction == EEdGraphPinDirection.EGPD_Input ? "In" : "Out";
+            var dir = pin.IsOutput ? "Out" : "In";
             var defaultVal = string.IsNullOrEmpty(pin.DefaultValue) ? "" : $" = {pin.DefaultValue}";
             lines.Add($"  [{dir}] {pin.PinName} ({pin.PinType}){defaultVal}");
+        }
+
+        // Show additional properties
+        foreach (var (key, value) in node.AdditionalProperties)
+        {
+            lines.Add($"  {key}: {value}");
         }
 
         return string.Join("\n", lines);

@@ -1266,9 +1266,9 @@ public class CUE4ParseViewModel : ViewModel
 
                 return false;
             }
-            case UAnimBlueprintGeneratedClass when isNone:
+            case UAnimBlueprintGeneratedClass when isNone && pointer.Object.Value is UAnimBlueprintGeneratedClass animBpClass:
             {
-                var graphVm = AnimGraphViewModel.ExtractFromPackage(pkg);
+                var graphVm = AnimGraphViewModel.ExtractFromClass(animBpClass);
                 if (graphVm.Nodes.Count > 0)
                 {
                     Application.Current.Dispatcher.Invoke(() =>
