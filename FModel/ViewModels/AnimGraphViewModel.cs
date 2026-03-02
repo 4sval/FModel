@@ -344,7 +344,7 @@ public class AnimGraphViewModel
         foreach (var prop in structValue.Properties)
         {
             var name = prop.Name.Text;
-            var value = prop.Tag?.ToString() ?? string.Empty;
+            var value = prop.Tag?.GenericValue?.ToString() ?? string.Empty;
 
             switch (name)
             {
