@@ -531,6 +531,13 @@ public partial class AnimGraphViewer
 
     private void OnCanvasMouseDown(object sender, MouseButtonEventArgs e)
     {
+        // Only start panning when clicking on the canvas background, not on a node.
+        // MouseLeftButtonDown is a Direct routed event in WPF — it fires independently
+        // on each UIElement with a fresh Handled=false, so the node's e.Handled=true
+        // does NOT prevent this handler from firing.
+        if (e.OriginalSource != sender)
+            return;
+
         _isPanning = true;
         _lastMousePos = e.GetPosition((UIElement)sender);
         ((UIElement)sender).CaptureMouse();
