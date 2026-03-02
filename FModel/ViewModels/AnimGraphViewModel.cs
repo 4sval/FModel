@@ -40,6 +40,11 @@ public class AnimGraphConnection
 
 public class AnimGraphViewModel
 {
+    private const int GridColumns = 4;
+    private const int NodeHorizontalSpacing = 300;
+    private const int NodeVerticalSpacing = 200;
+    private const int MaxPropertyValueDisplayLength = 100;
+
     public string PackageName { get; set; } = string.Empty;
     public List<AnimGraphNode> Nodes { get; } = [];
     public List<AnimGraphConnection> Connections { get; } = [];
@@ -87,8 +92,8 @@ public class AnimGraphViewModel
             {
                 Name = propName,
                 ExportType = structType,
-                NodePosX = nodeIndex % 4 * 300,
-                NodePosY = nodeIndex / 4 * 200
+                NodePosX = nodeIndex % GridColumns * NodeHorizontalSpacing,
+                NodePosY = nodeIndex / GridColumns * NodeVerticalSpacing
             };
 
             // Try to extract property values from the CDO
@@ -146,7 +151,7 @@ public class AnimGraphViewModel
                     break;
                 default:
                     // Store additional properties for display in tooltip
-                    if (value.Length <= 100)
+                    if (value.Length <= MaxPropertyValueDisplayLength)
                         node.AdditionalProperties[name] = value;
                     break;
             }
@@ -229,11 +234,12 @@ public class AnimGraphViewModel
             return;
 
         var targetPropName = animNodeProps[linkId].name;
-        if (!nodeByName.TryGetValue(targetPropName, out var targetNode))
-            return;
 
         // Avoid self-connections
-        if (sourceNode == targetNode) return;
+        if (targetPropName == sourceNode.Name) return;
+
+        if (!nodeByName.TryGetValue(targetPropName, out var targetNode))
+            return;
 
         vm.Connections.Add(new AnimGraphConnection
         {

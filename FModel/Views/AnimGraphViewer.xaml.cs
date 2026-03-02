@@ -64,7 +64,7 @@ public partial class AnimGraphViewer
             DrawNode(node);
         }
 
-        // Draw connection lines with actual pin positions
+        // Draw connection lines between pin positions
         foreach (var conn in _viewModel.Connections)
         {
             DrawConnectionLine(conn);
