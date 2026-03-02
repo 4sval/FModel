@@ -55,8 +55,8 @@ public partial class AnimGraphViewer
     }
 
     /// <summary>
-    /// Creates a tab for each layer in the animation graph.
-    /// Each tab contains its own canvas with zoom/pan support.
+    /// Creates a tab for the final output pose layer only.
+    /// Only the AnimGraph layer (containing the Root node) is shown initially.
     /// </summary>
     private void BuildLayerTabs()
     {
@@ -67,7 +67,15 @@ public partial class AnimGraphViewer
         if (_viewModel.Layers.Count == 0)
             return;
 
-        foreach (var layer in _viewModel.Layers)
+        // Show only the final output pose layer (AnimGraph) initially
+        var outputLayer = _viewModel.Layers.FirstOrDefault(l =>
+            l.Nodes.Any(n => n.ExportType.Contains("Root", StringComparison.OrdinalIgnoreCase) ||
+                             n.ExportType.Contains("Result", StringComparison.OrdinalIgnoreCase)))
+            ?? _viewModel.Layers[0];
+
+        var layersToShow = new[] { outputLayer };
+
+        foreach (var layer in layersToShow)
         {
             var tabItem = new System.Windows.Controls.TabItem
             {
