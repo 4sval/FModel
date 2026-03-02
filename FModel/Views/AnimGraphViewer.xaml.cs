@@ -427,7 +427,8 @@ public partial class AnimGraphViewer
                 return;
         }
 
-        var dx = Math.Abs(endPos.X - startPos.X) * 0.5;
+        // Ensure a minimum tangent length for smooth curves even when nodes are close
+        var dx = Math.Max(Math.Abs(endPos.X - startPos.X) * 0.5, 50);
         var pathFigure = new PathFigure { StartPoint = startPos };
         pathFigure.Segments.Add(new BezierSegment(
             new Point(startPos.X + dx, startPos.Y),
@@ -440,9 +441,9 @@ public partial class AnimGraphViewer
         var path = new Path
         {
             Data = pathGeometry,
-            Stroke = new SolidColorBrush(Color.FromRgb(180, 180, 200)),
-            StrokeThickness = 1.5,
-            Opacity = 0.7,
+            Stroke = new SolidColorBrush(Color.FromRgb(200, 200, 220)),
+            StrokeThickness = 2,
+            Opacity = 0.8,
             SnapsToDevicePixels = true
         };
         Panel.SetZIndex(path, 0);
@@ -506,26 +507,32 @@ public partial class AnimGraphViewer
         if (_currentLayerState == null) return;
 
         var factor = e.Delta > 0 ? 1.1 : 1.0 / 1.1;
-        var pos = e.GetPosition(_currentLayerState.Canvas);
 
-        _currentLayerState.ScaleTransform.ScaleX *= factor;
-        _currentLayerState.ScaleTransform.ScaleY *= factor;
+        // Get mouse position relative to the parent Border (stable coordinate space)
+        var mousePos = e.GetPosition((UIElement)sender);
 
-        // Zoom toward mouse position
-        _currentLayerState.TranslateTransform.X = pos.X * (1 - factor) + _currentLayerState.TranslateTransform.X * factor;
-        _currentLayerState.TranslateTransform.Y = pos.Y * (1 - factor) + _currentLayerState.TranslateTransform.Y * factor;
+        var oldScale = _currentLayerState.ScaleTransform.ScaleX;
+        var newScale = Math.Clamp(oldScale * factor, 0.05, 5.0);
 
-        // Clamp scale
-        _currentLayerState.ScaleTransform.ScaleX = Math.Clamp(_currentLayerState.ScaleTransform.ScaleX, 0.05, 5.0);
-        _currentLayerState.ScaleTransform.ScaleY = Math.Clamp(_currentLayerState.ScaleTransform.ScaleY, 0.05, 5.0);
+        // Calculate the canvas-local point under the mouse cursor
+        var canvasX = (mousePos.X - _currentLayerState.TranslateTransform.X) / oldScale;
+        var canvasY = (mousePos.Y - _currentLayerState.TranslateTransform.Y) / oldScale;
 
-        ZoomText.Text = $"Zoom: {_currentLayerState.ScaleTransform.ScaleX * 100:F0}%";
+        // Apply new scale
+        _currentLayerState.ScaleTransform.ScaleX = newScale;
+        _currentLayerState.ScaleTransform.ScaleY = newScale;
+
+        // Adjust translate so the canvas point under the mouse stays fixed
+        _currentLayerState.TranslateTransform.X = mousePos.X - canvasX * newScale;
+        _currentLayerState.TranslateTransform.Y = mousePos.Y - canvasY * newScale;
+
+        ZoomText.Text = $"Zoom: {newScale * 100:F0}%";
     }
 
     private void OnCanvasMouseDown(object sender, MouseButtonEventArgs e)
     {
         _isPanning = true;
-        _lastMousePos = e.GetPosition(this);
+        _lastMousePos = e.GetPosition((UIElement)sender);
         ((UIElement)sender).CaptureMouse();
     }
 
@@ -538,7 +545,7 @@ public partial class AnimGraphViewer
     private void OnCanvasMouseMove(object sender, MouseEventArgs e)
     {
         if (!_isPanning || _currentLayerState == null) return;
-        var currentPos = e.GetPosition(this);
+        var currentPos = e.GetPosition((UIElement)sender);
         var delta = currentPos - _lastMousePos;
         _currentLayerState.TranslateTransform.X += delta.X;
         _currentLayerState.TranslateTransform.Y += delta.Y;
