@@ -18,9 +18,14 @@ public partial class AnimGraphViewer
     private const double NodeCornerRadius = 4;
 
     private readonly AnimGraphViewModel _viewModel;
-    private readonly Dictionary<AnimGraphNode, Point> _nodePositions = new();
-    private readonly Dictionary<AnimGraphNode, (Border border, double width, double height)> _nodeVisuals = new();
-    private readonly Dictionary<(AnimGraphNode node, string pinName, bool isOutput), Point> _pinPositions = new();
+
+    // Per-layer state
+    private readonly Dictionary<AnimGraphLayer, LayerCanvasState> _layerStates = new();
+    private LayerCanvasState? _currentLayerState;
+
+    // Currently selected node (for properties panel)
+    private AnimGraphNode? _selectedNode;
+    private Border? _selectedBorder;
 
     private bool _isPanning;
     private Point _lastMousePos;
@@ -38,60 +43,122 @@ public partial class AnimGraphViewer
         NodeCountText.Text = $"Nodes: {_viewModel.Nodes.Count}";
         ConnectionCountText.Text = $"Connections: {_viewModel.Connections.Count}";
 
-        DrawGraph();
-        FitToView();
+        BuildLayerTabs();
     }
 
-    private void DrawGraph()
+    /// <summary>
+    /// Creates a tab for each layer in the animation graph.
+    /// Each tab contains its own canvas with zoom/pan support.
+    /// </summary>
+    private void BuildLayerTabs()
     {
-        GraphCanvas.Children.Clear();
-        _nodePositions.Clear();
-        _nodeVisuals.Clear();
-        _pinPositions.Clear();
+        LayerTabControl.Items.Clear();
+        _layerStates.Clear();
 
-        // Use positions from the view model (auto-layout grid positions)
-        foreach (var node in _viewModel.Nodes)
+        // If no layers were built (empty graph), show nothing
+        if (_viewModel.Layers.Count == 0)
+            return;
+
+        foreach (var layer in _viewModel.Layers)
         {
-            _nodePositions[node] = new Point(node.NodePosX, node.NodePosY);
+            var tabItem = new System.Windows.Controls.TabItem
+            {
+                Header = layer.Name,
+                Tag = layer
+            };
+
+            // Create canvas container for this layer
+            var canvasBorder = new Border
+            {
+                ClipToBounds = true,
+                Background = new SolidColorBrush(Color.FromRgb(30, 30, 46))
+            };
+
+            var canvas = new Canvas { RenderTransformOrigin = new Point(0, 0) };
+            var scaleTransform = new ScaleTransform(1, 1);
+            var translateTransform = new TranslateTransform(0, 0);
+            var transformGroup = new TransformGroup();
+            transformGroup.Children.Add(scaleTransform);
+            transformGroup.Children.Add(translateTransform);
+            canvas.RenderTransform = transformGroup;
+
+            canvasBorder.Child = canvas;
+            canvasBorder.MouseWheel += OnMouseWheel;
+            canvasBorder.MouseLeftButtonDown += OnCanvasMouseDown;
+            canvasBorder.MouseLeftButtonUp += OnCanvasMouseUp;
+            canvasBorder.MouseMove += OnCanvasMouseMove;
+
+            tabItem.Content = canvasBorder;
+
+            var state = new LayerCanvasState
+            {
+                Layer = layer,
+                Canvas = canvas,
+                ScaleTransform = scaleTransform,
+                TranslateTransform = translateTransform
+            };
+            _layerStates[layer] = state;
+
+            LayerTabControl.Items.Add(tabItem);
         }
 
-        // Auto-layout nodes that have 0,0 positions
-        AutoLayoutZeroPositionNodes();
+        // Select the first tab
+        if (LayerTabControl.Items.Count > 0)
+            LayerTabControl.SelectedIndex = 0;
+    }
 
-        // Draw nodes on top
-        foreach (var node in _viewModel.Nodes)
+    private void OnLayerTabChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (LayerTabControl.SelectedItem is not System.Windows.Controls.TabItem { Tag: AnimGraphLayer layer })
+            return;
+
+        if (!_layerStates.TryGetValue(layer, out var state))
+            return;
+
+        _currentLayerState = state;
+
+        // Draw graph for this layer if not yet drawn
+        if (!state.IsDrawn)
         {
-            DrawNode(node);
+            DrawLayerGraph(state);
+            state.IsDrawn = true;
+
+            // Fit to view after first draw
+            Dispatcher.BeginInvoke(new Action(() => FitToView(state)));
         }
 
-        // Draw connection lines between pin positions
-        foreach (var conn in _viewModel.Connections)
+        ZoomText.Text = $"Zoom: {state.ScaleTransform.ScaleX * 100:F0}%";
+    }
+
+    private void DrawLayerGraph(LayerCanvasState state)
+    {
+        state.Canvas.Children.Clear();
+        state.NodePositions.Clear();
+        state.NodeVisuals.Clear();
+        state.PinPositions.Clear();
+
+        // Use positions from the view model
+        foreach (var node in state.Layer.Nodes)
         {
-            DrawConnectionLine(conn);
+            state.NodePositions[node] = new Point(node.NodePosX, node.NodePosY);
+        }
+
+        // Draw nodes
+        foreach (var node in state.Layer.Nodes)
+        {
+            DrawNode(state, node);
+        }
+
+        // Draw connections
+        foreach (var conn in state.Layer.Connections)
+        {
+            DrawConnectionLine(state, conn);
         }
     }
 
-    private void AutoLayoutZeroPositionNodes()
+    private void DrawNode(LayerCanvasState state, AnimGraphNode node)
     {
-        var zeroNodes = _viewModel.Nodes.Where(n => n.NodePosX == 0 && n.NodePosY == 0).ToList();
-        if (zeroNodes.Count <= 1) return;
-
-        // If most nodes have zero positions, do a simple grid layout
-        var nonZeroCount = _viewModel.Nodes.Count - zeroNodes.Count;
-        if (nonZeroCount > zeroNodes.Count) return; // Only a few are zero, leave them
-
-        var cols = (int)Math.Ceiling(Math.Sqrt(zeroNodes.Count));
-        for (var i = 0; i < zeroNodes.Count; i++)
-        {
-            var col = i % cols;
-            var row = i / cols;
-            _nodePositions[zeroNodes[i]] = new Point(col * (NodeWidth + 80), row * 200);
-        }
-    }
-
-    private void DrawNode(AnimGraphNode node)
-    {
-        var pos = _nodePositions[node];
+        var pos = state.NodePositions[node];
         var inputPins = node.Pins.Where(p => !p.IsOutput).ToList();
         var outputPins = node.Pins.Where(p => p.IsOutput).ToList();
         var maxPins = Math.Max(inputPins.Count, outputPins.Count);
@@ -106,7 +173,8 @@ public partial class AnimGraphViewer
             Background = new SolidColorBrush(Color.FromRgb(45, 45, 65)),
             BorderBrush = new SolidColorBrush(Color.FromRgb(80, 80, 110)),
             BorderThickness = new Thickness(1),
-            SnapsToDevicePixels = true
+            SnapsToDevicePixels = true,
+            Cursor = Cursors.Hand
         };
 
         var grid = new Grid();
@@ -166,32 +234,155 @@ public partial class AnimGraphViewer
         Canvas.SetLeft(border, pos.X);
         Canvas.SetTop(border, pos.Y);
         Panel.SetZIndex(border, 1);
-        GraphCanvas.Children.Add(border);
+        state.Canvas.Children.Add(border);
 
-        _nodeVisuals[node] = (border, NodeWidth, nodeHeight);
+        state.NodeVisuals[node] = (border, NodeWidth, nodeHeight);
 
         // Calculate pin positions for connections
         for (var i = 0; i < inputPins.Count; i++)
         {
             var pinPos = new Point(pos.X, pos.Y + NodeHeaderHeight + 4 + i * PinRowHeight + PinRowHeight / 2);
-            _pinPositions[(node, inputPins[i].PinName, false)] = pinPos;
+            state.PinPositions[(node, inputPins[i].PinName, false)] = pinPos;
         }
 
         for (var i = 0; i < outputPins.Count; i++)
         {
             var pinPos = new Point(pos.X + NodeWidth, pos.Y + NodeHeaderHeight + 4 + i * PinRowHeight + PinRowHeight / 2);
-            _pinPositions[(node, outputPins[i].PinName, true)] = pinPos;
+            state.PinPositions[(node, outputPins[i].PinName, true)] = pinPos;
         }
 
-        // Add tooltip
-        border.ToolTip = BuildNodeTooltip(node);
+        // Add tooltip with basic info
+        border.ToolTip = $"{node.ExportType}\n{node.Name}";
 
-        // Click to select
+        // Click to select node and show properties
         border.MouseLeftButtonDown += (s, e) =>
         {
-            SelectedNodeText.Text = $"Selected: {node.ExportType} - {node.Name}";
+            SelectNode(node, border);
             e.Handled = true;
         };
+    }
+
+    /// <summary>
+    /// Selects a node and populates the properties panel with its details.
+    /// </summary>
+    private void SelectNode(AnimGraphNode node, Border border)
+    {
+        // Deselect previous
+        if (_selectedBorder != null)
+        {
+            _selectedBorder.BorderBrush = new SolidColorBrush(Color.FromRgb(80, 80, 110));
+            _selectedBorder.BorderThickness = new Thickness(1);
+        }
+
+        // Highlight selected
+        _selectedNode = node;
+        _selectedBorder = border;
+        border.BorderBrush = new SolidColorBrush(Color.FromRgb(0, 160, 255));
+        border.BorderThickness = new Thickness(2);
+
+        SelectedNodeText.Text = $"Selected: {node.ExportType} - {node.Name}";
+        PopulatePropertiesPanel(node);
+    }
+
+    /// <summary>
+    /// Fills the properties panel with the selected node's information,
+    /// similar to UE's Details panel when a node is selected.
+    /// </summary>
+    private void PopulatePropertiesPanel(AnimGraphNode node)
+    {
+        PropertiesPanel.Children.Clear();
+        PropertiesTitleText.Text = $"Properties - {GetNodeDisplayName(node)}";
+
+        // Node header section
+        AddPropertySection("Node Info");
+        AddPropertyRow("Name", node.Name);
+        AddPropertyRow("Type", node.ExportType);
+        if (!string.IsNullOrEmpty(node.NodeComment))
+            AddPropertyRow("Comment", node.NodeComment);
+
+        // Pins section
+        var inputPins = node.Pins.Where(p => !p.IsOutput).ToList();
+        var outputPins = node.Pins.Where(p => p.IsOutput).ToList();
+
+        if (inputPins.Count > 0)
+        {
+            AddPropertySection("Input Pins");
+            foreach (var pin in inputPins)
+            {
+                var defaultVal = string.IsNullOrEmpty(pin.DefaultValue) ? "" : $" = {pin.DefaultValue}";
+                AddPropertyRow(pin.PinName, $"{pin.PinType}{defaultVal}");
+            }
+        }
+
+        if (outputPins.Count > 0)
+        {
+            AddPropertySection("Output Pins");
+            foreach (var pin in outputPins)
+            {
+                AddPropertyRow(pin.PinName, pin.PinType);
+            }
+        }
+
+        // Additional properties
+        if (node.AdditionalProperties.Count > 0)
+        {
+            AddPropertySection("Details");
+            foreach (var (key, value) in node.AdditionalProperties)
+            {
+                AddPropertyRow(key, value);
+            }
+        }
+    }
+
+    private void AddPropertySection(string title)
+    {
+        PropertiesPanel.Children.Add(new TextBlock
+        {
+            Text = title,
+            FontWeight = FontWeights.SemiBold,
+            FontSize = 12,
+            Margin = new Thickness(0, PropertiesPanel.Children.Count > 0 ? 12 : 4, 0, 4),
+            Foreground = new SolidColorBrush(Color.FromRgb(180, 200, 220))
+        });
+
+        PropertiesPanel.Children.Add(new Separator
+        {
+            Margin = new Thickness(0, 0, 0, 4),
+            Opacity = 0.3
+        });
+    }
+
+    private void AddPropertyRow(string key, string value)
+    {
+        var rowGrid = new Grid { Margin = new Thickness(0, 1, 0, 1) };
+        rowGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(100) });
+        rowGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+        var keyText = new TextBlock
+        {
+            Text = key,
+            FontSize = 11,
+            Foreground = new SolidColorBrush(Color.FromRgb(140, 160, 180)),
+            TextTrimming = TextTrimming.CharacterEllipsis,
+            VerticalAlignment = VerticalAlignment.Top,
+            Margin = new Thickness(4, 2, 4, 2)
+        };
+        Grid.SetColumn(keyText, 0);
+        rowGrid.Children.Add(keyText);
+
+        var valueText = new TextBlock
+        {
+            Text = value,
+            FontSize = 11,
+            Foreground = new SolidColorBrush(Color.FromRgb(220, 220, 240)),
+            TextWrapping = TextWrapping.Wrap,
+            VerticalAlignment = VerticalAlignment.Top,
+            Margin = new Thickness(4, 2, 4, 2)
+        };
+        Grid.SetColumn(valueText, 1);
+        rowGrid.Children.Add(valueText);
+
+        PropertiesPanel.Children.Add(rowGrid);
     }
 
     private static TextBlock CreatePinLabel(AnimGraphPin pin, HorizontalAlignment alignment)
@@ -212,24 +403,24 @@ public partial class AnimGraphViewer
         };
     }
 
-    private void DrawConnectionLine(AnimGraphConnection conn)
+    private void DrawConnectionLine(LayerCanvasState state, AnimGraphConnection conn)
     {
         var sourceKey = (conn.SourceNode, conn.SourcePinName, true);
         var targetKey = (conn.TargetNode, conn.TargetPinName, false);
 
-        if (!_pinPositions.TryGetValue(sourceKey, out var startPos))
+        if (!state.PinPositions.TryGetValue(sourceKey, out var startPos))
         {
             // Fallback: use node center-right
-            if (_nodePositions.TryGetValue(conn.SourceNode, out var srcNodePos))
+            if (state.NodePositions.TryGetValue(conn.SourceNode, out var srcNodePos))
                 startPos = new Point(srcNodePos.X + NodeWidth, srcNodePos.Y + NodeHeaderHeight + 10);
             else
                 return;
         }
 
-        if (!_pinPositions.TryGetValue(targetKey, out var endPos))
+        if (!state.PinPositions.TryGetValue(targetKey, out var endPos))
         {
             // Fallback: use node center-left
-            if (_nodePositions.TryGetValue(conn.TargetNode, out var tgtNodePos))
+            if (state.NodePositions.TryGetValue(conn.TargetNode, out var tgtNodePos))
                 endPos = new Point(tgtNodePos.X, tgtNodePos.Y + NodeHeaderHeight + 10);
             else
                 return;
@@ -254,7 +445,7 @@ public partial class AnimGraphViewer
             SnapsToDevicePixels = true
         };
         Panel.SetZIndex(path, 0);
-        GraphCanvas.Children.Add(path);
+        state.Canvas.Children.Add(path);
     }
 
     private static string GetNodeDisplayName(AnimGraphNode node)
@@ -308,55 +499,26 @@ public partial class AnimGraphViewer
         };
     }
 
-    private static string BuildNodeTooltip(AnimGraphNode node)
-    {
-        var lines = new List<string>
-        {
-            $"Name: {node.Name}",
-            $"Type: {node.ExportType}",
-            $"Position: ({node.NodePosX}, {node.NodePosY})"
-        };
-
-        if (!string.IsNullOrEmpty(node.NodeComment))
-            lines.Add($"Comment: {node.NodeComment}");
-
-        lines.Add($"Input Pins: {node.Pins.Count(p => !p.IsOutput)}");
-        lines.Add($"Output Pins: {node.Pins.Count(p => p.IsOutput)}");
-
-        foreach (var pin in node.Pins)
-        {
-            var dir = pin.IsOutput ? "Out" : "In";
-            var defaultVal = string.IsNullOrEmpty(pin.DefaultValue) ? "" : $" = {pin.DefaultValue}";
-            lines.Add($"  [{dir}] {pin.PinName} ({pin.PinType}){defaultVal}");
-        }
-
-        // Show additional properties
-        foreach (var (key, value) in node.AdditionalProperties)
-        {
-            lines.Add($"  {key}: {value}");
-        }
-
-        return string.Join("\n", lines);
-    }
-
     // Zoom & Pan
     private void OnMouseWheel(object sender, MouseWheelEventArgs e)
     {
-        var factor = e.Delta > 0 ? 1.1 : 1.0 / 1.1;
-        var pos = e.GetPosition(GraphCanvas);
+        if (_currentLayerState == null) return;
 
-        ScaleTransform.ScaleX *= factor;
-        ScaleTransform.ScaleY *= factor;
+        var factor = e.Delta > 0 ? 1.1 : 1.0 / 1.1;
+        var pos = e.GetPosition(_currentLayerState.Canvas);
+
+        _currentLayerState.ScaleTransform.ScaleX *= factor;
+        _currentLayerState.ScaleTransform.ScaleY *= factor;
 
         // Zoom toward mouse position
-        TranslateTransform.X = pos.X * (1 - factor) + TranslateTransform.X * factor;
-        TranslateTransform.Y = pos.Y * (1 - factor) + TranslateTransform.Y * factor;
+        _currentLayerState.TranslateTransform.X = pos.X * (1 - factor) + _currentLayerState.TranslateTransform.X * factor;
+        _currentLayerState.TranslateTransform.Y = pos.Y * (1 - factor) + _currentLayerState.TranslateTransform.Y * factor;
 
-        // Prevent ScaleX from exceeding limits that would cause WPF layout issues
-        ScaleTransform.ScaleX = Math.Clamp(ScaleTransform.ScaleX, 0.05, 5.0);
-        ScaleTransform.ScaleY = Math.Clamp(ScaleTransform.ScaleY, 0.05, 5.0);
+        // Clamp scale
+        _currentLayerState.ScaleTransform.ScaleX = Math.Clamp(_currentLayerState.ScaleTransform.ScaleX, 0.05, 5.0);
+        _currentLayerState.ScaleTransform.ScaleY = Math.Clamp(_currentLayerState.ScaleTransform.ScaleY, 0.05, 5.0);
 
-        ZoomText.Text = $"Zoom: {ScaleTransform.ScaleX * 100:F0}%";
+        ZoomText.Text = $"Zoom: {_currentLayerState.ScaleTransform.ScaleX * 100:F0}%";
     }
 
     private void OnCanvasMouseDown(object sender, MouseButtonEventArgs e)
@@ -374,54 +536,74 @@ public partial class AnimGraphViewer
 
     private void OnCanvasMouseMove(object sender, MouseEventArgs e)
     {
-        if (!_isPanning) return;
+        if (!_isPanning || _currentLayerState == null) return;
         var currentPos = e.GetPosition(this);
         var delta = currentPos - _lastMousePos;
-        TranslateTransform.X += delta.X;
-        TranslateTransform.Y += delta.Y;
+        _currentLayerState.TranslateTransform.X += delta.X;
+        _currentLayerState.TranslateTransform.Y += delta.Y;
         _lastMousePos = currentPos;
     }
 
     private void OnFitToView(object sender, RoutedEventArgs e)
     {
-        FitToView();
+        if (_currentLayerState != null)
+            FitToView(_currentLayerState);
     }
 
-    private void FitToView()
+    private void FitToView(LayerCanvasState state)
     {
-        if (_nodePositions.Count == 0) return;
+        if (state.NodePositions.Count == 0) return;
 
-        var minX = _nodePositions.Values.Min(p => p.X);
-        var minY = _nodePositions.Values.Min(p => p.Y);
-        var maxX = _nodePositions.Values.Max(p => p.X) + NodeWidth;
-        var maxY = _nodePositions.Values.Max(p => p.Y) + 150;
+        var minX = state.NodePositions.Values.Min(p => p.X);
+        var minY = state.NodePositions.Values.Min(p => p.Y);
+        var maxX = state.NodePositions.Values.Max(p => p.X) + NodeWidth;
+        var maxY = state.NodePositions.Values.Max(p => p.Y) + 150;
 
         var graphWidth = maxX - minX;
         var graphHeight = maxY - minY;
         if (graphWidth < 1 || graphHeight < 1) return;
 
-        var viewWidth = ActualWidth > 0 ? ActualWidth : 800;
-        var viewHeight = ActualHeight > 0 ? ActualHeight - 80 : 600;
+        // Get available size from the tab content area
+        var tabContent = LayerTabControl.SelectedContent as FrameworkElement;
+        var viewWidth = tabContent?.ActualWidth > 0 ? tabContent.ActualWidth : (ActualWidth > 0 ? ActualWidth * 0.65 : 800);
+        var viewHeight = tabContent?.ActualHeight > 0 ? tabContent.ActualHeight : (ActualHeight > 0 ? ActualHeight - 120 : 600);
 
         var scaleX = viewWidth / graphWidth * 0.9;
         var scaleY = viewHeight / graphHeight * 0.9;
         var scale = Math.Min(Math.Min(scaleX, scaleY), 2.0);
 
-        ScaleTransform.ScaleX = scale;
-        ScaleTransform.ScaleY = scale;
+        state.ScaleTransform.ScaleX = scale;
+        state.ScaleTransform.ScaleY = scale;
 
-        TranslateTransform.X = -minX * scale + (viewWidth - graphWidth * scale) / 2;
-        TranslateTransform.Y = -minY * scale + (viewHeight - graphHeight * scale) / 2;
+        state.TranslateTransform.X = -minX * scale + (viewWidth - graphWidth * scale) / 2;
+        state.TranslateTransform.Y = -minY * scale + (viewHeight - graphHeight * scale) / 2;
 
         ZoomText.Text = $"Zoom: {scale * 100:F0}%";
     }
 
     private void OnResetZoom(object sender, RoutedEventArgs e)
     {
-        ScaleTransform.ScaleX = 1;
-        ScaleTransform.ScaleY = 1;
-        TranslateTransform.X = 0;
-        TranslateTransform.Y = 0;
+        if (_currentLayerState == null) return;
+        _currentLayerState.ScaleTransform.ScaleX = 1;
+        _currentLayerState.ScaleTransform.ScaleY = 1;
+        _currentLayerState.TranslateTransform.X = 0;
+        _currentLayerState.TranslateTransform.Y = 0;
         ZoomText.Text = "Zoom: 100%";
+    }
+
+    /// <summary>
+    /// Holds per-layer canvas state (positions, visuals, transforms).
+    /// </summary>
+    private class LayerCanvasState
+    {
+        public AnimGraphLayer Layer { get; init; } = null!;
+        public Canvas Canvas { get; init; } = null!;
+        public ScaleTransform ScaleTransform { get; init; } = null!;
+        public TranslateTransform TranslateTransform { get; init; } = null!;
+        public bool IsDrawn { get; set; }
+
+        public Dictionary<AnimGraphNode, Point> NodePositions { get; } = new();
+        public Dictionary<AnimGraphNode, (Border border, double width, double height)> NodeVisuals { get; } = new();
+        public Dictionary<(AnimGraphNode node, string pinName, bool isOutput), Point> PinPositions { get; } = new();
     }
 }

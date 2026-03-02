@@ -38,6 +38,18 @@ public class AnimGraphConnection
     public string TargetPinName { get; set; } = string.Empty;
 }
 
+/// <summary>
+/// Represents a layer/sub-graph within the animation blueprint,
+/// similar to how UE's Animation Blueprint editor organizes nodes
+/// into separate tabs (AnimGraph, StateMachine sub-graphs, etc.).
+/// </summary>
+public class AnimGraphLayer
+{
+    public string Name { get; set; } = string.Empty;
+    public List<AnimGraphNode> Nodes { get; } = [];
+    public List<AnimGraphConnection> Connections { get; } = [];
+}
+
 public class AnimGraphViewModel
 {
     private const int GridColumns = 4;
@@ -48,6 +60,7 @@ public class AnimGraphViewModel
     public string PackageName { get; set; } = string.Empty;
     public List<AnimGraphNode> Nodes { get; } = [];
     public List<AnimGraphConnection> Connections { get; } = [];
+    public List<AnimGraphLayer> Layers { get; } = [];
 
     /// <summary>
     /// Extracts animation graph node information from a UAnimBlueprintGeneratedClass.
@@ -85,15 +98,12 @@ public class AnimGraphViewModel
 
         // Build nodes from the collected properties
         var nodeByName = new Dictionary<string, AnimGraphNode>();
-        var nodeIndex = 0;
         foreach (var (propName, structType) in animNodeProps)
         {
             var node = new AnimGraphNode
             {
                 Name = propName,
-                ExportType = structType,
-                NodePosX = nodeIndex % GridColumns * NodeHorizontalSpacing,
-                NodePosY = nodeIndex / GridColumns * NodeVerticalSpacing
+                ExportType = structType
             };
 
             // Try to extract property values from the CDO
@@ -113,7 +123,6 @@ public class AnimGraphViewModel
 
             nodeByName[propName] = node;
             vm.Nodes.Add(node);
-            nodeIndex++;
         }
 
         // Resolve connections between nodes using CDO property values
@@ -122,7 +131,199 @@ public class AnimGraphViewModel
             ResolveConnections(cdo, animNodeProps, nodeByName, vm);
         }
 
+        // Group nodes into layers (connected subgraphs)
+        BuildLayers(vm);
+
         return vm;
+    }
+
+    /// <summary>
+    /// Groups nodes into layers by finding connected components in the graph.
+    /// Each connected component becomes a separate layer/tab, named after
+    /// its most prominent node (Root, StateMachine, etc.).
+    /// </summary>
+    private static void BuildLayers(AnimGraphViewModel vm)
+    {
+        if (vm.Nodes.Count == 0) return;
+
+        // Build adjacency sets (undirected) for connected component detection
+        var adjacency = new Dictionary<AnimGraphNode, HashSet<AnimGraphNode>>();
+        foreach (var node in vm.Nodes)
+            adjacency[node] = [];
+
+        foreach (var conn in vm.Connections)
+        {
+            adjacency[conn.SourceNode].Add(conn.TargetNode);
+            adjacency[conn.TargetNode].Add(conn.SourceNode);
+        }
+
+        // Find connected components via BFS
+        var visited = new HashSet<AnimGraphNode>();
+        var components = new List<List<AnimGraphNode>>();
+
+        foreach (var node in vm.Nodes)
+        {
+            if (visited.Contains(node)) continue;
+
+            var component = new List<AnimGraphNode>();
+            var queue = new Queue<AnimGraphNode>();
+            queue.Enqueue(node);
+            visited.Add(node);
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                component.Add(current);
+
+                foreach (var neighbor in adjacency[current])
+                {
+                    if (visited.Add(neighbor))
+                        queue.Enqueue(neighbor);
+                }
+            }
+
+            components.Add(component);
+        }
+
+        // Create a layer for each connected component
+        var layerIndex = 0;
+        foreach (var component in components)
+        {
+            var componentSet = new HashSet<AnimGraphNode>(component);
+            var layerName = GetLayerName(component, layerIndex);
+
+            var layer = new AnimGraphLayer { Name = layerName };
+            layer.Nodes.AddRange(component);
+
+            // Add only the connections that belong to this component
+            foreach (var conn in vm.Connections)
+            {
+                if (componentSet.Contains(conn.SourceNode) && componentSet.Contains(conn.TargetNode))
+                    layer.Connections.Add(conn);
+            }
+
+            // Layout nodes within this layer in a grid
+            LayoutLayerNodes(layer);
+
+            vm.Layers.Add(layer);
+            layerIndex++;
+        }
+    }
+
+    /// <summary>
+    /// Determines a display name for a layer based on the types of nodes it contains.
+    /// </summary>
+    private static string GetLayerName(List<AnimGraphNode> nodes, int index)
+    {
+        // Look for a prominent node type to name the layer
+        var rootNode = nodes.FirstOrDefault(n =>
+            n.ExportType.Contains("Root", StringComparison.OrdinalIgnoreCase));
+        if (rootNode != null)
+            return "AnimGraph";
+
+        var stateMachine = nodes.FirstOrDefault(n =>
+            n.ExportType.Contains("StateMachine", StringComparison.OrdinalIgnoreCase));
+        if (stateMachine != null)
+            return $"StateMachine ({stateMachine.Name})";
+
+        var blend = nodes.FirstOrDefault(n =>
+            n.ExportType.Contains("Blend", StringComparison.OrdinalIgnoreCase));
+        if (blend != null)
+            return $"Blend ({blend.Name})";
+
+        if (nodes.Count == 1)
+            return GetShortTypeName(nodes[0].ExportType);
+
+        return $"Layer {index}";
+    }
+
+    private static string GetShortTypeName(string exportType)
+    {
+        if (exportType.StartsWith("FAnimNode_"))
+            return exportType["FAnimNode_".Length..];
+        if (exportType.StartsWith("AnimNode_"))
+            return exportType["AnimNode_".Length..];
+        return exportType;
+    }
+
+    /// <summary>
+    /// Arranges nodes within a layer in a left-to-right flow layout
+    /// based on connection topology (sinks on the left, sources on the right).
+    /// </summary>
+    private static void LayoutLayerNodes(AnimGraphLayer layer)
+    {
+        if (layer.Nodes.Count == 0) return;
+
+        // Build directed adjacency: target -> sources (who feeds into target)
+        var incomingEdges = new Dictionary<AnimGraphNode, List<AnimGraphNode>>();
+        var outgoingEdges = new Dictionary<AnimGraphNode, List<AnimGraphNode>>();
+        foreach (var node in layer.Nodes)
+        {
+            incomingEdges[node] = [];
+            outgoingEdges[node] = [];
+        }
+
+        foreach (var conn in layer.Connections)
+        {
+            // SourceNode's output feeds into TargetNode's input
+            outgoingEdges[conn.SourceNode].Add(conn.TargetNode);
+            incomingEdges[conn.TargetNode].Add(conn.SourceNode);
+        }
+
+        // Topological sort to assign depth levels (longest path from leaves)
+        var depth = new Dictionary<AnimGraphNode, int>();
+        var layerSet = new HashSet<AnimGraphNode>(layer.Nodes);
+
+        // Find sink nodes (nodes with no outgoing edges within this layer)
+        var sinkNodes = layer.Nodes.Where(n => outgoingEdges[n].Count == 0).ToList();
+
+        // BFS from sinks to assign depth
+        foreach (var node in layer.Nodes)
+            depth[node] = 0;
+
+        var queue = new Queue<AnimGraphNode>();
+        foreach (var sink in sinkNodes)
+        {
+            depth[sink] = 0;
+            queue.Enqueue(sink);
+        }
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            foreach (var source in incomingEdges[current])
+            {
+                var newDepth = depth[current] + 1;
+                if (newDepth > depth[source])
+                {
+                    depth[source] = newDepth;
+                    queue.Enqueue(source);
+                }
+            }
+        }
+
+        // Group by depth level and assign positions
+        var maxDepth = depth.Values.DefaultIfEmpty(0).Max();
+        var nodesAtDepth = new Dictionary<int, List<AnimGraphNode>>();
+        foreach (var (node, d) in depth)
+        {
+            if (!nodesAtDepth.TryGetValue(d, out var list))
+                nodesAtDepth[d] = list = [];
+            list.Add(node);
+        }
+
+        // Position: sources (high depth) on the right, sinks (depth 0) on the left
+        for (var d = 0; d <= maxDepth; d++)
+        {
+            if (!nodesAtDepth.TryGetValue(d, out var nodesInColumn)) continue;
+
+            var x = (maxDepth - d) * NodeHorizontalSpacing;
+            for (var i = 0; i < nodesInColumn.Count; i++)
+            {
+                nodesInColumn[i].NodePosX = x;
+                nodesInColumn[i].NodePosY = i * NodeVerticalSpacing;
+            }
+        }
     }
 
     private static bool IsAnimNodeStruct(string name)
@@ -150,7 +351,7 @@ public class AnimGraphViewModel
                     node.NodeComment = value;
                     break;
                 default:
-                    // Store additional properties for display in tooltip
+                    // Store additional properties for display
                     if (value.Length <= MaxPropertyValueDisplayLength)
                         node.AdditionalProperties[name] = value;
                     break;
