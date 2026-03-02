@@ -68,9 +68,11 @@ public partial class AnimGraphViewer
             return;
 
         // Show only the final output pose layer (AnimGraph) initially.
-        // The root node of the output layer is an AnimGraphNode_Root with Name="AnimGraph".
+        // The root node of the output layer has a "Name" property set to "AnimGraph"
+        // in its AdditionalProperties (from the AnimGraphNode_Root struct).
         var outputLayer = _viewModel.Layers.FirstOrDefault(l =>
-            l.Nodes.Any(n => n.Name.Equals("AnimGraph", StringComparison.OrdinalIgnoreCase)))
+            l.Nodes.Any(n => n.AdditionalProperties.TryGetValue("Name", out var name) &&
+                             name.Equals("AnimGraph", StringComparison.OrdinalIgnoreCase)))
             ?? _viewModel.Layers[0];
 
         var layersToShow = new[] { outputLayer };

@@ -215,9 +215,11 @@ public class AnimGraphViewModel
     /// </summary>
     private static string GetLayerName(List<AnimGraphNode> nodes, int index)
     {
-        // The final output pose layer contains an AnimGraphNode_Root with Name="AnimGraph"
+        // The final output pose layer contains an AnimGraphNode_Root whose
+        // "Name" property (in AdditionalProperties) is set to "AnimGraph"
         var rootNode = nodes.FirstOrDefault(n =>
-            n.Name.Equals("AnimGraph", StringComparison.OrdinalIgnoreCase));
+            n.AdditionalProperties.TryGetValue("Name", out var name) &&
+            name.Equals("AnimGraph", StringComparison.OrdinalIgnoreCase));
         if (rootNode != null)
             return "AnimGraph";
 
