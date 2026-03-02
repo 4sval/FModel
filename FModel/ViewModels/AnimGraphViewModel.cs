@@ -284,7 +284,6 @@ public class AnimGraphViewModel
         var queue = new Queue<AnimGraphNode>();
         foreach (var sink in sinkNodes)
         {
-            depth[sink] = 0;
             queue.Enqueue(sink);
         }
 

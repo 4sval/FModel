@@ -16,6 +16,7 @@ public partial class AnimGraphViewer
     private const double NodeHeaderHeight = 28;
     private const double PinRowHeight = 22;
     private const double NodeCornerRadius = 4;
+    private const double DefaultGraphWidthRatio = 0.65;
 
     private readonly AnimGraphViewModel _viewModel;
 
@@ -74,7 +75,7 @@ public partial class AnimGraphViewer
                 Background = new SolidColorBrush(Color.FromRgb(30, 30, 46))
             };
 
-            var canvas = new Canvas { RenderTransformOrigin = new Point(0, 0) };
+            var canvas = new Canvas();
             var scaleTransform = new ScaleTransform(1, 1);
             var translateTransform = new TranslateTransform(0, 0);
             var transformGroup = new TransformGroup();
@@ -124,7 +125,7 @@ public partial class AnimGraphViewer
             state.IsDrawn = true;
 
             // Fit to view after first draw
-            Dispatcher.BeginInvoke(new Action(() => FitToView(state)));
+            Dispatcher.BeginInvoke(() => FitToView(state));
         }
 
         ZoomText.Text = $"Zoom: {state.ScaleTransform.ScaleX * 100:F0}%";
@@ -565,7 +566,7 @@ public partial class AnimGraphViewer
 
         // Get available size from the tab content area
         var tabContent = LayerTabControl.SelectedContent as FrameworkElement;
-        var viewWidth = tabContent?.ActualWidth > 0 ? tabContent.ActualWidth : (ActualWidth > 0 ? ActualWidth * 0.65 : 800);
+        var viewWidth = tabContent?.ActualWidth > 0 ? tabContent.ActualWidth : (ActualWidth > 0 ? ActualWidth * DefaultGraphWidthRatio : 800);
         var viewHeight = tabContent?.ActualHeight > 0 ? tabContent.ActualHeight : (ActualHeight > 0 ? ActualHeight - 120 : 600);
 
         var scaleX = viewWidth / graphWidth * 0.9;
