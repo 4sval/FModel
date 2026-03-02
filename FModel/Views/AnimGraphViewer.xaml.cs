@@ -29,7 +29,10 @@ public partial class AnimGraphViewer
     private Border? _selectedBorder;
 
     private bool _isPanning;
+    private bool _potentialPan;
+    private Point _panStartPos;
     private Point _lastMousePos;
+    private const double PanThreshold = 5.0;
 
     public AnimGraphViewer(AnimGraphViewModel viewModel)
     {
@@ -85,7 +88,8 @@ public partial class AnimGraphViewer
 
             canvasBorder.Child = canvas;
             canvasBorder.MouseWheel += OnMouseWheel;
-            canvasBorder.MouseLeftButtonDown += OnCanvasMouseDown;
+            canvasBorder.AddHandler(UIElement.MouseLeftButtonDownEvent,
+                new MouseButtonEventHandler(OnCanvasMouseDown), true);
             canvasBorder.MouseLeftButtonUp += OnCanvasMouseUp;
             canvasBorder.MouseMove += OnCanvasMouseMove;
 
@@ -444,7 +448,8 @@ public partial class AnimGraphViewer
             Stroke = new SolidColorBrush(Color.FromRgb(200, 200, 220)),
             StrokeThickness = 2,
             Opacity = 0.8,
-            SnapsToDevicePixels = true
+            SnapsToDevicePixels = true,
+            IsHitTestVisible = false
         };
         Panel.SetZIndex(path, 0);
         state.Canvas.Children.Add(path);
@@ -531,28 +536,43 @@ public partial class AnimGraphViewer
 
     private void OnCanvasMouseDown(object sender, MouseButtonEventArgs e)
     {
-        // Only start panning when clicking on the canvas background, not on a node.
-        // MouseLeftButtonDown is a Direct routed event in WPF — it fires independently
-        // on each UIElement with a fresh Handled=false, so the node's e.Handled=true
-        // does NOT prevent this handler from firing.
-        if (e.OriginalSource != sender)
-            return;
-
-        _isPanning = true;
-        _lastMousePos = e.GetPosition((UIElement)sender);
-        ((UIElement)sender).CaptureMouse();
+        _potentialPan = true;
+        _isPanning = false;
+        _panStartPos = e.GetPosition((UIElement)sender);
+        _lastMousePos = _panStartPos;
     }
 
     private void OnCanvasMouseUp(object sender, MouseButtonEventArgs e)
     {
         _isPanning = false;
+        _potentialPan = false;
         ((UIElement)sender).ReleaseMouseCapture();
     }
 
     private void OnCanvasMouseMove(object sender, MouseEventArgs e)
     {
-        if (!_isPanning || _currentLayerState == null) return;
+        if (!_potentialPan || _currentLayerState == null || e.LeftButton != MouseButtonState.Pressed)
+        {
+            _potentialPan = false;
+            _isPanning = false;
+            return;
+        }
+
         var currentPos = e.GetPosition((UIElement)sender);
+
+        if (!_isPanning)
+        {
+            // Start panning only after the mouse moves beyond the threshold
+            if (Math.Abs(currentPos.X - _panStartPos.X) > PanThreshold ||
+                Math.Abs(currentPos.Y - _panStartPos.Y) > PanThreshold)
+            {
+                _isPanning = true;
+                ((UIElement)sender).CaptureMouse();
+                _lastMousePos = currentPos;
+            }
+            return;
+        }
+
         var delta = currentPos - _lastMousePos;
         _currentLayerState.TranslateTransform.X += delta.X;
         _currentLayerState.TranslateTransform.Y += delta.Y;
