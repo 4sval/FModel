@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 using System.Windows.Shapes;
 using FModel.ViewModels;
 
@@ -12,10 +13,13 @@ namespace FModel.Views;
 
 public partial class AnimGraphViewer
 {
-    private const double NodeWidth = 200;
-    private const double NodeHeaderHeight = 28;
-    private const double PinRowHeight = 22;
-    private const double NodeCornerRadius = 4;
+    private const double NodeWidth = 220;
+    private const double NodeHeaderHeight = 26;
+    private const double PinRowHeight = 24;
+    private const double NodeCornerRadius = 6;
+    private const double PinCircleRadius = 5;
+    private const double PinLabelOffset = 14; // PinCircleRadius * 2 + padding
+    private const double HeaderGradientDarkenFactor = 0.6;
     private const double DefaultGraphWidthRatio = 0.65;
 
     private readonly AnimGraphViewModel _viewModel;
@@ -75,7 +79,7 @@ public partial class AnimGraphViewer
             var canvasBorder = new Border
             {
                 ClipToBounds = true,
-                Background = new SolidColorBrush(Color.FromRgb(30, 30, 46))
+                Background = new SolidColorBrush(Color.FromRgb(24, 24, 24))
             };
 
             var canvas = new Canvas();
@@ -167,30 +171,59 @@ public partial class AnimGraphViewer
         var inputPins = node.Pins.Where(p => !p.IsOutput).ToList();
         var outputPins = node.Pins.Where(p => p.IsOutput).ToList();
         var maxPins = Math.Max(inputPins.Count, outputPins.Count);
-        var nodeHeight = NodeHeaderHeight + Math.Max(maxPins, 1) * PinRowHeight + 8;
+        var nodeHeight = NodeHeaderHeight + Math.Max(maxPins, 1) * PinRowHeight + 10;
 
-        // Node background
+        // Node shadow
+        var shadow = new Border
+        {
+            Width = NodeWidth,
+            Height = nodeHeight,
+            CornerRadius = new CornerRadius(NodeCornerRadius),
+            Background = Brushes.Black,
+            Opacity = 0.4,
+            Effect = new BlurEffect { Radius = 8 }
+        };
+        Canvas.SetLeft(shadow, pos.X + 3);
+        Canvas.SetTop(shadow, pos.Y + 3);
+        Panel.SetZIndex(shadow, 0);
+        state.Canvas.Children.Add(shadow);
+
+        // Node body
         var border = new Border
         {
             Width = NodeWidth,
             Height = nodeHeight,
             CornerRadius = new CornerRadius(NodeCornerRadius),
-            Background = new SolidColorBrush(Color.FromRgb(45, 45, 65)),
-            BorderBrush = new SolidColorBrush(Color.FromRgb(80, 80, 110)),
-            BorderThickness = new Thickness(1),
-            SnapsToDevicePixels = true,
-            Cursor = Cursors.Hand
+            Background = new SolidColorBrush(Color.FromArgb(230, 42, 42, 42)),
+            BorderBrush = new SolidColorBrush(Color.FromRgb(20, 20, 20)),
+            BorderThickness = new Thickness(1.5),
+            SnapsToDevicePixels = true
         };
 
         var grid = new Grid();
         grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(NodeHeaderHeight) });
         grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
 
-        // Header
+        // Header with gradient
+        var headerColor = GetNodeHeaderColor(node.ExportType);
+        var headerBrush = new LinearGradientBrush
+        {
+            StartPoint = new Point(0, 0),
+            EndPoint = new Point(0, 1)
+        };
+        headerBrush.GradientStops.Add(new GradientStop(headerColor, 0.0));
+        headerBrush.GradientStops.Add(new GradientStop(
+            Color.FromArgb(headerColor.A,
+                (byte)(headerColor.R * HeaderGradientDarkenFactor),
+                (byte)(headerColor.G * HeaderGradientDarkenFactor),
+                (byte)(headerColor.B * HeaderGradientDarkenFactor)), 1.0));
+
         var headerBorder = new Border
         {
-            Background = GetNodeHeaderBrush(node.ExportType),
-            CornerRadius = new CornerRadius(NodeCornerRadius, NodeCornerRadius, 0, 0)
+            Background = headerBrush,
+            CornerRadius = new CornerRadius(NodeCornerRadius, NodeCornerRadius, 0, 0),
+            BorderBrush = new SolidColorBrush(Color.FromArgb(40, 255, 255, 255)),
+            BorderThickness = new Thickness(0, 0, 0, 1)
         };
 
         var headerText = new TextBlock
@@ -200,39 +233,32 @@ public partial class AnimGraphViewer
             FontSize = 11,
             FontWeight = FontWeights.SemiBold,
             VerticalAlignment = VerticalAlignment.Center,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            TextTrimming = TextTrimming.CharacterEllipsis,
-            Margin = new Thickness(4, 0, 4, 0)
+            Margin = new Thickness(10, 0, 10, 0),
+            TextTrimming = TextTrimming.CharacterEllipsis
         };
         headerBorder.Child = headerText;
         Grid.SetRow(headerBorder, 0);
         grid.Children.Add(headerBorder);
 
         // Pins area
-        var pinsGrid = new Grid();
-        pinsGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-        pinsGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        var pinsCanvas = new Canvas();
 
-        // Input pins
-        var inputPanel = new StackPanel { Margin = new Thickness(4, 4, 0, 0) };
-        foreach (var pin in inputPins)
+        for (var i = 0; i < inputPins.Count; i++)
         {
-            inputPanel.Children.Add(CreatePinLabel(pin, HorizontalAlignment.Left));
+            var pinY = 6 + i * PinRowHeight + PinRowHeight / 2;
+            var pinColor = GetPinColor(inputPins[i].PinType);
+            AddPinVisual(pinsCanvas, inputPins[i], pinY, true, pinColor);
         }
-        Grid.SetColumn(inputPanel, 0);
-        pinsGrid.Children.Add(inputPanel);
 
-        // Output pins
-        var outputPanel = new StackPanel { Margin = new Thickness(0, 4, 4, 0) };
-        foreach (var pin in outputPins)
+        for (var i = 0; i < outputPins.Count; i++)
         {
-            outputPanel.Children.Add(CreatePinLabel(pin, HorizontalAlignment.Right));
+            var pinY = 6 + i * PinRowHeight + PinRowHeight / 2;
+            var pinColor = GetPinColor(outputPins[i].PinType);
+            AddPinVisual(pinsCanvas, outputPins[i], pinY, false, pinColor);
         }
-        Grid.SetColumn(outputPanel, 1);
-        pinsGrid.Children.Add(outputPanel);
 
-        Grid.SetRow(pinsGrid, 1);
-        grid.Children.Add(pinsGrid);
+        Grid.SetRow(pinsCanvas, 1);
+        grid.Children.Add(pinsCanvas);
 
         border.Child = grid;
 
@@ -243,20 +269,34 @@ public partial class AnimGraphViewer
 
         state.NodeVisuals[node] = (border, NodeWidth, nodeHeight);
 
-        // Calculate pin positions for connections
+        // Calculate pin positions for connections (in canvas space)
         for (var i = 0; i < inputPins.Count; i++)
         {
-            var pinPos = new Point(pos.X, pos.Y + NodeHeaderHeight + 4 + i * PinRowHeight + PinRowHeight / 2);
+            var pinPos = new Point(pos.X, pos.Y + NodeHeaderHeight + 6 + i * PinRowHeight + PinRowHeight / 2);
             state.PinPositions[(node, inputPins[i].PinName, false)] = pinPos;
         }
 
         for (var i = 0; i < outputPins.Count; i++)
         {
-            var pinPos = new Point(pos.X + NodeWidth, pos.Y + NodeHeaderHeight + 4 + i * PinRowHeight + PinRowHeight / 2);
+            var pinPos = new Point(pos.X + NodeWidth, pos.Y + NodeHeaderHeight + 6 + i * PinRowHeight + PinRowHeight / 2);
             state.PinPositions[(node, outputPins[i].PinName, true)] = pinPos;
         }
 
-        // Add tooltip with basic info
+        // Draw pin circles on the node edges (over the border)
+        for (var i = 0; i < inputPins.Count; i++)
+        {
+            var pinY = pos.Y + NodeHeaderHeight + 6 + i * PinRowHeight + PinRowHeight / 2;
+            var pinColor = GetPinColor(inputPins[i].PinType);
+            DrawPinCircle(state, pos.X, pinY, pinColor);
+        }
+
+        for (var i = 0; i < outputPins.Count; i++)
+        {
+            var pinY = pos.Y + NodeHeaderHeight + 6 + i * PinRowHeight + PinRowHeight / 2;
+            var pinColor = GetPinColor(outputPins[i].PinType);
+            DrawPinCircle(state, pos.X + NodeWidth, pinY, pinColor);
+        }
+
         border.ToolTip = $"{node.ExportType}\n{node.Name}";
 
         // Click to select node and show properties
@@ -267,6 +307,64 @@ public partial class AnimGraphViewer
         };
     }
 
+    private void AddPinVisual(Canvas pinsCanvas, AnimGraphPin pin, double y, bool isInput, Color pinColor)
+    {
+        var displayName = string.IsNullOrEmpty(pin.PinName) ? "(unnamed)" : pin.PinName;
+        var label = new TextBlock
+        {
+            Text = displayName,
+            Foreground = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
+            FontSize = 10,
+            VerticalAlignment = VerticalAlignment.Center,
+            TextTrimming = TextTrimming.CharacterEllipsis
+        };
+
+        if (isInput)
+        {
+            Canvas.SetLeft(label, PinLabelOffset);
+        }
+        else
+        {
+            label.TextAlignment = TextAlignment.Right;
+            label.Width = NodeWidth - PinLabelOffset;
+            Canvas.SetLeft(label, -PinLabelOffset);
+        }
+
+        Canvas.SetTop(label, y - label.FontSize * 0.7);
+        pinsCanvas.Children.Add(label);
+    }
+
+    private static void DrawPinCircle(LayerCanvasState state, double cx, double cy, Color pinColor)
+    {
+        // Outer ring
+        var outerCircle = new Ellipse
+        {
+            Width = PinCircleRadius * 2 + 2,
+            Height = PinCircleRadius * 2 + 2,
+            Fill = new SolidColorBrush(Color.FromRgb(20, 20, 20)),
+            Stroke = new SolidColorBrush(pinColor),
+            StrokeThickness = 1.5,
+            IsHitTestVisible = false
+        };
+        Canvas.SetLeft(outerCircle, cx - PinCircleRadius - 1);
+        Canvas.SetTop(outerCircle, cy - PinCircleRadius - 1);
+        Panel.SetZIndex(outerCircle, 2);
+        state.Canvas.Children.Add(outerCircle);
+
+        // Inner filled circle
+        var innerCircle = new Ellipse
+        {
+            Width = PinCircleRadius,
+            Height = PinCircleRadius,
+            Fill = new SolidColorBrush(pinColor),
+            IsHitTestVisible = false
+        };
+        Canvas.SetLeft(innerCircle, cx - PinCircleRadius / 2);
+        Canvas.SetTop(innerCircle, cy - PinCircleRadius / 2);
+        Panel.SetZIndex(innerCircle, 3);
+        state.Canvas.Children.Add(innerCircle);
+    }
+
     /// <summary>
     /// Selects a node and populates the properties panel with its details.
     /// </summary>
@@ -275,14 +373,14 @@ public partial class AnimGraphViewer
         // Deselect previous
         if (_selectedBorder != null)
         {
-            _selectedBorder.BorderBrush = new SolidColorBrush(Color.FromRgb(80, 80, 110));
-            _selectedBorder.BorderThickness = new Thickness(1);
+            _selectedBorder.BorderBrush = new SolidColorBrush(Color.FromRgb(20, 20, 20));
+            _selectedBorder.BorderThickness = new Thickness(1.5);
         }
 
         // Highlight selected
         _selectedNode = node;
         _selectedBorder = border;
-        border.BorderBrush = new SolidColorBrush(Color.FromRgb(0, 160, 255));
+        border.BorderBrush = new SolidColorBrush(Color.FromRgb(230, 160, 0));
         border.BorderThickness = new Thickness(2);
 
         SelectedNodeText.Text = $"Selected: {node.ExportType} - {node.Name}";
@@ -390,24 +488,6 @@ public partial class AnimGraphViewer
         PropertiesPanel.Children.Add(rowGrid);
     }
 
-    private static TextBlock CreatePinLabel(AnimGraphPin pin, HorizontalAlignment alignment)
-    {
-        var displayName = string.IsNullOrEmpty(pin.PinName) ? "(unnamed)" : pin.PinName;
-        var pinColor = GetPinColor(pin.PinType);
-
-        return new TextBlock
-        {
-            Text = alignment == HorizontalAlignment.Left ? $"● {displayName}" : $"{displayName} ●",
-            Foreground = new SolidColorBrush(pinColor),
-            FontSize = 10,
-            Height = PinRowHeight,
-            HorizontalAlignment = alignment,
-            VerticalAlignment = VerticalAlignment.Center,
-            TextTrimming = TextTrimming.CharacterEllipsis,
-            Padding = new Thickness(2, 2, 2, 0)
-        };
-    }
-
     private void DrawConnectionLine(LayerCanvasState state, AnimGraphConnection conn)
     {
         var sourceKey = (conn.SourceNode, conn.SourcePinName, true);
@@ -415,7 +495,6 @@ public partial class AnimGraphViewer
 
         if (!state.PinPositions.TryGetValue(sourceKey, out var startPos))
         {
-            // Fallback: use node center-right
             if (state.NodePositions.TryGetValue(conn.SourceNode, out var srcNodePos))
                 startPos = new Point(srcNodePos.X + NodeWidth, srcNodePos.Y + NodeHeaderHeight + 10);
             else
@@ -424,14 +503,16 @@ public partial class AnimGraphViewer
 
         if (!state.PinPositions.TryGetValue(targetKey, out var endPos))
         {
-            // Fallback: use node center-left
             if (state.NodePositions.TryGetValue(conn.TargetNode, out var tgtNodePos))
                 endPos = new Point(tgtNodePos.X, tgtNodePos.Y + NodeHeaderHeight + 10);
             else
                 return;
         }
 
-        // Ensure a minimum tangent length for smooth curves even when nodes are close
+        // Determine wire color from source pin type
+        var sourcePin = conn.SourceNode.Pins.FirstOrDefault(p => p.PinName == conn.SourcePinName && p.IsOutput);
+        var wireColor = sourcePin != null ? GetPinColor(sourcePin.PinType) : Color.FromRgb(200, 200, 220);
+
         var dx = Math.Max(Math.Abs(endPos.X - startPos.X) * 0.5, 50);
         var pathFigure = new PathFigure { StartPoint = startPos };
         pathFigure.Segments.Add(new BezierSegment(
@@ -445,9 +526,9 @@ public partial class AnimGraphViewer
         var path = new Path
         {
             Data = pathGeometry,
-            Stroke = new SolidColorBrush(Color.FromRgb(200, 200, 220)),
-            StrokeThickness = 2,
-            Opacity = 0.8,
+            Stroke = new SolidColorBrush(wireColor),
+            StrokeThickness = 2.5,
+            Opacity = 0.85,
             SnapsToDevicePixels = true,
             IsHitTestVisible = false
         };
@@ -474,18 +555,18 @@ public partial class AnimGraphViewer
         return type;
     }
 
-    private static Brush GetNodeHeaderBrush(string exportType)
+    private static Color GetNodeHeaderColor(string exportType)
     {
         return exportType switch
         {
-            _ when exportType.Contains("StateMachine") => new SolidColorBrush(Color.FromRgb(140, 60, 20)),
-            _ when exportType.Contains("Transition") => new SolidColorBrush(Color.FromRgb(140, 120, 0)),
-            _ when exportType.Contains("BlendSpace") => new SolidColorBrush(Color.FromRgb(60, 60, 160)),
-            _ when exportType.Contains("Blend") => new SolidColorBrush(Color.FromRgb(80, 80, 160)),
-            _ when exportType.Contains("Sequence") => new SolidColorBrush(Color.FromRgb(0, 120, 120)),
-            _ when exportType.Contains("Result") || exportType.Contains("Root") => new SolidColorBrush(Color.FromRgb(120, 40, 40)),
-            _ when exportType.Contains("AnimNode") || exportType.Contains("FAnimNode") => new SolidColorBrush(Color.FromRgb(0, 120, 80)),
-            _ => new SolidColorBrush(Color.FromRgb(70, 70, 90))
+            _ when exportType.Contains("StateMachine") => Color.FromRgb(200, 80, 20),
+            _ when exportType.Contains("Transition") => Color.FromRgb(180, 150, 0),
+            _ when exportType.Contains("BlendSpace") => Color.FromRgb(60, 80, 180),
+            _ when exportType.Contains("Blend") => Color.FromRgb(70, 100, 180),
+            _ when exportType.Contains("Sequence") => Color.FromRgb(0, 140, 140),
+            _ when exportType.Contains("Result") || exportType.Contains("Root") => Color.FromRgb(160, 50, 50),
+            _ when exportType.Contains("AnimNode") || exportType.Contains("FAnimNode") => Color.FromRgb(20, 140, 80),
+            _ => Color.FromRgb(80, 80, 100)
         };
     }
 
