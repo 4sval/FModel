@@ -424,6 +424,16 @@ public class AnimGraphViewModel
         AnimGraphNode sourceNode, List<(string name, string structType)> animNodeProps,
         Dictionary<string, AnimGraphNode> nodeByName, AnimGraphViewModel vm)
     {
+        // Handle arrays of pose links (e.g., BlendPose TArray<FPoseLink>)
+        if (tag.GenericValue is UScriptArray array)
+        {
+            for (var i = 0; i < array.Properties.Count; i++)
+            {
+                TryResolvePoseLink(array.Properties[i], $"{pinName}[{i}]", sourceNode, animNodeProps, nodeByName, vm);
+            }
+            return;
+        }
+
         // A PoseLink/ComponentSpacePoseLink is a struct with a LinkID property
         if (tag.GetValue(typeof(FStructFallback)) is not FStructFallback linkStruct)
             return;
