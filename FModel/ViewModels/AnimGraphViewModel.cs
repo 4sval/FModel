@@ -276,10 +276,15 @@ public class AnimGraphViewModel
             if (!smParentLayer.TryGetValue(smName, out var parentName))
                 continue;
 
-            // Per-state layers have a name different from the machine name
-            // (named after the StateResult node's Name property)
+            // Per-state layers are named by the _StateResult root node's property name (unique);
+            // use the _StateResult node's Name additional property for the display portion
             if (!layer.Name.Equals(smName, StringComparison.OrdinalIgnoreCase))
-                layer.Name = $"{parentName}{SubGraphPathSeparator}{smName}{SubGraphPathSeparator}{layer.Name}";
+            {
+                var stateResultNode = layer.Nodes.FirstOrDefault(n =>
+                    n.ExportType.EndsWith("_StateResult", StringComparison.OrdinalIgnoreCase));
+                var stateName = stateResultNode?.AdditionalProperties.GetValueOrDefault("Name") ?? layer.Name;
+                layer.Name = $"{parentName}{SubGraphPathSeparator}{smName}{SubGraphPathSeparator}{stateName}";
+            }
             else
                 layer.Name = $"{parentName}{SubGraphPathSeparator}{smName}";
         }
@@ -426,19 +431,27 @@ public class AnimGraphViewModel
 
     /// <summary>
     /// Determines a display name for a layer based on the types of nodes it contains.
-    /// A Root node's "Name" property defines the layer/sub-graph name
-    /// (e.g., "AnimGraph" for the main output pose, or a specific name for LinkedAnimLayer sub-graphs).
+    /// Animation blueprint layers use the _Root node's "Name" property (e.g., "AnimGraph").
+    /// State machine state sub-graphs use the _StateResult root node's unique property name
+    /// (from StateRootNodeIndex) to avoid duplicate name collisions.
     /// </summary>
     private static string GetLayerName(List<AnimGraphNode> nodes, int index)
     {
+        // Animation blueprint layers: use _Root node's Name property
         var rootNode = nodes.FirstOrDefault(n =>
-            (n.ExportType.EndsWith("_Root", StringComparison.OrdinalIgnoreCase) ||
-             n.ExportType.EndsWith("_StateResult", StringComparison.OrdinalIgnoreCase)) &&
+            n.ExportType.EndsWith("_Root", StringComparison.OrdinalIgnoreCase) &&
             n.AdditionalProperties.TryGetValue("Name", out _));
         if (rootNode != null &&
             rootNode.AdditionalProperties.TryGetValue("Name", out var rootName) &&
             !string.IsNullOrEmpty(rootName))
             return rootName;
+
+        // State machine state sub-graphs: use the _StateResult root node's property name
+        // (unique identifier from StateRootNodeIndex, avoids duplicate state name collisions)
+        var stateResultNode = nodes.FirstOrDefault(n =>
+            n.ExportType.EndsWith("_StateResult", StringComparison.OrdinalIgnoreCase));
+        if (stateResultNode != null)
+            return stateResultNode.Name;
 
         // Check if any node belongs to a baked state machine
         var smNode = nodes.FirstOrDefault(n =>
