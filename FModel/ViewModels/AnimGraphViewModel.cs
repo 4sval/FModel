@@ -315,8 +315,8 @@ public class AnimGraphViewModel
 
     /// <summary>
     /// Creates an <see cref="AnimGraphLayer"/> for a state machine state sub-graph
-    /// and stores it in <see cref="AnimGraphViewModel.StateSubGraphs"/> keyed by the
-    /// root node's property name (from StateRootNodeIndex).
+    /// and stores it in <see cref="AnimGraphViewModel.StateSubGraphs"/> keyed by
+    /// <paramref name="rootNodePropName"/> (the root node's property name from StateRootNodeIndex).
     /// </summary>
     private static void AddStateSubGraph(AnimGraphViewModel vm, List<AnimGraphNode> nodes, string rootNodePropName, int index)
     {
@@ -353,7 +353,7 @@ public class AnimGraphViewModel
         }
 
         // Rename state sub-graphs whose nodes belong to a state machine
-        foreach (var (key, layer) in vm.StateSubGraphs)
+        foreach (var (_, layer) in vm.StateSubGraphs)
         {
             var smName = string.Empty;
             foreach (var node in layer.Nodes)
