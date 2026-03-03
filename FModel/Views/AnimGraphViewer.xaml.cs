@@ -563,27 +563,23 @@ public partial class AnimGraphViewer
         }
         else if (node.IsStateMachineState)
         {
-            // State nodes within an overview: find the per-state layer by StateRootNodeIndex
+            // State nodes within an overview: find the per-state sub-graph by StateRootNodeIndex
             // The root node's property name is stored on the overview state node
             if (node.AdditionalProperties.TryGetValue("StateRootNodeName", out var rootNodeName) &&
-                !string.IsNullOrEmpty(rootNodeName))
+                !string.IsNullOrEmpty(rootNodeName) &&
+                _viewModel.StateSubGraphs.TryGetValue(rootNodeName, out var stateLayer))
             {
-                var stateLayer = _viewModel.Layers.FirstOrDefault(l =>
-                    l.Nodes.Any(n => n.Name == rootNodeName));
-                if (stateLayer != null)
+                // If tab already exists, just select it
+                foreach (System.Windows.Controls.TabItem tab in LayerTabControl.Items)
                 {
-                    // If tab already exists, just select it
-                    foreach (System.Windows.Controls.TabItem tab in LayerTabControl.Items)
+                    if (tab.Tag == stateLayer)
                     {
-                        if (tab.Tag == stateLayer)
-                        {
-                            LayerTabControl.SelectedItem = tab;
-                            return;
-                        }
+                        LayerTabControl.SelectedItem = tab;
+                        return;
                     }
-                    AddLayerTab(stateLayer);
-                    return;
                 }
+                AddLayerTab(stateLayer);
+                return;
             }
         }
         else if (node.ExportType.Contains("StateMachine", StringComparison.OrdinalIgnoreCase))

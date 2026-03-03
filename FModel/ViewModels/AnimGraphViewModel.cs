@@ -77,7 +77,15 @@ public class AnimGraphViewModel
     public string PackageName { get; set; } = string.Empty;
     public List<AnimGraphNode> Nodes { get; } = [];
     public List<AnimGraphConnection> Connections { get; } = [];
+    /// <summary>
+    /// Animation blueprint graph layers, each defined by a unique AnimGraphNode_Root.
+    /// </summary>
     public List<AnimGraphLayer> Layers { get; } = [];
+    /// <summary>
+    /// State machine state sub-graphs, keyed by the _StateResult root node's property name
+    /// (derived from StateRootNodeIndex) for unique identification.
+    /// </summary>
+    public Dictionary<string, AnimGraphLayer> StateSubGraphs { get; } = new();
 
     /// <summary>
     /// Extracts animation graph node information from a UAnimBlueprintGeneratedClass.
@@ -203,6 +211,7 @@ public class AnimGraphViewModel
 
         // Pass 2: Build state machine state sub-graphs from AnimGraphNode_StateResult nodes.
         // Each _StateResult node defines a state's sub-graph within a state machine.
+        // These are stored in StateSubGraphs keyed by the root node's property name.
         var stateResultRoots = vm.Nodes
             .Where(n => n.ExportType.EndsWith("_StateResult", StringComparison.OrdinalIgnoreCase))
             .ToList();
@@ -211,7 +220,7 @@ public class AnimGraphViewModel
         {
             if (!assigned.Add(stateResultNode)) continue;
             var layerNodes = CollectUpstream(stateResultNode, upstreamOf, assigned);
-            AddLayer(vm, layerNodes, layerIndex++);
+            AddStateSubGraph(vm, layerNodes, stateResultNode.Name, layerIndex++);
         }
 
         // Fallback: any remaining unassigned nodes go into connected-component layers
@@ -305,6 +314,27 @@ public class AnimGraphViewModel
     }
 
     /// <summary>
+    /// Creates an <see cref="AnimGraphLayer"/> for a state machine state sub-graph
+    /// and stores it in <see cref="AnimGraphViewModel.StateSubGraphs"/> keyed by the
+    /// root node's property name (from StateRootNodeIndex).
+    /// </summary>
+    private static void AddStateSubGraph(AnimGraphViewModel vm, List<AnimGraphNode> nodes, string rootNodePropName, int index)
+    {
+        var nodeSet = new HashSet<AnimGraphNode>(nodes);
+        var layer = new AnimGraphLayer { Name = GetLayerName(nodes, index) };
+        layer.Nodes.AddRange(nodes);
+
+        foreach (var conn in vm.Connections)
+        {
+            if (nodeSet.Contains(conn.SourceNode) && nodeSet.Contains(conn.TargetNode))
+                layer.Connections.Add(conn);
+        }
+
+        LayoutLayerNodes(layer);
+        vm.StateSubGraphs[rootNodePropName] = layer;
+    }
+
+    /// <summary>
     /// Renames state machine internal layers with a parent path prefix
     /// (e.g., "AnimGraph > Locomotion" for the overview, or
     /// "AnimGraph > Locomotion > Idle" for per-state sub-graphs).
@@ -322,8 +352,8 @@ public class AnimGraphViewModel
             }
         }
 
-        // Rename layers whose nodes belong to a state machine
-        foreach (var layer in vm.Layers)
+        // Rename state sub-graphs whose nodes belong to a state machine
+        foreach (var (key, layer) in vm.StateSubGraphs)
         {
             var smName = string.Empty;
             foreach (var node in layer.Nodes)
@@ -342,17 +372,11 @@ public class AnimGraphViewModel
             if (!smParentLayer.TryGetValue(smName, out var parentName))
                 continue;
 
-            // Per-state layers are named by the _StateResult root node's property name (unique);
-            // use the _StateResult node's Name additional property for the display portion
-            if (!layer.Name.Equals(smName, StringComparison.OrdinalIgnoreCase))
-            {
-                var stateResultNode = layer.Nodes.FirstOrDefault(n =>
-                    n.ExportType.EndsWith("_StateResult", StringComparison.OrdinalIgnoreCase));
-                var stateName = stateResultNode?.AdditionalProperties.GetValueOrDefault("Name") ?? layer.Name;
-                layer.Name = $"{parentName}{SubGraphPathSeparator}{smName}{SubGraphPathSeparator}{stateName}";
-            }
-            else
-                layer.Name = $"{parentName}{SubGraphPathSeparator}{smName}";
+            // Per-state layers: use the _StateResult node's Name additional property for display
+            var stateResultNode = layer.Nodes.FirstOrDefault(n =>
+                n.ExportType.EndsWith("_StateResult", StringComparison.OrdinalIgnoreCase));
+            var stateName = stateResultNode?.AdditionalProperties.GetValueOrDefault("Name") ?? layer.Name;
+            layer.Name = $"{parentName}{SubGraphPathSeparator}{smName}{SubGraphPathSeparator}{stateName}";
         }
     }
 
@@ -383,8 +407,7 @@ public class AnimGraphViewModel
             var parentName = smParentLayer.GetValueOrDefault(sm.MachineName, "AnimGraph");
             var overviewLayerName = $"{parentName}{SubGraphPathSeparator}{sm.MachineName}";
 
-            // Remove existing internal layers with this name (they'll be replaced by the overview)
-            vm.Layers.RemoveAll(l => l.Name.Equals(overviewLayerName, StringComparison.OrdinalIgnoreCase));
+            // State sub-graphs are now in StateSubGraphs (no need to remove from Layers)
 
             var overviewLayer = new AnimGraphLayer { Name = overviewLayerName };
             var stateNodes = new List<AnimGraphNode>();
