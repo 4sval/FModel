@@ -21,6 +21,11 @@ public partial class AnimGraphViewer
     private const double PinLabelOffset = 14; // PinCircleRadius * 2 + padding
     private const double HeaderGradientDarkenFactor = 0.6;
     private const double DefaultGraphWidthRatio = 0.65;
+    private const double StateNodeWidth = 180;
+    private const double StateNodeHeight = 50;
+    private const double StateNodeCornerRadius = 24;
+    private const double EntryNodeSize = 30;
+    private const double TransitionArrowSize = 10;
 
     private readonly AnimGraphViewModel _viewModel;
 
@@ -160,16 +165,21 @@ public partial class AnimGraphViewer
             state.NodePositions[node] = new Point(node.NodePosX, node.NodePosY);
         }
 
-        // Draw nodes
-        foreach (var node in state.Layer.Nodes)
-        {
-            DrawNode(state, node);
-        }
-
-        // Draw connections
+        // Draw connections first (behind nodes) for state machine overview
         foreach (var conn in state.Layer.Connections)
         {
             DrawConnectionLine(state, conn);
+        }
+
+        // Draw nodes
+        foreach (var node in state.Layer.Nodes)
+        {
+            if (node.IsEntryNode)
+                DrawEntryNode(state, node);
+            else if (node.IsStateMachineState)
+                DrawStateNode(state, node);
+            else
+                DrawNode(state, node);
         }
     }
 
@@ -321,6 +331,142 @@ public partial class AnimGraphViewer
         };
     }
 
+    /// <summary>
+    /// Draws an Entry node as a small filled circle, matching UE's state machine editor.
+    /// </summary>
+    private void DrawEntryNode(LayerCanvasState state, AnimGraphNode node)
+    {
+        var pos = state.NodePositions[node];
+
+        var circle = new Ellipse
+        {
+            Width = EntryNodeSize,
+            Height = EntryNodeSize,
+            Fill = new SolidColorBrush(Color.FromRgb(80, 80, 80)),
+            Stroke = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
+            StrokeThickness = 2,
+            SnapsToDevicePixels = true
+        };
+        Canvas.SetLeft(circle, pos.X);
+        Canvas.SetTop(circle, pos.Y);
+        Panel.SetZIndex(circle, 1);
+        state.Canvas.Children.Add(circle);
+
+        var label = new TextBlock
+        {
+            Text = "Entry",
+            Foreground = Brushes.White,
+            FontSize = 10,
+            FontWeight = FontWeights.SemiBold,
+            TextAlignment = TextAlignment.Center
+        };
+        label.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+        Canvas.SetLeft(label, pos.X + EntryNodeSize / 2 - label.DesiredSize.Width / 2);
+        Canvas.SetTop(label, pos.Y + EntryNodeSize + 4);
+        Panel.SetZIndex(label, 1);
+        state.Canvas.Children.Add(label);
+
+        // Output pin position (right edge of circle)
+        state.PinPositions[(node, "Output", true)] = new Point(
+            pos.X + EntryNodeSize, pos.Y + EntryNodeSize / 2);
+
+        // Store visuals with a dummy border for selection
+        var hitArea = new Border
+        {
+            Width = EntryNodeSize,
+            Height = EntryNodeSize,
+            Background = Brushes.Transparent,
+            CornerRadius = new CornerRadius(EntryNodeSize / 2)
+        };
+        Canvas.SetLeft(hitArea, pos.X);
+        Canvas.SetTop(hitArea, pos.Y);
+        Panel.SetZIndex(hitArea, 2);
+        state.Canvas.Children.Add(hitArea);
+        state.NodeVisuals[node] = (hitArea, EntryNodeSize, EntryNodeSize);
+
+        hitArea.MouseLeftButtonDown += (s, e) =>
+        {
+            SelectNode(node, hitArea);
+            e.Handled = true;
+        };
+    }
+
+    /// <summary>
+    /// Draws a state machine state node as a rounded rectangle with a centered name,
+    /// matching UE's state machine editor visual style.
+    /// </summary>
+    private void DrawStateNode(LayerCanvasState state, AnimGraphNode node)
+    {
+        var pos = state.NodePositions[node];
+
+        // Shadow
+        var shadow = new Border
+        {
+            Width = StateNodeWidth,
+            Height = StateNodeHeight,
+            CornerRadius = new CornerRadius(StateNodeCornerRadius),
+            Background = Brushes.Black,
+            Opacity = 0.4,
+            Effect = new BlurEffect { Radius = 6 }
+        };
+        Canvas.SetLeft(shadow, pos.X + 2);
+        Canvas.SetTop(shadow, pos.Y + 2);
+        Panel.SetZIndex(shadow, 0);
+        state.Canvas.Children.Add(shadow);
+
+        // State body
+        var border = new Border
+        {
+            Width = StateNodeWidth,
+            Height = StateNodeHeight,
+            CornerRadius = new CornerRadius(StateNodeCornerRadius),
+            Background = new SolidColorBrush(Color.FromArgb(240, 55, 55, 55)),
+            BorderBrush = new SolidColorBrush(Color.FromRgb(120, 120, 120)),
+            BorderThickness = new Thickness(2),
+            SnapsToDevicePixels = true
+        };
+
+        var nameText = new TextBlock
+        {
+            Text = node.Name,
+            Foreground = Brushes.White,
+            FontSize = 13,
+            FontWeight = FontWeights.SemiBold,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            TextTrimming = TextTrimming.CharacterEllipsis,
+            TextAlignment = TextAlignment.Center
+        };
+        border.Child = nameText;
+
+        Canvas.SetLeft(border, pos.X);
+        Canvas.SetTop(border, pos.Y);
+        Panel.SetZIndex(border, 1);
+        state.Canvas.Children.Add(border);
+
+        state.NodeVisuals[node] = (border, StateNodeWidth, StateNodeHeight);
+
+        // Pin positions (left = input, right = output)
+        state.PinPositions[(node, "In", false)] = new Point(
+            pos.X, pos.Y + StateNodeHeight / 2);
+        state.PinPositions[(node, "Out", true)] = new Point(
+            pos.X + StateNodeWidth, pos.Y + StateNodeHeight / 2);
+
+        border.ToolTip = $"State: {node.Name}";
+
+        border.MouseLeftButtonDown += (s, e) =>
+        {
+            if (e.ClickCount == 2)
+            {
+                TryOpenSubGraph(node);
+                e.Handled = true;
+                return;
+            }
+            SelectNode(node, border);
+            e.Handled = true;
+        };
+    }
+
     private void AddPinVisual(Canvas pinsCanvas, AnimGraphPin pin, double y, bool isInput, Color pinColor)
     {
         var displayName = string.IsNullOrEmpty(pin.PinName) ? "(unnamed)" : pin.PinName;
@@ -414,6 +560,13 @@ public partial class AnimGraphViewer
         if (node.ExportType.Contains("LinkedAnimLayer", StringComparison.OrdinalIgnoreCase))
         {
             node.AdditionalProperties.TryGetValue("Layer", out layerName);
+        }
+        else if (node.IsStateMachineState)
+        {
+            // State nodes within an overview: try to open internal per-state layer
+            // Internal layers share the state machine's path prefix name
+            // (future: individual state layers could be opened here)
+            return;
         }
         else if (node.ExportType.Contains("StateMachine", StringComparison.OrdinalIgnoreCase))
         {
@@ -571,28 +724,87 @@ public partial class AnimGraphViewer
         // Determine wire color from source pin type
         var sourcePin = conn.SourceNode.Pins.FirstOrDefault(p => p.PinName == conn.SourcePinName && p.IsOutput);
         var wireColor = sourcePin != null ? GetPinColor(sourcePin.PinType) : Color.FromRgb(200, 200, 220);
+        var isTransition = (conn.SourceNode.IsStateMachineState || conn.SourceNode.IsEntryNode) &&
+                           (conn.TargetNode.IsStateMachineState || conn.TargetNode.IsEntryNode);
 
-        var dx = Math.Max(Math.Abs(endPos.X - startPos.X) * 0.5, 50);
-        var pathFigure = new PathFigure { StartPoint = startPos };
-        pathFigure.Segments.Add(new BezierSegment(
-            new Point(startPos.X + dx, startPos.Y),
-            new Point(endPos.X - dx, endPos.Y),
-            endPos, true));
-
-        var pathGeometry = new PathGeometry();
-        pathGeometry.Figures.Add(pathFigure);
-
-        var path = new Path
+        if (isTransition)
         {
-            Data = pathGeometry,
-            Stroke = new SolidColorBrush(wireColor),
+            DrawTransitionArrow(state, startPos, endPos, wireColor);
+        }
+        else
+        {
+            var dx = Math.Max(Math.Abs(endPos.X - startPos.X) * 0.5, 50);
+            var pathFigure = new PathFigure { StartPoint = startPos };
+            pathFigure.Segments.Add(new BezierSegment(
+                new Point(startPos.X + dx, startPos.Y),
+                new Point(endPos.X - dx, endPos.Y),
+                endPos, true));
+
+            var pathGeometry = new PathGeometry();
+            pathGeometry.Figures.Add(pathFigure);
+
+            var path = new Path
+            {
+                Data = pathGeometry,
+                Stroke = new SolidColorBrush(wireColor),
+                StrokeThickness = 2.5,
+                Opacity = 0.85,
+                SnapsToDevicePixels = true,
+                IsHitTestVisible = false
+            };
+            Panel.SetZIndex(path, 0);
+            state.Canvas.Children.Add(path);
+        }
+    }
+
+    /// <summary>
+    /// Draws a directional transition arrow between state machine state nodes,
+    /// with an arrowhead at the target end.
+    /// </summary>
+    private static void DrawTransitionArrow(LayerCanvasState state, Point startPos, Point endPos, Color wireColor)
+    {
+        var brush = new SolidColorBrush(wireColor);
+
+        // Main line
+        var line = new Line
+        {
+            X1 = startPos.X,
+            Y1 = startPos.Y,
+            X2 = endPos.X,
+            Y2 = endPos.Y,
+            Stroke = brush,
             StrokeThickness = 2.5,
-            Opacity = 0.85,
             SnapsToDevicePixels = true,
             IsHitTestVisible = false
         };
-        Panel.SetZIndex(path, 0);
-        state.Canvas.Children.Add(path);
+        Panel.SetZIndex(line, 0);
+        state.Canvas.Children.Add(line);
+
+        // Arrowhead
+        var dx = endPos.X - startPos.X;
+        var dy = endPos.Y - startPos.Y;
+        var length = Math.Sqrt(dx * dx + dy * dy);
+        if (length < 1) return;
+
+        var ux = dx / length;
+        var uy = dy / length;
+        var arrowBase = new Point(endPos.X - ux * TransitionArrowSize, endPos.Y - uy * TransitionArrowSize);
+        var perpX = -uy * TransitionArrowSize * 0.5;
+        var perpY = ux * TransitionArrowSize * 0.5;
+
+        var arrowHead = new Polygon
+        {
+            Points =
+            [
+                endPos,
+                new Point(arrowBase.X + perpX, arrowBase.Y + perpY),
+                new Point(arrowBase.X - perpX, arrowBase.Y - perpY)
+            ],
+            Fill = brush,
+            IsHitTestVisible = false
+        };
+        Panel.SetZIndex(arrowHead, 0);
+        state.Canvas.Children.Add(arrowHead);
     }
 
     private static string GetNodeDisplayName(AnimGraphNode node)
@@ -642,6 +854,7 @@ public partial class AnimGraphViewer
             "string" or "text" or "name" => Color.FromRgb(255, 80, 180),
             "delegate" => Color.FromRgb(255, 56, 56),
             "pose" => Color.FromRgb(0, 160, 100),
+            "transition" => Color.FromRgb(200, 200, 200),
             _ => Color.FromRgb(180, 180, 200)
         };
     }

@@ -15,6 +15,8 @@ public class AnimGraphNode
     public string NodeComment { get; set; } = string.Empty;
     public int NodePosX { get; set; }
     public int NodePosY { get; set; }
+    public bool IsStateMachineState { get; set; }
+    public bool IsEntryNode { get; set; }
     public List<AnimGraphPin> Pins { get; set; } = [];
     public Dictionary<string, string> AdditionalProperties { get; set; } = new();
 
@@ -50,11 +52,24 @@ public class AnimGraphLayer
     public List<AnimGraphConnection> Connections { get; } = [];
 }
 
+/// <summary>
+/// Holds metadata extracted from BakedStateMachines for building
+/// state machine overview layers (Entry + State nodes + Transition connections).
+/// </summary>
+internal class StateMachineMetadata
+{
+    public string MachineName { get; init; } = string.Empty;
+    public List<string> StateNames { get; } = [];
+    public List<(int PreviousState, int NextState)> Transitions { get; } = [];
+}
+
 public class AnimGraphViewModel
 {
     private const int GridColumns = 4;
     private const int NodeHorizontalSpacing = 300;
     private const int NodeVerticalSpacing = 200;
+    private const int StateNodeHorizontalSpacing = 250;
+    private const int StateNodeVerticalSpacing = 150;
     private const int MaxPropertyValueDisplayLength = 100;
     internal const string SubGraphPathSeparator = " > ";
 
@@ -133,13 +148,18 @@ public class AnimGraphViewModel
         }
 
         // Associate state machine nodes with their baked machine names
-        AssociateStateMachineNames(animBlueprintClass, cdo, animNodeProps, nodeByName);
+        // and collect state machine metadata for overview layers
+        var smMetadata = new List<StateMachineMetadata>();
+        AssociateStateMachineNames(animBlueprintClass, cdo, animNodeProps, nodeByName, smMetadata);
 
         // Group nodes into layers (connected subgraphs)
         BuildLayers(vm);
 
         // Prefix state machine internal layers with their parent path to avoid name collisions
         PrefixStateMachineLayerNames(vm);
+
+        // Build state machine overview layers (Entry + State nodes + Transitions)
+        BuildStateMachineOverviewLayers(vm, smMetadata);
 
         return vm;
     }
@@ -258,6 +278,142 @@ public class AnimGraphViewModel
     }
 
     /// <summary>
+    /// Creates state machine overview layers with synthetic Entry + State nodes
+    /// and transition connections between states, providing a UE-like state machine
+    /// editor view. The overview layer is named with the path prefix to match
+    /// double-click navigation from StateMachine nodes.
+    /// </summary>
+    private static void BuildStateMachineOverviewLayers(AnimGraphViewModel vm, List<StateMachineMetadata> smMetadata)
+    {
+        // Map: machineName → parent layer name (where the StateMachine node lives)
+        var smParentLayer = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var layer in vm.Layers)
+        {
+            foreach (var node in layer.Nodes)
+            {
+                if (node.AdditionalProperties.TryGetValue("StateMachineName", out var machineName))
+                    smParentLayer.TryAdd(machineName, layer.Name);
+            }
+        }
+
+        foreach (var sm in smMetadata)
+        {
+            if (sm.StateNames.Count == 0) continue;
+
+            // Determine the path-prefixed layer name
+            var parentName = smParentLayer.GetValueOrDefault(sm.MachineName, "AnimGraph");
+            var overviewLayerName = $"{parentName}{SubGraphPathSeparator}{sm.MachineName}";
+
+            // Remove existing internal layers with this name (they'll be replaced by the overview)
+            vm.Layers.RemoveAll(l => l.Name.Equals(overviewLayerName, StringComparison.OrdinalIgnoreCase));
+
+            var overviewLayer = new AnimGraphLayer { Name = overviewLayerName };
+            var stateNodes = new List<AnimGraphNode>();
+
+            // Create Entry node
+            var entryNode = new AnimGraphNode
+            {
+                Name = "Entry",
+                ExportType = "Entry",
+                IsEntryNode = true
+            };
+            entryNode.Pins.Add(new AnimGraphPin
+            {
+                PinName = "Output",
+                IsOutput = true,
+                PinType = "transition",
+                OwnerNode = entryNode
+            });
+            overviewLayer.Nodes.Add(entryNode);
+
+            // Create State nodes
+            for (var i = 0; i < sm.StateNames.Count; i++)
+            {
+                var stateNode = new AnimGraphNode
+                {
+                    Name = sm.StateNames[i],
+                    ExportType = "State",
+                    IsStateMachineState = true
+                };
+                stateNode.Pins.Add(new AnimGraphPin
+                {
+                    PinName = "In",
+                    IsOutput = false,
+                    PinType = "transition",
+                    OwnerNode = stateNode
+                });
+                stateNode.Pins.Add(new AnimGraphPin
+                {
+                    PinName = "Out",
+                    IsOutput = true,
+                    PinType = "transition",
+                    OwnerNode = stateNode
+                });
+                stateNodes.Add(stateNode);
+                overviewLayer.Nodes.Add(stateNode);
+            }
+
+            // Entry connects to first state (state index 0)
+            if (stateNodes.Count > 0)
+            {
+                overviewLayer.Connections.Add(new AnimGraphConnection
+                {
+                    SourceNode = entryNode,
+                    SourcePinName = "Output",
+                    TargetNode = stateNodes[0],
+                    TargetPinName = "In"
+                });
+            }
+
+            // Transition connections between states
+            foreach (var (prevIdx, nextIdx) in sm.Transitions)
+            {
+                if (prevIdx < stateNodes.Count && nextIdx < stateNodes.Count)
+                {
+                    overviewLayer.Connections.Add(new AnimGraphConnection
+                    {
+                        SourceNode = stateNodes[prevIdx],
+                        SourcePinName = "Out",
+                        TargetNode = stateNodes[nextIdx],
+                        TargetPinName = "In"
+                    });
+                }
+            }
+
+            // Layout state nodes in a grid arrangement
+            LayoutStateMachineOverview(overviewLayer, entryNode, stateNodes);
+
+            vm.Layers.Add(overviewLayer);
+        }
+    }
+
+    /// <summary>
+    /// Arranges state machine overview nodes: Entry on the left, state nodes in a grid.
+    /// </summary>
+    private static void LayoutStateMachineOverview(AnimGraphLayer layer, AnimGraphNode entryNode, List<AnimGraphNode> stateNodes)
+    {
+        // Place Entry on the far left
+        entryNode.NodePosX = 0;
+        entryNode.NodePosY = 0;
+
+        if (stateNodes.Count == 0) return;
+
+        // Arrange state nodes in a grid to the right of Entry
+        var cols = Math.Max(1, (int)Math.Ceiling(Math.Sqrt(stateNodes.Count)));
+        for (var i = 0; i < stateNodes.Count; i++)
+        {
+            var col = i % cols;
+            var row = i / cols;
+            stateNodes[i].NodePosX = StateNodeHorizontalSpacing + col * StateNodeHorizontalSpacing;
+            stateNodes[i].NodePosY = row * StateNodeVerticalSpacing;
+        }
+
+        // Center Entry vertically relative to state nodes
+        var maxRow = (stateNodes.Count - 1) / cols;
+        entryNode.NodePosY = maxRow * StateNodeVerticalSpacing / 2;
+    }
+
+    /// <summary>
     /// Determines a display name for a layer based on the types of nodes it contains.
     /// A Root node's "Name" property defines the layer/sub-graph name
     /// (e.g., "AnimGraph" for the main output pose, or a specific name for LinkedAnimLayer sub-graphs).
@@ -307,12 +463,13 @@ public class AnimGraphViewModel
 
     /// <summary>
     /// Reads BakedStateMachines from the animation blueprint class to associate
-    /// FAnimNode_StateMachine nodes with their machine names and mark internal
-    /// state root nodes so they can be grouped into correctly named layers.
+    /// FAnimNode_StateMachine nodes with their machine names, mark internal
+    /// state root nodes, and collect state/transition metadata for overview layers.
     /// </summary>
     private static void AssociateStateMachineNames(UClass animBlueprintClass, UObject? cdo,
         List<(string name, string structType)> animNodeProps,
-        Dictionary<string, AnimGraphNode> nodeByName)
+        Dictionary<string, AnimGraphNode> nodeByName,
+        List<StateMachineMetadata> smMetadata)
     {
         // BakedStateMachines is a UPROPERTY on UAnimBlueprintGeneratedClass
         // Try reading from both the class and CDO
@@ -357,17 +514,30 @@ public class AnimGraphViewModel
                     smNode.AdditionalProperties["StateMachineName"] = machineName;
             }
 
-            // Mark state root nodes with BelongsToStateMachine so their layers get the machine name
+            var metadata = new StateMachineMetadata { MachineName = machineName };
+
+            // Extract state names and mark root nodes with BelongsToStateMachine
             foreach (var prop in machineStruct.Properties)
             {
                 if (prop.Name.Text != "States") continue;
                 if (prop.Tag?.GenericValue is not UScriptArray states) break;
 
-                foreach (var stateProp in states.Properties)
+                for (var stateIdx = 0; stateIdx < states.Properties.Count; stateIdx++)
                 {
-                    if (stateProp.GetValue(typeof(FStructFallback)) is not FStructFallback stateStruct)
+                    if (states.Properties[stateIdx].GetValue(typeof(FStructFallback)) is not FStructFallback stateStruct)
+                    {
+                        metadata.StateNames.Add($"State_{stateIdx}");
                         continue;
+                    }
 
+                    // Extract state name
+                    var stateName = $"State_{stateIdx}";
+                    if (stateStruct.TryGetValue(out FName stateNameProp, "StateName"))
+                        stateName = stateNameProp.Text;
+
+                    metadata.StateNames.Add(stateName);
+
+                    // Mark root node
                     if (!stateStruct.TryGetValue(out int stateRootIndex, "StateRootNodeIndex"))
                         continue;
 
@@ -380,6 +550,33 @@ public class AnimGraphViewModel
                 }
                 break;
             }
+
+            // Extract machine-level transitions (PreviousState → NextState)
+            foreach (var prop in machineStruct.Properties)
+            {
+                if (prop.Name.Text != "Transitions") continue;
+                if (prop.Tag?.GenericValue is not UScriptArray transitions) break;
+
+                foreach (var transProp in transitions.Properties)
+                {
+                    if (transProp.GetValue(typeof(FStructFallback)) is not FStructFallback transStruct)
+                        continue;
+
+                    if (!transStruct.TryGetValue(out int previousState, "PreviousState"))
+                        continue;
+                    if (!transStruct.TryGetValue(out int nextState, "NextState"))
+                        continue;
+
+                    if (previousState >= 0 && nextState >= 0 &&
+                        previousState < metadata.StateNames.Count && nextState < metadata.StateNames.Count)
+                    {
+                        metadata.Transitions.Add((previousState, nextState));
+                    }
+                }
+                break;
+            }
+
+            smMetadata.Add(metadata);
         }
     }
 
