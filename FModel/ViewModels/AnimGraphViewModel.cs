@@ -166,11 +166,11 @@ public class AnimGraphViewModel
     }
 
     /// <summary>
-    /// Groups nodes into layers based on root nodes. In Unreal Engine, each
-    /// animation blueprint layer has a unique AnimGraphNode_Root, and each
-    /// state machine state sub-graph has a unique AnimGraphNode_StateResult.
-    /// Starting from each root node, we trace upstream through directed
-    /// connections to collect all nodes that feed into it.
+    /// Groups nodes into layers based on root nodes. In Unreal Engine:
+    /// - Each animation blueprint layer has a unique AnimGraphNode_Root
+    /// - Each state machine state sub-graph has a unique AnimGraphNode_StateResult
+    /// These two types are processed in separate passes to keep graph layers
+    /// and state machine state sub-graphs independent.
     /// </summary>
     private static void BuildLayers(AnimGraphViewModel vm)
     {
@@ -185,43 +185,36 @@ public class AnimGraphViewModel
         foreach (var conn in vm.Connections)
             upstreamOf[conn.TargetNode].Add(conn.SourceNode);
 
-        // Find all root nodes that define layers:
-        // _Root nodes define animation blueprint layers
-        // _StateResult nodes define state machine state sub-graphs
-        var rootNodes = vm.Nodes
-            .Where(n => n.ExportType.EndsWith("_Root", StringComparison.OrdinalIgnoreCase) ||
-                        n.ExportType.EndsWith("_StateResult", StringComparison.OrdinalIgnoreCase))
-            .ToList();
-
         var assigned = new HashSet<AnimGraphNode>();
         var layerIndex = 0;
 
-        // For each root node, BFS upstream to find all nodes in the layer
-        foreach (var rootNode in rootNodes)
+        // Pass 1: Build graph layers from AnimGraphNode_Root nodes.
+        // Each _Root node defines an animation blueprint layer (e.g. "AnimGraph").
+        var graphRoots = vm.Nodes
+            .Where(n => n.ExportType.EndsWith("_Root", StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        foreach (var rootNode in graphRoots)
         {
             if (!assigned.Add(rootNode)) continue;
-
-            var layerNodes = new List<AnimGraphNode> { rootNode };
-            var queue = new Queue<AnimGraphNode>();
-            queue.Enqueue(rootNode);
-
-            while (queue.Count > 0)
-            {
-                var current = queue.Dequeue();
-                foreach (var upstream in upstreamOf[current])
-                {
-                    if (assigned.Add(upstream))
-                    {
-                        layerNodes.Add(upstream);
-                        queue.Enqueue(upstream);
-                    }
-                }
-            }
-
+            var layerNodes = CollectUpstream(rootNode, upstreamOf, assigned);
             AddLayer(vm, layerNodes, layerIndex++);
         }
 
-        // Any remaining unassigned nodes go into fallback layers (connected components)
+        // Pass 2: Build state machine state sub-graphs from AnimGraphNode_StateResult nodes.
+        // Each _StateResult node defines a state's sub-graph within a state machine.
+        var stateResultRoots = vm.Nodes
+            .Where(n => n.ExportType.EndsWith("_StateResult", StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        foreach (var stateResultNode in stateResultRoots)
+        {
+            if (!assigned.Add(stateResultNode)) continue;
+            var layerNodes = CollectUpstream(stateResultNode, upstreamOf, assigned);
+            AddLayer(vm, layerNodes, layerIndex++);
+        }
+
+        // Fallback: any remaining unassigned nodes go into connected-component layers
         var remaining = vm.Nodes.Where(n => !assigned.Contains(n)).ToList();
         if (remaining.Count == 0) return;
 
@@ -261,6 +254,34 @@ public class AnimGraphViewModel
 
             AddLayer(vm, component, layerIndex++);
         }
+    }
+
+    /// <summary>
+    /// Collects a root node and all its upstream providers via BFS.
+    /// </summary>
+    private static List<AnimGraphNode> CollectUpstream(
+        AnimGraphNode root,
+        Dictionary<AnimGraphNode, List<AnimGraphNode>> upstreamOf,
+        HashSet<AnimGraphNode> assigned)
+    {
+        var nodes = new List<AnimGraphNode> { root };
+        var queue = new Queue<AnimGraphNode>();
+        queue.Enqueue(root);
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            foreach (var upstream in upstreamOf[current])
+            {
+                if (assigned.Add(upstream))
+                {
+                    nodes.Add(upstream);
+                    queue.Enqueue(upstream);
+                }
+            }
+        }
+
+        return nodes;
     }
 
     /// <summary>
