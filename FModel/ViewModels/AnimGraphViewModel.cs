@@ -131,6 +131,9 @@ public class AnimGraphViewModel
             ResolveConnections(cdo, animNodeProps, nodeByName, vm);
         }
 
+        // Associate state machine nodes with their baked machine names
+        AssociateStateMachineNames(animBlueprintClass, cdo, animNodeProps, nodeByName);
+
         // Group nodes into layers (connected subgraphs)
         BuildLayers(vm);
 
@@ -225,6 +228,14 @@ public class AnimGraphViewModel
             !string.IsNullOrEmpty(rootName))
             return rootName;
 
+        // Check if any node belongs to a baked state machine
+        var smNode = nodes.FirstOrDefault(n =>
+            n.AdditionalProperties.TryGetValue("BelongsToStateMachine", out _));
+        if (smNode != null &&
+            smNode.AdditionalProperties.TryGetValue("BelongsToStateMachine", out var smName) &&
+            !string.IsNullOrEmpty(smName))
+            return smName;
+
         var stateMachine = nodes.FirstOrDefault(n =>
             n.ExportType.Contains("StateMachine", StringComparison.OrdinalIgnoreCase));
         if (stateMachine != null)
@@ -248,6 +259,84 @@ public class AnimGraphViewModel
         if (exportType.StartsWith("AnimNode_"))
             return exportType["AnimNode_".Length..];
         return exportType;
+    }
+
+    /// <summary>
+    /// Reads BakedStateMachines from the animation blueprint class to associate
+    /// FAnimNode_StateMachine nodes with their machine names and mark internal
+    /// state root nodes so they can be grouped into correctly named layers.
+    /// </summary>
+    private static void AssociateStateMachineNames(UClass animBlueprintClass, UObject? cdo,
+        List<(string name, string structType)> animNodeProps,
+        Dictionary<string, AnimGraphNode> nodeByName)
+    {
+        // BakedStateMachines is a UPROPERTY on UAnimBlueprintGeneratedClass
+        // Try reading from both the class and CDO
+        UScriptArray? bakedMachines = null;
+        if (animBlueprintClass.TryGetValue(out UScriptArray classBaked, "BakedStateMachines"))
+            bakedMachines = classBaked;
+        else if (cdo != null && cdo.TryGetValue(out UScriptArray cdoBaked, "BakedStateMachines"))
+            bakedMachines = cdoBaked;
+
+        if (bakedMachines == null || bakedMachines.Properties.Count == 0)
+            return;
+
+        for (var machineIdx = 0; machineIdx < bakedMachines.Properties.Count; machineIdx++)
+        {
+            if (bakedMachines.Properties[machineIdx].GetValue(typeof(FStructFallback)) is not FStructFallback machineStruct)
+                continue;
+
+            // Extract MachineName
+            var machineName = string.Empty;
+            foreach (var prop in machineStruct.Properties)
+            {
+                if (prop.Name.Text == "MachineName")
+                {
+                    machineName = prop.Tag?.GenericValue?.ToString() ?? string.Empty;
+                    break;
+                }
+            }
+            if (string.IsNullOrEmpty(machineName))
+                continue;
+
+            // Associate FAnimNode_StateMachine nodes that reference this machine index
+            var machineIdxStr = machineIdx.ToString();
+            foreach (var (propName, structType) in animNodeProps)
+            {
+                if (!structType.Contains("StateMachine", StringComparison.OrdinalIgnoreCase))
+                    continue;
+                if (!nodeByName.TryGetValue(propName, out var smNode))
+                    continue;
+                if (!smNode.AdditionalProperties.TryGetValue("StateMachineIndexInClass", out var idxStr))
+                    continue;
+                if (idxStr == machineIdxStr)
+                    smNode.AdditionalProperties["StateMachineName"] = machineName;
+            }
+
+            // Mark state root nodes with BelongsToStateMachine so their layers get the machine name
+            foreach (var prop in machineStruct.Properties)
+            {
+                if (prop.Name.Text != "States") continue;
+                if (prop.Tag?.GenericValue is not UScriptArray states) break;
+
+                foreach (var stateProp in states.Properties)
+                {
+                    if (stateProp.GetValue(typeof(FStructFallback)) is not FStructFallback stateStruct)
+                        continue;
+
+                    if (!stateStruct.TryGetValue(out int stateRootIndex, "StateRootNodeIndex"))
+                        continue;
+
+                    if (stateRootIndex < 0 || stateRootIndex >= animNodeProps.Count)
+                        continue;
+
+                    var rootPropName = animNodeProps[stateRootIndex].name;
+                    if (nodeByName.TryGetValue(rootPropName, out var rootNode))
+                        rootNode.AdditionalProperties["BelongsToStateMachine"] = machineName;
+                }
+                break;
+            }
+        }
     }
 
     /// <summary>

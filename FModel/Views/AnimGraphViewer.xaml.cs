@@ -312,7 +312,7 @@ public partial class AnimGraphViewer
         {
             if (e.ClickCount == 2)
             {
-                TryOpenLinkedLayer(node);
+                TryOpenSubGraph(node);
                 e.Handled = true;
                 return;
             }
@@ -402,16 +402,21 @@ public partial class AnimGraphViewer
     }
 
     /// <summary>
-    /// When a LinkedAnimLayer node is double-clicked, opens its corresponding
-    /// layer sub-graph in a new tab. The layer is identified by matching the
-    /// node's "Layer" property with a layer whose Root node has the same "Name".
+    /// When a LinkedAnimLayer or StateMachine node is double-clicked, opens its
+    /// corresponding sub-graph in a new tab.
+    /// - LinkedAnimLayer: matches "Layer" property → layer name from Root node's "Name"
+    /// - StateMachine: matches "StateMachineName" property → layer name from BakedStateMachines
     /// </summary>
-    private void TryOpenLinkedLayer(AnimGraphNode node)
+    private void TryOpenSubGraph(AnimGraphNode node)
     {
-        if (!node.ExportType.Contains("LinkedAnimLayer", StringComparison.OrdinalIgnoreCase))
-            return;
+        string? layerName = null;
 
-        if (!node.AdditionalProperties.TryGetValue("Layer", out var layerName) || string.IsNullOrEmpty(layerName))
+        if (node.ExportType.Contains("LinkedAnimLayer", StringComparison.OrdinalIgnoreCase))
+            node.AdditionalProperties.TryGetValue("Layer", out layerName);
+        else if (node.ExportType.Contains("StateMachine", StringComparison.OrdinalIgnoreCase))
+            node.AdditionalProperties.TryGetValue("StateMachineName", out layerName);
+
+        if (string.IsNullOrEmpty(layerName))
             return;
 
         var targetLayer = _viewModel.Layers.FirstOrDefault(l =>
