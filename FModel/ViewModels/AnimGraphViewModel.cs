@@ -212,16 +212,18 @@ public class AnimGraphViewModel
 
     /// <summary>
     /// Determines a display name for a layer based on the types of nodes it contains.
+    /// A Root node's "Name" property defines the layer/sub-graph name
+    /// (e.g., "AnimGraph" for the main output pose, or a specific name for LinkedAnimLayer sub-graphs).
     /// </summary>
     private static string GetLayerName(List<AnimGraphNode> nodes, int index)
     {
-        // The final output pose layer contains an AnimGraphNode_Root whose
-        // "Name" property (in AdditionalProperties) is set to "AnimGraph"
         var rootNode = nodes.FirstOrDefault(n =>
-            n.AdditionalProperties.TryGetValue("Name", out var name) &&
-            name.Equals("AnimGraph", StringComparison.OrdinalIgnoreCase));
-        if (rootNode != null)
-            return "AnimGraph";
+            n.ExportType.EndsWith("_Root", StringComparison.OrdinalIgnoreCase) &&
+            n.AdditionalProperties.TryGetValue("Name", out _));
+        if (rootNode != null &&
+            rootNode.AdditionalProperties.TryGetValue("Name", out var rootName) &&
+            !string.IsNullOrEmpty(rootName))
+            return rootName;
 
         var stateMachine = nodes.FirstOrDefault(n =>
             n.ExportType.Contains("StateMachine", StringComparison.OrdinalIgnoreCase));

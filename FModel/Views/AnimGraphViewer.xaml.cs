@@ -63,67 +63,65 @@ public partial class AnimGraphViewer
         LayerTabControl.Items.Clear();
         _layerStates.Clear();
 
-        // If no layers were built (empty graph), show nothing
         if (_viewModel.Layers.Count == 0)
             return;
 
-        // Show only the final output pose layer (AnimGraph) initially.
-        // The root node of the output layer has a "Name" property set to "AnimGraph"
-        // in its AdditionalProperties (from the AnimGraphNode_Root struct).
+        // Show only the AnimGraph layer initially
         var outputLayer = _viewModel.Layers.FirstOrDefault(l =>
-            l.Nodes.Any(n => n.AdditionalProperties.TryGetValue("Name", out var name) &&
-                             name.Equals("AnimGraph", StringComparison.OrdinalIgnoreCase)))
+            l.Name.Equals("AnimGraph", StringComparison.OrdinalIgnoreCase))
             ?? _viewModel.Layers[0];
 
-        var layersToShow = new[] { outputLayer };
+        AddLayerTab(outputLayer);
 
-        foreach (var layer in layersToShow)
-        {
-            var tabItem = new System.Windows.Controls.TabItem
-            {
-                Header = layer.Name,
-                Tag = layer
-            };
-
-            // Create canvas container for this layer
-            var canvasBorder = new Border
-            {
-                ClipToBounds = true,
-                Background = new SolidColorBrush(Color.FromRgb(24, 24, 24))
-            };
-
-            var canvas = new Canvas();
-            var scaleTransform = new ScaleTransform(1, 1);
-            var translateTransform = new TranslateTransform(0, 0);
-            var transformGroup = new TransformGroup();
-            transformGroup.Children.Add(scaleTransform);
-            transformGroup.Children.Add(translateTransform);
-            canvas.RenderTransform = transformGroup;
-
-            canvasBorder.Child = canvas;
-            canvasBorder.MouseWheel += OnMouseWheel;
-            canvasBorder.AddHandler(UIElement.MouseLeftButtonDownEvent,
-                new MouseButtonEventHandler(OnCanvasMouseDown), true);
-            canvasBorder.MouseLeftButtonUp += OnCanvasMouseUp;
-            canvasBorder.MouseMove += OnCanvasMouseMove;
-
-            tabItem.Content = canvasBorder;
-
-            var state = new LayerCanvasState
-            {
-                Layer = layer,
-                Canvas = canvas,
-                ScaleTransform = scaleTransform,
-                TranslateTransform = translateTransform
-            };
-            _layerStates[layer] = state;
-
-            LayerTabControl.Items.Add(tabItem);
-        }
-
-        // Select the first tab
         if (LayerTabControl.Items.Count > 0)
             LayerTabControl.SelectedIndex = 0;
+    }
+
+    /// <summary>
+    /// Creates a new tab for the given layer and selects it.
+    /// </summary>
+    private void AddLayerTab(AnimGraphLayer layer)
+    {
+        var tabItem = new System.Windows.Controls.TabItem
+        {
+            Header = layer.Name,
+            Tag = layer
+        };
+
+        var canvasBorder = new Border
+        {
+            ClipToBounds = true,
+            Background = new SolidColorBrush(Color.FromRgb(24, 24, 24))
+        };
+
+        var canvas = new Canvas();
+        var scaleTransform = new ScaleTransform(1, 1);
+        var translateTransform = new TranslateTransform(0, 0);
+        var transformGroup = new TransformGroup();
+        transformGroup.Children.Add(scaleTransform);
+        transformGroup.Children.Add(translateTransform);
+        canvas.RenderTransform = transformGroup;
+
+        canvasBorder.Child = canvas;
+        canvasBorder.MouseWheel += OnMouseWheel;
+        canvasBorder.AddHandler(UIElement.MouseLeftButtonDownEvent,
+            new MouseButtonEventHandler(OnCanvasMouseDown), true);
+        canvasBorder.MouseLeftButtonUp += OnCanvasMouseUp;
+        canvasBorder.MouseMove += OnCanvasMouseMove;
+
+        tabItem.Content = canvasBorder;
+
+        var state = new LayerCanvasState
+        {
+            Layer = layer,
+            Canvas = canvas,
+            ScaleTransform = scaleTransform,
+            TranslateTransform = translateTransform
+        };
+        _layerStates[layer] = state;
+
+        LayerTabControl.Items.Add(tabItem);
+        LayerTabControl.SelectedItem = tabItem;
     }
 
     private void OnLayerTabChanged(object sender, SelectionChangedEventArgs e)
@@ -309,9 +307,15 @@ public partial class AnimGraphViewer
 
         border.ToolTip = $"{node.ExportType}\n{node.Name}";
 
-        // Click to select node and show properties
+        // Click to select, double-click to open linked layer
         border.MouseLeftButtonDown += (s, e) =>
         {
+            if (e.ClickCount == 2)
+            {
+                TryOpenLinkedLayer(node);
+                e.Handled = true;
+                return;
+            }
             SelectNode(node, border);
             e.Handled = true;
         };
@@ -395,6 +399,37 @@ public partial class AnimGraphViewer
 
         SelectedNodeText.Text = $"Selected: {node.ExportType} - {node.Name}";
         PopulatePropertiesPanel(node);
+    }
+
+    /// <summary>
+    /// When a LinkedAnimLayer node is double-clicked, opens its corresponding
+    /// layer sub-graph in a new tab. The layer is identified by matching the
+    /// node's "Layer" property with a layer whose Root node has the same "Name".
+    /// </summary>
+    private void TryOpenLinkedLayer(AnimGraphNode node)
+    {
+        if (!node.ExportType.Contains("LinkedAnimLayer", StringComparison.OrdinalIgnoreCase))
+            return;
+
+        if (!node.AdditionalProperties.TryGetValue("Layer", out var layerName) || string.IsNullOrEmpty(layerName))
+            return;
+
+        var targetLayer = _viewModel.Layers.FirstOrDefault(l =>
+            l.Name.Equals(layerName, StringComparison.OrdinalIgnoreCase));
+        if (targetLayer == null)
+            return;
+
+        // If tab already exists, just select it
+        foreach (System.Windows.Controls.TabItem tab in LayerTabControl.Items)
+        {
+            if (tab.Tag == targetLayer)
+            {
+                LayerTabControl.SelectedItem = tab;
+                return;
+            }
+        }
+
+        AddLayerTab(targetLayer);
     }
 
     /// <summary>
