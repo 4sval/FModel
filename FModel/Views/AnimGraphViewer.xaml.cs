@@ -563,10 +563,10 @@ public partial class AnimGraphViewer
         }
         else if (node.IsStateMachineState)
         {
-            // State nodes within an overview: try to open internal per-state layer
-            // Internal layers share the state machine's path prefix name
-            // (future: individual state layers could be opened here)
-            return;
+            // State nodes within an overview: open the per-state internal sub-graph
+            // Per-state layers are named "overviewPath > stateName"
+            var overviewName = _currentLayerState?.Layer.Name ?? string.Empty;
+            layerName = $"{overviewName}{AnimGraphViewModel.SubGraphPathSeparator}{node.Name}";
         }
         else if (node.ExportType.Contains("StateMachine", StringComparison.OrdinalIgnoreCase))
         {

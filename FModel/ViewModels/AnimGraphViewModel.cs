@@ -239,8 +239,8 @@ public class AnimGraphViewModel
 
     /// <summary>
     /// Renames state machine internal layers with a parent path prefix
-    /// (e.g., "AnimGraph > Locomotion") to avoid name collisions with
-    /// linked anim layer sub-graphs that may share the same base name.
+    /// (e.g., "AnimGraph > Locomotion" for the overview, or
+    /// "AnimGraph > Locomotion > Idle" for per-state sub-graphs).
     /// </summary>
     private static void PrefixStateMachineLayerNames(AnimGraphViewModel vm)
     {
@@ -272,7 +272,14 @@ public class AnimGraphViewModel
             if (string.IsNullOrEmpty(smName))
                 continue;
 
-            if (smParentLayer.TryGetValue(smName, out var parentName))
+            if (!smParentLayer.TryGetValue(smName, out var parentName))
+                continue;
+
+            // Per-state layers have a name different from the machine name
+            // (named after the StateResult node's Name property)
+            if (!layer.Name.Equals(smName, StringComparison.OrdinalIgnoreCase))
+                layer.Name = $"{parentName}{SubGraphPathSeparator}{smName}{SubGraphPathSeparator}{layer.Name}";
+            else
                 layer.Name = $"{parentName}{SubGraphPathSeparator}{smName}";
         }
     }
@@ -421,7 +428,8 @@ public class AnimGraphViewModel
     private static string GetLayerName(List<AnimGraphNode> nodes, int index)
     {
         var rootNode = nodes.FirstOrDefault(n =>
-            n.ExportType.EndsWith("_Root", StringComparison.OrdinalIgnoreCase) &&
+            (n.ExportType.EndsWith("_Root", StringComparison.OrdinalIgnoreCase) ||
+             n.ExportType.EndsWith("_StateResult", StringComparison.OrdinalIgnoreCase)) &&
             n.AdditionalProperties.TryGetValue("Name", out _));
         if (rootNode != null &&
             rootNode.AdditionalProperties.TryGetValue("Name", out var rootName) &&
