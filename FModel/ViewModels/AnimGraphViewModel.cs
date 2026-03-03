@@ -60,6 +60,7 @@ internal class StateMachineMetadata
 {
     public string MachineName { get; init; } = string.Empty;
     public List<string> StateNames { get; } = [];
+    public List<string> StateRootPropNames { get; } = [];
     public List<(int PreviousState, int NextState)> Transitions { get; } = [];
 }
 
@@ -342,6 +343,9 @@ public class AnimGraphViewModel
                     ExportType = "State",
                     IsStateMachineState = true
                 };
+                // Store root node property name for StateRootNodeIndex-based lookup
+                if (i < sm.StateRootPropNames.Count && !string.IsNullOrEmpty(sm.StateRootPropNames[i]))
+                    stateNode.AdditionalProperties["StateRootNodeName"] = sm.StateRootPropNames[i];
                 stateNode.Pins.Add(new AnimGraphPin
                 {
                     PinName = "In",
@@ -535,6 +539,7 @@ public class AnimGraphViewModel
                     if (states.Properties[stateIdx].GetValue(typeof(FStructFallback)) is not FStructFallback stateStruct)
                     {
                         metadata.StateNames.Add($"State_{stateIdx}");
+                        metadata.StateRootPropNames.Add(string.Empty);
                         continue;
                     }
 
@@ -545,14 +550,16 @@ public class AnimGraphViewModel
 
                     metadata.StateNames.Add(stateName);
 
-                    // Mark root node
-                    if (!stateStruct.TryGetValue(out int stateRootIndex, "StateRootNodeIndex"))
+                    // Mark root node via StateRootNodeIndex
+                    if (!stateStruct.TryGetValue(out int stateRootIndex, "StateRootNodeIndex") ||
+                        stateRootIndex < 0 || stateRootIndex >= animNodeProps.Count)
+                    {
+                        metadata.StateRootPropNames.Add(string.Empty);
                         continue;
-
-                    if (stateRootIndex < 0 || stateRootIndex >= animNodeProps.Count)
-                        continue;
+                    }
 
                     var rootPropName = animNodeProps[stateRootIndex].name;
+                    metadata.StateRootPropNames.Add(rootPropName);
                     if (nodeByName.TryGetValue(rootPropName, out var rootNode))
                         rootNode.AdditionalProperties["BelongsToStateMachine"] = machineName;
                 }
