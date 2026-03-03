@@ -412,9 +412,18 @@ public partial class AnimGraphViewer
         string? layerName = null;
 
         if (node.ExportType.Contains("LinkedAnimLayer", StringComparison.OrdinalIgnoreCase))
+        {
             node.AdditionalProperties.TryGetValue("Layer", out layerName);
+        }
         else if (node.ExportType.Contains("StateMachine", StringComparison.OrdinalIgnoreCase))
-            node.AdditionalProperties.TryGetValue("StateMachineName", out layerName);
+        {
+            // State machine internal layers are prefixed with parent path
+            if (node.AdditionalProperties.TryGetValue("StateMachineName", out var smName))
+            {
+                var parentName = _currentLayerState?.Layer.Name ?? "AnimGraph";
+                layerName = $"{parentName}{AnimGraphViewModel.SubGraphPathSeparator}{smName}";
+            }
+        }
 
         if (string.IsNullOrEmpty(layerName))
             return;

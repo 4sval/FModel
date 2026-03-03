@@ -56,6 +56,7 @@ public class AnimGraphViewModel
     private const int NodeHorizontalSpacing = 300;
     private const int NodeVerticalSpacing = 200;
     private const int MaxPropertyValueDisplayLength = 100;
+    internal const string SubGraphPathSeparator = " > ";
 
     public string PackageName { get; set; } = string.Empty;
     public List<AnimGraphNode> Nodes { get; } = [];
@@ -137,6 +138,9 @@ public class AnimGraphViewModel
         // Group nodes into layers (connected subgraphs)
         BuildLayers(vm);
 
+        // Prefix state machine internal layers with their parent path to avoid name collisions
+        PrefixStateMachineLayerNames(vm);
+
         return vm;
     }
 
@@ -210,6 +214,46 @@ public class AnimGraphViewModel
 
             vm.Layers.Add(layer);
             layerIndex++;
+        }
+    }
+
+    /// <summary>
+    /// Renames state machine internal layers with a parent path prefix
+    /// (e.g., "AnimGraph > Locomotion") to avoid name collisions with
+    /// linked anim layer sub-graphs that may share the same base name.
+    /// </summary>
+    private static void PrefixStateMachineLayerNames(AnimGraphViewModel vm)
+    {
+        // Map: machineName → parent layer name (where the StateMachine node lives)
+        var smParentLayer = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var layer in vm.Layers)
+        {
+            foreach (var node in layer.Nodes)
+            {
+                if (node.AdditionalProperties.TryGetValue("StateMachineName", out var machineName))
+                    smParentLayer.TryAdd(machineName, layer.Name);
+            }
+        }
+
+        // Rename layers whose nodes belong to a state machine
+        foreach (var layer in vm.Layers)
+        {
+            var smName = string.Empty;
+            foreach (var node in layer.Nodes)
+            {
+                if (node.AdditionalProperties.TryGetValue("BelongsToStateMachine", out var val) &&
+                    !string.IsNullOrEmpty(val))
+                {
+                    smName = val;
+                    break;
+                }
+            }
+
+            if (string.IsNullOrEmpty(smName))
+                continue;
+
+            if (smParentLayer.TryGetValue(smName, out var parentName))
+                layer.Name = $"{parentName}{SubGraphPathSeparator}{smName}";
         }
     }
 
