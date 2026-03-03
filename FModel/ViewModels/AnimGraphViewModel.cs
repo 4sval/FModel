@@ -166,76 +166,121 @@ public class AnimGraphViewModel
     }
 
     /// <summary>
-    /// Groups nodes into layers by finding connected components in the graph.
-    /// Each connected component becomes a separate layer/tab, named after
-    /// its most prominent node (Root, StateMachine, etc.).
+    /// Groups nodes into layers based on root nodes. In Unreal Engine, each
+    /// animation blueprint layer has a unique AnimGraphNode_Root, and each
+    /// state machine state sub-graph has a unique AnimGraphNode_StateResult.
+    /// Starting from each root node, we trace upstream through directed
+    /// connections to collect all nodes that feed into it.
     /// </summary>
     private static void BuildLayers(AnimGraphViewModel vm)
     {
         if (vm.Nodes.Count == 0) return;
 
-        // Build adjacency sets (undirected) for connected component detection
-        var adjacency = new Dictionary<AnimGraphNode, HashSet<AnimGraphNode>>();
+        // Build upstream map: for each node, which nodes feed into it
+        // Connection direction: SourceNode (provider) → TargetNode (consumer)
+        var upstreamOf = new Dictionary<AnimGraphNode, List<AnimGraphNode>>();
         foreach (var node in vm.Nodes)
-            adjacency[node] = [];
+            upstreamOf[node] = [];
 
         foreach (var conn in vm.Connections)
+            upstreamOf[conn.TargetNode].Add(conn.SourceNode);
+
+        // Find all root nodes that define layers:
+        // _Root nodes define animation blueprint layers
+        // _StateResult nodes define state machine state sub-graphs
+        var rootNodes = vm.Nodes
+            .Where(n => n.ExportType.EndsWith("_Root", StringComparison.OrdinalIgnoreCase) ||
+                        n.ExportType.EndsWith("_StateResult", StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        var assigned = new HashSet<AnimGraphNode>();
+        var layerIndex = 0;
+
+        // For each root node, BFS upstream to find all nodes in the layer
+        foreach (var rootNode in rootNodes)
         {
-            adjacency[conn.SourceNode].Add(conn.TargetNode);
-            adjacency[conn.TargetNode].Add(conn.SourceNode);
-        }
+            if (!assigned.Add(rootNode)) continue;
 
-        // Find connected components via BFS
-        var visited = new HashSet<AnimGraphNode>();
-        var components = new List<List<AnimGraphNode>>();
-
-        foreach (var node in vm.Nodes)
-        {
-            if (visited.Contains(node)) continue;
-
-            var component = new List<AnimGraphNode>();
+            var layerNodes = new List<AnimGraphNode> { rootNode };
             var queue = new Queue<AnimGraphNode>();
-            queue.Enqueue(node);
-            visited.Add(node);
+            queue.Enqueue(rootNode);
 
             while (queue.Count > 0)
             {
                 var current = queue.Dequeue();
-                component.Add(current);
-
-                foreach (var neighbor in adjacency[current])
+                foreach (var upstream in upstreamOf[current])
                 {
-                    if (visited.Add(neighbor))
-                        queue.Enqueue(neighbor);
+                    if (assigned.Add(upstream))
+                    {
+                        layerNodes.Add(upstream);
+                        queue.Enqueue(upstream);
+                    }
                 }
             }
 
-            components.Add(component);
+            AddLayer(vm, layerNodes, layerIndex++);
         }
 
-        // Create a layer for each connected component
-        var layerIndex = 0;
-        foreach (var component in components)
+        // Any remaining unassigned nodes go into fallback layers (connected components)
+        var remaining = vm.Nodes.Where(n => !assigned.Contains(n)).ToList();
+        if (remaining.Count == 0) return;
+
+        var adjacency = new Dictionary<AnimGraphNode, HashSet<AnimGraphNode>>();
+        foreach (var node in remaining)
+            adjacency[node] = [];
+
+        foreach (var conn in vm.Connections)
         {
-            var componentSet = new HashSet<AnimGraphNode>(component);
-            var layerName = GetLayerName(component, layerIndex);
-
-            var layer = new AnimGraphLayer { Name = layerName };
-            layer.Nodes.AddRange(component);
-
-            // Add only the connections that belong to this component
-            foreach (var conn in vm.Connections)
+            if (adjacency.ContainsKey(conn.SourceNode) && adjacency.ContainsKey(conn.TargetNode))
             {
-                if (componentSet.Contains(conn.SourceNode) && componentSet.Contains(conn.TargetNode))
-                    layer.Connections.Add(conn);
+                adjacency[conn.SourceNode].Add(conn.TargetNode);
+                adjacency[conn.TargetNode].Add(conn.SourceNode);
+            }
+        }
+
+        foreach (var node in remaining)
+        {
+            if (!assigned.Add(node)) continue;
+
+            var component = new List<AnimGraphNode> { node };
+            var queue = new Queue<AnimGraphNode>();
+            queue.Enqueue(node);
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                foreach (var neighbor in adjacency[current])
+                {
+                    if (assigned.Add(neighbor))
+                    {
+                        component.Add(neighbor);
+                        queue.Enqueue(neighbor);
+                    }
+                }
             }
 
-            // Layout nodes within this layer in a grid
-            LayoutLayerNodes(layer);
-
-            vm.Layers.Add(layer);
-            layerIndex++;
+            AddLayer(vm, component, layerIndex++);
         }
+    }
+
+    /// <summary>
+    /// Creates an <see cref="AnimGraphLayer"/> from a set of nodes, assigns
+    /// the relevant connections, lays out the nodes and adds the layer to the VM.
+    /// </summary>
+    private static void AddLayer(AnimGraphViewModel vm, List<AnimGraphNode> nodes, int index)
+    {
+        var nodeSet = new HashSet<AnimGraphNode>(nodes);
+        var layer = new AnimGraphLayer { Name = GetLayerName(nodes, index) };
+        layer.Nodes.AddRange(nodes);
+
+        foreach (var conn in vm.Connections)
+        {
+            if (nodeSet.Contains(conn.SourceNode) && nodeSet.Contains(conn.TargetNode))
+                layer.Connections.Add(conn);
+        }
+
+        LayoutLayerNodes(layer);
+        vm.Layers.Add(layer);
     }
 
     /// <summary>
