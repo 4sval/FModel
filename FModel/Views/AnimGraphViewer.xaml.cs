@@ -568,20 +568,20 @@ public partial class AnimGraphViewer
             if (node.AdditionalProperties.TryGetValue("StateRootNodeName", out var rootNodeName) &&
                 !string.IsNullOrEmpty(rootNodeName))
             {
-                var targetLayer = _viewModel.Layers.FirstOrDefault(l =>
+                var stateLayer = _viewModel.Layers.FirstOrDefault(l =>
                     l.Nodes.Any(n => n.Name == rootNodeName));
-                if (targetLayer != null)
+                if (stateLayer != null)
                 {
                     // If tab already exists, just select it
                     foreach (System.Windows.Controls.TabItem tab in LayerTabControl.Items)
                     {
-                        if (tab.Tag == targetLayer)
+                        if (tab.Tag == stateLayer)
                         {
                             LayerTabControl.SelectedItem = tab;
                             return;
                         }
                     }
-                    AddLayerTab(targetLayer);
+                    AddLayerTab(stateLayer);
                     return;
                 }
             }
