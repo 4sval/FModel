@@ -27,7 +27,7 @@ public partial class AnimGraphViewer
     private const double EntryNodeSize = 30;
     private const double TransitionArrowSize = 10;
     private const double TransitionCircleRadius = 8;
-    private const double TransitionCircleGap = 4;
+    private const double TransitionCircleSpacing = 3;
     private const double TransitionMultiOffset = 12;
     private const double DistanceEpsilon = 0.001;
 
@@ -781,41 +781,33 @@ public partial class AnimGraphViewer
             // Compute edge-to-edge shortest path between node bounding boxes
             var (startPos, endPos) = ComputeEdgeToEdgePoints(state, conn.SourceNode, conn.TargetNode);
 
-            // Offset each transition line perpendicular to the center-to-center direction:
-            //  - Different directions (A→B vs B→A) go on opposite perpendicular sides
-            //  - Multiple same-direction transitions spread outward so circles don't overlap
+            // Offset lines: different directions go on opposite perpendicular sides
             var cdx = endPos.X - startPos.X;
             var cdy = endPos.Y - startPos.Y;
             var cLen = Math.Sqrt(cdx * cdx + cdy * cdy);
+            double circleLineOffset = 0;
 
             if (cLen > DistanceEpsilon)
             {
                 var px = -cdy / cLen; // perpendicular unit X
                 var py = cdx / cLen;  // perpendicular unit Y
 
-                var circleSpread = TransitionCircleRadius * 2 + TransitionCircleGap;
-                double perpOffset;
-
+                // Different directions on opposite perpendicular sides
                 if (hasBothDirections)
                 {
-                    // Each direction on its own perpendicular side; stack outward for multiples
-                    perpOffset = perpSide * (TransitionMultiOffset + sameDirectionIndex * circleSpread);
-                }
-                else if (sameDirectionCount > 1)
-                {
-                    // Single direction, multiple transitions: spread symmetrically around center
-                    perpOffset = (sameDirectionIndex - (sameDirectionCount - 1) / 2.0) * circleSpread;
-                }
-                else
-                {
-                    perpOffset = 0;
+                    var sideOffset = perpSide * TransitionMultiOffset;
+                    startPos = new Point(startPos.X + px * sideOffset, startPos.Y + py * sideOffset);
+                    endPos = new Point(endPos.X + px * sideOffset, endPos.Y + py * sideOffset);
                 }
 
-                startPos = new Point(startPos.X + px * perpOffset, startPos.Y + py * perpOffset);
-                endPos = new Point(endPos.X + px * perpOffset, endPos.Y + py * perpOffset);
+                // Multiple same-direction transitions: offset circles along the line direction
+                if (sameDirectionCount > 1)
+                {
+                    circleLineOffset = (sameDirectionIndex - (sameDirectionCount - 1) / 2.0) * TransitionCircleRadius * TransitionCircleSpacing;
+                }
             }
 
-            DrawTransitionArrow(state, conn, startPos, endPos, wireColor);
+            DrawTransitionArrow(state, conn, startPos, endPos, wireColor, circleLineOffset);
         }
         else
         {
@@ -964,7 +956,7 @@ public partial class AnimGraphViewer
     /// with an arrowhead at the target end and a small circle at the midpoint
     /// for easy click selection (matching UE's transition icon style).
     /// </summary>
-    private void DrawTransitionArrow(LayerCanvasState state, AnimGraphConnection conn, Point startPos, Point endPos, Color wireColor)
+    private void DrawTransitionArrow(LayerCanvasState state, AnimGraphConnection conn, Point startPos, Point endPos, Color wireColor, double circleLineOffset = 0)
     {
         var brush = new SolidColorBrush(wireColor);
 
@@ -1021,9 +1013,9 @@ public partial class AnimGraphViewer
         Panel.SetZIndex(hitPath, 1);
         state.Canvas.Children.Add(hitPath);
 
-        // Small circle at the midpoint of the (already perpendicular-offset) line
-        var midX = (startPos.X + endPos.X) / 2;
-        var midY = (startPos.Y + endPos.Y) / 2;
+        // Small circle at the midpoint (offset along line for same-direction transitions)
+        var midX = (startPos.X + endPos.X) / 2 + ux * circleLineOffset;
+        var midY = (startPos.Y + endPos.Y) / 2 + uy * circleLineOffset;
         var circle = new Ellipse
         {
             Width = TransitionCircleRadius * 2,
