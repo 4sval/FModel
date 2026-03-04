@@ -27,6 +27,7 @@ public partial class AnimGraphViewer
     private const double EntryNodeSize = 30;
     private const double TransitionArrowSize = 10;
     private const double TransitionCircleRadius = 8;
+    private const double TransitionCircleSpacing = 3;
     private const double TransitionMultiOffset = 12;
     private const double DistanceEpsilon = 0.001;
 
@@ -175,19 +176,22 @@ public partial class AnimGraphViewer
         }
 
         // Draw connections first (behind nodes) for state machine overview
-        // Group transition connections by (source, target) pair to offset multiple transitions
-        var transitionGroups = new Dictionary<(AnimGraphNode, AnimGraphNode), List<AnimGraphConnection>>();
+        // Group transition connections by unordered node pair so A→B and B→A are handled together
+        var pairGroups = new Dictionary<(AnimGraphNode, AnimGraphNode), List<AnimGraphConnection>>();
         foreach (var conn in state.Layer.Connections)
         {
             var isTransition = (conn.SourceNode.IsStateMachineState || conn.SourceNode.IsEntryNode) &&
                                (conn.TargetNode.IsStateMachineState || conn.TargetNode.IsEntryNode);
             if (isTransition)
             {
-                var key = (conn.SourceNode, conn.TargetNode);
-                if (!transitionGroups.TryGetValue(key, out var list))
+                // Stable unordered key: use node Name for deterministic ordering
+                var a = conn.SourceNode;
+                var b = conn.TargetNode;
+                var key = string.Compare(a.Name, b.Name, StringComparison.Ordinal) <= 0 ? (a, b) : (b, a);
+                if (!pairGroups.TryGetValue(key, out var list))
                 {
                     list = [];
-                    transitionGroups[key] = list;
+                    pairGroups[key] = list;
                 }
                 list.Add(conn);
             }
@@ -197,13 +201,19 @@ public partial class AnimGraphViewer
             }
         }
 
-        // Draw grouped transitions with offset when multiple exist between the same pair
-        foreach (var (_, group) in transitionGroups)
+        // Draw transitions: different directions on opposite sides, same-direction circles offset along line
+        foreach (var (pair, allConns) in pairGroups)
         {
-            for (var i = 0; i < group.Count; i++)
-            {
-                DrawConnectionLine(state, group[i], i, group.Count);
-            }
+            var (nodeA, nodeB) = pair;
+            var forward = allConns.Where(c => c.SourceNode == nodeA).ToList();
+            var backward = allConns.Where(c => c.SourceNode == nodeB).ToList();
+            var hasBothDirections = forward.Count > 0 && backward.Count > 0;
+
+            for (var i = 0; i < forward.Count; i++)
+                DrawConnectionLine(state, forward[i], i, forward.Count, perpSide: 1, hasBothDirections: hasBothDirections);
+
+            for (var i = 0; i < backward.Count; i++)
+                DrawConnectionLine(state, backward[i], i, backward.Count, perpSide: -1, hasBothDirections: hasBothDirections);
         }
 
         // Draw nodes
@@ -752,7 +762,9 @@ public partial class AnimGraphViewer
         PropertiesPanel.Children.Add(rowGrid);
     }
 
-    private void DrawConnectionLine(LayerCanvasState state, AnimGraphConnection conn, int transitionIndex = 0, int transitionCount = 1)
+    private void DrawConnectionLine(LayerCanvasState state, AnimGraphConnection conn,
+        int sameDirectionIndex = 0, int sameDirectionCount = 1,
+        int perpSide = 0, bool hasBothDirections = false)
     {
         var sourceKey = (conn.SourceNode, conn.SourcePinName, true);
         var targetKey = (conn.TargetNode, conn.TargetPinName, false);
@@ -769,25 +781,33 @@ public partial class AnimGraphViewer
             // Compute edge-to-edge shortest path between node bounding boxes
             var (startPos, endPos) = ComputeEdgeToEdgePoints(state, conn.SourceNode, conn.TargetNode);
 
-            // Offset lines when multiple transitions share the same source→target pair
-            if (transitionCount > 1)
+            // Offset lines: different directions go on opposite perpendicular sides
+            var cdx = endPos.X - startPos.X;
+            var cdy = endPos.Y - startPos.Y;
+            var cLen = Math.Sqrt(cdx * cdx + cdy * cdy);
+            double circleLineOffset = 0;
+
+            if (cLen > DistanceEpsilon)
             {
-                var cdx = endPos.X - startPos.X;
-                var cdy = endPos.Y - startPos.Y;
-                var cLen = Math.Sqrt(cdx * cdx + cdy * cdy);
-                if (cLen > DistanceEpsilon)
+                var px = -cdy / cLen; // perpendicular unit X
+                var py = cdx / cLen;  // perpendicular unit Y
+
+                // Different directions on opposite perpendicular sides
+                if (hasBothDirections)
                 {
-                    // Perpendicular unit vector
-                    var px = -cdy / cLen;
-                    var py = cdx / cLen;
-                    // Center the offsets: e.g. for 3 transitions: -1, 0, +1
-                    var offsetAmount = (transitionIndex - (transitionCount - 1) / 2.0) * TransitionMultiOffset;
-                    startPos = new Point(startPos.X + px * offsetAmount, startPos.Y + py * offsetAmount);
-                    endPos = new Point(endPos.X + px * offsetAmount, endPos.Y + py * offsetAmount);
+                    var sideOffset = perpSide * TransitionMultiOffset;
+                    startPos = new Point(startPos.X + px * sideOffset, startPos.Y + py * sideOffset);
+                    endPos = new Point(endPos.X + px * sideOffset, endPos.Y + py * sideOffset);
+                }
+
+                // Same-direction transitions: offset circles along the line direction
+                if (sameDirectionCount > 1)
+                {
+                    circleLineOffset = (sameDirectionIndex - (sameDirectionCount - 1) / 2.0) * TransitionCircleRadius * TransitionCircleSpacing;
                 }
             }
 
-            DrawTransitionArrow(state, conn, startPos, endPos, wireColor);
+            DrawTransitionArrow(state, conn, startPos, endPos, wireColor, circleLineOffset);
         }
         else
         {
@@ -936,7 +956,7 @@ public partial class AnimGraphViewer
     /// with an arrowhead at the target end and a small circle at the midpoint
     /// for easy click selection (matching UE's transition icon style).
     /// </summary>
-    private void DrawTransitionArrow(LayerCanvasState state, AnimGraphConnection conn, Point startPos, Point endPos, Color wireColor)
+    private void DrawTransitionArrow(LayerCanvasState state, AnimGraphConnection conn, Point startPos, Point endPos, Color wireColor, double circleLineOffset = 0)
     {
         var brush = new SolidColorBrush(wireColor);
 
@@ -993,9 +1013,9 @@ public partial class AnimGraphViewer
         Panel.SetZIndex(hitPath, 1);
         state.Canvas.Children.Add(hitPath);
 
-        // Small circle at the midpoint for easy click selection (UE transition icon style)
-        var midX = (startPos.X + endPos.X) / 2;
-        var midY = (startPos.Y + endPos.Y) / 2;
+        // Small circle at the midpoint (offset along line for same-direction transitions)
+        var midX = (startPos.X + endPos.X) / 2 + ux * circleLineOffset;
+        var midY = (startPos.Y + endPos.Y) / 2 + uy * circleLineOffset;
         var circle = new Ellipse
         {
             Width = TransitionCircleRadius * 2,
