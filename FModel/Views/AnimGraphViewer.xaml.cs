@@ -26,6 +26,8 @@ public partial class AnimGraphViewer
     private const double StateNodeCornerRadius = 24;
     private const double EntryNodeSize = 30;
     private const double TransitionArrowSize = 10;
+    private const double TransitionCircleRadius = 8;
+    private const double TransitionMultiOffset = 12;
     private const double DistanceEpsilon = 0.001;
 
     private readonly AnimGraphViewModel _viewModel;
@@ -41,6 +43,7 @@ public partial class AnimGraphViewer
     // Currently selected transition (for properties panel)
     private AnimGraphConnection? _selectedTransition;
     private Path? _selectedTransitionPath;
+    private Ellipse? _selectedTransitionCircle;
     private Color _selectedTransitionOriginalColor;
 
     private bool _isPanning;
@@ -172,9 +175,35 @@ public partial class AnimGraphViewer
         }
 
         // Draw connections first (behind nodes) for state machine overview
+        // Group transition connections by (source, target) pair to offset multiple transitions
+        var transitionGroups = new Dictionary<(AnimGraphNode, AnimGraphNode), List<AnimGraphConnection>>();
         foreach (var conn in state.Layer.Connections)
         {
-            DrawConnectionLine(state, conn);
+            var isTransition = (conn.SourceNode.IsStateMachineState || conn.SourceNode.IsEntryNode) &&
+                               (conn.TargetNode.IsStateMachineState || conn.TargetNode.IsEntryNode);
+            if (isTransition)
+            {
+                var key = (conn.SourceNode, conn.TargetNode);
+                if (!transitionGroups.TryGetValue(key, out var list))
+                {
+                    list = [];
+                    transitionGroups[key] = list;
+                }
+                list.Add(conn);
+            }
+            else
+            {
+                DrawConnectionLine(state, conn);
+            }
+        }
+
+        // Draw grouped transitions with offset when multiple exist between the same pair
+        foreach (var (_, group) in transitionGroups)
+        {
+            for (var i = 0; i < group.Count; i++)
+            {
+                DrawConnectionLine(state, group[i], i, group.Count);
+            }
         }
 
         // Draw nodes
@@ -544,15 +573,7 @@ public partial class AnimGraphViewer
         }
 
         // Deselect previous transition
-        if (_selectedTransitionPath != null)
-        {
-            var restoreBrush = new SolidColorBrush(_selectedTransitionOriginalColor);
-            _selectedTransitionPath.Stroke = restoreBrush;
-            _selectedTransitionPath.Fill = restoreBrush;
-            _selectedTransitionPath.StrokeThickness = 2.5;
-            _selectedTransitionPath = null;
-        }
-        _selectedTransition = null;
+        DeselectTransition();
 
         // Highlight selected
         _selectedNode = node;
@@ -731,7 +752,7 @@ public partial class AnimGraphViewer
         PropertiesPanel.Children.Add(rowGrid);
     }
 
-    private void DrawConnectionLine(LayerCanvasState state, AnimGraphConnection conn)
+    private void DrawConnectionLine(LayerCanvasState state, AnimGraphConnection conn, int transitionIndex = 0, int transitionCount = 1)
     {
         var sourceKey = (conn.SourceNode, conn.SourcePinName, true);
         var targetKey = (conn.TargetNode, conn.TargetPinName, false);
@@ -747,6 +768,25 @@ public partial class AnimGraphViewer
         {
             // Compute edge-to-edge shortest path between node bounding boxes
             var (startPos, endPos) = ComputeEdgeToEdgePoints(state, conn.SourceNode, conn.TargetNode);
+
+            // Offset lines when multiple transitions share the same source→target pair
+            if (transitionCount > 1)
+            {
+                var cdx = endPos.X - startPos.X;
+                var cdy = endPos.Y - startPos.Y;
+                var cLen = Math.Sqrt(cdx * cdx + cdy * cdy);
+                if (cLen > DistanceEpsilon)
+                {
+                    // Perpendicular unit vector
+                    var px = -cdy / cLen;
+                    var py = cdx / cLen;
+                    // Center the offsets: e.g. for 3 transitions: -1, 0, +1
+                    var offsetAmount = (transitionIndex - (transitionCount - 1) / 2.0) * TransitionMultiOffset;
+                    startPos = new Point(startPos.X + px * offsetAmount, startPos.Y + py * offsetAmount);
+                    endPos = new Point(endPos.X + px * offsetAmount, endPos.Y + py * offsetAmount);
+                }
+            }
+
             DrawTransitionArrow(state, conn, startPos, endPos, wireColor);
         }
         else
@@ -893,8 +933,8 @@ public partial class AnimGraphViewer
 
     /// <summary>
     /// Draws a directional transition arrow between state machine state nodes,
-    /// with an arrowhead at the target end. The arrow is clickable to select
-    /// the transition and view its properties.
+    /// with an arrowhead at the target end and a small circle at the midpoint
+    /// for easy click selection (matching UE's transition icon style).
     /// </summary>
     private void DrawTransitionArrow(LayerCanvasState state, AnimGraphConnection conn, Point startPos, Point endPos, Color wireColor)
     {
@@ -911,7 +951,7 @@ public partial class AnimGraphViewer
         // Pull the endpoint back by the arrowhead size so the line ends at the arrow base
         var lineEnd = new Point(endPos.X - ux * TransitionArrowSize, endPos.Y - uy * TransitionArrowSize);
 
-        // Build a single path containing the line + arrowhead for hit testing
+        // Build a single path containing the line + arrowhead
         var pathFigure = new PathFigure { StartPoint = startPos };
         pathFigure.Segments.Add(new LineSegment(lineEnd, true));
 
@@ -935,13 +975,12 @@ public partial class AnimGraphViewer
             StrokeThickness = 2.5,
             Fill = brush,
             SnapsToDevicePixels = true,
-            IsHitTestVisible = true,
-            Cursor = System.Windows.Input.Cursors.Hand
+            IsHitTestVisible = false
         };
         Panel.SetZIndex(path, 0);
         state.Canvas.Children.Add(path);
 
-        // Invisible wider hit area for easier clicking
+        // Invisible wider hit area on the line for fallback clicking
         var hitPath = new Path
         {
             Data = pathGeometry,
@@ -949,19 +988,66 @@ public partial class AnimGraphViewer
             StrokeThickness = 10,
             Fill = Brushes.Transparent,
             IsHitTestVisible = true,
-            Cursor = System.Windows.Input.Cursors.Hand
+            Cursor = Cursors.Hand
         };
-        Panel.SetZIndex(hitPath, 0);
+        Panel.SetZIndex(hitPath, 1);
         state.Canvas.Children.Add(hitPath);
 
-        hitPath.MouseLeftButtonDown += (s, e) =>
+        // Small circle at the midpoint for easy click selection (UE transition icon style)
+        var midX = (startPos.X + endPos.X) / 2;
+        var midY = (startPos.Y + endPos.Y) / 2;
+        var circle = new Ellipse
         {
-            SelectTransition(conn, path, wireColor);
+            Width = TransitionCircleRadius * 2,
+            Height = TransitionCircleRadius * 2,
+            Fill = brush,
+            Stroke = new SolidColorBrush(Color.FromRgb(30, 30, 30)),
+            StrokeThickness = 1.5,
+            SnapsToDevicePixels = true,
+            IsHitTestVisible = true,
+            Cursor = Cursors.Hand,
+            ToolTip = $"{conn.SourceNode.Name} → {conn.TargetNode.Name}"
+        };
+        Canvas.SetLeft(circle, midX - TransitionCircleRadius);
+        Canvas.SetTop(circle, midY - TransitionCircleRadius);
+        Panel.SetZIndex(circle, 2);
+        state.Canvas.Children.Add(circle);
+
+        // Draw a small direction arrow icon inside the circle
+        var iconSize = TransitionCircleRadius * 0.7;
+        var iconGeometry = new PathGeometry();
+        var iconFigure = new PathFigure
+        {
+            StartPoint = new Point(midX + ux * iconSize, midY + uy * iconSize),
+            IsFilled = true
+        };
+        var iconPerpX = -uy * iconSize * 0.6;
+        var iconPerpY = ux * iconSize * 0.6;
+        iconFigure.Segments.Add(new LineSegment(
+            new Point(midX - ux * iconSize * 0.5 + iconPerpX, midY - uy * iconSize * 0.5 + iconPerpY), true));
+        iconFigure.Segments.Add(new LineSegment(
+            new Point(midX - ux * iconSize * 0.5 - iconPerpX, midY - uy * iconSize * 0.5 - iconPerpY), true));
+        iconFigure.IsClosed = true;
+        iconGeometry.Figures.Add(iconFigure);
+        iconGeometry.Freeze();
+
+        var iconPath = new Path
+        {
+            Data = iconGeometry,
+            Fill = Brushes.White,
+            IsHitTestVisible = false
+        };
+        Panel.SetZIndex(iconPath, 3);
+        state.Canvas.Children.Add(iconPath);
+
+        circle.MouseLeftButtonDown += (s, e) =>
+        {
+            SelectTransition(conn, path, circle, wireColor);
             e.Handled = true;
         };
-        path.MouseLeftButtonDown += (s, e) =>
+        hitPath.MouseLeftButtonDown += (s, e) =>
         {
-            SelectTransition(conn, path, wireColor);
+            SelectTransition(conn, path, circle, wireColor);
             e.Handled = true;
         };
     }
@@ -969,7 +1055,7 @@ public partial class AnimGraphViewer
     /// <summary>
     /// Selects a transition arrow and shows its properties in the properties panel.
     /// </summary>
-    private void SelectTransition(AnimGraphConnection conn, Path transitionPath, Color originalColor)
+    private void SelectTransition(AnimGraphConnection conn, Path transitionPath, Ellipse transitionCircle, Color originalColor)
     {
         // Deselect previous node selection
         if (_selectedBorder != null)
@@ -981,27 +1067,46 @@ public partial class AnimGraphViewer
         _selectedNode = null;
 
         // Deselect previous transition
+        DeselectTransition();
+
+        // Highlight selected transition
+        _selectedTransition = conn;
+        _selectedTransitionPath = transitionPath;
+        _selectedTransitionCircle = transitionCircle;
+        _selectedTransitionOriginalColor = originalColor;
+        var highlightBrush = new SolidColorBrush(Color.FromRgb(230, 160, 0));
+        transitionPath.Stroke = highlightBrush;
+        transitionPath.Fill = highlightBrush;
+        transitionPath.StrokeThickness = 3.5;
+        transitionCircle.Fill = highlightBrush;
+        transitionCircle.Stroke = new SolidColorBrush(Color.FromRgb(255, 200, 50));
+
+        var sourceName = conn.SourceNode.Name;
+        var targetName = conn.TargetNode.Name;
+        SelectedNodeText.Text = $"Selected: Transition {sourceName} → {targetName}";
+        PopulateTransitionProperties(conn);
+    }
+
+    /// <summary>
+    /// Restores the previously selected transition to its original appearance.
+    /// </summary>
+    private void DeselectTransition()
+    {
         if (_selectedTransitionPath != null)
         {
             var restoreBrush = new SolidColorBrush(_selectedTransitionOriginalColor);
             _selectedTransitionPath.Stroke = restoreBrush;
             _selectedTransitionPath.Fill = restoreBrush;
             _selectedTransitionPath.StrokeThickness = 2.5;
+            _selectedTransitionPath = null;
         }
-
-        // Highlight selected transition
-        _selectedTransition = conn;
-        _selectedTransitionPath = transitionPath;
-        _selectedTransitionOriginalColor = originalColor;
-        var highlightBrush = new SolidColorBrush(Color.FromRgb(230, 160, 0));
-        transitionPath.Stroke = highlightBrush;
-        transitionPath.Fill = highlightBrush;
-        transitionPath.StrokeThickness = 3.5;
-
-        var sourceName = conn.SourceNode.Name;
-        var targetName = conn.TargetNode.Name;
-        SelectedNodeText.Text = $"Selected: Transition {sourceName} → {targetName}";
-        PopulateTransitionProperties(conn);
+        if (_selectedTransitionCircle != null)
+        {
+            _selectedTransitionCircle.Fill = new SolidColorBrush(_selectedTransitionOriginalColor);
+            _selectedTransitionCircle.Stroke = new SolidColorBrush(Color.FromRgb(30, 30, 30));
+            _selectedTransitionCircle = null;
+        }
+        _selectedTransition = null;
     }
 
     /// <summary>
