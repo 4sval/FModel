@@ -27,6 +27,7 @@ public partial class AnimGraphViewer
     private const double EntryNodeSize = 30;
     private const double TransitionArrowSize = 10;
     private const double TransitionCircleRadius = 8;
+    private const double TransitionCircleGap = 4;
     private const double TransitionMultiOffset = 12;
     private const double DistanceEpsilon = 0.001;
 
@@ -792,7 +793,7 @@ public partial class AnimGraphViewer
                 var px = -cdy / cLen; // perpendicular unit X
                 var py = cdx / cLen;  // perpendicular unit Y
 
-                var circleSpread = TransitionCircleRadius * 2 + 4; // circle diameter + gap
+                var circleSpread = TransitionCircleRadius * 2 + TransitionCircleGap;
                 double perpOffset;
 
                 if (hasBothDirections)
