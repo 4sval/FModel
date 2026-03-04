@@ -26,6 +26,7 @@ public partial class AnimGraphViewer
     private const double StateNodeCornerRadius = 24;
     private const double EntryNodeSize = 30;
     private const double TransitionArrowSize = 10;
+    private const double DistanceEpsilon = 0.001;
 
     private readonly AnimGraphViewModel _viewModel;
 
@@ -36,6 +37,11 @@ public partial class AnimGraphViewer
     // Currently selected node (for properties panel)
     private AnimGraphNode? _selectedNode;
     private Border? _selectedBorder;
+
+    // Currently selected transition (for properties panel)
+    private AnimGraphConnection? _selectedTransition;
+    private Path? _selectedTransitionPath;
+    private Color _selectedTransitionOriginalColor;
 
     private bool _isPanning;
     private bool _potentialPan;
@@ -530,12 +536,23 @@ public partial class AnimGraphViewer
     /// </summary>
     private void SelectNode(AnimGraphNode node, Border border)
     {
-        // Deselect previous
+        // Deselect previous node
         if (_selectedBorder != null)
         {
             _selectedBorder.BorderBrush = new SolidColorBrush(Color.FromRgb(20, 20, 20));
             _selectedBorder.BorderThickness = new Thickness(1.5);
         }
+
+        // Deselect previous transition
+        if (_selectedTransitionPath != null)
+        {
+            var restoreBrush = new SolidColorBrush(_selectedTransitionOriginalColor);
+            _selectedTransitionPath.Stroke = restoreBrush;
+            _selectedTransitionPath.Fill = restoreBrush;
+            _selectedTransitionPath.StrokeThickness = 2.5;
+            _selectedTransitionPath = null;
+        }
+        _selectedTransition = null;
 
         // Highlight selected
         _selectedNode = node;
@@ -719,34 +736,37 @@ public partial class AnimGraphViewer
         var sourceKey = (conn.SourceNode, conn.SourcePinName, true);
         var targetKey = (conn.TargetNode, conn.TargetPinName, false);
 
-        if (!state.PinPositions.TryGetValue(sourceKey, out var startPos))
-        {
-            if (state.NodePositions.TryGetValue(conn.SourceNode, out var srcNodePos))
-                startPos = new Point(srcNodePos.X + NodeWidth, srcNodePos.Y + NodeHeaderHeight + 10);
-            else
-                return;
-        }
-
-        if (!state.PinPositions.TryGetValue(targetKey, out var endPos))
-        {
-            if (state.NodePositions.TryGetValue(conn.TargetNode, out var tgtNodePos))
-                endPos = new Point(tgtNodePos.X, tgtNodePos.Y + NodeHeaderHeight + 10);
-            else
-                return;
-        }
+        var isTransition = (conn.SourceNode.IsStateMachineState || conn.SourceNode.IsEntryNode) &&
+                           (conn.TargetNode.IsStateMachineState || conn.TargetNode.IsEntryNode);
 
         // Determine wire color from source pin type
         var sourcePin = conn.SourceNode.Pins.FirstOrDefault(p => p.PinName == conn.SourcePinName && p.IsOutput);
         var wireColor = sourcePin != null ? GetPinColor(sourcePin.PinType) : Color.FromRgb(200, 200, 220);
-        var isTransition = (conn.SourceNode.IsStateMachineState || conn.SourceNode.IsEntryNode) &&
-                           (conn.TargetNode.IsStateMachineState || conn.TargetNode.IsEntryNode);
 
         if (isTransition)
         {
-            DrawTransitionArrow(state, startPos, endPos, wireColor);
+            // Compute edge-to-edge shortest path between node bounding boxes
+            var (startPos, endPos) = ComputeEdgeToEdgePoints(state, conn.SourceNode, conn.TargetNode);
+            DrawTransitionArrow(state, conn, startPos, endPos, wireColor);
         }
         else
         {
+            if (!state.PinPositions.TryGetValue(sourceKey, out var startPos))
+            {
+                if (state.NodePositions.TryGetValue(conn.SourceNode, out var srcNodePos))
+                    startPos = new Point(srcNodePos.X + NodeWidth, srcNodePos.Y + NodeHeaderHeight + 10);
+                else
+                    return;
+            }
+
+            if (!state.PinPositions.TryGetValue(targetKey, out var endPos))
+            {
+                if (state.NodePositions.TryGetValue(conn.TargetNode, out var tgtNodePos))
+                    endPos = new Point(tgtNodePos.X, tgtNodePos.Y + NodeHeaderHeight + 10);
+                else
+                    return;
+            }
+
             var dx = Math.Max(Math.Abs(endPos.X - startPos.X) * 0.5, 50);
             var pathFigure = new PathFigure { StartPoint = startPos };
             pathFigure.Segments.Add(new BezierSegment(
@@ -772,29 +792,114 @@ public partial class AnimGraphViewer
     }
 
     /// <summary>
-    /// Draws a directional transition arrow between state machine state nodes,
-    /// with an arrowhead at the target end.
+    /// Computes the shortest straight-line connection points between two node edges.
+    /// For state nodes (rounded rectangles) and entry nodes (circles), finds the
+    /// intersection of the center-to-center line with each node's bounding shape.
     /// </summary>
-    private static void DrawTransitionArrow(LayerCanvasState state, Point startPos, Point endPos, Color wireColor)
+    private (Point start, Point end) ComputeEdgeToEdgePoints(LayerCanvasState state, AnimGraphNode sourceNode, AnimGraphNode targetNode)
+    {
+        var srcCenter = GetNodeCenter(state, sourceNode);
+        var tgtCenter = GetNodeCenter(state, targetNode);
+
+        var startEdge = ClipToNodeEdge(state, sourceNode, srcCenter, tgtCenter);
+        var endEdge = ClipToNodeEdge(state, targetNode, tgtCenter, srcCenter);
+
+        return (startEdge, endEdge);
+    }
+
+    private static Point GetNodeCenter(LayerCanvasState state, AnimGraphNode node)
+    {
+        if (!state.NodePositions.TryGetValue(node, out var pos))
+            return default;
+
+        if (node.IsEntryNode)
+            return new Point(pos.X + EntryNodeSize / 2, pos.Y + EntryNodeSize / 2);
+
+        if (node.IsStateMachineState)
+            return new Point(pos.X + StateNodeWidth / 2, pos.Y + StateNodeHeight / 2);
+
+        return new Point(pos.X + NodeWidth / 2, pos.Y + NodeHeaderHeight / 2);
+    }
+
+    /// <summary>
+    /// Clips a line from <paramref name="from"/> toward <paramref name="to"/>
+    /// to the edge of the node's bounding shape.
+    /// </summary>
+    private static Point ClipToNodeEdge(LayerCanvasState state, AnimGraphNode node, Point from, Point to)
+    {
+        if (!state.NodePositions.TryGetValue(node, out var pos))
+            return from;
+
+        if (node.IsEntryNode)
+        {
+            // Circle clipping
+            var cx = pos.X + EntryNodeSize / 2;
+            var cy = pos.Y + EntryNodeSize / 2;
+            var radius = EntryNodeSize / 2;
+            var dx = to.X - cx;
+            var dy = to.Y - cy;
+            var dist = Math.Sqrt(dx * dx + dy * dy);
+            if (dist < DistanceEpsilon) return from;
+            return new Point(cx + dx / dist * radius, cy + dy / dist * radius);
+        }
+
+        // Rectangle clipping (state nodes or regular nodes)
+        double w, h;
+        if (node.IsStateMachineState)
+        {
+            w = StateNodeWidth;
+            h = StateNodeHeight;
+        }
+        else
+        {
+            w = NodeWidth;
+            h = state.NodeVisuals.TryGetValue(node, out var vis) ? vis.height : 60;
+        }
+
+        var rectCx = pos.X + w / 2;
+        var rectCy = pos.Y + h / 2;
+        var dirX = to.X - rectCx;
+        var dirY = to.Y - rectCy;
+        if (Math.Abs(dirX) < DistanceEpsilon && Math.Abs(dirY) < DistanceEpsilon)
+            return from;
+
+        // Find intersection with rectangle edges
+        var halfW = w / 2;
+        var halfH = h / 2;
+        double tMin = double.MaxValue;
+
+        // Check left/right edges
+        if (Math.Abs(dirX) > DistanceEpsilon)
+        {
+            var t = (dirX > 0 ? halfW : -halfW) / dirX;
+            var iy = dirY * t;
+            if (t > 0 && Math.Abs(iy) <= halfH)
+                tMin = Math.Min(tMin, t);
+        }
+        // Check top/bottom edges
+        if (Math.Abs(dirY) > DistanceEpsilon)
+        {
+            var t = (dirY > 0 ? halfH : -halfH) / dirY;
+            var ix = dirX * t;
+            if (t > 0 && Math.Abs(ix) <= halfW)
+                tMin = Math.Min(tMin, t);
+        }
+
+        if (tMin < double.MaxValue)
+            return new Point(rectCx + dirX * tMin, rectCy + dirY * tMin);
+
+        return from;
+    }
+
+    /// <summary>
+    /// Draws a directional transition arrow between state machine state nodes,
+    /// with an arrowhead at the target end. The arrow is clickable to select
+    /// the transition and view its properties.
+    /// </summary>
+    private void DrawTransitionArrow(LayerCanvasState state, AnimGraphConnection conn, Point startPos, Point endPos, Color wireColor)
     {
         var brush = new SolidColorBrush(wireColor);
 
-        // Main line
-        var line = new Line
-        {
-            X1 = startPos.X,
-            Y1 = startPos.Y,
-            X2 = endPos.X,
-            Y2 = endPos.Y,
-            Stroke = brush,
-            StrokeThickness = 2.5,
-            SnapsToDevicePixels = true,
-            IsHitTestVisible = false
-        };
-        Panel.SetZIndex(line, 0);
-        state.Canvas.Children.Add(line);
-
-        // Arrowhead
         var dx = endPos.X - startPos.X;
         var dy = endPos.Y - startPos.Y;
         var length = Math.Sqrt(dx * dx + dy * dy);
@@ -802,23 +907,123 @@ public partial class AnimGraphViewer
 
         var ux = dx / length;
         var uy = dy / length;
-        var arrowBase = new Point(endPos.X - ux * TransitionArrowSize, endPos.Y - uy * TransitionArrowSize);
+
+        // Pull the endpoint back by the arrowhead size so the line ends at the arrow base
+        var lineEnd = new Point(endPos.X - ux * TransitionArrowSize, endPos.Y - uy * TransitionArrowSize);
+
+        // Build a single path containing the line + arrowhead for hit testing
+        var pathFigure = new PathFigure { StartPoint = startPos };
+        pathFigure.Segments.Add(new LineSegment(lineEnd, true));
+
+        var arrowBase = lineEnd;
         var perpX = -uy * TransitionArrowSize * 0.5;
         var perpY = ux * TransitionArrowSize * 0.5;
+        var arrowFigure = new PathFigure { StartPoint = endPos, IsFilled = true };
+        arrowFigure.Segments.Add(new LineSegment(new Point(arrowBase.X + perpX, arrowBase.Y + perpY), true));
+        arrowFigure.Segments.Add(new LineSegment(new Point(arrowBase.X - perpX, arrowBase.Y - perpY), true));
+        arrowFigure.IsClosed = true;
 
-        var arrowHead = new Polygon
+        var pathGeometry = new PathGeometry();
+        pathGeometry.Figures.Add(pathFigure);
+        pathGeometry.Figures.Add(arrowFigure);
+        pathGeometry.Freeze();
+
+        var path = new Path
         {
-            Points =
-            [
-                endPos,
-                new Point(arrowBase.X + perpX, arrowBase.Y + perpY),
-                new Point(arrowBase.X - perpX, arrowBase.Y - perpY)
-            ],
+            Data = pathGeometry,
+            Stroke = brush,
+            StrokeThickness = 2.5,
             Fill = brush,
-            IsHitTestVisible = false
+            SnapsToDevicePixels = true,
+            IsHitTestVisible = true,
+            Cursor = System.Windows.Input.Cursors.Hand
         };
-        Panel.SetZIndex(arrowHead, 0);
-        state.Canvas.Children.Add(arrowHead);
+        Panel.SetZIndex(path, 0);
+        state.Canvas.Children.Add(path);
+
+        // Invisible wider hit area for easier clicking
+        var hitPath = new Path
+        {
+            Data = pathGeometry,
+            Stroke = Brushes.Transparent,
+            StrokeThickness = 10,
+            Fill = Brushes.Transparent,
+            IsHitTestVisible = true,
+            Cursor = System.Windows.Input.Cursors.Hand
+        };
+        Panel.SetZIndex(hitPath, 0);
+        state.Canvas.Children.Add(hitPath);
+
+        hitPath.MouseLeftButtonDown += (s, e) =>
+        {
+            SelectTransition(conn, path, wireColor);
+            e.Handled = true;
+        };
+        path.MouseLeftButtonDown += (s, e) =>
+        {
+            SelectTransition(conn, path, wireColor);
+            e.Handled = true;
+        };
+    }
+
+    /// <summary>
+    /// Selects a transition arrow and shows its properties in the properties panel.
+    /// </summary>
+    private void SelectTransition(AnimGraphConnection conn, Path transitionPath, Color originalColor)
+    {
+        // Deselect previous node selection
+        if (_selectedBorder != null)
+        {
+            _selectedBorder.BorderBrush = new SolidColorBrush(Color.FromRgb(20, 20, 20));
+            _selectedBorder.BorderThickness = new Thickness(1.5);
+            _selectedBorder = null;
+        }
+        _selectedNode = null;
+
+        // Deselect previous transition
+        if (_selectedTransitionPath != null)
+        {
+            var restoreBrush = new SolidColorBrush(_selectedTransitionOriginalColor);
+            _selectedTransitionPath.Stroke = restoreBrush;
+            _selectedTransitionPath.Fill = restoreBrush;
+            _selectedTransitionPath.StrokeThickness = 2.5;
+        }
+
+        // Highlight selected transition
+        _selectedTransition = conn;
+        _selectedTransitionPath = transitionPath;
+        _selectedTransitionOriginalColor = originalColor;
+        var highlightBrush = new SolidColorBrush(Color.FromRgb(230, 160, 0));
+        transitionPath.Stroke = highlightBrush;
+        transitionPath.Fill = highlightBrush;
+        transitionPath.StrokeThickness = 3.5;
+
+        var sourceName = conn.SourceNode.Name;
+        var targetName = conn.TargetNode.Name;
+        SelectedNodeText.Text = $"Selected: Transition {sourceName} → {targetName}";
+        PopulateTransitionProperties(conn);
+    }
+
+    /// <summary>
+    /// Fills the properties panel with the selected transition's information.
+    /// </summary>
+    private void PopulateTransitionProperties(AnimGraphConnection conn)
+    {
+        PropertiesPanel.Children.Clear();
+        PropertiesTitleText.Text = $"Properties - Transition";
+
+        AddPropertySection("Transition Info");
+        AddPropertyRow("From", conn.SourceNode.Name);
+        AddPropertyRow("To", conn.TargetNode.Name);
+
+        if (conn.TransitionProperties.Count > 0)
+        {
+            AddPropertySection("Details");
+            foreach (var (key, value) in conn.TransitionProperties)
+            {
+                AddPropertyRow(key, value);
+            }
+        }
     }
 
     private static string GetNodeDisplayName(AnimGraphNode node)

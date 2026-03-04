@@ -38,6 +38,10 @@ public class AnimGraphConnection
     public string SourcePinName { get; set; } = string.Empty;
     public AnimGraphNode TargetNode { get; set; } = null!;
     public string TargetPinName { get; set; } = string.Empty;
+    /// <summary>
+    /// Additional properties for state machine transitions (e.g. CrossfadeDuration, LogicType).
+    /// </summary>
+    public Dictionary<string, string> TransitionProperties { get; set; } = new();
 }
 
 /// <summary>
@@ -61,7 +65,7 @@ internal class StateMachineMetadata
     public string MachineName { get; init; } = string.Empty;
     public List<string> StateNames { get; } = [];
     public List<string> StateRootPropNames { get; } = [];
-    public List<(int PreviousState, int NextState)> Transitions { get; } = [];
+    public List<(int PreviousState, int NextState, Dictionary<string, string> Properties)> Transitions { get; } = [];
 }
 
 public class AnimGraphViewModel
@@ -471,17 +475,20 @@ public class AnimGraphViewModel
             }
 
             // Transition connections between states
-            foreach (var (prevIdx, nextIdx) in sm.Transitions)
+            foreach (var (prevIdx, nextIdx, transProps) in sm.Transitions)
             {
                 if (prevIdx < stateNodes.Count && nextIdx < stateNodes.Count)
                 {
-                    overviewLayer.Connections.Add(new AnimGraphConnection
+                    var conn = new AnimGraphConnection
                     {
                         SourceNode = stateNodes[prevIdx],
                         SourcePinName = "Out",
                         TargetNode = stateNodes[nextIdx],
                         TargetPinName = "In"
-                    });
+                    };
+                    foreach (var (k, v) in transProps)
+                        conn.TransitionProperties[k] = v;
+                    overviewLayer.Connections.Add(conn);
                 }
             }
 
@@ -690,7 +697,17 @@ public class AnimGraphViewModel
                     if (previousState >= 0 && nextState >= 0 &&
                         previousState < metadata.StateNames.Count && nextState < metadata.StateNames.Count)
                     {
-                        metadata.Transitions.Add((previousState, nextState));
+                        var transProps = new Dictionary<string, string>();
+                        foreach (var tp in transStruct.Properties)
+                        {
+                            var name = tp.Name.Text;
+                            if (name is "PreviousState" or "NextState") continue;
+                            var val = tp.Tag?.GenericValue?.ToString();
+                            if (!string.IsNullOrEmpty(val))
+                                transProps[name] = val.Length > MaxPropertyValueDisplayLength
+                                    ? val[..MaxPropertyValueDisplayLength] + "…" : val;
+                        }
+                        metadata.Transitions.Add((previousState, nextState, transProps));
                     }
                 }
                 break;
