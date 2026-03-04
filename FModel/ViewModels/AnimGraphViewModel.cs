@@ -653,6 +653,8 @@ public class AnimGraphViewModel
                     metadata.StateNames.Add(stateName);
 
                     // Mark root node via StateRootNodeIndex
+                    // UE stores node indices in reverse order relative to ChildProperties,
+                    // so the actual index into animNodeProps is (Count - 1 - stateRootIndex).
                     if (!stateStruct.TryGetValue(out int stateRootIndex, "StateRootNodeIndex") ||
                         stateRootIndex < 0 || stateRootIndex >= animNodeProps.Count)
                     {
@@ -660,7 +662,8 @@ public class AnimGraphViewModel
                         continue;
                     }
 
-                    var rootPropName = animNodeProps[stateRootIndex].name;
+                    var mappedIndex = animNodeProps.Count - 1 - stateRootIndex;
+                    var rootPropName = animNodeProps[mappedIndex].name;
                     metadata.StateRootPropNames.Add(rootPropName);
                     if (nodeByName.TryGetValue(rootPropName, out var rootNode))
                         rootNode.AdditionalProperties["BelongsToStateMachine"] = machineName;
