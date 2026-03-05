@@ -810,7 +810,7 @@ public partial class AnimGraphViewer
         else
             AddLayerTab(targetLayer);
 
-        // Select and highlight the SaveCachedPose node in the target layer.
+        // Select, highlight, and center the SaveCachedPose node in the target layer.
         // Use Dispatcher.BeginInvoke to ensure the visual tree is fully updated
         // after the tab switch before attempting to select the node.
         Dispatcher.BeginInvoke(() =>
@@ -819,6 +819,7 @@ public partial class AnimGraphViewer
                 state.NodeVisuals.TryGetValue(savePoseNode, out var visual))
             {
                 SelectNode(savePoseNode, visual.border);
+                CenterOnNode(savePoseNode, state);
             }
         });
     }
@@ -1502,6 +1503,39 @@ public partial class AnimGraphViewer
         _currentLayerState.TranslateTransform.X = 0;
         _currentLayerState.TranslateTransform.Y = 0;
         ZoomText.Text = "Zoom: 100%";
+    }
+
+    /// <summary>
+    /// Adjusts the translate transform so that the specified node is centered
+    /// in the viewport, keeping the current zoom level unchanged.
+    /// </summary>
+    private void CenterOnNode(AnimGraphNode node, LayerCanvasState state)
+    {
+        if (!state.NodePositions.TryGetValue(node, out var pos))
+            return;
+
+        var scale = state.ScaleTransform.ScaleX;
+
+        // Determine node dimensions
+        double nodeW = NodeWidth, nodeH = 150;
+        if (state.NodeVisuals.TryGetValue(node, out var vis))
+        {
+            nodeW = vis.width;
+            nodeH = vis.height;
+        }
+
+        // Viewport size
+        var tabContent = LayerTabControl.SelectedContent as FrameworkElement;
+        var viewWidth = tabContent?.ActualWidth > 0 ? tabContent.ActualWidth : (ActualWidth > 0 ? ActualWidth * DefaultGraphWidthRatio : 800);
+        var viewHeight = tabContent?.ActualHeight > 0 ? tabContent.ActualHeight : (ActualHeight > 0 ? ActualHeight - 120 : 600);
+
+        // Center of the node in graph space
+        var nodeCenterX = pos.X + nodeW / 2;
+        var nodeCenterY = pos.Y + nodeH / 2;
+
+        // Set translate so that the node center maps to the viewport center
+        state.TranslateTransform.X = viewWidth / 2 - nodeCenterX * scale;
+        state.TranslateTransform.Y = viewHeight / 2 - nodeCenterY * scale;
     }
 
     /// <summary>
