@@ -206,16 +206,19 @@ public class AnimGraphViewModel
             .Where(n => n.ExportType.EndsWith("_Root", StringComparison.OrdinalIgnoreCase))
             .ToList();
 
+        AnimGraphLayer? primaryGraphLayer = null;
         foreach (var rootNode in graphRoots)
         {
             if (!assigned.Add(rootNode)) continue;
             var layerNodes = CollectUpstream(rootNode, upstreamOf, assigned);
             AddLayer(vm, layerNodes, layerIndex++);
+            primaryGraphLayer ??= vm.Layers[^1];
         }
 
         // Pass 2: Build state machine state sub-graphs from AnimGraphNode_StateResult nodes.
         // Each _StateResult node defines a state's sub-graph within a state machine.
         // These are stored in StateSubGraphs keyed by the root node's property name.
+        // SaveCachedPose nodes are excluded because they belong to the parent AnimGraph layer.
         var stateResultRoots = vm.Nodes
             .Where(n => n.ExportType.EndsWith("_StateResult", StringComparison.OrdinalIgnoreCase))
             .ToList();
@@ -223,8 +226,40 @@ public class AnimGraphViewModel
         foreach (var stateResultNode in stateResultRoots)
         {
             if (!assigned.Add(stateResultNode)) continue;
-            var layerNodes = CollectUpstream(stateResultNode, upstreamOf, assigned);
+            var layerNodes = CollectUpstream(stateResultNode, upstreamOf, assigned,
+                excludeNode: IsSaveCachedPoseNode);
             AddStateSubGraph(vm, layerNodes, stateResultNode.Name, layerIndex++);
+        }
+
+        // Pass 3: Move unassigned SaveCachedPose nodes and their input chains
+        // to the primary AnimGraph layer. In UE, SaveCachedPose can only exist at
+        // the animation blueprint's top-level layer, not inside state machine sub-graphs.
+        if (primaryGraphLayer != null)
+        {
+            var unassignedSavePoseNodes = vm.Nodes
+                .Where(n => !assigned.Contains(n) && IsSaveCachedPoseNode(n))
+                .ToList();
+
+            if (unassignedSavePoseNodes.Count > 0)
+            {
+                foreach (var saveNode in unassignedSavePoseNodes)
+                {
+                    if (!assigned.Add(saveNode)) continue;
+                    var inputChain = CollectUpstream(saveNode, upstreamOf, assigned);
+                    primaryGraphLayer.Nodes.AddRange(inputChain);
+                }
+
+                // Rebuild connections for the expanded primary layer
+                var nodeSet = new HashSet<AnimGraphNode>(primaryGraphLayer.Nodes);
+                primaryGraphLayer.Connections.Clear();
+                foreach (var conn in vm.Connections)
+                {
+                    if (nodeSet.Contains(conn.SourceNode) && nodeSet.Contains(conn.TargetNode))
+                        primaryGraphLayer.Connections.Add(conn);
+                }
+
+                LayoutLayerNodes(primaryGraphLayer);
+            }
         }
 
         // Fallback: any remaining unassigned nodes go into connected-component layers
@@ -271,11 +306,14 @@ public class AnimGraphViewModel
 
     /// <summary>
     /// Collects a root node and all its upstream providers via BFS.
+    /// When <paramref name="excludeNode"/> is provided, matching upstream nodes
+    /// are skipped (not collected and their inputs are not traversed).
     /// </summary>
     private static List<AnimGraphNode> CollectUpstream(
         AnimGraphNode root,
         Dictionary<AnimGraphNode, List<AnimGraphNode>> upstreamOf,
-        HashSet<AnimGraphNode> assigned)
+        HashSet<AnimGraphNode> assigned,
+        Func<AnimGraphNode, bool>? excludeNode = null)
     {
         var nodes = new List<AnimGraphNode> { root };
         var queue = new Queue<AnimGraphNode>();
@@ -286,6 +324,8 @@ public class AnimGraphViewModel
             var current = queue.Dequeue();
             foreach (var upstream in upstreamOf[current])
             {
+                if (excludeNode != null && excludeNode(upstream))
+                    continue;
                 if (assigned.Add(upstream))
                 {
                     nodes.Add(upstream);
@@ -833,6 +873,12 @@ public class AnimGraphViewModel
         return name.StartsWith("FAnimNode_", StringComparison.OrdinalIgnoreCase) ||
                name.StartsWith("AnimNode_", StringComparison.OrdinalIgnoreCase) ||
                name.StartsWith("AnimGraphNode_", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsSaveCachedPoseNode(AnimGraphNode node)
+    {
+        return node.ExportType.Contains("SaveCachedPose", StringComparison.OrdinalIgnoreCase) ||
+               node.Name.Contains("SaveCachedPose", StringComparison.OrdinalIgnoreCase);
     }
 
     private static void ExtractNodeProperties(UObject cdo, string propName, AnimGraphNode node)
