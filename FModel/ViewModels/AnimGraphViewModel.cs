@@ -202,6 +202,8 @@ public class AnimGraphViewModel
 
         // Pass 1: Build graph layers from AnimGraphNode_Root nodes.
         // Each _Root node defines an animation blueprint layer (e.g. "AnimGraph").
+        // SaveCachedPose nodes are excluded so their input chains don't get pulled
+        // into Root layers; Pass 3 assigns SaveCachedPose nodes to the correct layer.
         var graphRoots = vm.Nodes
             .Where(n => n.ExportType.EndsWith("_Root", StringComparison.OrdinalIgnoreCase))
             .ToList();
@@ -210,7 +212,8 @@ public class AnimGraphViewModel
         foreach (var rootNode in graphRoots)
         {
             if (!assigned.Add(rootNode)) continue;
-            var layerNodes = CollectUpstream(rootNode, upstreamOf, assigned);
+            var layerNodes = CollectUpstream(rootNode, upstreamOf, assigned,
+                excludeNode: IsSaveCachedPoseNode);
             AddLayer(vm, layerNodes, layerIndex++);
             primaryGraphLayer ??= vm.Layers[^1];
         }
