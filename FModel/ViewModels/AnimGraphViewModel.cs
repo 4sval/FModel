@@ -202,8 +202,6 @@ public class AnimGraphViewModel
 
         // Pass 1: Build graph layers from AnimGraphNode_Root nodes.
         // Each _Root node defines an animation blueprint layer (e.g. "AnimGraph").
-        // SaveCachedPose nodes are excluded so their input chains don't get pulled
-        // into Root layers; Pass 3 assigns SaveCachedPose nodes to the correct layer.
         var graphRoots = vm.Nodes
             .Where(n => n.ExportType.EndsWith("_Root", StringComparison.OrdinalIgnoreCase))
             .ToList();
@@ -212,8 +210,7 @@ public class AnimGraphViewModel
         foreach (var rootNode in graphRoots)
         {
             if (!assigned.Add(rootNode)) continue;
-            var layerNodes = CollectUpstream(rootNode, upstreamOf, assigned,
-                excludeNode: IsSaveCachedPoseNode);
+            var layerNodes = CollectUpstream(rootNode, upstreamOf, assigned);
             AddLayer(vm, layerNodes, layerIndex++);
             primaryGraphLayer ??= vm.Layers[^1];
         }
@@ -234,10 +231,9 @@ public class AnimGraphViewModel
             AddStateSubGraph(vm, layerNodes, stateResultNode.Name, layerIndex++);
         }
 
-        // Pass 3: Move unassigned SaveCachedPose nodes and their input chains
-        // to the primary AnimGraph layer. In UE, SaveCachedPose can only exist at
-        // the animation blueprint's top-level layer, not inside state machine sub-graphs.
-        // If no _Root layer exists, these nodes fall through to the fallback handler below.
+        // Pass 3: Catch any still-unassigned SaveCachedPose nodes and their input
+        // chains, adding them to the primary AnimGraph layer before the fallback
+        // handles remaining nodes.
         if (primaryGraphLayer != null)
         {
             var unassignedSavePoseNodes = vm.Nodes
@@ -253,59 +249,135 @@ public class AnimGraphViewModel
                     primaryGraphLayer.Nodes.AddRange(inputChain);
                 }
 
-                // Rebuild connections for the expanded primary layer
-                var nodeSet = new HashSet<AnimGraphNode>(primaryGraphLayer.Nodes);
-                primaryGraphLayer.Connections.Clear();
-                foreach (var conn in vm.Connections)
-                {
-                    if (nodeSet.Contains(conn.SourceNode) && nodeSet.Contains(conn.TargetNode))
-                        primaryGraphLayer.Connections.Add(conn);
-                }
-
-                LayoutLayerNodes(primaryGraphLayer);
+                RebuildLayerConnections(vm, primaryGraphLayer);
             }
         }
 
         // Fallback: any remaining unassigned nodes go into connected-component layers
         var remaining = vm.Nodes.Where(n => !assigned.Contains(n)).ToList();
-        if (remaining.Count == 0) return;
-
-        var adjacency = new Dictionary<AnimGraphNode, HashSet<AnimGraphNode>>();
-        foreach (var node in remaining)
-            adjacency[node] = [];
-
-        foreach (var conn in vm.Connections)
+        if (remaining.Count > 0)
         {
-            if (adjacency.ContainsKey(conn.SourceNode) && adjacency.ContainsKey(conn.TargetNode))
+            var adjacency = new Dictionary<AnimGraphNode, HashSet<AnimGraphNode>>();
+            foreach (var node in remaining)
+                adjacency[node] = [];
+
+            foreach (var conn in vm.Connections)
             {
-                adjacency[conn.SourceNode].Add(conn.TargetNode);
-                adjacency[conn.TargetNode].Add(conn.SourceNode);
-            }
-        }
-
-        foreach (var node in remaining)
-        {
-            if (!assigned.Add(node)) continue;
-
-            var component = new List<AnimGraphNode> { node };
-            var queue = new Queue<AnimGraphNode>();
-            queue.Enqueue(node);
-
-            while (queue.Count > 0)
-            {
-                var current = queue.Dequeue();
-                foreach (var neighbor in adjacency[current])
+                if (adjacency.ContainsKey(conn.SourceNode) && adjacency.ContainsKey(conn.TargetNode))
                 {
-                    if (assigned.Add(neighbor))
-                    {
-                        component.Add(neighbor);
-                        queue.Enqueue(neighbor);
-                    }
+                    adjacency[conn.SourceNode].Add(conn.TargetNode);
+                    adjacency[conn.TargetNode].Add(conn.SourceNode);
                 }
             }
 
-            AddLayer(vm, component, layerIndex++);
+            foreach (var node in remaining)
+            {
+                if (!assigned.Add(node)) continue;
+
+                var component = new List<AnimGraphNode> { node };
+                var queue = new Queue<AnimGraphNode>();
+                queue.Enqueue(node);
+
+                while (queue.Count > 0)
+                {
+                    var current = queue.Dequeue();
+                    foreach (var neighbor in adjacency[current])
+                    {
+                        if (assigned.Add(neighbor))
+                        {
+                            component.Add(neighbor);
+                            queue.Enqueue(neighbor);
+                        }
+                    }
+                }
+
+                AddLayer(vm, component, layerIndex++);
+            }
         }
+
+        // Final enforcement: SaveCachedPose nodes can only exist in animation
+        // blueprint layers (layers that contain a _Root node). After all passes
+        // above, scan every non-_Root layer (state sub-graphs and fallback layers)
+        // and move any SaveCachedPose nodes to the primary _Root layer.
+        if (primaryGraphLayer != null)
+        {
+            EnforceSaveCachedPoseInAnimBlueprintLayer(vm, primaryGraphLayer);
+        }
+    }
+
+    /// <summary>
+    /// Ensures every SaveCachedPose node resides in an animation blueprint layer
+    /// (one that contains a _Root node). Any SaveCachedPose found in a state
+    /// sub-graph or a fallback connected-component layer is moved to
+    /// <paramref name="targetLayer"/> and the affected layers are rebuilt.
+    /// </summary>
+    private static void EnforceSaveCachedPoseInAnimBlueprintLayer(
+        AnimGraphViewModel vm, AnimGraphLayer targetLayer)
+    {
+        var moved = false;
+
+        // Identify animation-blueprint layers (layers that contain a _Root node)
+        var animBlueprintLayers = new HashSet<AnimGraphLayer>();
+        foreach (var layer in vm.Layers)
+        {
+            if (layer.Nodes.Any(n => n.ExportType.EndsWith("_Root", StringComparison.OrdinalIgnoreCase)))
+                animBlueprintLayers.Add(layer);
+        }
+
+        // Scan non-animation-blueprint layers in vm.Layers
+        var affectedLayers = new HashSet<AnimGraphLayer>();
+        foreach (var layer in vm.Layers)
+        {
+            if (animBlueprintLayers.Contains(layer)) continue;
+            var toMove = layer.Nodes.Where(IsSaveCachedPoseNode).ToList();
+            if (toMove.Count == 0) continue;
+
+            foreach (var node in toMove)
+            {
+                layer.Nodes.Remove(node);
+                targetLayer.Nodes.Add(node);
+            }
+            affectedLayers.Add(layer);
+            moved = true;
+        }
+
+        // Scan state sub-graphs
+        foreach (var (_, layer) in vm.StateSubGraphs)
+        {
+            var toMove = layer.Nodes.Where(IsSaveCachedPoseNode).ToList();
+            if (toMove.Count == 0) continue;
+
+            foreach (var node in toMove)
+            {
+                layer.Nodes.Remove(node);
+                targetLayer.Nodes.Add(node);
+            }
+            affectedLayers.Add(layer);
+            moved = true;
+        }
+
+        if (!moved) return;
+
+        // Rebuild connections for the target layer and all affected source layers
+        RebuildLayerConnections(vm, targetLayer);
+        foreach (var layer in affectedLayers)
+            RebuildLayerConnections(vm, layer);
+    }
+
+    /// <summary>
+    /// Rebuilds a layer's connection list from vm.Connections based on which
+    /// nodes are currently in the layer, then re-runs layout.
+    /// </summary>
+    private static void RebuildLayerConnections(AnimGraphViewModel vm, AnimGraphLayer layer)
+    {
+        var nodeSet = new HashSet<AnimGraphNode>(layer.Nodes);
+        layer.Connections.Clear();
+        foreach (var conn in vm.Connections)
+        {
+            if (nodeSet.Contains(conn.SourceNode) && nodeSet.Contains(conn.TargetNode))
+                layer.Connections.Add(conn);
+        }
+        LayoutLayerNodes(layer);
     }
 
     /// <summary>
