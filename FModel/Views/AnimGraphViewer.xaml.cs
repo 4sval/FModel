@@ -671,14 +671,22 @@ public partial class AnimGraphViewer
     }
 
     /// <summary>
-    /// When a LinkedAnimLayer or StateMachine node is double-clicked, opens its
-    /// corresponding sub-graph in a new tab.
+    /// When a LinkedAnimLayer, StateMachine, or UseCachedPose node is double-clicked,
+    /// opens its corresponding sub-graph/layer in a new tab.
     /// - LinkedAnimLayer: matches "Layer" property → layer name from Root node's "Name"
     /// - StateMachine: matches "StateMachineName" property → layer name from BakedStateMachines
+    /// - UseCachedPose: finds the matching SaveCachedPose node via connections
+    ///   and navigates to the layer containing it
     /// </summary>
     private void TryOpenSubGraph(AnimGraphNode node)
     {
         string? layerName = null;
+
+        if (NodeMatchesType(node, "UseCachedPose"))
+        {
+            TryNavigateToSaveCachedPose(node);
+            return;
+        }
 
         if (node.ExportType.Contains("LinkedAnimLayer", StringComparison.OrdinalIgnoreCase))
         {
@@ -734,6 +742,80 @@ public partial class AnimGraphViewer
         }
 
         AddLayerTab(targetLayer);
+    }
+
+    /// <summary>
+    /// Navigates from a UseCachedPose node to its corresponding SaveCachedPose node.
+    /// Finds the SaveCachedPose through direct connections in the graph, locates the
+    /// layer containing it, switches to that layer's tab, and selects the node.
+    /// </summary>
+    private void TryNavigateToSaveCachedPose(AnimGraphNode useCachedPoseNode)
+    {
+        // Find the matching SaveCachedPose node via connections
+        AnimGraphNode? savePoseNode = null;
+        foreach (var conn in _viewModel.Connections)
+        {
+            if (conn.SourceNode == useCachedPoseNode && NodeMatchesType(conn.TargetNode, "SaveCachedPose"))
+            {
+                savePoseNode = conn.TargetNode;
+                break;
+            }
+            if (conn.TargetNode == useCachedPoseNode && NodeMatchesType(conn.SourceNode, "SaveCachedPose"))
+            {
+                savePoseNode = conn.SourceNode;
+                break;
+            }
+        }
+
+        if (savePoseNode == null)
+            return;
+
+        // Find which layer contains the SaveCachedPose node
+        AnimGraphLayer? targetLayer = null;
+        foreach (var layer in _viewModel.Layers)
+        {
+            if (layer.Nodes.Contains(savePoseNode))
+            {
+                targetLayer = layer;
+                break;
+            }
+        }
+        if (targetLayer == null)
+        {
+            foreach (var (_, layer) in _viewModel.StateSubGraphs)
+            {
+                if (layer.Nodes.Contains(savePoseNode))
+                {
+                    targetLayer = layer;
+                    break;
+                }
+            }
+        }
+        if (targetLayer == null)
+            return;
+
+        // Switch to the layer's tab (or open it)
+        System.Windows.Controls.TabItem? existingTab = null;
+        foreach (System.Windows.Controls.TabItem tab in LayerTabControl.Items)
+        {
+            if (tab.Tag == targetLayer)
+            {
+                existingTab = tab;
+                break;
+            }
+        }
+
+        if (existingTab != null)
+            LayerTabControl.SelectedItem = existingTab;
+        else
+            AddLayerTab(targetLayer);
+
+        // Select and highlight the SaveCachedPose node in the target layer
+        if (_layerStates.TryGetValue(targetLayer, out var state) &&
+            state.NodeVisuals.TryGetValue(savePoseNode, out var visual))
+        {
+            SelectNode(savePoseNode, visual.border);
+        }
     }
 
     /// <summary>
