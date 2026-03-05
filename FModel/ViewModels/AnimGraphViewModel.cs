@@ -356,31 +356,54 @@ public class AnimGraphViewModel
             }
         }
 
-        // Rename state sub-graphs whose nodes belong to a state machine
-        foreach (var (_, layer) in vm.StateSubGraphs)
+        // Iteratively rename state sub-graphs and discover nested StateMachine nodes.
+        // Each pass renames sub-graphs whose parent SM is already known, then registers
+        // any nested SM nodes found in the newly-renamed sub-graphs for the next pass.
+        bool changed = true;
+        while (changed)
         {
-            var smName = string.Empty;
-            foreach (var node in layer.Nodes)
+            changed = false;
+            foreach (var (_, layer) in vm.StateSubGraphs)
             {
-                if (node.AdditionalProperties.TryGetValue("BelongsToStateMachine", out var val) &&
-                    !string.IsNullOrEmpty(val))
+                var smName = string.Empty;
+                foreach (var node in layer.Nodes)
                 {
-                    smName = val;
-                    break;
+                    if (node.AdditionalProperties.TryGetValue("BelongsToStateMachine", out var val) &&
+                        !string.IsNullOrEmpty(val))
+                    {
+                        smName = val;
+                        break;
+                    }
+                }
+
+                if (string.IsNullOrEmpty(smName))
+                    continue;
+
+                if (!smParentLayer.TryGetValue(smName, out var parentName))
+                    continue;
+
+                // Per-state layers: use the _StateResult node's Name additional property for display
+                var stateResultNode = layer.Nodes.FirstOrDefault(n =>
+                    n.ExportType.EndsWith("_StateResult", StringComparison.OrdinalIgnoreCase));
+                var stateName = stateResultNode?.AdditionalProperties.GetValueOrDefault("Name") ?? layer.Name;
+                var expectedName = $"{parentName}{SubGraphPathSeparator}{smName}{SubGraphPathSeparator}{stateName}";
+
+                if (layer.Name != expectedName)
+                {
+                    layer.Name = expectedName;
+                    changed = true;
+                }
+
+                // Register any nested StateMachine nodes within this sub-graph
+                foreach (var node in layer.Nodes)
+                {
+                    if (node.AdditionalProperties.TryGetValue("StateMachineName", out var nestedMachineName))
+                    {
+                        if (smParentLayer.TryAdd(nestedMachineName, layer.Name))
+                            changed = true;
+                    }
                 }
             }
-
-            if (string.IsNullOrEmpty(smName))
-                continue;
-
-            if (!smParentLayer.TryGetValue(smName, out var parentName))
-                continue;
-
-            // Per-state layers: use the _StateResult node's Name additional property for display
-            var stateResultNode = layer.Nodes.FirstOrDefault(n =>
-                n.ExportType.EndsWith("_StateResult", StringComparison.OrdinalIgnoreCase));
-            var stateName = stateResultNode?.AdditionalProperties.GetValueOrDefault("Name") ?? layer.Name;
-            layer.Name = $"{parentName}{SubGraphPathSeparator}{smName}{SubGraphPathSeparator}{stateName}";
         }
     }
 
@@ -395,6 +418,15 @@ public class AnimGraphViewModel
         // Map: machineName → parent layer name (where the StateMachine node lives)
         var smParentLayer = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var layer in vm.Layers)
+        {
+            foreach (var node in layer.Nodes)
+            {
+                if (node.AdditionalProperties.TryGetValue("StateMachineName", out var machineName))
+                    smParentLayer.TryAdd(machineName, layer.Name);
+            }
+        }
+        // Also scan state sub-graphs for nested StateMachine nodes (already renamed by PrefixStateMachineLayerNames)
+        foreach (var (_, layer) in vm.StateSubGraphs)
         {
             foreach (var node in layer.Nodes)
             {
