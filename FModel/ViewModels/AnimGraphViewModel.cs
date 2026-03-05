@@ -235,6 +235,8 @@ public class AnimGraphViewModel
         // SaveCachedPose can only exist in animation blueprint layers (defined by _Root nodes).
         // Determine the correct _Root layer by tracing downstream UseCachedPose consumers
         // back through the state machine hierarchy to their parent animation blueprint layer.
+        // Each SaveCachedPose's upstream chain excludes other SaveCachedPose nodes so that
+        // chained SaveCachedPose → UseCachedPose → SaveCachedPose are independently placed.
         if (primaryGraphLayer != null)
         {
             var unassignedSavePoseNodes = vm.Nodes
@@ -250,7 +252,8 @@ public class AnimGraphViewModel
                 {
                     if (!assigned.Add(saveNode)) continue;
                     var targetLayer = FindOwnerRootLayer(saveNode, vm, lookups) ?? primaryGraphLayer;
-                    var inputChain = CollectUpstream(saveNode, upstreamOf, assigned);
+                    var inputChain = CollectUpstream(saveNode, upstreamOf, assigned,
+                        excludeNode: IsSaveCachedPoseNode);
                     targetLayer.Nodes.AddRange(inputChain);
                     affectedLayers.Add(targetLayer);
                 }
