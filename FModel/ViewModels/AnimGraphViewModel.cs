@@ -215,6 +215,12 @@ public class AnimGraphViewModel
             primaryGraphLayer ??= vm.Layers[^1];
         }
 
+        // Determine the outermost animation blueprint layer for fallback.
+        // In UE, the outermost layer is always named "AnimGraph".
+        // If found, use it; otherwise fall back to the first _Root layer.
+        var outermostGraphLayer = vm.Layers.FirstOrDefault(l =>
+            l.Name.Equals("AnimGraph", StringComparison.OrdinalIgnoreCase)) ?? primaryGraphLayer;
+
         // Pass 2: Build state machine state sub-graphs from AnimGraphNode_StateResult nodes.
         // Each _StateResult node defines a state's sub-graph within a state machine.
         // These are stored in StateSubGraphs keyed by the root node's property name.
@@ -237,7 +243,7 @@ public class AnimGraphViewModel
         // back through the state machine hierarchy to their parent animation blueprint layer.
         // Each SaveCachedPose's upstream chain excludes other SaveCachedPose nodes so that
         // chained SaveCachedPose → UseCachedPose → SaveCachedPose are independently placed.
-        if (primaryGraphLayer != null)
+        if (outermostGraphLayer != null)
         {
             var unassignedSavePoseNodes = vm.Nodes
                 .Where(n => !assigned.Contains(n) && IsSaveCachedPoseNode(n))
@@ -251,7 +257,7 @@ public class AnimGraphViewModel
                 foreach (var saveNode in unassignedSavePoseNodes)
                 {
                     if (!assigned.Add(saveNode)) continue;
-                    var targetLayer = FindOwnerRootLayer(saveNode, vm, lookups) ?? primaryGraphLayer;
+                    var targetLayer = FindOwnerRootLayer(saveNode, vm, lookups) ?? outermostGraphLayer;
                     var inputChain = CollectUpstream(saveNode, upstreamOf, assigned,
                         excludeNode: IsSaveCachedPoseNode);
                     targetLayer.Nodes.AddRange(inputChain);
@@ -309,9 +315,9 @@ public class AnimGraphViewModel
         // blueprint layers (layers that contain a _Root node). After all passes
         // above, scan every non-_Root layer (state sub-graphs and fallback layers)
         // and move any SaveCachedPose nodes to the correct _Root layer.
-        if (primaryGraphLayer != null)
+        if (outermostGraphLayer != null)
         {
-            EnforceSaveCachedPoseInRootLayers(vm, primaryGraphLayer);
+            EnforceSaveCachedPoseInRootLayers(vm, outermostGraphLayer);
         }
     }
 
@@ -406,15 +412,17 @@ public class AnimGraphViewModel
 
     /// <summary>
     /// Finds the correct animation blueprint layer (_Root layer) for a SaveCachedPose node
-    /// by tracing its downstream UseCachedPose consumers through the state machine
-    /// hierarchy to find the parent animation blueprint layer.
+    /// by tracing ALL downstream UseCachedPose consumers through the state machine
+    /// hierarchy to find each consumer's ancestor _Root layer. If all consumers trace
+    /// to the same _Root layer, that layer is used. If consumers span different _Root
+    /// layers, the SaveCachedPose must be placed in the outermost layer (AnimGraph).
     /// Returns null if no suitable layer is found.
     /// </summary>
     private static AnimGraphLayer? FindOwnerRootLayer(
         AnimGraphNode saveNode, AnimGraphViewModel vm, LayerLookups lookups)
     {
-        // Find downstream consumers (UseCachedPose nodes referencing this SaveCachedPose)
-        // Trace each consumer up to find the ancestor _Root layer
+        // Collect ancestor _Root layers from ALL consumers
+        var consumerRootLayers = new HashSet<AnimGraphLayer>();
         foreach (var conn in vm.Connections)
         {
             if (conn.SourceNode != saveNode) continue;
@@ -424,9 +432,20 @@ public class AnimGraphViewModel
 
             var rootLayer = GetAncestorRootLayer(consumerLayer, lookups.MachineToLayer);
             if (rootLayer != null)
-                return rootLayer;
+                consumerRootLayers.Add(rootLayer);
         }
 
+        if (consumerRootLayers.Count == 0)
+            return null;
+
+        // If all consumers trace to the same _Root layer, use it
+        if (consumerRootLayers.Count == 1)
+            return consumerRootLayers.First();
+
+        // Consumers span different _Root layers: the SaveCachedPose must be placed
+        // in the outermost animation blueprint layer (AnimGraph) since it needs to
+        // be accessible from all consumer layers. Return null to trigger fallback
+        // to the outermost layer.
         return null;
     }
 
