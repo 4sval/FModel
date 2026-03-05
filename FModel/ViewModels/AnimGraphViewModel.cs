@@ -231,9 +231,10 @@ public class AnimGraphViewModel
             AddStateSubGraph(vm, layerNodes, stateResultNode.Name, layerIndex++);
         }
 
-        // Pass 3: Catch any still-unassigned SaveCachedPose nodes and their input
-        // chains, adding them to the primary AnimGraph layer before the fallback
-        // handles remaining nodes.
+        // Pass 3: Assign unassigned SaveCachedPose nodes to their correct _Root layer.
+        // SaveCachedPose can only exist in animation blueprint layers (defined by _Root nodes).
+        // Determine the correct _Root layer by tracing downstream UseCachedPose consumers
+        // back through the state machine hierarchy to their parent animation blueprint layer.
         if (primaryGraphLayer != null)
         {
             var unassignedSavePoseNodes = vm.Nodes
@@ -242,14 +243,20 @@ public class AnimGraphViewModel
 
             if (unassignedSavePoseNodes.Count > 0)
             {
+                var lookups = BuildLayerLookups(vm);
+                var affectedLayers = new HashSet<AnimGraphLayer>();
+
                 foreach (var saveNode in unassignedSavePoseNodes)
                 {
                     if (!assigned.Add(saveNode)) continue;
+                    var targetLayer = FindOwnerRootLayer(saveNode, vm, lookups) ?? primaryGraphLayer;
                     var inputChain = CollectUpstream(saveNode, upstreamOf, assigned);
-                    primaryGraphLayer.Nodes.AddRange(inputChain);
+                    targetLayer.Nodes.AddRange(inputChain);
+                    affectedLayers.Add(targetLayer);
                 }
 
-                RebuildLayerConnections(vm, primaryGraphLayer);
+                foreach (var layer in affectedLayers)
+                    RebuildLayerConnections(vm, layer);
             }
         }
 
@@ -298,24 +305,23 @@ public class AnimGraphViewModel
         // Final enforcement: SaveCachedPose nodes can only exist in animation
         // blueprint layers (layers that contain a _Root node). After all passes
         // above, scan every non-_Root layer (state sub-graphs and fallback layers)
-        // and move any SaveCachedPose nodes to the primary _Root layer.
+        // and move any SaveCachedPose nodes to the correct _Root layer.
         if (primaryGraphLayer != null)
         {
-            EnforceSaveCachedPoseInAnimBlueprintLayer(vm, primaryGraphLayer);
+            EnforceSaveCachedPoseInRootLayers(vm, primaryGraphLayer);
         }
     }
 
     /// <summary>
     /// Ensures every SaveCachedPose node resides in an animation blueprint layer
     /// (one that contains a _Root node). Any SaveCachedPose found in a state
-    /// sub-graph or a fallback connected-component layer is moved to
-    /// <paramref name="targetLayer"/> and the affected layers are rebuilt.
+    /// sub-graph or a fallback connected-component layer is moved to the correct
+    /// _Root layer determined by tracing its UseCachedPose consumers.
+    /// Falls back to <paramref name="fallbackLayer"/> if no better target is found.
     /// </summary>
-    private static void EnforceSaveCachedPoseInAnimBlueprintLayer(
-        AnimGraphViewModel vm, AnimGraphLayer targetLayer)
+    private static void EnforceSaveCachedPoseInRootLayers(
+        AnimGraphViewModel vm, AnimGraphLayer fallbackLayer)
     {
-        var moved = false;
-
         // Identify animation-blueprint layers (layers that contain a _Root node)
         var animBlueprintLayers = new HashSet<AnimGraphLayer>();
         foreach (var layer in vm.Layers)
@@ -324,44 +330,138 @@ public class AnimGraphViewModel
                 animBlueprintLayers.Add(layer);
         }
 
-        // Scan non-animation-blueprint layers in vm.Layers
-        var affectedLayers = new HashSet<AnimGraphLayer>();
+        // Collect SaveCachedPose nodes from non-_Root layers and state sub-graphs
+        var moves = new List<(AnimGraphNode node, AnimGraphLayer sourceLayer)>();
+
         foreach (var layer in vm.Layers)
         {
             if (animBlueprintLayers.Contains(layer)) continue;
-            var toMove = layer.Nodes.Where(IsSaveCachedPoseNode).ToList();
-            if (toMove.Count == 0) continue;
-
-            foreach (var node in toMove)
-            {
-                layer.Nodes.Remove(node);
-                targetLayer.Nodes.Add(node);
-            }
-            affectedLayers.Add(layer);
-            moved = true;
+            foreach (var node in layer.Nodes.Where(IsSaveCachedPoseNode).ToList())
+                moves.Add((node, layer));
         }
 
-        // Scan state sub-graphs
         foreach (var (_, layer) in vm.StateSubGraphs)
         {
-            var toMove = layer.Nodes.Where(IsSaveCachedPoseNode).ToList();
-            if (toMove.Count == 0) continue;
-
-            foreach (var node in toMove)
-            {
-                layer.Nodes.Remove(node);
-                targetLayer.Nodes.Add(node);
-            }
-            affectedLayers.Add(layer);
-            moved = true;
+            foreach (var node in layer.Nodes.Where(IsSaveCachedPoseNode).ToList())
+                moves.Add((node, layer));
         }
 
-        if (!moved) return;
+        if (moves.Count == 0) return;
 
-        // Rebuild connections for the target layer and all affected source layers
-        RebuildLayerConnections(vm, targetLayer);
+        var lookups = BuildLayerLookups(vm);
+        var affectedLayers = new HashSet<AnimGraphLayer>();
+        foreach (var (node, sourceLayer) in moves)
+        {
+            var targetLayer = FindOwnerRootLayer(node, vm, lookups) ?? fallbackLayer;
+            sourceLayer.Nodes.Remove(node);
+            targetLayer.Nodes.Add(node);
+            affectedLayers.Add(sourceLayer);
+            affectedLayers.Add(targetLayer);
+        }
+
         foreach (var layer in affectedLayers)
             RebuildLayerConnections(vm, layer);
+    }
+
+    /// <summary>
+    /// Pre-computed lookup maps for layer hierarchy traversal.
+    /// </summary>
+    private readonly struct LayerLookups(
+        Dictionary<AnimGraphNode, AnimGraphLayer> nodeToLayer,
+        Dictionary<string, AnimGraphLayer> machineToLayer)
+    {
+        public Dictionary<AnimGraphNode, AnimGraphLayer> NodeToLayer { get; } = nodeToLayer;
+        public Dictionary<string, AnimGraphLayer> MachineToLayer { get; } = machineToLayer;
+    }
+
+    /// <summary>
+    /// Builds the lookup maps needed by <see cref="FindOwnerRootLayer"/> and
+    /// <see cref="GetAncestorRootLayer"/>. Call once and reuse for multiple queries.
+    /// </summary>
+    private static LayerLookups BuildLayerLookups(AnimGraphViewModel vm)
+    {
+        var nodeToLayer = new Dictionary<AnimGraphNode, AnimGraphLayer>();
+        foreach (var layer in vm.Layers)
+            foreach (var node in layer.Nodes)
+                nodeToLayer.TryAdd(node, layer);
+        foreach (var (_, subGraph) in vm.StateSubGraphs)
+            foreach (var node in subGraph.Nodes)
+                nodeToLayer.TryAdd(node, subGraph);
+
+        var machineToLayer = new Dictionary<string, AnimGraphLayer>(StringComparer.OrdinalIgnoreCase);
+        foreach (var layer in vm.Layers)
+            foreach (var node in layer.Nodes)
+                if (node.AdditionalProperties.TryGetValue("StateMachineName", out var mn))
+                    machineToLayer.TryAdd(mn, layer);
+        foreach (var (_, subGraph) in vm.StateSubGraphs)
+            foreach (var node in subGraph.Nodes)
+                if (node.AdditionalProperties.TryGetValue("StateMachineName", out var mn))
+                    machineToLayer.TryAdd(mn, subGraph);
+
+        return new LayerLookups(nodeToLayer, machineToLayer);
+    }
+
+    /// <summary>
+    /// Finds the correct animation blueprint layer (_Root layer) for a SaveCachedPose node
+    /// by tracing its downstream UseCachedPose consumers through the state machine
+    /// hierarchy to find the parent animation blueprint layer.
+    /// Returns null if no suitable layer is found.
+    /// </summary>
+    private static AnimGraphLayer? FindOwnerRootLayer(
+        AnimGraphNode saveNode, AnimGraphViewModel vm, LayerLookups lookups)
+    {
+        // Find downstream consumers (UseCachedPose nodes referencing this SaveCachedPose)
+        // Trace each consumer up to find the ancestor _Root layer
+        foreach (var conn in vm.Connections)
+        {
+            if (conn.SourceNode != saveNode) continue;
+
+            if (!lookups.NodeToLayer.TryGetValue(conn.TargetNode, out var consumerLayer))
+                continue;
+
+            var rootLayer = GetAncestorRootLayer(consumerLayer, lookups.MachineToLayer);
+            if (rootLayer != null)
+                return rootLayer;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Walks up the layer hierarchy to find the nearest ancestor animation blueprint
+    /// layer (one containing a _Root node). For state sub-graphs, traces through the
+    /// BelongsToStateMachine → StateMachineName chain to find the parent layer.
+    /// </summary>
+    private static AnimGraphLayer? GetAncestorRootLayer(
+        AnimGraphLayer layer,
+        Dictionary<string, AnimGraphLayer> machineToLayer)
+    {
+        var visited = new HashSet<AnimGraphLayer>();
+        var current = layer;
+
+        while (current != null && visited.Add(current))
+        {
+            // If this layer contains a _Root node, it's an animation blueprint layer
+            if (current.Nodes.Any(n => n.ExportType.EndsWith("_Root", StringComparison.OrdinalIgnoreCase)))
+                return current;
+
+            // Find the state machine this sub-graph belongs to
+            string? smName = null;
+            foreach (var node in current.Nodes)
+            {
+                if (node.AdditionalProperties.TryGetValue("BelongsToStateMachine", out var val) &&
+                    !string.IsNullOrEmpty(val))
+                {
+                    smName = val;
+                    break;
+                }
+            }
+
+            if (string.IsNullOrEmpty(smName) || !machineToLayer.TryGetValue(smName, out current))
+                break;
+        }
+
+        return null;
     }
 
     /// <summary>
