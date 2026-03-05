@@ -231,6 +231,10 @@ public partial class AnimGraphViewer
         var pairGroups = new Dictionary<(AnimGraphNode, AnimGraphNode), List<AnimGraphConnection>>();
         foreach (var conn in state.Layer.Connections)
         {
+            // Skip connections between SaveCachedPose and UseCachedPose nodes
+            if (IsCachedPoseConnection(conn))
+                continue;
+
             var isTransition = (conn.SourceNode.IsStateMachineState || conn.SourceNode.IsEntryNode) &&
                                (conn.TargetNode.IsStateMachineState || conn.TargetNode.IsEntryNode);
             if (isTransition)
@@ -918,6 +922,28 @@ public partial class AnimGraphViewer
             Panel.SetZIndex(path, 0);
             state.Canvas.Children.Add(path);
         }
+    }
+
+    /// <summary>
+    /// Returns true if the connection links a SaveCachedPose node to a UseCachedPose node
+    /// (or vice-versa). These connections are not drawn because the cached pose link is
+    /// an implicit data dependency, not a visible wire in UE's animation blueprint editor.
+    /// </summary>
+    private static bool IsCachedPoseConnection(AnimGraphConnection conn)
+    {
+        var srcType = conn.SourceNode.ExportType;
+        var tgtType = conn.TargetNode.ExportType;
+
+        var srcIsSave = srcType.Contains("SaveCachedPose", StringComparison.OrdinalIgnoreCase) ||
+                        conn.SourceNode.Name.Contains("SaveCachedPose", StringComparison.OrdinalIgnoreCase);
+        var srcIsUse  = srcType.Contains("UseCachedPose", StringComparison.OrdinalIgnoreCase) ||
+                        conn.SourceNode.Name.Contains("UseCachedPose", StringComparison.OrdinalIgnoreCase);
+        var tgtIsSave = tgtType.Contains("SaveCachedPose", StringComparison.OrdinalIgnoreCase) ||
+                        conn.TargetNode.Name.Contains("SaveCachedPose", StringComparison.OrdinalIgnoreCase);
+        var tgtIsUse  = tgtType.Contains("UseCachedPose", StringComparison.OrdinalIgnoreCase) ||
+                        conn.TargetNode.Name.Contains("UseCachedPose", StringComparison.OrdinalIgnoreCase);
+
+        return (srcIsSave && tgtIsUse) || (srcIsUse && tgtIsSave);
     }
 
     /// <summary>
