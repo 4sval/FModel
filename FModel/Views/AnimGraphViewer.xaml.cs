@@ -931,19 +931,18 @@ public partial class AnimGraphViewer
     /// </summary>
     private static bool IsCachedPoseConnection(AnimGraphConnection conn)
     {
-        var srcType = conn.SourceNode.ExportType;
-        var tgtType = conn.TargetNode.ExportType;
-
-        var srcIsSave = srcType.Contains("SaveCachedPose", StringComparison.OrdinalIgnoreCase) ||
-                        conn.SourceNode.Name.Contains("SaveCachedPose", StringComparison.OrdinalIgnoreCase);
-        var srcIsUse  = srcType.Contains("UseCachedPose", StringComparison.OrdinalIgnoreCase) ||
-                        conn.SourceNode.Name.Contains("UseCachedPose", StringComparison.OrdinalIgnoreCase);
-        var tgtIsSave = tgtType.Contains("SaveCachedPose", StringComparison.OrdinalIgnoreCase) ||
-                        conn.TargetNode.Name.Contains("SaveCachedPose", StringComparison.OrdinalIgnoreCase);
-        var tgtIsUse  = tgtType.Contains("UseCachedPose", StringComparison.OrdinalIgnoreCase) ||
-                        conn.TargetNode.Name.Contains("UseCachedPose", StringComparison.OrdinalIgnoreCase);
+        var srcIsSave = NodeMatchesType(conn.SourceNode, "SaveCachedPose");
+        var srcIsUse  = NodeMatchesType(conn.SourceNode, "UseCachedPose");
+        var tgtIsSave = NodeMatchesType(conn.TargetNode, "SaveCachedPose");
+        var tgtIsUse  = NodeMatchesType(conn.TargetNode, "UseCachedPose");
 
         return (srcIsSave && tgtIsUse) || (srcIsUse && tgtIsSave);
+    }
+
+    private static bool NodeMatchesType(AnimGraphNode node, string typeFragment)
+    {
+        return node.ExportType.Contains(typeFragment, StringComparison.OrdinalIgnoreCase) ||
+               node.Name.Contains(typeFragment, StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>
