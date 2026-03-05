@@ -810,12 +810,17 @@ public partial class AnimGraphViewer
         else
             AddLayerTab(targetLayer);
 
-        // Select and highlight the SaveCachedPose node in the target layer
-        if (_layerStates.TryGetValue(targetLayer, out var state) &&
-            state.NodeVisuals.TryGetValue(savePoseNode, out var visual))
+        // Select and highlight the SaveCachedPose node in the target layer.
+        // Use Dispatcher.BeginInvoke to ensure the visual tree is fully updated
+        // after the tab switch before attempting to select the node.
+        Dispatcher.BeginInvoke(() =>
         {
-            SelectNode(savePoseNode, visual.border);
-        }
+            if (_layerStates.TryGetValue(targetLayer, out var state) &&
+                state.NodeVisuals.TryGetValue(savePoseNode, out var visual))
+            {
+                SelectNode(savePoseNode, visual.border);
+            }
+        });
     }
 
     /// <summary>
