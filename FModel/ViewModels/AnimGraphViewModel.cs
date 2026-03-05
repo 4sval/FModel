@@ -243,25 +243,74 @@ public class AnimGraphViewModel
         // back through the state machine hierarchy to their parent animation blueprint layer.
         // Each SaveCachedPose's upstream chain excludes other SaveCachedPose nodes so that
         // chained SaveCachedPose → UseCachedPose → SaveCachedPose are independently placed.
+        //
+        // When chains exist (e.g. UseCachedPose(A) → … → SaveCachedPose(B) →
+        // UseCachedPose(B) → … → SaveCachedPose(C)), the UseCachedPose consumers of
+        // upstream SaveCachedPose nodes may only appear in a layer after the downstream
+        // SaveCachedPose is processed. We therefore iterate: each pass rebuilds lookups
+        // and resolves nodes whose consumers are already placed, deferring the rest.
         if (outermostGraphLayer != null)
         {
-            var unassignedSavePoseNodes = vm.Nodes
+            var pending = vm.Nodes
                 .Where(n => !assigned.Contains(n) && IsSaveCachedPoseNode(n))
                 .ToList();
 
-            if (unassignedSavePoseNodes.Count > 0)
+            if (pending.Count > 0)
             {
-                var lookups = BuildLayerLookups(vm);
                 var affectedLayers = new HashSet<AnimGraphLayer>();
 
-                foreach (var saveNode in unassignedSavePoseNodes)
+                bool madeProgress;
+                var maxPasses = pending.Count;
+                do
+                {
+                    madeProgress = false;
+                    var lookups = BuildLayerLookups(vm);
+
+                    for (var i = pending.Count - 1; i >= 0; i--)
+                    {
+                        var saveNode = pending[i];
+                        var targetLayer = FindOwnerRootLayer(saveNode, vm, lookups);
+
+                        // If no layer was found, check whether the failure is because
+                        // some consumer nodes are not yet in any layer (deferred
+                        // dependency). If so, skip this node and retry next pass.
+                        if (targetLayer == null)
+                        {
+                            var hasDeferredConsumer = false;
+                            foreach (var conn in vm.Connections)
+                            {
+                                if (conn.SourceNode == saveNode &&
+                                    !lookups.NodeToLayer.ContainsKey(conn.TargetNode))
+                                {
+                                    hasDeferredConsumer = true;
+                                    break;
+                                }
+                            }
+
+                            if (hasDeferredConsumer)
+                                continue;
+
+                            targetLayer = outermostGraphLayer;
+                        }
+
+                        assigned.Add(saveNode);
+                        var inputChain = CollectUpstream(saveNode, upstreamOf, assigned,
+                            excludeNode: IsSaveCachedPoseNode);
+                        targetLayer.Nodes.AddRange(inputChain);
+                        affectedLayers.Add(targetLayer);
+                        pending.RemoveAt(i);
+                        madeProgress = true;
+                    }
+                } while (madeProgress && pending.Count > 0 && --maxPasses > 0);
+
+                // Fallback: remaining nodes (circular deps or truly unresolvable)
+                foreach (var saveNode in pending)
                 {
                     if (!assigned.Add(saveNode)) continue;
-                    var targetLayer = FindOwnerRootLayer(saveNode, vm, lookups) ?? outermostGraphLayer;
                     var inputChain = CollectUpstream(saveNode, upstreamOf, assigned,
                         excludeNode: IsSaveCachedPoseNode);
-                    targetLayer.Nodes.AddRange(inputChain);
-                    affectedLayers.Add(targetLayer);
+                    outermostGraphLayer.Nodes.AddRange(inputChain);
+                    affectedLayers.Add(outermostGraphLayer);
                 }
 
                 foreach (var layer in affectedLayers)
