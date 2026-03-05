@@ -209,11 +209,31 @@ public partial class AnimGraphViewer
             var backward = allConns.Where(c => c.SourceNode == nodeB).ToList();
             var hasBothDirections = forward.Count > 0 && backward.Count > 0;
 
+            // Compute a stable perpendicular vector based on the canonical pair direction (nodeA→nodeB)
+            // so that forward and backward connections are offset to opposite sides consistently
+            var pairPerpX = 0.0;
+            var pairPerpY = 0.0;
+            if (hasBothDirections)
+            {
+                var centerA = GetNodeCenter(state, nodeA);
+                var centerB = GetNodeCenter(state, nodeB);
+                var pdx = centerB.X - centerA.X;
+                var pdy = centerB.Y - centerA.Y;
+                var pLen = Math.Sqrt(pdx * pdx + pdy * pdy);
+                if (pLen > DistanceEpsilon)
+                {
+                    pairPerpX = -pdy / pLen;
+                    pairPerpY = pdx / pLen;
+                }
+            }
+
             for (var i = 0; i < forward.Count; i++)
-                DrawConnectionLine(state, forward[i], i, forward.Count, perpSide: 1, hasBothDirections: hasBothDirections);
+                DrawConnectionLine(state, forward[i], i, forward.Count,
+                    pairPerpX, pairPerpY, perpSide: 1, hasBothDirections: hasBothDirections);
 
             for (var i = 0; i < backward.Count; i++)
-                DrawConnectionLine(state, backward[i], i, backward.Count, perpSide: -1, hasBothDirections: hasBothDirections);
+                DrawConnectionLine(state, backward[i], i, backward.Count,
+                    pairPerpX, pairPerpY, perpSide: -1, hasBothDirections: hasBothDirections);
         }
 
         // Draw nodes
@@ -764,6 +784,7 @@ public partial class AnimGraphViewer
 
     private void DrawConnectionLine(LayerCanvasState state, AnimGraphConnection conn,
         int sameDirectionIndex = 0, int sameDirectionCount = 1,
+        double pairPerpX = 0, double pairPerpY = 0,
         int perpSide = 0, bool hasBothDirections = false)
     {
         var sourceKey = (conn.SourceNode, conn.SourcePinName, true);
@@ -789,15 +810,12 @@ public partial class AnimGraphViewer
 
             if (cLen > DistanceEpsilon)
             {
-                var px = -cdy / cLen; // perpendicular unit X
-                var py = cdx / cLen;  // perpendicular unit Y
-
-                // Different directions on opposite perpendicular sides
+                // Use the pre-computed canonical pair perpendicular for bidirectional separation
                 if (hasBothDirections)
                 {
                     var sideOffset = perpSide * TransitionMultiOffset;
-                    startPos = new Point(startPos.X + px * sideOffset, startPos.Y + py * sideOffset);
-                    endPos = new Point(endPos.X + px * sideOffset, endPos.Y + py * sideOffset);
+                    startPos = new Point(startPos.X + pairPerpX * sideOffset, startPos.Y + pairPerpY * sideOffset);
+                    endPos = new Point(endPos.X + pairPerpX * sideOffset, endPos.Y + pairPerpY * sideOffset);
                 }
 
                 // Multiple same-direction transitions: offset circles along the line direction
