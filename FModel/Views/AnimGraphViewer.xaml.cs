@@ -86,7 +86,7 @@ public partial class AnimGraphViewer
             l.Name.Equals("AnimGraph", StringComparison.OrdinalIgnoreCase))
             ?? _viewModel.Layers[0];
 
-        AddLayerTab(outputLayer);
+        AddLayerTab(outputLayer, closable: false);
 
         if (LayerTabControl.Items.Count > 0)
             LayerTabControl.SelectedIndex = 0;
@@ -95,13 +95,46 @@ public partial class AnimGraphViewer
     /// <summary>
     /// Creates a new tab for the given layer and selects it.
     /// </summary>
-    private void AddLayerTab(AnimGraphLayer layer)
+    private void AddLayerTab(AnimGraphLayer layer, bool closable = true)
     {
-        var tabItem = new System.Windows.Controls.TabItem
+        var tabItem = new System.Windows.Controls.TabItem { Tag = layer };
+
+        if (closable)
         {
-            Header = layer.Name,
-            Tag = layer
-        };
+            // Build a header with text + close button
+            var headerPanel = new StackPanel { Orientation = Orientation.Horizontal };
+            headerPanel.Children.Add(new TextBlock
+            {
+                Text = layer.Name,
+                VerticalAlignment = VerticalAlignment.Center,
+                MaxWidth = 200,
+                TextTrimming = TextTrimming.CharacterEllipsis
+            });
+            var closeBtn = new Button
+            {
+                Content = "×",
+                FontSize = 12,
+                Padding = new Thickness(4, 0, 4, 0),
+                Margin = new Thickness(6, 0, 0, 0),
+                VerticalAlignment = VerticalAlignment.Center,
+                Background = Brushes.Transparent,
+                BorderThickness = new Thickness(0),
+                Cursor = Cursors.Hand,
+                Foreground = Brushes.Gray
+            };
+            closeBtn.Click += (_, _) => CloseTab(tabItem);
+            headerPanel.Children.Add(closeBtn);
+            tabItem.Header = headerPanel;
+        }
+        else
+        {
+            tabItem.Header = new TextBlock
+            {
+                Text = layer.Name,
+                MaxWidth = 200,
+                TextTrimming = TextTrimming.CharacterEllipsis
+            };
+        }
 
         var canvasBorder = new Border
         {
@@ -137,6 +170,24 @@ public partial class AnimGraphViewer
 
         LayerTabControl.Items.Add(tabItem);
         LayerTabControl.SelectedItem = tabItem;
+    }
+
+    /// <summary>
+    /// Closes the given tab and cleans up its layer state.
+    /// </summary>
+    private void CloseTab(System.Windows.Controls.TabItem tabItem)
+    {
+        if (tabItem.Tag is AnimGraphLayer layer)
+            _layerStates.Remove(layer);
+
+        var index = LayerTabControl.Items.IndexOf(tabItem);
+        LayerTabControl.Items.Remove(tabItem);
+
+        // Select the previous tab or the first one
+        if (LayerTabControl.Items.Count > 0)
+        {
+            LayerTabControl.SelectedIndex = Math.Max(0, index - 1);
+        }
     }
 
     private void OnLayerTabChanged(object sender, SelectionChangedEventArgs e)

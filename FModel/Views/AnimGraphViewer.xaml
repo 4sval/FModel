@@ -41,9 +41,24 @@
                 <ColumnDefinition Width="280" MinWidth="200"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Layer tabs with graph canvas -->
+            <!-- Layer tabs with graph canvas (single-line, scrollable tab strip) -->
             <TabControl x:Name="LayerTabControl" Grid.Column="0" SelectionChanged="OnLayerTabChanged"
-                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"/>
+                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}">
+                <TabControl.Template>
+                    <ControlTemplate TargetType="TabControl">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                                <TabPanel IsItemsHost="True"/>
+                            </ScrollViewer>
+                            <ContentPresenter Grid.Row="1" ContentSource="SelectedContent"/>
+                        </Grid>
+                    </ControlTemplate>
+                </TabControl.Template>
+            </TabControl>
 
             <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch"
                           Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}"/>
