@@ -234,6 +234,7 @@ public class AnimGraphViewModel
         // Pass 3: Move unassigned SaveCachedPose nodes and their input chains
         // to the primary AnimGraph layer. In UE, SaveCachedPose can only exist at
         // the animation blueprint's top-level layer, not inside state machine sub-graphs.
+        // If no _Root layer exists, these nodes fall through to the fallback handler below.
         if (primaryGraphLayer != null)
         {
             var unassignedSavePoseNodes = vm.Nodes
