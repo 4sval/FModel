@@ -122,17 +122,49 @@ public class FLogger : ITextFormatter
     {
         try
         {
+            var isWebUrl = Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult)
+                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+            var linkColor = isWebUrl ? Brushes.DodgerBlue : Brushes.Cornsilk;
+            var hoverColor = isWebUrl ? Brushes.DeepSkyBlue : Brushes.Gold;
+
             new Hyperlink(new Run(newLine ? $"{message}{Environment.NewLine}" : message), Logger.Document.ContentEnd)
             {
                 NavigateUri = new Uri(url),
                 OverridesDefaultStyle = true,
-                Style = new Style(typeof(Hyperlink)) { Setters =
+                Style = new Style(typeof(Hyperlink))
                 {
-                    new Setter(FrameworkContentElement.CursorProperty, Cursors.Hand),
-                    new Setter(TextBlock.TextDecorationsProperty, TextDecorations.Underline),
-                    new Setter(TextElement.ForegroundProperty, Brushes.Cornsilk)
-                }}
-            }.Click += (sender, _) => Process.Start("explorer.exe", $"/select, \"{((Hyperlink)sender).NavigateUri.AbsoluteUri}\"");
+                    Setters =
+                    {
+                        new Setter(FrameworkContentElement.CursorProperty, Cursors.Hand),
+                        new Setter(TextElement.ForegroundProperty, linkColor),
+                        new Setter(TextElement.FontWeightProperty, FontWeights.Bold)
+                    },
+                    Triggers =
+                    {
+                        new Trigger
+                        {
+                            Property = UIElement.IsMouseOverProperty,
+                            Value = true,
+                            Setters =
+                            { 
+                                new Setter(TextElement.ForegroundProperty, hoverColor),
+                                new Setter(TextBlock.TextDecorationsProperty, TextDecorations.Underline)
+                            }
+                        }
+                    }
+                }
+            }.Click += (sender, _) =>
+            {
+                var uri = ((Hyperlink) sender).NavigateUri.AbsoluteUri;
+                if (isWebUrl)
+                {
+                    Process.Start(new ProcessStartInfo(uri) { UseShellExecute = true });
+                }
+                else
+                {
+                    Process.Start("explorer.exe", $"/select, \"{uri}\"");
+                }
+            };
         }
         finally
         {

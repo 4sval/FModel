@@ -356,6 +356,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             case "csv":
                 AssetCategory = EAssetCategory.Data;
                 break;
+            case "stinfo":
             case "ushaderbytecode":
                 AssetCategory = EAssetCategory.ByteCode;
                 break;

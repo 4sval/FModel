@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CUE4Parse.UE4.Exceptions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Views.Resources.Controls;
@@ -92,6 +93,20 @@ public class ThreadWorkerViewModel : ViewModel
                     CurrentCancellationTokenSource = null; // kill token
                     OperationCancelled = true;
                     OperationCancelled = false;
+                    return;
+                }
+                catch (MappingException e)
+                {
+                    _applicationView.Status.SetStatus(EStatusKind.Failed);
+                    CurrentCancellationTokenSource = null; // kill token
+
+                    Log.Error("{Exception}", e);
+                    FLogger.Append(ELog.Error, () =>
+                    {
+                        FLogger.Text($"Package has unversioned properties but mapping file (.usmap) is missing, can't serialize. See: ", Constants.WHITE);
+                        FLogger.Link("[Resolve Mapping Error]", Constants.MAPPING_ISSUE_LINK, true);
+                    });
+
                     return;
                 }
                 catch (Exception e)

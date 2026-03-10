@@ -28,6 +28,7 @@ public static class Constants
     public const string YELLOW = "#E5C07B";
     public const string BLUE = "#528BCC";
 
+    public const string MAPPING_ISSUE_LINK = "https://github.com/4sval/FModel/discussions/418";
     public const string ISSUE_LINK = "https://github.com/4sval/FModel/discussions/categories/q-a";
     public const string GH_REPO = "https://api.github.com/repos/4sval/FModel";
     public const string GH_COMMITS_HISTORY = GH_REPO + "/commits";
