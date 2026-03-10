@@ -95,27 +95,24 @@ public class ThreadWorkerViewModel : ViewModel
                     OperationCancelled = false;
                     return;
                 }
-                catch (MappingException e)
-                {
-                    _applicationView.Status.SetStatus(EStatusKind.Failed);
-                    CurrentCancellationTokenSource = null; // kill token
-
-                    Log.Error("{Exception}", e);
-                    FLogger.Append(ELog.Error, () =>
-                    {
-                        FLogger.Text($"Package has unversioned properties but mapping file (.usmap) is missing, can't serialize. See: ", Constants.WHITE);
-                        FLogger.Link("[Resolve Mapping Error]", Constants.MAPPING_ISSUE_LINK, true);
-                    });
-
-                    return;
-                }
                 catch (Exception e)
                 {
                     _applicationView.Status.SetStatus(EStatusKind.Failed);
                     CurrentCancellationTokenSource = null; // kill token
 
                     Log.Error("{Exception}", e);
-                    FLogger.Append(e);
+                    if (e is MappingException)
+                    {
+                        FLogger.Append(ELog.Error, () =>
+                        {
+                            FLogger.Text("Package has unversioned properties but mapping file (.usmap) is missing, can't serialize. See: ", Constants.WHITE);
+                            FLogger.Link("→ link ←", Constants.MAPPING_ISSUE_LINK, true);
+                        });
+                    }
+                    else
+                    {
+                        FLogger.Append(e);
+                    }
                     return;
                 }
             }

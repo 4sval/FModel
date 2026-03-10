@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -122,11 +122,6 @@ public class FLogger : ITextFormatter
     {
         try
         {
-            var isWebUrl = Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult)
-                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
-            var linkColor = isWebUrl ? Brushes.DodgerBlue : Brushes.Cornsilk;
-            var hoverColor = isWebUrl ? Brushes.DeepSkyBlue : Brushes.Gold;
-
             new Hyperlink(new Run(newLine ? $"{message}{Environment.NewLine}" : message), Logger.Document.ContentEnd)
             {
                 NavigateUri = new Uri(url),
@@ -136,7 +131,7 @@ public class FLogger : ITextFormatter
                     Setters =
                     {
                         new Setter(FrameworkContentElement.CursorProperty, Cursors.Hand),
-                        new Setter(TextElement.ForegroundProperty, linkColor),
+                        new Setter(TextElement.ForegroundProperty, Brushes.Goldenrod),
                         new Setter(TextElement.FontWeightProperty, FontWeights.Bold)
                     },
                     Triggers =
@@ -146,8 +141,8 @@ public class FLogger : ITextFormatter
                             Property = UIElement.IsMouseOverProperty,
                             Value = true,
                             Setters =
-                            { 
-                                new Setter(TextElement.ForegroundProperty, hoverColor),
+                            {
+                                new Setter(TextElement.ForegroundProperty, Brushes.Gold),
                                 new Setter(TextBlock.TextDecorationsProperty, TextDecorations.Underline)
                             }
                         }
@@ -155,14 +150,14 @@ public class FLogger : ITextFormatter
                 }
             }.Click += (sender, _) =>
             {
-                var uri = ((Hyperlink) sender).NavigateUri.AbsoluteUri;
-                if (isWebUrl)
+                var uri = ((Hyperlink) sender).NavigateUri;
+                if (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
                 {
-                    Process.Start(new ProcessStartInfo(uri) { UseShellExecute = true });
+                    Process.Start(new ProcessStartInfo(uri.AbsoluteUri) { UseShellExecute = true });
                 }
                 else
                 {
-                    Process.Start("explorer.exe", $"/select, \"{uri}\"");
+                    Process.Start("explorer.exe", $"/select, \"{uri.AbsoluteUri}\"");
                 }
             };
         }
