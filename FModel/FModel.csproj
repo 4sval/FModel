@@ -158,8 +158,8 @@
                       Version="11.3.12" />
     <PackageReference Include="Autoupdater.NET.Official"
                       Version="1.9.2" />
-    <PackageReference Include="AvalonEdit"
-                      Version="6.3.1.120" />
+    <PackageReference Include="AvaloniaEdit"
+                      Version="0.10.12" />
     <PackageReference Include="CSCore"
                       Version="1.2.1.2" />
     <PackageReference Include="DiscordRichPresence"
