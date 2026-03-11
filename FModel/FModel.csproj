@@ -148,10 +148,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AdonisUI"
-                      Version="1.17.1" />
-    <PackageReference Include="AdonisUI.ClassicTheme"
-                      Version="1.17.1" />
+    <PackageReference Include="Avalonia"
+                      Version="11.3.12" />
+    <PackageReference Include="Avalonia.Desktop"
+                      Version="11.3.12" />
+    <PackageReference Include="Avalonia.Themes.Fluent"
+                      Version="11.3.12" />
+    <PackageReference Include="Avalonia.Fonts.Inter"
+                      Version="11.3.12" />
     <PackageReference Include="Autoupdater.NET.Official"
                       Version="1.9.2" />
     <PackageReference Include="AvalonEdit"
