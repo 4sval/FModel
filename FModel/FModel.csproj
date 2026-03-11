@@ -160,8 +160,6 @@
                       Version="1.9.2" />
     <PackageReference Include="AvaloniaEdit"
                       Version="0.10.12" />
-    <PackageReference Include="CSCore"
-                      Version="1.2.1.2" />
     <PackageReference Include="DiscordRichPresence"
                       Version="1.6.1.70" />
     <PackageReference Include="EpicManifestParser"
