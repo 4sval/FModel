@@ -1,0 +1,56 @@
+{
+  // ─── Editor ────────────────────────────────────────────────────────────────
+  // Defer all formatting rules to .editorconfig
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": false,
+  "editor.trimAutoWhitespace": true,
+  "editor.rulers": [120],
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+  "editor.stickyScroll.enabled": true,
+
+  // ─── Files ─────────────────────────────────────────────────────────────────
+  "files.eol": "\n",
+  "files.encoding": "utf8",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.associations": {
+    "*.xaml": "xml",
+    "*.axaml": "xml",
+    "*.frag": "glsl",
+    "*.vert": "glsl"
+  },
+  "files.exclude": {
+    "**/bin/": true,
+    "**/obj/": true,
+    "**/.vs/": true
+  },
+  "search.exclude": {
+    "**/bin/": true,
+    "**/obj/": true,
+    "**/CUE4Parse/CUE4Parse-Natives/": true
+  },
+
+  // ─── C# Dev Kit ────────────────────────────────────────────────────────────
+  "dotnet.defaultSolution": "FModel/FModel.sln",
+  "dotnet.backgroundAnalysis.analyzerDiagnosticsScope": "fullSolution",
+  "dotnet.backgroundAnalysis.compilerDiagnosticsScope": "fullSolution",
+  // Format on save respects .editorconfig rules
+  "[csharp]": {
+    "editor.defaultFormatter": "ms-dotnettools.csharp",
+    "editor.formatOnSave": true
+  },
+
+  // ─── XML / XAML ────────────────────────────────────────────────────────────
+  "[xml]": {
+    "editor.defaultFormatter": "redhat.vscode-xml",
+    "editor.formatOnSave": true
+  },
+  "xml.format.splitAttributes": "alignWithFirstAttr",
+  "xml.format.closingBracketNewLine": false,
+
+  // ─── Git ───────────────────────────────────────────────────────────────────
+  "git.suggestSmartCommit": false,
+  "gitlens.hovers.currentLine.over": "line",
+  "gitlens.currentLine.enabled": true
+}

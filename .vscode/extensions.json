@@ -1,0 +1,19 @@
+{
+  "recommendations": [
+    // C# / .NET
+    "ms-dotnettools.csdevkit",
+    "ms-dotnettools.vscode-dotnet-runtime",
+    "patcx.vscode-nuget-gallery",
+    "eamodio.gitlens",
+    // XAML
+    "redhat.vscode-xml",
+    // GLSL Shaders
+    "slevesque.shader",
+    "dtoplak.vscode-glsllint",
+    // Avalonia (Linux port)
+    "avaloniateam.vscode-avalonia",
+    // General
+    "usernamehw.errorlens",
+    "editorconfig.editorconfig"
+  ]
+}
