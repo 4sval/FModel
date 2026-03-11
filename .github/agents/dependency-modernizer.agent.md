@@ -2,7 +2,51 @@
 description: Migrates FModel.csproj from net8.0-windows to net8.0, replacing Windows-only NuGet packages with cross-platform equivalents
 name: Dependency Modernizer
 argument-hint: Ask me to audit the project file, replace a specific package, or produce a full dependency migration plan
-tools: [read, search, edit, execute, todo, web]
+tools:
+    [
+        execute/runNotebookCell,
+        execute/testFailure,
+        execute/getTerminalOutput,
+        execute/awaitTerminal,
+        execute/killTerminal,
+        execute/createAndRunTask,
+        execute/runInTerminal,
+        execute/runTests,
+        read/getNotebookSummary,
+        read/problems,
+        read/readFile,
+        read/terminalSelection,
+        read/terminalLastCommand,
+        edit/createDirectory,
+        edit/createFile,
+        edit/createJupyterNotebook,
+        edit/editFiles,
+        edit/editNotebook,
+        edit/rename,
+        search/changes,
+        search/codebase,
+        search/fileSearch,
+        search/listDirectory,
+        search/searchResults,
+        search/textSearch,
+        search/usages,
+        web/fetch,
+        github/add_issue_comment,
+        github/add_reply_to_pull_request_comment,
+        github/create_pull_request,
+        github/issue_read,
+        github/issue_write,
+        github/list_issue_types,
+        github/list_issues,
+        github/list_pull_requests,
+        github/pull_request_read,
+        github/pull_request_review_write,
+        github/search_issues,
+        github/search_pull_requests,
+        github/sub_issue_write,
+        github/update_pull_request,
+        todo,
+    ]
 handoffs:
     - label: Review Dependency Changes
       agent: Cross-Platform .NET Reviewer

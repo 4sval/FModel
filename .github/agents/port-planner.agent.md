@@ -2,7 +2,19 @@
 description: Analyzes the FModel codebase for Windows-specific code and produces a prioritized Linux port migration backlog
 name: Port Planner
 argument-hint: Ask me to scan a specific area (e.g. "analyze the Views folder") or just say "generate the full migration backlog"
-tools: ["read", "search", "web"]
+tools:
+    [
+        read,
+        search,
+        web,
+        github/add_issue_comment,
+        github/issue_read,
+        github/issue_write,
+        github/list_issue_types,
+        github/list_issues,
+        github/search_issues,
+        github/sub_issue_write,
+    ]
 handoffs:
     - label: Start Implementation — Modernize Dependencies
       agent: Dependency Modernizer
