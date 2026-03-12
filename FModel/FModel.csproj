@@ -188,8 +188,6 @@
                       Version="3.2.1" />
     <PackageReference Include="Twizzle.ImGui-Bundle.NET"
                       Version="1.91.5.2" />
-    <PackageReference Include="VirtualizingWrapPanel"
-                      Version="2.3.2" />
   </ItemGroup>
 
   <ItemGroup>
