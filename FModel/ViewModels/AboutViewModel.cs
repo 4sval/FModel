@@ -48,12 +48,13 @@ public class AboutViewModel : ViewModel
         await Task.WhenAll(
             Task.Run(() =>
             {
-                DescriptionLabel = "FModel is an archive explorer for Unreal Engine games that uses CUE4Parse as its core parsing library, providing robust support for the latest UE4 and UE5 archive formats. It aims to deliver a modern and intuitive user interface, powerful features, and a comprehensive set of tools for previewing and converting game packages, empowering YOU to understand games' inner workings with ease.";
-                ContributorsLabel = $"FModel owes its continued existence to the passionate individuals who have generously contributed their time and expertise. Contributions from individuals such as {string.Join(", ", "GMatrixGames", "amr", "LongerWarrior", "MinshuG", "InTheShade", "Officer")}, and countless others, both in the past and those yet to come, ensure the continuous development and success of this project. If you are benefiting from FModel and would like to support its continued improvements, please consider making a donation.";
+                DescriptionLabel = "FModel Linux is an unofficial Linux port of FModel (https://github.com/4sval/FModel), originally developed by Asval and contributors. It is an archive explorer for Unreal Engine games that uses CUE4Parse as its core parsing library, providing robust support for the latest UE4 and UE5 archive formats, along with a comprehensive set of tools for previewing and converting game packages.";
+                ContributorsLabel = $"The Linux port is maintained by r6e. The underlying FModel project owes its continued existence to Asval and the passionate contributors who have generously given their time and expertise, including {string.Join(", ", "GMatrixGames", "amr", "LongerWarrior", "MinshuG", "InTheShade", "Officer")}, and many others. If you are benefiting from FModel and would like to support its continued improvements, please consider donating to the upstream project.";
                 ReferencesLabel = string.Join(", ",
-                    "Adonis UI", "AutoUpdater.NET", "AvalonEdit", "CSCore", "CUE4Parse", "DiscordRichPresence",
-                    "EpicManifestParser", "ImGui.NET", "K4os.Compression.LZ4", "Newtonsoft.Json", "NVorbis", "Oodle.NET",
-                    "Ookii.Dialogs.Wpf", "OpenTK", "RestSharp", "Serilog", "SixLabors.ImageSharp", "SkiaSharp");
+                    "Avalonia", "AvaloniaEdit", "CUE4Parse", "DiscordRichPresence",
+                    "EpicManifestParser", "K4os.Compression.LZ4", "Newtonsoft.Json", "NVorbis", "Oodle.NET",
+                    "OpenTK", "RestSharp", "Serilog", "SixLabors.ImageSharp", "SkiaSharp",
+                    "Svg.Skia", "Twizzle.ImGui-Bundle.NET");
             }),
             Task.Run(() =>
             {

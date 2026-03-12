@@ -30,6 +30,11 @@
     <NoWarn>NU1701</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(UseFModelApi)' == 'true'">
+    <!-- Build with -p:UseFModelApi=true to enable upstream fmodel.app API integration -->
+    <DefineConstants>$(DefineConstants);USE_FMODEL_API</DefineConstants>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>

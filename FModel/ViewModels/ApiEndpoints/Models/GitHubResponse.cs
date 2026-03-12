@@ -1,20 +1,18 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
-using System.Windows;
-using AdonisUI.Controls;
-using AutoUpdaterDotNET;
 using FModel.Framework;
 using FModel.Settings;
-using MessageBox = AdonisUI.Controls.MessageBox;
-using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
-using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
-using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
+using Serilog;
 using J = Newtonsoft.Json.JsonPropertyAttribute;
 
 namespace FModel.ViewModels.ApiEndpoints.Models;
 
 public class GitHubRelease
 {
+    [J("tag_name")] public string TagName { get; private set; }
+    [J("html_url")] public string HtmlUrl { get; private set; }
+    [J("body")] public string Body { get; private set; }
     [J("assets")] public GitHubAsset[] Assets { get; private set; }
 }
 
@@ -98,42 +96,22 @@ public class GitHubCommit : ViewModel
 
     public void Download()
     {
-        if (IsCurrent)
+        if (IsCurrent) return;
+
+        var url = Asset?.BrowserDownloadUrl;
+        if (string.IsNullOrEmpty(url))
         {
-            MessageBox.Show(new MessageBoxModel
-            {
-                Text = "You are already on the latest version.",
-                Caption = "Update FModel",
-                Icon = MessageBoxImage.Information,
-                Buttons = [MessageBoxButtons.Ok()],
-                IsSoundEnabled = false
-            });
+            Log.Warning("Download skipped: no asset URL available for commit {Sha}", ShortSha);
             return;
         }
 
-        var messageBox = new MessageBoxModel
-        {
-            Text = $"Are you sure you want to update to version '{ShortSha}'?{(!Asset.IsLatest ? "\nThis is not the latest version." : "")}",
-            Caption = "Update FModel",
-            Icon = MessageBoxImage.Question,
-            Buttons = MessageBoxButtons.YesNo(),
-            IsSoundEnabled = false
-        };
-
-        MessageBox.Show(messageBox);
-        if (messageBox.Result != MessageBoxResult.Yes) return;
-
         try
         {
-            if (AutoUpdater.DownloadUpdate(new UpdateInfoEventArgs { DownloadURL = Asset.BrowserDownloadUrl }))
-            {
-                Application.Current.Shutdown();
-            }
+            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         }
         catch (Exception exception)
         {
-            UserSettings.Default.ShowChangelog = false;
-            MessageBox.Show(exception.Message, exception.GetType().ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+            Log.Warning(exception, "Could not open download URL: {Url}", url);
         }
     }
 }

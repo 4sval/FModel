@@ -28,12 +28,14 @@ public static class Constants
     public const string YELLOW = "#E5C07B";
     public const string BLUE = "#528BCC";
 
-    public const string ISSUE_LINK = "https://github.com/4sval/FModel/discussions/categories/q-a";
-    public const string GH_REPO = "https://api.github.com/repos/4sval/FModel";
+    public const string ISSUE_LINK = "https://github.com/r6e/FModel-Linux/issues";
+    public const string GH_REPO = "https://api.github.com/repos/r6e/FModel-Linux";
     public const string GH_COMMITS_HISTORY = GH_REPO + "/commits";
     public const string GH_RELEASES = GH_REPO + "/releases";
+    // Directs users to support the original upstream FModel project
     public const string DONATE_LINK = "https://fmodel.app/donate";
-    public const string DISCORD_LINK = "https://fmodel.app/discord";
+    // Reserved for a future Discord server; Discord RPC is currently disabled
+    public const string DISCORD_LINK = "";
 
     public const string _FN_LIVE_TRIGGER = "fortnite-live.manifest";
     public const string _VAL_LIVE_TRIGGER = "valorant-live.manifest";

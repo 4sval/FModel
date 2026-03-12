@@ -62,7 +62,8 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
                 Process.Start(new ProcessStartInfo { FileName = Constants.ISSUE_LINK, UseShellExecute = true });
                 break;
             case "Help_Discord":
-                Process.Start(new ProcessStartInfo { FileName = Constants.DISCORD_LINK, UseShellExecute = true });
+                if (!string.IsNullOrEmpty(Constants.DISCORD_LINK))
+                    Process.Start(new ProcessStartInfo { FileName = Constants.DISCORD_LINK, UseShellExecute = true });
                 break;
             case "ToolBox_Clear_Logs":
                 FLogger.ClearLogs();

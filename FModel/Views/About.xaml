@@ -3,42 +3,113 @@
                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                              xmlns:local="clr-namespace:FModel"
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
-                             WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
-                             IconVisibility="Collapsed" Width="500" SizeToContent="Height"
+                             WindowStartupLocation="CenterScreen"
+                             ResizeMode="NoResize"
+                             IconVisibility="Collapsed"
+                             Width="500"
+                             SizeToContent="Height"
                              Loaded="OnLoaded">
     <adonisControls:AdonisWindow.Style>
-        <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
-            <Setter Property="Title" Value="About" />
+        <Style TargetType="adonisControls:AdonisWindow"
+               BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}">
+            <Setter Property="Title"
+                    Value="About" />
         </Style>
     </adonisControls:AdonisWindow.Style>
     <StackPanel Margin="30 10">
-        <StackPanel HorizontalAlignment="Center" Margin="0 0 0 30">
-            <TextBlock Text="{Binding Source={x:Static local:Constants.APP_VERSION}, StringFormat={}FModel {0}}" FontSize="15" FontWeight="500" Foreground="#9DA3DD" FontStretch="Expanded" />
-            <TextBlock Text="Made with &#x2665; by Asval" FontSize="30" FontWeight="700" Foreground="#DAE5F2" HorizontalAlignment="Center" />
+        <StackPanel HorizontalAlignment="Center"
+                    Margin="0 0 0 30">
+            <TextBlock Text="{Binding Source={x:Static local:Constants.APP_VERSION}, StringFormat={}FModel Linux {0}}"
+                       FontSize="15"
+                       FontWeight="500"
+                       Foreground="#9DA3DD"
+                       FontStretch="Expanded" />
+            <TextBlock Text="Originally made with &#x2665; by Asval"
+                       FontSize="24"
+                       FontWeight="700"
+                       Foreground="#DAE5F2"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="Linux port by r6e"
+                       FontSize="15"
+                       FontWeight="500"
+                       Foreground="#9DA3DD"
+                       HorizontalAlignment="Center" />
         </StackPanel>
 
         <StackPanel HorizontalAlignment="Center">
-            <TextBlock Text="Description" FontSize="15" FontWeight="700" Foreground="#9DA3DD" FontStretch="Expanded" />
-            <TextBlock Text="&#09;&#09;&#09;&#09;" FontSize="25" FontWeight="700" Height="2" Foreground="Transparent" HorizontalAlignment="Center" />
+            <TextBlock Text="Description"
+                       FontSize="15"
+                       FontWeight="700"
+                       Foreground="#9DA3DD"
+                       FontStretch="Expanded" />
+            <TextBlock Text="&#09;&#09;&#09;&#09;"
+                       FontSize="25"
+                       FontWeight="700"
+                       Height="2"
+                       Foreground="Transparent"
+                       HorizontalAlignment="Center" />
         </StackPanel>
-        <TextBlock FontSize="12" Foreground="#727272" TextWrapping="Wrap" Margin="0 0 0 30" Text="{Binding DescriptionLabel}" />
+        <TextBlock FontSize="12"
+                   Foreground="#727272"
+                   TextWrapping="Wrap"
+                   Margin="0 0 0 30"
+                   Text="{Binding DescriptionLabel}" />
 
         <StackPanel HorizontalAlignment="Center">
-            <TextBlock Text="Contributors" FontSize="15" FontWeight="700" Foreground="#9DA3DD" FontStretch="Expanded" />
-            <TextBlock Text="&#09;&#09;&#09;&#09;" FontSize="25" FontWeight="700" Height="2" Foreground="Transparent" HorizontalAlignment="Center" />
+            <TextBlock Text="Contributors"
+                       FontSize="15"
+                       FontWeight="700"
+                       Foreground="#9DA3DD"
+                       FontStretch="Expanded" />
+            <TextBlock Text="&#09;&#09;&#09;&#09;"
+                       FontSize="25"
+                       FontWeight="700"
+                       Height="2"
+                       Foreground="Transparent"
+                       HorizontalAlignment="Center" />
         </StackPanel>
-        <TextBlock FontSize="12" Foreground="#727272" TextWrapping="Wrap" Margin="0 0 0 30" Text="{Binding ContributorsLabel}" />
+        <TextBlock FontSize="12"
+                   Foreground="#727272"
+                   TextWrapping="Wrap"
+                   Margin="0 0 0 30"
+                   Text="{Binding ContributorsLabel}" />
 
         <StackPanel HorizontalAlignment="Center">
-            <TextBlock Text="Donators" FontSize="15" FontWeight="700" Foreground="#9DA3DD" FontStretch="Expanded" />
-            <TextBlock Text="&#09;&#09;&#09;&#09;" FontSize="25" FontWeight="700" Height="2" Foreground="Transparent" HorizontalAlignment="Center" />
+            <TextBlock Text="Donators"
+                       FontSize="15"
+                       FontWeight="700"
+                       Foreground="#9DA3DD"
+                       FontStretch="Expanded" />
+            <TextBlock Text="&#09;&#09;&#09;&#09;"
+                       FontSize="25"
+                       FontWeight="700"
+                       Height="2"
+                       Foreground="Transparent"
+                       HorizontalAlignment="Center" />
         </StackPanel>
-        <TextBlock FontSize="12" Foreground="#727272" TextWrapping="Wrap" Margin="0 0 0 30" Text="{Binding DonatorsLabel}" />
+        <TextBlock FontSize="12"
+                   Foreground="#727272"
+                   TextWrapping="Wrap"
+                   Margin="0 0 0 30"
+                   Text="{Binding DonatorsLabel}" />
 
         <StackPanel HorizontalAlignment="Center">
-            <TextBlock Text="Powered by" FontSize="15" FontWeight="700" Foreground="#9DA3DD" FontStretch="Expanded" />
-            <TextBlock Text="&#09;&#09;&#09;&#09;" FontSize="25" FontWeight="700" Height="2" Foreground="Transparent" HorizontalAlignment="Center" />
+            <TextBlock Text="Powered by"
+                       FontSize="15"
+                       FontWeight="700"
+                       Foreground="#9DA3DD"
+                       FontStretch="Expanded" />
+            <TextBlock Text="&#09;&#09;&#09;&#09;"
+                       FontSize="25"
+                       FontWeight="700"
+                       Height="2"
+                       Foreground="Transparent"
+                       HorizontalAlignment="Center" />
         </StackPanel>
-        <TextBlock FontSize="12" Foreground="#727272" TextWrapping="Wrap" Margin="0 0 0 30" Text="{Binding ReferencesLabel}" />
+        <TextBlock FontSize="12"
+                   Foreground="#727272"
+                   TextWrapping="Wrap"
+                   Margin="0 0 0 30"
+                   Text="{Binding ReferencesLabel}" />
     </StackPanel>
 </adonisControls:AdonisWindow>

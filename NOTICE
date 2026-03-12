@@ -1,32 +1,36 @@
+This software is a derivative of FModel (<https://github.com/4sval/FModel>),
+copyright © Asval and FModel contributors. Licensed under the GNU General
+Public License v3.0.
+
 This software includes material developed by the following third-party libraries:
 
-- Adonis UI (https://github.com/benruehl/adonis-ui/blob/master/LICENSE) - Copyright (c) 2018 Benjamin Rühl. Licensed under the MIT License.
-- AutoUpdater.NET (https://github.com/ravibpatel/AutoUpdater.NET/blob/master/LICENSE) - Copyright (c) 2012-2023 RBSoft. Licensed under the MIT License.
-- AvalonEdit (https://github.com/icsharpcode/AvalonEdit/blob/master/LICENSE) - Copyright (c) AvalonEdit Contributors. Licensed under the MIT License.
-- CSCore (https://github.com/filoe/cscore/blob/master/license.md) - Licensed under the MS-PL License.
-- CUE4Parse (https://github.com/FabianFG/CUE4Parse/blob/master/LICENSE) - Copyright 2023 CUE4Parse Contributors. Licensed under the Apache License 2.0.
-- DiscordRichPresence (https://github.com/Lachee/discord-rpc-csharp/blob/master/LICENSE) - Copyright (c) 2021 Lachee. Licensed under the MIT License.
-- EpicManifestParser (https://github.com/NotOfficer/EpicManifestParser/blob/master/LICENSE) - Copyright (c) 2020 NotOfficer. Licensed under the MIT License.
-- ImGui.NET (https://github.com/mellinoe/ImGui.NET/blob/master/LICENSE) - Copyright (c) 2017 Eric Mellino and ImGui.NET contributors. Licensed under the MIT License.
-- K4os.Compression.LZ4 (https://github.com/MiloszKrajewski/K4os.Compression.LZ4/blob/master/LICENSE) - Copyright (c) 2017 Milosz Krajewski. Licensed under the MIT License.
-- Newtonsoft.Json (https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md) - Copyright (c) 2007 James Newton-King. Licensed under the MIT License.
-- NVorbis (https://github.com/NVorbis/NVorbis/blob/master/LICENSE) - Copyright (c) 2020 Andrew Ward. Licensed under the MIT License.
-- Oodle.NET (https://github.com/NotOfficer/Oodle.NET/blob/master/LICENSE) - Copyright (c) 2021 Officer. Licensed under the MIT License.
-- Ookii.Dialogs.Wpf (https://github.com/ookii-dialogs/ookii-dialogs-wpf/blob/master/LICENSE) - Copyright (c) C. Augusto Proiete 2018-2021 & Sven Groot 2009-2018. Licensed under the BSD 3-Clause License.
-- OpenTK (https://github.com/opentk/opentk/blob/master/LICENSE.md) - Copyright (c) 2006-2019 Stefanos Apostolopoulos for the Open Toolkit project. Licensed under the MIT License.
-- RestSharp (https://github.com/restsharp/RestSharp/blob/dev/LICENSE.txt) - Copyright (c) .NET Foundation and Contributors. Licensed under the Apache License 2.0.
-- Serilog (https://github.com/serilog/serilog/blob/dev/LICENSE) - Copyright 2013-2015 Serilog Contributors. Licensed under the Apache License 2.0.
-- SixLabors.ImageSharp (https://github.com/SixLabors/ImageSharp/blob/main/LICENSE) - Copyright (c) Six Labors. Licensed under the Apache License 2.0.
-- SkiaSharp (https://github.com/mono/SkiaSharp/blob/main/LICENSE.md) - Copyright (c) 2015-2016 Xamarin, Inc. & 2017-2018 Microsoft Corporation. Licensed under the MIT License.
-- VirtualizingWrapPanel (https://github.com/sbaeumlisberger/VirtualizingWrapPanel/blob/master/LICENSE) - Copyright (c) 2019 S. Bäumlisberger. Licensed under the MIT License.
+- Avalonia (<https://github.com/AvaloniaUI/Avalonia/blob/master/licence.md>) - Copyright (c) 2013-present AvalonUI project contributors. Licensed under the MIT License.
+- AvaloniaEdit (<https://github.com/AvaloniaUI/AvaloniaEdit/blob/master/LICENSE>) - Copyright (c) AvaloniaEdit Contributors. Licensed under the MIT License.
+- CUE4Parse (<https://github.com/FabianFG/CUE4Parse/blob/master/LICENSE>) - Copyright 2023 CUE4Parse Contributors. Licensed under the Apache License 2.0.
+- DiscordRichPresence (<https://github.com/Lachee/discord-rpc-csharp/blob/master/LICENSE>) - Copyright (c) 2021 Lachee. Licensed under the MIT License.
+- EpicManifestParser (<https://github.com/NotOfficer/EpicManifestParser/blob/master/LICENSE>) - Copyright (c) 2020 NotOfficer. Licensed under the MIT License.
+- EpicManifestParser.ZlibngDotNetDecompressor (<https://github.com/NotOfficer/EpicManifestParser/blob/master/LICENSE>) - Copyright (c) 2020 NotOfficer. Licensed under the MIT License.
+- K4os.Compression.LZ4 (<https://github.com/MiloszKrajewski/K4os.Compression.LZ4/blob/master/LICENSE>) - Copyright (c) 2017 Milosz Krajewski. Licensed under the MIT License.
+- Newtonsoft.Json (<https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md>) - Copyright (c) 2007 James Newton-King. Licensed under the MIT License.
+- NVorbis (<https://github.com/NVorbis/NVorbis/blob/master/LICENSE>) - Copyright (c) 2020 Andrew Ward. Licensed under the MIT License.
+- Oodle.NET (<https://github.com/NotOfficer/Oodle.NET/blob/master/LICENSE>) - Copyright (c) 2021 Officer. Licensed under the MIT License.
+- OpenTK (<https://github.com/opentk/opentk/blob/master/LICENSE.md>) - Copyright (c) 2006-2019 Stefanos Apostolopoulos for the Open Toolkit project. Licensed under the MIT License.
+- RestSharp (<https://github.com/restsharp/RestSharp/blob/dev/LICENSE.txt>) - Copyright (c) .NET Foundation and Contributors. Licensed under the Apache License 2.0.
+- Serilog (<https://github.com/serilog/serilog/blob/dev/LICENSE>) - Copyright 2013-2015 Serilog Contributors. Licensed under the Apache License 2.0.
+- Serilog.Sinks.Console (<https://github.com/serilog/serilog-sinks-console/blob/dev/LICENSE>) - Copyright 2013-2016 Serilog Contributors. Licensed under the Apache License 2.0.
+- Serilog.Sinks.File (<https://github.com/serilog/serilog-sinks-file/blob/dev/LICENSE>) - Copyright 2013-2016 Serilog Contributors. Licensed under the Apache License 2.0.
+- SixLabors.ImageSharp (<https://github.com/SixLabors/ImageSharp/blob/main/LICENSE>) - Copyright (c) Six Labors. Licensed under the Apache License 2.0.
+- SkiaSharp (<https://github.com/mono/SkiaSharp/blob/main/LICENSE.md>) - Copyright (c) 2015-2016 Xamarin, Inc. & 2017-2018 Microsoft Corporation. Licensed under the MIT License.
+- SkiaSharp.HarfBuzz (<https://github.com/mono/SkiaSharp/blob/main/LICENSE.md>) - Copyright (c) 2015-2016 Xamarin, Inc. & 2017-2018 Microsoft Corporation. Licensed under the MIT License.
+- Svg.Skia (<https://github.com/wieslawsoltes/Svg.Skia/blob/master/LICENSE.TXT>) - Copyright (c) Wiesław Šoltés. Licensed under the MIT License.
+- Twizzle.ImGui-Bundle.NET (<https://github.com/Twizzle/ImGui-Bundle.NET>) - Licensed under the MIT License.
 
 ---------------------------------------------------------------------------
 
 LICENSE TEXTS
+
 1. MIT License
-2. MS-PL License
-3. BSD 3-Clause License
-4. Apache License 2.0
+2. Apache License 2.0
 
 ---------------------------------------------------------------------------
 
@@ -49,67 +53,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----------------------------------------------------------------------------
-
-MS-PL License
-
-1. Definitions
-The terms “reproduce,” “reproduction,” “derivative works,” and “distribution” have the
-same meaning here as under U.S. copyright law.
-
-A “contribution” is the original software, or any additions or changes to the software.
-
-A “contributor” is any person that distributes its contribution under this license.
-
-“Licensed patents” are a contributor’s patent claims that read directly on its contribution.
-
-2. Grant of Rights
-
-(A) Copyright Grant- Subject to the terms of this license, including the license conditions and limitations in section 3, each contributor grants you a non-exclusive, worldwide, royalty-free copyright license to reproduce its contribution, prepare derivative works of its contribution, and distribute its contribution or any derivative works that you create.
-
-(B) Patent Grant- Subject to the terms of this license, including the license conditions and limitations in section 3, each contributor grants you a non-exclusive, worldwide, royalty-free license under its licensed patents to make, have made, use, sell, offer for sale, import, and/or otherwise dispose of its contribution in the software or derivative works of the contribution in the software.
-
-3. Conditions and Limitations
-
-(A) No Trademark License- This license does not grant you rights to use any contributors’ name, logo, or trademarks.
-
-(B) If you bring a patent claim against any contributor over patents that you claim are infringed by the software, your patent license from such contributor to the software ends automatically.
-
-(C) If you distribute any portion of the software, you must retain all copyright, patent, trademark, and attribution notices that are present in the software.
-
-(D) If you distribute any portion of the software in source code form, you may do so only under this license by including a complete copy of this license with your distribution. If you distribute any portion of the software in compiled or object code form, you may only do so under a license that complies with this license.
-
-(E) The software is licensed “as-is.” You bear the risk of using it. The contributors give no express warranties, guarantees or conditions. You may have additional consumer rights under your local laws which this license cannot change. To the extent permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular purpose and non-infringement.
-
----------------------------------------------------------------------------
-
-BSD 3-Clause License
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution.
-
-3. Neither the name of the copyright holder nor the names of its
-   contributors may be used to endorse or promote products derived from
-   this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ---------------------------------------------------------------------------
 

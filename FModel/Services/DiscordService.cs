@@ -14,10 +14,10 @@ namespace FModel.Services
 
     public class DiscordHandler
     {
-        private const string _APP_ID = "684489366189768767";
+        private const string _APP_ID = ""; // Disabled: no Discord application registered for this fork yet
 
         private RichPresence _currentPresence;
-        private readonly DiscordRpcClient _client = new(_APP_ID);
+        private readonly DiscordRpcClient? _client = string.IsNullOrEmpty(_APP_ID) ? null : new(_APP_ID);
         private readonly Timestamps _timestamps = new() {Start = DateTime.UtcNow};
 
         private readonly Assets _staticAssets = new()
@@ -33,6 +33,8 @@ namespace FModel.Services
 
         public void Initialize(string gameName)
         {
+            if (_client == null) return; // _APP_ID is empty, Discord RPC is disabled for this fork
+
             _currentPresence = new RichPresence
             {
                 Assets = _staticAssets,
@@ -53,7 +55,7 @@ namespace FModel.Services
 
         public void UpdatePresence(string details, string state)
         {
-            if (!_client.IsInitialized) return;
+            if (_client is not { IsInitialized: true }) return;
             _currentPresence.Details = details;
             _currentPresence.State = state;
             _client.SetPresence(_currentPresence);
@@ -62,7 +64,7 @@ namespace FModel.Services
 
         public void UpdateButDontSavePresence(string details = null, string state = null)
         {
-            if (!_client.IsInitialized) return;
+            if (_client is not { IsInitialized: true }) return;
             _client.SetPresence(new RichPresence
             {
                 Assets = _staticAssets,
@@ -76,20 +78,20 @@ namespace FModel.Services
 
         public void UpdateToSavedPresence()
         {
-            if (!_client.IsInitialized) return;
+            if (_client is not { IsInitialized: true }) return;
             _client.SetPresence(_currentPresence);
             _client.Invoke();
         }
 
         public void Shutdown()
         {
-            if (_client.IsInitialized)
+            if (_client is { IsInitialized: true })
                 _client.Deinitialize();
         }
 
         public void Dispose()
         {
-            if (!_client.IsDisposed)
+            if (_client is { IsDisposed: false })
                 _client.Dispose();
         }
     }

@@ -1,22 +1,25 @@
-name: FModel Builder
+name: FModel Linux Builder
 
 on:
   workflow_dispatch:
     inputs:
-        appVersion:
-          description: 'FModel Version And Release Tag'
-          required: true
-          default: '4.0.X.X'
+      appVersion:
+        description: "FModel Linux Version And Release Tag"
+        required: true
+        default: "4.0.X.X"
+
+permissions:
+  contents: write
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: GIT Checkout
         uses: actions/checkout@v6
         with:
-          submodules: 'true'
+          submodules: "true"
 
       - name: Fetch Submodules Recursively
         run: git submodule update --init --recursive
@@ -24,25 +27,25 @@ jobs:
       - name: .NET 8 Setup
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: "8.0.x"
 
       - name: .NET Restore
         run: dotnet restore FModel
 
       - name: .NET Publish
-        run: dotnet publish FModel -c Release --no-self-contained -r win-x64 -f net8.0-windows -o "./FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false -p:AssemblyVersion=${{ github.event.inputs.appVersion }} -p:FileVersion=${{ github.event.inputs.appVersion }}
+        run: dotnet publish FModel -c Release --no-self-contained -r linux-x64 -f net8.0 -o "./FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false -p:AssemblyVersion=${{ github.event.inputs.appVersion }} -p:FileVersion=${{ github.event.inputs.appVersion }}
 
       - name: ZIP File
         uses: papeloto/action-zip@v1.2
         with:
-          files: ./FModel/bin/Publish/FModel.exe
-          dest: FModel.zip # will end up in working directory not the Publish folder
+          files: ./FModel/bin/Publish/
+          dest: FModel-Linux.zip # will end up in working directory not the Publish folder
 
       - name: GIT Release
         uses: marvinpinto/action-automatic-releases@latest
         with:
-          title: "FModel v${{ github.event.inputs.appVersion }}"
+          title: "FModel Linux v${{ github.event.inputs.appVersion }}"
           automatic_release_tag: ${{ github.event.inputs.appVersion }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: false
-          files: FModel.zip
+          files: FModel-Linux.zip

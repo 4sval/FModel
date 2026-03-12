@@ -17,6 +17,13 @@ public class GitHubApiEndpoint(RestClient client) : AbstractApiProvider(client)
         return response.Data;
     }
 
+    public async Task<GitHubRelease> GetLatestReleaseAsync()
+    {
+        var request = new FRestRequest($"{Constants.GH_RELEASES}/latest");
+        var response = await _client.ExecuteAsync<GitHubRelease>(request).ConfigureAwait(false);
+        return response.Data;
+    }
+
     public async Task<GitHubRelease> GetReleaseAsync(string tag)
     {
         var request = new FRestRequest($"{Constants.GH_RELEASES}/tags/{tag}");

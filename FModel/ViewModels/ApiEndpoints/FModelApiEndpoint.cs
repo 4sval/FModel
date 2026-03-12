@@ -1,37 +1,28 @@
 using System;
-using AdonisUI.Controls;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using AutoUpdaterDotNET;
-using CUE4Parse.Utils;
-using FModel.Extensions;
-using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
-using FModel.Views;
-using Newtonsoft.Json;
 using RestSharp;
 using Serilog;
-using MessageBox = AdonisUI.Controls.MessageBox;
-using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
-using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 
 namespace FModel.ViewModels.ApiEndpoints;
 
 public class FModelApiEndpoint : AbstractApiProvider
 {
+#if USE_FMODEL_API
     private News _news;
-    private Info _infos;
     private Donator[] _donators;
     private Game _game;
     private readonly IDictionary<string, CommunityDesign> _communityDesigns = new Dictionary<string, CommunityDesign>();
-    private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
+#endif
+    private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
 
     public FModelApiEndpoint(RestClient client) : base(client) { }
 
+#if USE_FMODEL_API
     public async Task<News> GetNewsAsync(CancellationToken token, string game)
     {
         var request = new FRestRequest($"https://api.fmodel.app/v1/news/{Constants.APP_VERSION}");
@@ -45,7 +36,11 @@ public class FModelApiEndpoint : AbstractApiProvider
     {
         return _news ??= GetNewsAsync(token, game).GetAwaiter().GetResult();
     }
+#else
+    public News GetNews(CancellationToken token, string game) => null;
+#endif
 
+#if USE_FMODEL_API
     public async Task<Donator[]> GetDonatorsAsync()
     {
         var request = new FRestRequest($"https://api.fmodel.app/v1/donations/donators");
@@ -58,7 +53,11 @@ public class FModelApiEndpoint : AbstractApiProvider
     {
         return _donators ??= GetDonatorsAsync().GetAwaiter().GetResult();
     }
+#else
+    public Donator[] GetDonators() => null;
+#endif
 
+#if USE_FMODEL_API
     public async Task<Game> GetGamesAsync(CancellationToken token, string gameName)
     {
         var request = new FRestRequest($"https://api.fmodel.app/v1/games/{gameName}");
@@ -71,7 +70,11 @@ public class FModelApiEndpoint : AbstractApiProvider
     {
         return _game ??= GetGamesAsync(token, gameName).GetAwaiter().GetResult();
     }
+#else
+    public Game GetGames(CancellationToken token, string gameName) => null;
+#endif
 
+#if USE_FMODEL_API
     public async Task<CommunityDesign> GetDesignAsync(string designName)
     {
         var request = new FRestRequest($"https://api.fmodel.app/v1/designs/{designName}");
@@ -89,86 +92,52 @@ public class FModelApiEndpoint : AbstractApiProvider
         _communityDesigns[designName] = communityDesign;
         return communityDesign;
     }
+#else
+    public CommunityDesign GetDesign(string designName) => null;
+#endif
 
-    public void CheckForUpdates(bool launch = false)
+    public async Task<GitHubRelease> CheckForUpdatesAsync()
     {
         if (DateTime.Now < UserSettings.Default.NextUpdateCheck)
         {
             Log.Warning("Updates have been silenced until {DateTime}", UserSettings.Default.NextUpdateCheck);
-            return;
+            return null;
         }
 
-        if (launch)
+        UserSettings.Default.LastUpdateCheck = DateTime.Now;
+
+        var latestRelease = await _apiEndpointView.GitHubApi.GetLatestReleaseAsync().ConfigureAwait(false);
+        if (latestRelease?.TagName == null)
         {
-            AutoUpdater.ParseUpdateInfoEvent += ParseUpdateInfoEvent;
-            AutoUpdater.CheckForUpdateEvent += CheckForUpdateEvent;
+            Log.Warning("Could not check for updates: failed to fetch latest release from GitHub");
+            return null;
         }
-        AutoUpdater.Start("https://api.fmodel.app/v1/infos/Qa");
-    }
 
-    private void ParseUpdateInfoEvent(ParseUpdateInfoEventArgs args)
-    {
-        _infos = JsonConvert.DeserializeObject<Info>(args.RemoteData);
-        if (_infos != null)
+        var tagName = latestRelease.TagName.TrimStart('v');
+        var versionPart = tagName.Contains('-') ? tagName[..tagName.IndexOf('-')] : tagName;
+        if (!System.Version.TryParse(versionPart, out var latestVersion))
         {
-            args.UpdateInfo = new UpdateInfoEventArgs
-            {
-                CurrentVersion = _infos.Version.SubstringBefore('-'),
-                ChangelogURL = _infos.ChangelogUrl,
-                DownloadURL = _infos.DownloadUrl,
-                Mandatory = new CustomMandatory
-                {
-                    CommitHash = _infos.Version.SubstringAfter('+')
-                }
-            };
+            Log.Warning("Could not parse latest release tag: {Tag}", latestRelease.TagName);
+            return null;
         }
-    }
 
-    private void CheckForUpdateEvent(UpdateInfoEventArgs args)
-    {
-        if (args is { CurrentVersion: { } })
+        var currentVersionStr = Constants.APP_VERSION ?? "0.0.0.0";
+        var currentVersionPart = currentVersionStr.Contains('-')
+            ? currentVersionStr[..currentVersionStr.IndexOf('-')]
+            : currentVersionStr;
+        if (!System.Version.TryParse(currentVersionPart, out var currentVersion))
         {
-            UserSettings.Default.LastUpdateCheck = DateTime.Now;
-
-            var targetHash = ((CustomMandatory) args.Mandatory).CommitHash;
-            if (targetHash == Constants.APP_COMMIT_ID)
-            {
-                if (UserSettings.Default.ShowChangelog)
-                    ShowChangelog(args);
-
-                return;
-            }
-
-            var currentVersion = new System.Version(args.CurrentVersion);
-            UserSettings.Default.ShowChangelog = currentVersion != args.InstalledVersion;
-
-            const string message = "A new update is available!";
-            Log.Warning("{message} Version {CurrentVersion} ({Hash})", message, currentVersion, targetHash);
-            Helper.OpenWindow<AdonisWindow>(message, () => new UpdateView { Title = message, ResizeMode = ResizeMode.NoResize }.ShowDialog());
+            Log.Warning("Could not parse current application version: {Version}", currentVersionStr);
+            return null;
         }
-        else
+
+        if (latestVersion <= currentVersion)
         {
-            MessageBox.Show(
-                "There is a problem reaching the update server, please check your internet connection or try again later.",
-                "Update Check Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            Log.Information("FModel Linux is up to date (v{Version})", Constants.APP_VERSION);
+            return null;
         }
+
+        Log.Warning("A new version of FModel Linux is available: {Version}", latestRelease.TagName);
+        return latestRelease;
     }
-
-    private void ShowChangelog(UpdateInfoEventArgs args)
-    {
-        var request = new FRestRequest(args.ChangelogURL);
-        var response = _client.Execute(request);
-        if (!response.IsSuccessful || string.IsNullOrEmpty(response.Content)) return;
-
-        _applicationView.CUE4Parse.TabControl.AddTab($"Release Notes: {args.CurrentVersion}");
-        _applicationView.CUE4Parse.TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("changelog");
-        _applicationView.CUE4Parse.TabControl.SelectedTab.SetDocumentText(response.Content, false, false);
-        UserSettings.Default.ShowChangelog = false;
-    }
-}
-
-public class CustomMandatory : Mandatory
-{
-    public string CommitHash { get; set; }
-    public string ShortCommitHash => CommitHash[..7];
 }
