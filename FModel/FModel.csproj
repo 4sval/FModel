@@ -156,8 +156,6 @@
                       Version="11.3.12" />
     <PackageReference Include="Avalonia.Fonts.Inter"
                       Version="11.3.12" />
-    <PackageReference Include="Autoupdater.NET.Official"
-                      Version="1.9.2" />
     <PackageReference Include="AvaloniaEdit"
                       Version="0.10.12" />
     <PackageReference Include="DiscordRichPresence"
