@@ -1,31 +1,26 @@
-<Application x:Class="FModel.App"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-             StartupUri="MainWindow.xaml" ShutdownMode="OnMainWindowClose"
-             Exit="AppExit" DispatcherUnhandledException="OnUnhandledException">
+             x:Class="FModel.App"
+             RequestedThemeVariant="Dark">
+    <Application.Styles>
+        <FluentTheme />
+        <!--
+            Views/Resources/* dictionaries will be re-added here as each
+            file is migrated from WPF to Avalonia XAML in later issues.
+        -->
+    </Application.Styles>
     <Application.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary>
-                    <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-                </ResourceDictionary>
-
-                <ResourceDictionary Source="pack://application:,,,/AdonisUI;component/ColorSchemes/Dark.xaml"/>
-                <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/Resources.xaml"/>
-
-                <ResourceDictionary Source="Views/Resources/Colors.xaml" />
-                <ResourceDictionary Source="Views/Resources/Icons.xaml" />
-                <ResourceDictionary Source="Views/Resources/Controls/ContextMenus/FileContextMenu.xaml" />
-                <ResourceDictionary Source="Views/Resources/Controls/ContextMenus/FolderContextMenu.xaml" />
-
-                <ResourceDictionary Source="Views/Resources/Resources.xaml" />
-                <ResourceDictionary Source="Views/Resources/Controls/TiledExplorer/Resources.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-
-            <Color x:Key="{x:Static adonisUi:Colors.AccentColor}">#206BD4</Color>
-            <Color x:Key="{x:Static adonisUi:Colors.AlertColor}">#D49220</Color>
-            <Color x:Key="{x:Static adonisUi:Colors.ErrorColor}">#C22B2B</Color>
+            <!-- Accent colours preserved from original AdonisUI scheme -->
+            <Color x:Key="AccentColor">#206BD4</Color>
+            <SolidColorBrush x:Key="AccentColorBrush"
+                             Color="{StaticResource AccentColor}" />
+            <Color x:Key="AlertColor">#D49220</Color>
+            <SolidColorBrush x:Key="AlertColorBrush"
+                             Color="{StaticResource AlertColor}" />
+            <Color x:Key="ErrorColor">#C22B2B</Color>
+            <SolidColorBrush x:Key="ErrorColorBrush"
+                             Color="{StaticResource ErrorColor}" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

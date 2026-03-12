@@ -12,8 +12,14 @@
     <PlatformTarget>x64</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-    <StartupObject>FModel.App</StartupObject>
+    <StartupObject>FModel.Program</StartupObject>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Properties/Resources.resx is a WPF boilerplate stub; excluded from non-WPF builds -->
+    <EmbeddedResource Remove="Properties\Resources.resx" />
+    <Compile Remove="Properties\Resources.Designer.cs" />
+  </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;NU1701</NoWarn>
@@ -176,6 +182,8 @@
                       Version="113.0.0" />
     <PackageReference Include="Serilog"
                       Version="4.3.0" />
+    <PackageReference Include="Serilog.Sinks.Console"
+                      Version="6.1.1" />
     <PackageReference Include="Serilog.Sinks.File"
                       Version="7.0.0" />
     <PackageReference Include="SixLabors.ImageSharp"

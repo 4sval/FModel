@@ -1,42 +1,57 @@
-using AdonisUI.Controls;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Layout;
+using Avalonia.Media;
+using Avalonia.Threading;
 using Microsoft.Win32;
 using Serilog;
+using Serilog.Sinks.SystemConsole.Themes;
 using System;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Windows;
-using System.Windows.Threading;
+using System.Runtime.Versioning;
+using System.Threading.Tasks;
 using CUE4Parse;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
 using Newtonsoft.Json;
-using Serilog.Sinks.SystemConsole.Themes;
-using MessageBox = AdonisUI.Controls.MessageBox;
-using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
-using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 
 namespace FModel;
 
 /// <summary>
 /// Interaction logic for App.xaml
 /// </summary>
-public partial class App
+public partial class App : Application
 {
     [DllImport("kernel32.dll")]
+    [SupportedOSPlatform("windows")]
     private static extern bool AttachConsole(int dwProcessId);
 
     [DllImport("winbrand.dll", CharSet = CharSet.Unicode)]
     [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-    static extern string BrandingFormatString(string format);
+    [SupportedOSPlatform("windows")]
+    private static extern string BrandingFormatString(string format);
 
-    protected override void OnStartup(StartupEventArgs e)
+    public App()
     {
+        InitializeComponent();
+    }
+
+    public override void OnFrameworkInitializationCompleted()
+    {
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            // TODO(#15): desktop.MainWindow = new Views.MainWindow();
+            desktop.Exit += AppExit;
+        }
+
 #if DEBUG
-        AttachConsole(-1);
+        if (OperatingSystem.IsWindows())
+            AttachConsole(-1);
 #endif
-        base.OnStartup(e);
 
         try
         {
@@ -64,7 +79,7 @@ public partial class App
             }
             catch (UnauthorizedAccessException exception)
             {
-                throw new Exception("FModel cannot create the output directory where it is currently located. Please move FModel.exe to a different location.", exception);
+                throw new Exception("FModel cannot create the output directory where it is currently located. Please move FModel to a different location.", exception);
             }
         }
 
@@ -100,7 +115,8 @@ public partial class App
 
         Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FModel"));
         Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Backups"));
-        if (createMe) Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Exports"));
+        if (createMe)
+            Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Exports"));
         Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Logs"));
         Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"));
 
@@ -123,9 +139,20 @@ public partial class App
         Log.Information("{OS}", GetOperatingSystemProductName());
         Log.Information("{RuntimeVer}", RuntimeInformation.FrameworkDescription);
         Log.Information("Culture {SysLang}", CultureInfo.CurrentCulture);
+
+        // Subscribed after logger is initialised so Log.Error calls inside
+        // the handler are always directed to the configured sinks.
+        Dispatcher.UIThread.UnhandledExceptionFilter += (_, e) =>
+        {
+            Log.Error("{Exception}", e.Exception);
+            e.Handled = true;
+            ShowErrorDialog(e.Exception);
+        };
+
+        base.OnFrameworkInitializationCompleted();
     }
 
-    private void AppExit(object sender, ExitEventArgs e)
+    private void AppExit(object? sender, ControlledApplicationLifetimeExitEventArgs e)
     {
         Log.Information("––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––");
         Log.CloseAndFlush();
@@ -133,46 +160,86 @@ public partial class App
         Environment.Exit(0);
     }
 
-    private void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+    internal static void ShowErrorDialog(Exception ex)
     {
-        Log.Error("{Exception}", e.Exception);
-
-        var messageBox = new MessageBoxModel
+        Dispatcher.UIThread.InvokeAsync(async () =>
         {
-            Text = $"An unhandled {e.Exception.GetBaseException().GetType()} occurred: {e.Exception.Message}",
-            Caption = "Fatal Error",
-            Icon = MessageBoxImage.Error,
-            Buttons =
-            [
-                MessageBoxButtons.Custom("Reset Settings", EErrorKind.ResetSettings),
-                MessageBoxButtons.Custom("Restart", EErrorKind.Restart),
-                MessageBoxButtons.Custom("OK", EErrorKind.Ignore)
-            ],
-            IsSoundEnabled = false
-        };
+            var result = EErrorKind.Ignore;
+            var tcs = new TaskCompletionSource();
 
-        MessageBox.Show(messageBox);
-        if (messageBox.Result == MessageBoxResult.Custom && (EErrorKind) messageBox.ButtonPressed.Id != EErrorKind.Ignore)
-        {
-            if ((EErrorKind) messageBox.ButtonPressed.Id == EErrorKind.ResetSettings)
+            var resetBtn = new Button { Content = "Reset Settings" };
+            var restartBtn = new Button { Content = "Restart" };
+            var okBtn = new Button { Content = "OK" };
+
+            var dialog = new Window
+            {
+                Title = "Fatal Error",
+                SizeToContent = SizeToContent.WidthAndHeight,
+                MinWidth = 420,
+                MaxWidth = 640,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                Content = new StackPanel
+                {
+                    Margin = new Thickness(16),
+                    Spacing = 12,
+                    Children =
+                    {
+                        new TextBlock
+                        {
+                            Text = $"An unhandled {ex.GetBaseException().GetType().Name} occurred:\n{ex.Message}",
+                            TextWrapping = TextWrapping.Wrap,
+                        },
+                        new StackPanel
+                        {
+                            Orientation = Orientation.Horizontal,
+                            Spacing = 8,
+                            HorizontalAlignment = HorizontalAlignment.Right,
+                            Children = { resetBtn, restartBtn, okBtn },
+                        },
+                    },
+                },
+            };
+
+            resetBtn.Click += (_, _) => { result = EErrorKind.ResetSettings; dialog.Close(); };
+            restartBtn.Click += (_, _) => { result = EErrorKind.Restart; dialog.Close(); };
+            okBtn.Click += (_, _) => { result = EErrorKind.Ignore; dialog.Close(); };
+            dialog.Closed += (_, _) => tcs.TrySetResult();
+
+            var owner = (Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+            if (owner != null)
+            {
+                await dialog.ShowDialog(owner);
+            }
+            else
+            {
+                try
+                { dialog.Show(); }
+                catch { return; }
+                await tcs.Task;
+            }
+
+            if (result == EErrorKind.ResetSettings)
                 UserSettings.Delete();
-
-            ApplicationService.ApplicationView.Restart();
-        }
-
-        e.Handled = true;
+            if (result != EErrorKind.Ignore)
+                ApplicationService.ApplicationView.Restart();
+        }).ContinueWith(
+            t => Log.Error("{Exception}", t.Exception!.InnerException),
+            TaskContinuationOptions.OnlyOnFaulted);
     }
 
     private string GetOperatingSystemProductName()
     {
         var productName = string.Empty;
-        try
+        if (OperatingSystem.IsWindows())
         {
-            productName = BrandingFormatString("%WINDOWS_LONG%");
-        }
-        catch
-        {
-            // ignored
+            try
+            {
+                productName = BrandingFormatString("%WINDOWS_LONG%");
+            }
+            catch
+            {
+                // ignored
+            }
         }
 
         if (string.IsNullOrEmpty(productName))
@@ -181,11 +248,14 @@ public partial class App
         return $"{productName} ({(Environment.Is64BitOperatingSystem ? "64" : "32")}-bit)";
     }
 
-    public static string GetRegistryValue(string path, string name = null, RegistryHive root = RegistryHive.CurrentUser)
+    public static string GetRegistryValue(string path, string? name = null, RegistryHive root = RegistryHive.CurrentUser)
     {
+        if (!OperatingSystem.IsWindows())
+            return string.Empty;
         using var rk = RegistryKey.OpenBaseKey(root, RegistryView.Default).OpenSubKey(path);
         if (rk != null)
-            return rk.GetValue(name, null) as string;
+            return rk.GetValue(name, null) as string ?? string.Empty;
         return string.Empty;
     }
 }
+
