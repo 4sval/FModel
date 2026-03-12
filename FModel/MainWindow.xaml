@@ -1,5 +1,5 @@
-<adonisControls:AdonisWindow x:Class="FModel.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<Window x:Class="FModel.MainWindow"
+        xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:FModel"
         xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
@@ -7,46 +7,23 @@
         xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
         xmlns:settings="clr-namespace:FModel.Settings"
         xmlns:services="clr-namespace:FModel.Services"
-        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-        xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
-        xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-        WindowStartupLocation="CenterScreen" Closing="OnClosing" Loaded="OnLoaded" PreviewKeyDown="OnWindowKeyDown"
-        Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.95'}"
-        Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.90'}">
-    <Window.TaskbarItemInfo>
-        <TaskbarItemInfo ProgressValue="1.0">
-            <TaskbarItemInfo.ProgressState>
-                <MultiBinding Converter="{converters:StatusToTaskbarStateConverter}">
-                    <Binding Path="Status.Kind" />
-                    <Binding Path="IsActive" RelativeSource="{RelativeSource AncestorType=Window}" />
-                </MultiBinding>
-            </TaskbarItemInfo.ProgressState>
-        </TaskbarItemInfo>
-    </Window.TaskbarItemInfo>
-    <adonisControls:AdonisWindow.Style>
-        <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
-            <Setter Property="Title" Value="{Binding DataContext.InitialWindowTitle, RelativeSource={RelativeSource Self}}" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding DataContext.TitleExtra, RelativeSource={RelativeSource Self}, Converter={x:Static converters:IsNullToBoolReversedConverter.Instance}}" Value="True">
-                    <Setter Property="Title">
-                        <Setter.Value>
-                            <MultiBinding StringFormat="{}{0} - {1} {2}">
-                                <Binding Path="DataContext.InitialWindowTitle" RelativeSource="{RelativeSource Self}" />
-                                <Binding Path="DataContext.GameDisplayName" RelativeSource="{RelativeSource Self}" />
-                                <Binding Path="DataContext.TitleExtra" RelativeSource="{RelativeSource Self}" />
-                            </MultiBinding>
-                        </Setter.Value>
-                    </Setter>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-    </adonisControls:AdonisWindow.Style>
+        WindowStartupLocation="CenterScreen"
+        Closing="OnClosing"
+        Loaded="OnLoaded"
+        KeyDown="OnWindowKeyDown"
+        Width="1400"
+        Height="900">
+    <!--
+        Title is set in code-behind (OnLoaded / property change) to replicate the
+        DataTrigger-based title logic that was in the WPF AdonisWindow style.
+        TaskbarItemInfo (Windows-only) is handled in code-behind with an OS guard.
+    -->
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="8" />
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0">
@@ -57,144 +34,226 @@
 
             <Menu Grid.Column="0">
                 <MenuItem Header="Directory">
-                    <MenuItem Header="Selector" Command="{Binding MenuCommand}" CommandParameter="Directory_Selector">
+                    <MenuItem Header="Selector"
+                              Command="{Binding MenuCommand}"
+                              CommandParameter="Directory_Selector">
                         <MenuItem.Icon>
-                            <Viewbox Width="16" Height="16">
-                                <Canvas Width="24" Height="24">
-                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource DirectoryIcon}" />
+                            <Viewbox Width="16"
+                                     Height="16">
+                                <Canvas Width="24"
+                                        Height="24">
+                                    <Path Fill="{DynamicResource SystemColors.ControlTextBrushKey}"
+                                          Data="{StaticResource DirectoryIcon}" />
                                 </Canvas>
                             </Viewbox>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="AES" Command="{Binding MenuCommand}" CommandParameter="Directory_AES" IsEnabled="{Binding Status.IsReady}">
+                    <MenuItem Header="AES"
+                              Command="{Binding MenuCommand}"
+                              CommandParameter="Directory_AES"
+                              IsEnabled="{Binding Status.IsReady}">
                         <MenuItem.Icon>
-                            <Viewbox Width="16" Height="16">
-                                <Canvas Width="24" Height="24">
-                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource KeyIcon}" />
+                            <Viewbox Width="16"
+                                     Height="16">
+                                <Canvas Width="24"
+                                        Height="24">
+                                    <Path Fill="{DynamicResource SystemColors.ControlTextBrushKey}"
+                                          Data="{StaticResource KeyIcon}" />
                                 </Canvas>
                             </Viewbox>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Backup" Command="{Binding MenuCommand}" CommandParameter="Directory_Backup" IsEnabled="{Binding Status.IsReady}">
+                    <MenuItem Header="Backup"
+                              Command="{Binding MenuCommand}"
+                              CommandParameter="Directory_Backup"
+                              IsEnabled="{Binding Status.IsReady}">
                         <MenuItem.Icon>
-                            <Viewbox Width="16" Height="16">
-                                <Canvas Width="24" Height="24">
-                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackupIcon}" />
+                            <Viewbox Width="16"
+                                     Height="16">
+                                <Canvas Width="24"
+                                        Height="24">
+                                    <Path Fill="{DynamicResource SystemColors.ControlTextBrushKey}"
+                                          Data="{StaticResource BackupIcon}" />
                                 </Canvas>
                             </Viewbox>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Archives Info" Command="{Binding MenuCommand}" CommandParameter="Directory_ArchivesInfo" IsEnabled="{Binding Status.IsReady}">
+                    <MenuItem Header="Archives Info"
+                              Command="{Binding MenuCommand}"
+                              CommandParameter="Directory_ArchivesInfo"
+                              IsEnabled="{Binding Status.IsReady}">
                         <MenuItem.Icon>
-                            <Viewbox Width="16" Height="16">
-                                <Canvas Width="24" Height="24">
-                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
+                            <Viewbox Width="16"
+                                     Height="16">
+                                <Canvas Width="24"
+                                        Height="24">
+                                    <Path Fill="{DynamicResource SystemColors.ControlTextBrushKey}"
+                                          Data="{StaticResource InfoIcon}" />
                                 </Canvas>
                             </Viewbox>
                         </MenuItem.Icon>
                     </MenuItem>
                 </MenuItem>
                 <MenuItem Header="Packages">
-                    <MenuItem Header="Search" IsEnabled="{Binding Status.IsReady}" InputGestureText="Ctrl+Shift+F" Click="OnSearchViewClick">
+                    <MenuItem Header="Search"
+                              IsEnabled="{Binding Status.IsReady}"
+                              InputGestureText="Ctrl+Shift+F"
+                              Click="OnSearchViewClick">
                         <MenuItem.Icon>
-                            <Viewbox Width="16" Height="16">
-                                <Canvas Width="24" Height="24">
-                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SearchIcon}" />
+                            <Viewbox Width="16"
+                                     Height="16">
+                                <Canvas Width="24"
+                                        Height="24">
+                                    <Path Fill="{DynamicResource SystemColors.ControlTextBrushKey}"
+                                          Data="{StaticResource SearchIcon}" />
                                 </Canvas>
                             </Viewbox>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="References" IsEnabled="{Binding Status.IsReady}" InputGestureText="Ctrl+Shift+R" Click="OnRefViewClick">
+                    <MenuItem Header="References"
+                              IsEnabled="{Binding Status.IsReady}"
+                              InputGestureText="Ctrl+Shift+R"
+                              Click="OnRefViewClick">
                         <MenuItem.Icon>
-                            <Viewbox Width="16" Height="16">
-                                <Canvas Width="24" Height="24">
-                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SearchIcon}" />
+                            <Viewbox Width="16"
+                                     Height="16">
+                                <Canvas Width="24"
+                                        Height="24">
+                                    <Path Fill="{DynamicResource SystemColors.ControlTextBrushKey}"
+                                          Data="{StaticResource SearchIcon}" />
                                 </Canvas>
                             </Viewbox>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Favorite Directories" ItemsSource="{Binding CustomDirectories.Directories}" IsEnabled="{Binding Status.IsReady}">
+                    <MenuItem Header="Favorite Directories"
+                              ItemsSource="{Binding CustomDirectories.Directories}"
+                              IsEnabled="{Binding Status.IsReady}">
                         <MenuItem.Icon>
-                            <Viewbox Width="16" Height="16">
-                                <Canvas Width="24" Height="24">
-                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource DirectoriesIcon}" />
+                            <Viewbox Width="16"
+                                     Height="16">
+                                <Canvas Width="24"
+                                        Height="24">
+                                    <Path Fill="{DynamicResource SystemColors.ControlTextBrushKey}"
+                                          Data="{StaticResource DirectoriesIcon}" />
                                 </Canvas>
                             </Viewbox>
                         </MenuItem.Icon>
                     </MenuItem>
                 </MenuItem>
                 <MenuItem Header="Views">
-                    <MenuItem Header="3D Viewer" Command="{Binding MenuCommand}" CommandParameter="Views_3dViewer">
+                    <MenuItem Header="3D Viewer"
+                              Command="{Binding MenuCommand}"
+                              CommandParameter="Views_3dViewer">
                         <MenuItem.Icon>
-                            <Viewbox Width="16" Height="16">
-                                <Canvas Width="24" Height="24">
-                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource MeshIcon}" />
+                            <Viewbox Width="16"
+                                     Height="16">
+                                <Canvas Width="24"
+                                        Height="24">
+                                    <Path Fill="{DynamicResource AccentColorBrush}"
+                                          Data="{StaticResource MeshIcon}" />
                                 </Canvas>
                             </Viewbox>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Audio Player" Command="{Binding MenuCommand}" CommandParameter="Views_AudioPlayer">
+                    <MenuItem Header="Audio Player"
+                              Command="{Binding MenuCommand}"
+                              CommandParameter="Views_AudioPlayer">
                         <MenuItem.Icon>
-                            <Viewbox Width="16" Height="16">
-                                <Canvas Width="24" Height="24">
-                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource AudioIcon}" />
+                            <Viewbox Width="16"
+                                     Height="16">
+                                <Canvas Width="24"
+                                        Height="24">
+                                    <Path Fill="{DynamicResource AccentColorBrush}"
+                                          Data="{StaticResource AudioIcon}" />
                                 </Canvas>
                             </Viewbox>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Image Merger" Command="{Binding MenuCommand}" CommandParameter="Views_ImageMerger">
+                    <MenuItem Header="Image Merger"
+                              Command="{Binding MenuCommand}"
+                              CommandParameter="Views_ImageMerger">
                         <MenuItem.Icon>
-                            <Viewbox Width="16" Height="16">
-                                <Canvas Width="24" Height="24">
-                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource ImageMergerIcon}" />
+                            <Viewbox Width="16"
+                                     Height="16">
+                                <Canvas Width="24"
+                                        Height="24">
+                                    <Path Fill="{DynamicResource AccentColorBrush}"
+                                          Data="{StaticResource ImageMergerIcon}" />
                                 </Canvas>
                             </Viewbox>
                         </MenuItem.Icon>
                     </MenuItem>
                 </MenuItem>
-                <MenuItem Header="Settings" Command="{Binding MenuCommand}" CommandParameter="Settings" />
-                <MenuItem Header="Help" >
-                    <MenuItem Header="Donate" Command="{Binding MenuCommand}" CommandParameter="Help_Donate">
+                <MenuItem Header="Settings"
+                          Command="{Binding MenuCommand}"
+                          CommandParameter="Settings" />
+                <MenuItem Header="Help">
+                    <MenuItem Header="Donate"
+                              Command="{Binding MenuCommand}"
+                              CommandParameter="Help_Donate">
                         <MenuItem.Icon>
-                            <Viewbox Width="16" Height="16">
-                                <Canvas Width="24" Height="24">
-                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource GiftIcon}" />
+                            <Viewbox Width="16"
+                                     Height="16">
+                                <Canvas Width="24"
+                                        Height="24">
+                                    <Path Fill="{DynamicResource AccentColorBrush}"
+                                          Data="{StaticResource GiftIcon}" />
                                 </Canvas>
                             </Viewbox>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Releases" Command="{Binding MenuCommand}" CommandParameter="Help_Releases">
+                    <MenuItem Header="Releases"
+                              Command="{Binding MenuCommand}"
+                              CommandParameter="Help_Releases">
                         <MenuItem.Icon>
-                            <Viewbox Width="16" Height="16">
-                                <Canvas Width="24" Height="24">
-                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource GitHubIcon}" />
+                            <Viewbox Width="16"
+                                     Height="16">
+                                <Canvas Width="24"
+                                        Height="24">
+                                    <Path Fill="{DynamicResource AccentColorBrush}"
+                                          Data="{StaticResource GitHubIcon}" />
                                 </Canvas>
                             </Viewbox>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Bugs Report" Command="{Binding MenuCommand}" CommandParameter="Help_BugsReport">
+                    <MenuItem Header="Bugs Report"
+                              Command="{Binding MenuCommand}"
+                              CommandParameter="Help_BugsReport">
                         <MenuItem.Icon>
-                            <Viewbox Width="16" Height="16">
-                                <Canvas Width="24" Height="24">
-                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource BugIcon}" />
+                            <Viewbox Width="16"
+                                     Height="16">
+                                <Canvas Width="24"
+                                        Height="24">
+                                    <Path Fill="{DynamicResource AccentColorBrush}"
+                                          Data="{StaticResource BugIcon}" />
                                 </Canvas>
                             </Viewbox>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Discord Server" Command="{Binding MenuCommand}" CommandParameter="Help_Discord">
+                    <MenuItem Header="Discord Server"
+                              Command="{Binding MenuCommand}"
+                              CommandParameter="Help_Discord">
                         <MenuItem.Icon>
-                            <Viewbox Width="16" Height="16">
-                                <Canvas Width="24" Height="24">
-                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource DiscordIcon}" />
+                            <Viewbox Width="16"
+                                     Height="16">
+                                <Canvas Width="24"
+                                        Height="24">
+                                    <Path Fill="{DynamicResource AccentColorBrush}"
+                                          Data="{StaticResource DiscordIcon}" />
                                 </Canvas>
                             </Viewbox>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="About FModel" Command="{Binding MenuCommand}" CommandParameter="Help_About">
+                    <MenuItem Header="About FModel"
+                              Command="{Binding MenuCommand}"
+                              CommandParameter="Help_About">
                         <MenuItem.Icon>
-                            <Viewbox Width="16" Height="16">
-                                <Canvas Width="24" Height="24">
-                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource InfoIcon}" />
+                            <Viewbox Width="16"
+                                     Height="16">
+                                <Canvas Width="24"
+                                        Height="24">
+                                    <Path Fill="{DynamicResource AccentColorBrush}"
+                                          Data="{StaticResource InfoIcon}" />
                                 </Canvas>
                             </Viewbox>
                         </MenuItem.Icon>
@@ -208,24 +267,34 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" Text="Preview New Explorer System" VerticalAlignment="Center" />
-                <CheckBox Grid.Column="1" Margin="5 2 5 0" Unchecked="FeaturePreviewOnUnchecked" KeyboardNavigation.TabNavigation="None" KeyboardNavigation.ControlTabNavigation="None"
-                          IsChecked="{Binding FeaturePreviewNewAssetExplorer, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
-                          Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"/>
+                <TextBlock Grid.Column="0"
+                           Text="Preview New Explorer System"
+                           VerticalAlignment="Center" />
+                <CheckBox Grid.Column="1"
+                          Margin="5 2 5 0"
+                          Unchecked="FeaturePreviewOnUnchecked"
+                          KeyboardNavigation.TabNavigation="None"
+                          IsChecked="{Binding FeaturePreviewNewAssetExplorer, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" />
             </Grid>
         </Grid>
 
-        <Grid x:Name="RootGrid" Grid.Row="2">
+        <Grid x:Name="RootGrid"
+              Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" MinWidth="400" />
+                <ColumnDefinition Width="Auto"
+                                  MinWidth="400" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <GroupBox Grid.Column="0" adonisExtensions:LayerExtension.Layer="2"
-                      Padding="0" Background="Transparent">
-                <TabControl x:Name="LeftTabControl" SelectionChanged="OnTabItemChange" SelectedIndex="{Binding SelectedLeftTabIndex, Mode=TwoWay}">
-                    <TabItem Style="{StaticResource TabItemFillSpace}" Header="Archives">
+            <GroupBox Grid.Column="0"
+                      Padding="0"
+                      Background="Transparent">
+                <TabControl x:Name="LeftTabControl"
+                            SelectionChanged="OnTabItemChange"
+                            SelectedIndex="{Binding SelectedLeftTabIndex, Mode=TwoWay}">
+                    <TabItem Style="{StaticResource TabItemFillSpace}"
+                             Header="Archives">
                         <DockPanel>
                             <Grid DockPanel.Dock="Top">
                                 <Grid.RowDefinitions>
@@ -239,8 +308,14 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Loading Mode" VerticalAlignment="Center" />
-                                <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding LoadingModes.Modes}" IsEnabled="{Binding Status.IsReady}"
+                                <TextBlock Grid.Row="0"
+                                           Grid.Column="0"
+                                           Text="Loading Mode"
+                                           VerticalAlignment="Center" />
+                                <ComboBox Grid.Row="0"
+                                          Grid.Column="2"
+                                          ItemsSource="{Binding LoadingModes.Modes}"
+                                          IsEnabled="{Binding Status.IsReady}"
                                           SelectedItem="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
@@ -248,8 +323,12 @@
                                         </DataTemplate>
                                     </ComboBox.ItemTemplate>
                                 </ComboBox>
-                                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Content="Load"
-                                        Command="{Binding LoadingModes.LoadCommand}" IsEnabled="{Binding Status.IsReady}"
+                                <Button Grid.Row="2"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="3"
+                                        Content="Load"
+                                        Command="{Binding LoadingModes.LoadCommand}"
+                                        IsEnabled="{Binding Status.IsReady}"
                                         CommandParameter="{Binding SelectedItems, ElementName=DirectoryFilesListBox}" />
                             </Grid>
                             <Grid DockPanel.Dock="Top">
@@ -260,10 +339,19 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <Separator Grid.Row="0" Style="{StaticResource CustomSeparator}" Tag="GAME ARCHIVES" />
-                                <ListBox Grid.Row="1" x:Name="DirectoryFilesListBox" Style="{StaticResource DirectoryFilesListBox}" MouseDoubleClick="OnMouseDoubleClick" />
-                                <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="INFORMATION" />
-                                <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0 0 0 5">
+                                <Separator Grid.Row="0"
+                                           Style="{StaticResource CustomSeparator}"
+                                           Tag="GAME ARCHIVES" />
+                                <ListBox Grid.Row="1"
+                                         x:Name="DirectoryFilesListBox"
+                                         Style="{StaticResource DirectoryFilesListBox}"
+                                         DoubleTapped="OnMouseDoubleClick" />
+                                <Separator Grid.Row="2"
+                                           Style="{StaticResource CustomSeparator}"
+                                           Tag="INFORMATION" />
+                                <StackPanel Grid.Row="3"
+                                            Orientation="Vertical"
+                                            Margin="0 0 0 5">
                                     <Grid HorizontalAlignment="Stretch">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
@@ -276,14 +364,46 @@
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.MountPoint, ElementName=DirectoryFilesListBox, FallbackValue='/', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Mount Point" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.FileCount, ElementName=DirectoryFilesListBox, FallbackValue='0', StringFormat={}{0} Files}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="File Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding SelectedItem.IsEncrypted, ElementName=DirectoryFilesListBox, FallbackValue='False'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="Is Encrypted" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.Guid, ElementName=DirectoryFilesListBox, FallbackValue='00000000000000000000000000000000'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="3" Grid.Column="1" Text="Global Unique Identifier" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="0"
+                                                   Grid.Column="0"
+                                                   Text="{Binding SelectedItem.MountPoint, ElementName=DirectoryFilesListBox, FallbackValue='/', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="0"
+                                                   Grid.Column="1"
+                                                   Text="Mount Point"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="1"
+                                                   Grid.Column="0"
+                                                   Text="{Binding SelectedItem.FileCount, ElementName=DirectoryFilesListBox, FallbackValue='0', StringFormat={}{0} Files}"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="1"
+                                                   Grid.Column="1"
+                                                   Text="File Count"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="2"
+                                                   Grid.Column="0"
+                                                   Text="{Binding SelectedItem.IsEncrypted, ElementName=DirectoryFilesListBox, FallbackValue='False'}"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="2"
+                                                   Grid.Column="1"
+                                                   Text="Is Encrypted"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="3"
+                                                   Grid.Column="0"
+                                                   Text="{Binding SelectedItem.Guid, ElementName=DirectoryFilesListBox, FallbackValue='00000000000000000000000000000000'}"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="3"
+                                                   Grid.Column="1"
+                                                   Text="Global Unique Identifier"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Right" />
                                     </Grid>
                                 </StackPanel>
                             </Grid>
@@ -307,56 +427,93 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
-                                <StackPanel Grid.Column="0" Orientation="Horizontal">
-                                    <Image Source="/FModel;component/Resources/label.png"
-                                           Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3.5 0" />
-                                    <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
+                                <StackPanel Grid.Column="0"
+                                            Orientation="Horizontal">
+                                    <Image Source="avares://FModel/Resources/label.png"
+                                           Width="16"
+                                           Height="16"
+                                           HorizontalAlignment="Center"
+                                           Margin="0 0 3.5 0" />
+                                    <TextBlock HorizontalAlignment="Left"
+                                               VerticalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis">
                                         <TextBlock.Text>
                                             <MultiBinding StringFormat="{}'{0}' has {1} folders and {2} packages">
-                                                <Binding Path="SelectedItem.Header" ElementName="AssetsFolderName" FallbackValue="None" />
-                                                <Binding Path="SelectedItem.FoldersView.Count" ElementName="AssetsFolderName" FallbackValue="0" />
-                                                <Binding Path="SelectedItem.AssetsList.Assets.Count" ElementName="AssetsFolderName" FallbackValue="0" />
+                                                <Binding Path="SelectedItem.Header"
+                                                         ElementName="AssetsFolderName"
+                                                         FallbackValue="None" />
+                                                <Binding Path="SelectedItem.FoldersView.Count"
+                                                         ElementName="AssetsFolderName"
+                                                         FallbackValue="0" />
+                                                <Binding Path="SelectedItem.AssetsList.Assets.Count"
+                                                         ElementName="AssetsFolderName"
+                                                         FallbackValue="0" />
                                             </MultiBinding>
                                         </TextBlock.Text>
                                     </TextBlock>
                                 </StackPanel>
-                                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Bring Selected Folder To View" Padding="4"
-                                            Command="{Binding MenuCommand}" CommandParameter="{Binding SelectedItem, ElementName=AssetsFolderName}">
-                                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
-                                            <Canvas Width="24" Height="24">
-                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource LocateMeIcon}" />
+                                <StackPanel Grid.Column="2"
+                                            Orientation="Horizontal"
+                                            HorizontalAlignment="Right">
+                                    <Button ToolTip.Tip="Bring Selected Folder To View"
+                                            Padding="4"
+                                            Command="{Binding MenuCommand}"
+                                            CommandParameter="{Binding SelectedItem, ElementName=AssetsFolderName}">
+                                        <Viewbox Width="16"
+                                                 Height="16"
+                                                 HorizontalAlignment="Center">
+                                            <Canvas Width="24"
+                                                    Height="24">
+                                                <Path Fill="{DynamicResource SystemColors.ControlTextBrushKey}"
+                                                      Data="{StaticResource LocateMeIcon}" />
                                             </Canvas>
                                         </Viewbox>
                                     </Button>
-                                    <!-- <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Expand All (not appropriate for huge amount of folders)" Padding="4" -->
-                                    <!--         Command="{Binding MenuCommand}" CommandParameter="ToolBox_Expand_All"> -->
-                                    <!--     <Viewbox Width="16" Height="16" HorizontalAlignment="Center"> -->
+                                    <!-- <Button  ToolTip="Expand All (not appropriate for huge
+                                    amount of folders)" Padding="4" -->
+                                    <!--         Command="{Binding MenuCommand}"
+                                    CommandParameter="ToolBox_Expand_All"> -->
+                                    <!--     <Viewbox Width="16" Height="16"
+                                    HorizontalAlignment="Center"> -->
                                     <!--         <Canvas Width="24" Height="24"> -->
-                                    <!--             <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource UnfoldIcon}" /> -->
+                                    <!--             <Path Fill="{DynamicResource
+                                    SystemColors.ControlTextBrushKey}" Data="{StaticResource
+                                    UnfoldIcon}" /> -->
                                     <!--         </Canvas> -->
                                     <!--     </Viewbox> -->
                                     <!-- </Button> -->
-                                    <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Collapse All" Padding="4"
-                                            Command="{Binding MenuCommand}" CommandParameter="ToolBox_Collapse_All">
-                                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
-                                            <Canvas Width="24" Height="24">
-                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource FoldIcon}"/>
+                                    <Button ToolTip.Tip="Collapse All"
+                                            Padding="4"
+                                            Command="{Binding MenuCommand}"
+                                            CommandParameter="ToolBox_Collapse_All">
+                                        <Viewbox Width="16"
+                                                 Height="16"
+                                                 HorizontalAlignment="Center">
+                                            <Canvas Width="24"
+                                                    Height="24">
+                                                <Path Fill="{DynamicResource SystemColors.ControlTextBrushKey}"
+                                                      Data="{StaticResource FoldIcon}" />
                                             </Canvas>
                                         </Viewbox>
                                     </Button>
                                 </StackPanel>
                             </Grid>
-                            <Separator Grid.Row="1" Style="{StaticResource CustomSeparator}" Margin="0" />
+                            <Separator Grid.Row="1"
+                                       Style="{StaticResource CustomSeparator}"
+                                       Margin="0" />
                             <TreeView Grid.Row="2"
                                       x:Name="AssetsFolderName"
                                       Style="{StaticResource AssetsFolderTreeView}"
-                                      SelectedItemChanged="OnAssetsTreeSelectedItemChanged"
-                                      PreviewKeyDown="OnFoldersPreviewKeyDown"
-                                      PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick">
+                                      SelectionChanged="OnAssetsTreeSelectedItemChanged"
+                                      KeyDown="OnFoldersPreviewKeyDown"
+                                      DoubleTapped="OnAssetsTreeMouseDoubleClick">
                             </TreeView>
-                            <Separator Grid.Row="3" Style="{StaticResource CustomSeparator}" Tag="INFORMATION" />
-                            <StackPanel Grid.Row="4" Orientation="Vertical" Margin="0 0 0 5">
+                            <Separator Grid.Row="3"
+                                       Style="{StaticResource CustomSeparator}"
+                                       Tag="INFORMATION" />
+                            <StackPanel Grid.Row="4"
+                                        Orientation="Vertical"
+                                        Margin="0 0 0 5">
                                 <Grid HorizontalAlignment="Stretch">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -370,16 +527,56 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
 
-                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.AssetsList.Assets.Count, ElementName=AssetsFolderName, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Packages Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.FoldersView.Count, ElementName=AssetsFolderName, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="Folders Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding SelectedItem.Archive, ElementName=AssetsFolderName, FallbackValue='None'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="Included In Archive" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.MountPoint, ElementName=AssetsFolderName, FallbackValue='/', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="Archive Mount Point" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                    <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding SelectedItem.Version, ElementName=AssetsFolderName, FallbackValue='VER_UE4_LATEST', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="Archive Version" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                    <TextBlock Grid.Row="0"
+                                               Grid.Column="0"
+                                               Text="{Binding SelectedItem.AssetsList.Assets.Count, ElementName=AssetsFolderName, FallbackValue=0}"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Row="0"
+                                               Grid.Column="1"
+                                               Text="Packages Count"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Right" />
+                                    <TextBlock Grid.Row="1"
+                                               Grid.Column="0"
+                                               Text="{Binding SelectedItem.FoldersView.Count, ElementName=AssetsFolderName, FallbackValue=0}"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Row="1"
+                                               Grid.Column="1"
+                                               Text="Folders Count"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Right" />
+                                    <TextBlock Grid.Row="2"
+                                               Grid.Column="0"
+                                               Text="{Binding SelectedItem.Archive, ElementName=AssetsFolderName, FallbackValue='None'}"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Row="2"
+                                               Grid.Column="1"
+                                               Text="Included In Archive"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Right" />
+                                    <TextBlock Grid.Row="3"
+                                               Grid.Column="0"
+                                               Text="{Binding SelectedItem.MountPoint, ElementName=AssetsFolderName, FallbackValue='/', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Row="3"
+                                               Grid.Column="1"
+                                               Text="Archive Mount Point"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Right" />
+                                    <TextBlock Grid.Row="4"
+                                               Grid.Column="0"
+                                               Text="{Binding SelectedItem.Version, ElementName=AssetsFolderName, FallbackValue='VER_UE4_LATEST', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Row="4"
+                                               Grid.Column="1"
+                                               Text="Archive Version"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Right" />
                                 </Grid>
                             </StackPanel>
                         </Grid>
@@ -389,8 +586,9 @@
                              HeaderStringFormat="{}{0} Packages">
                         <DockPanel>
 
-                            <inputs:SearchTextBox DockPanel.Dock="Top" x:Name="AssetsSearchTextBox"
-                                                  Text="{Binding SelectedItem.SearchText, ElementName=AssetsFolderName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            <inputs:SearchTextBox DockPanel.Dock="Top"
+                                                  x:Name="AssetsSearchTextBox"
+                                                  Text="{Binding SelectedItem.SearchText, ElementName=AssetsFolderName, Mode=TwoWay}"
                                                   ClearButtonClick="OnClearFilterClick" />
 
                             <Grid DockPanel.Dock="Top">
@@ -401,17 +599,24 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <controls:Breadcrumb Grid.Row="0" HorizontalAlignment="Left" Margin="0 5 0 5"
+                                <controls:Breadcrumb Grid.Row="0"
+                                                     HorizontalAlignment="Left"
+                                                     Margin="0 5 0 5"
                                                      MaxWidth="{Binding ActualWidth, ElementName=AssetsSearchTextBox}"
-                                                     DataContext="{Binding SelectedItem.PathAtThisPoint, ElementName=AssetsFolderName, FallbackValue='No/Directory/Detected/In/Folder'}"/>
+                                                     DataContext="{Binding SelectedItem.PathAtThisPoint, ElementName=AssetsFolderName, FallbackValue='No/Directory/Detected/In/Folder'}" />
 
-                                <ListBox Grid.Row="1" x:Name="AssetsListName"
+                                <ListBox Grid.Row="1"
+                                         x:Name="AssetsListName"
                                          Style="{StaticResource AssetsListBox}"
-                                         PreviewMouseDoubleClick="OnAssetsListMouseDoubleClick"
-                                         PreviewKeyDown="OnPreviewKeyDown" />
+                                         DoubleTapped="OnAssetsListMouseDoubleClick"
+                                         KeyDown="OnPreviewKeyDown" />
 
-                                <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="INFORMATION" />
-                                <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0 0 0 5">
+                                <Separator Grid.Row="2"
+                                           Style="{StaticResource CustomSeparator}"
+                                           Tag="INFORMATION" />
+                                <StackPanel Grid.Row="3"
+                                            Orientation="Vertical"
+                                            Margin="0 0 0 5">
                                     <Grid HorizontalAlignment="Stretch">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
@@ -425,16 +630,56 @@
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.Asset.Offset, ElementName=AssetsListName, FallbackValue=0, StringFormat='{}0x{0:X}'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Offset" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.Asset.Size, ElementName=AssetsListName, FallbackValue=0, Converter={x:Static converters:SizeToStringConverter.Instance}}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="Size" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding SelectedItem.Asset.CompressionMethod, ElementName=AssetsListName, FallbackValue='Unknown'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="Compression Method" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.Asset.IsEncrypted, ElementName=AssetsListName, FallbackValue='False'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="3" Grid.Column="1" Text="Is Encrypted" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                        <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName, FallbackValue='None'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="4" Grid.Column="1" Text="Included In Archive" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="0"
+                                                   Grid.Column="0"
+                                                   Text="{Binding SelectedItem.Asset.Offset, ElementName=AssetsListName, FallbackValue=0, StringFormat='{}0x{0:X}'}"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="0"
+                                                   Grid.Column="1"
+                                                   Text="Offset"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="1"
+                                                   Grid.Column="0"
+                                                   Text="{Binding SelectedItem.Asset.Size, ElementName=AssetsListName, FallbackValue=0, Converter={x:Static converters:SizeToStringConverter.Instance}}"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="1"
+                                                   Grid.Column="1"
+                                                   Text="Size"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="2"
+                                                   Grid.Column="0"
+                                                   Text="{Binding SelectedItem.Asset.CompressionMethod, ElementName=AssetsListName, FallbackValue='Unknown'}"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="2"
+                                                   Grid.Column="1"
+                                                   Text="Compression Method"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="3"
+                                                   Grid.Column="0"
+                                                   Text="{Binding SelectedItem.Asset.IsEncrypted, ElementName=AssetsListName, FallbackValue='False'}"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="3"
+                                                   Grid.Column="1"
+                                                   Text="Is Encrypted"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="4"
+                                                   Grid.Column="0"
+                                                   Text="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName, FallbackValue='None'}"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="4"
+                                                   Grid.Column="1"
+                                                   Text="Included In Archive"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Right" />
                                     </Grid>
                                 </StackPanel>
                             </Grid>
@@ -443,12 +688,17 @@
                 </TabControl>
             </GroupBox>
 
-            <GridSplitter Grid.Column="1" ResizeDirection="Columns" Width="4" VerticalAlignment="Stretch"
-                          ResizeBehavior="PreviousAndNext" MouseDoubleClick="OnGridSplitterDoubleClick"
-                          Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
+            <GridSplitter Grid.Column="1"
+                          ResizeDirection="Columns"
+                          Width="4"
+                          VerticalAlignment="Stretch"
+                          ResizeBehavior="PreviousAndNext"
+                          DoubleTapped="OnGridSplitterDoubleClick"
+                          Background="{DynamicResource SystemColors.ControlBrushKey}" />
 
-            <GroupBox Grid.Column="2" adonisExtensions:LayerExtension.Layer="2"
-                      Padding="0" Background="Transparent">
+            <GroupBox Grid.Column="2"
+                      Padding="0"
+                      Background="Transparent">
                 <Grid Margin="0 0 3 0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
@@ -456,10 +706,10 @@
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0">
-                        <Border BorderThickness="1" Padding="10"
-                                BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
-                                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
-                                Visibility="{Binding IsAssetsExplorerVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Border BorderThickness="1"
+                                Padding="10"
+                                Background="{DynamicResource SystemColors.AppWorkspaceBrushKey}"
+                                IsVisible="{Binding IsAssetsExplorerVisible}">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
@@ -467,37 +717,42 @@
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
 
-                                <Grid Grid.Row="0" adonisExtensions:LayerExtension.Layer="3">
+                                <Grid Grid.Row="0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="5" />
-                                        <ColumnDefinition Width="Auto" MinWidth="150" />
+                                        <ColumnDefinition Width="Auto"
+                                                          MinWidth="150" />
                                     </Grid.ColumnDefinitions>
 
-                                    <inputs:SearchTextBox x:Name="AssetsExplorerSearch" Grid.Column="0"
-                                                          Text="{Binding SelectedItem.SearchText, ElementName=AssetsFolderName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    <inputs:SearchTextBox x:Name="AssetsExplorerSearch"
+                                                          Grid.Column="0"
+                                                          Text="{Binding SelectedItem.SearchText, ElementName=AssetsFolderName, Mode=TwoWay}"
                                                           ClearButtonClick="OnClearFilterClick" />
 
-                                    <ComboBox x:Name="CategoriesSelector" Grid.Column="2"
+                                    <ComboBox x:Name="CategoriesSelector"
+                                              Grid.Column="2"
                                               ItemsSource="{Binding Categories}"
                                               SelectedItem="{Binding SelectedItem.SelectedCategory, ElementName=AssetsFolderName, Mode=TwoWay}" />
                                 </Grid>
 
-                                <controls:Breadcrumb Grid.Row="1" Margin="0 5 0 0"
+                                <controls:Breadcrumb Grid.Row="1"
+                                                     Margin="0 5 0 0"
                                                      HorizontalAlignment="Left"
                                                      DataContext="{Binding SelectedItem.PathAtThisPoint, ElementName=AssetsFolderName}" />
 
-                                <ListBox x:Name="AssetsExplorer" Grid.Row="2"
+                                <ListBox x:Name="AssetsExplorer"
+                                         Grid.Row="2"
                                          ItemsSource="{Binding SelectedItem.CombinedEntries, ElementName=AssetsFolderName, IsAsync=True}"
                                          Style="{StaticResource TiledExplorer}"
-                                         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
-                                         PreviewKeyDown="OnPreviewKeyDown" />
+                                         Background="{DynamicResource SystemColors.AppWorkspaceBrushKey}"
+                                         KeyDown="OnPreviewKeyDown" />
                             </Grid>
                         </Border>
 
                         <TabControl x:Name="TabControlName"
                                     Style="{StaticResource GameFilesTabControl}"
-                                    Visibility="{Binding IsAssetsExplorerVisible, Converter={x:Static converters:InvertBoolToVisibilityConverter.Instance}, ConverterParameter=Hidden}" />
+                                    IsVisible="{Binding IsAssetsExplorerVisible, Converter={x:Static converters:InvertBooleanConverter.Instance}}" />
                     </Grid>
 
                     <Border Grid.Row="0"
@@ -505,31 +760,22 @@
                             HorizontalAlignment="Right"
                             Margin="12,12,20,12"
                             Opacity="0.5"
-                            Visibility="{Binding FeaturePreviewNewAssetExplorer, Source={x:Static settings:UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}"
-                            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                            IsVisible="{Binding FeaturePreviewNewAssetExplorer, Source={x:Static settings:UserSettings.Default}}"
                             CornerRadius="8"
-                            Padding="4"
-                            Effect="{DynamicResource ShadowEffect}">
-                        <Border.Triggers>
-                            <EventTrigger RoutedEvent="MouseEnter">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                                         To="1"
-                                                         Duration="0:0:0.2" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                            <EventTrigger RoutedEvent="MouseLeave">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                                         To="0.5"
-                                                         Duration="0:0:0.2" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                        </Border.Triggers>
+                            Padding="4">
+                        <!-- Opacity fade replaces WPF Storyboard EventTriggers on MouseEnter/Leave -->
+                        <Border.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity"
+                                                  Duration="0:0:0.2" />
+                            </Transitions>
+                        </Border.Transitions>
+                        <Border.Styles>
+                            <Style Selector="Border:pointerover">
+                                <Setter Property="Opacity"
+                                        Value="1" />
+                            </Style>
+                        </Border.Styles>
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Center">
                             <ToggleButton Width="32"
@@ -537,42 +783,39 @@
                                           Cursor="Hand"
                                           Margin="0,0,2,0"
                                           IsChecked="{Binding IsAssetsExplorerVisible, Mode=TwoWay}"
-                                          Style="{StaticResource AssetsExplorerToggleButtonStyle}" />
+                                          Theme="{StaticResource AssetsExplorerToggleButtonStyle}" />
                             <ToggleButton Width="32"
                                           Height="32"
                                           Cursor="Hand"
-                                          Checked="OnPreviewTexturesToggled"
+                                          IsCheckedChanged="OnPreviewTexturesToggled"
                                           Focusable="False"
+                                          ToolTip.Tip="Preview Textures (OFF)"
                                           IsChecked="{Binding PreviewTexturesAssetExplorer, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}">
-                                <ToggleButton.Style>
-                                    <Style TargetType="ToggleButton"
-                                           BasedOn="{StaticResource ModernToggleButtonStyle}">
-                                        <Setter Property="ToolTip"
-                                                Value="Preview Textures (OFF)" />
-                                        <Style.Triggers>
-                                            <Trigger Property="IsChecked"
-                                                     Value="True">
-                                                <Setter Property="Background"
-                                                        Value="MediumPurple" />
-                                                <Setter Property="ToolTip"
-                                                        Value="Preview Textures (ON)" />
-                                            </Trigger>
-                                        </Style.Triggers>
+                                <ToggleButton.Styles>
+                                    <!-- WPF IsChecked=True trigger: purple background and updated
+                                    tooltip -->
+                                    <Style Selector="ToggleButton:checked">
+                                        <Setter Property="Background"
+                                                Value="MediumPurple" />
+                                        <Setter Property="ToolTip.Tip"
+                                                Value="Preview Textures (ON)" />
                                     </Style>
-                                </ToggleButton.Style>
+                                </ToggleButton.Styles>
                                 <Viewbox Width="16"
                                          Height="16">
                                     <Canvas Width="24"
                                             Height="24">
                                         <Path Data="{StaticResource TextureIconAlt}"
-                                              Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                                              Fill="{DynamicResource SystemColors.ControlTextBrushKey}" />
                                     </Canvas>
                                 </Viewbox>
                             </ToggleButton>
                         </StackPanel>
                     </Border>
 
-                    <Expander Grid.Row="1" Margin="0 5 0 5" ExpandDirection="Down"
+                    <Expander Grid.Row="1"
+                              Margin="0 5 0 5"
+                              ExpandDirection="Down"
                               IsExpanded="{Binding IsLoggerExpanded, Source={x:Static settings:UserSettings.Default}}">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -581,21 +824,41 @@
                                 <ColumnDefinition Width="24" />
                             </Grid.ColumnDefinitions>
 
-                            <controls:CustomRichTextBox Grid.Column="0" Grid.ColumnSpan="3" x:Name="LogRtbName" Style="{StaticResource CustomRichTextBox}" />
-                            <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Bottom" Margin="-5 -5 5 5">
-                                <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Open Output Folder" Padding="0,4,0,4"
-                                        Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Output_Directory" Focusable="False">
-                                    <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
-                                        <Canvas Width="24" Height="24">
-                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource FolderIcon}" />
+                            <controls:CustomRichTextBox Grid.Column="0"
+                                                        Grid.ColumnSpan="3"
+                                                        x:Name="LogRtbName"
+                                                        Style="{StaticResource CustomRichTextBox}" />
+                            <StackPanel Grid.Column="2"
+                                        Orientation="Vertical"
+                                        VerticalAlignment="Bottom"
+                                        Margin="-5 -5 5 5">
+                                <Button ToolTip.Tip="Open Output Folder"
+                                        Padding="0,4,0,4"
+                                        Command="{Binding MenuCommand}"
+                                        CommandParameter="ToolBox_Open_Output_Directory"
+                                        Focusable="False">
+                                    <Viewbox Width="16"
+                                             Height="16"
+                                             HorizontalAlignment="Center">
+                                        <Canvas Width="24"
+                                                Height="24">
+                                            <Path Fill="{DynamicResource SystemColors.ControlTextBrushKey}"
+                                                  Data="{StaticResource FolderIcon}" />
                                         </Canvas>
                                     </Viewbox>
                                 </Button>
-                                <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Clear Logs" Padding="0,4,0,4"
-                                        Command="{Binding MenuCommand}" CommandParameter="ToolBox_Clear_Logs" Focusable="False">
-                                    <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
-                                        <Canvas Width="24" Height="24">
-                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TrashIcon}"/>
+                                <Button ToolTip.Tip="Clear Logs"
+                                        Padding="0,4,0,4"
+                                        Command="{Binding MenuCommand}"
+                                        CommandParameter="ToolBox_Clear_Logs"
+                                        Focusable="False">
+                                    <Viewbox Width="16"
+                                             Height="16"
+                                             HorizontalAlignment="Center">
+                                        <Canvas Width="24"
+                                                Height="24">
+                                            <Path Fill="{DynamicResource SystemColors.ControlTextBrushKey}"
+                                                  Data="{StaticResource TrashIcon}" />
                                         </Canvas>
                                     </Viewbox>
                                 </Button>
@@ -606,108 +869,40 @@
             </GroupBox>
         </Grid>
 
-        <StatusBar Grid.Row="3" MinHeight="28" MaxHeight="28"
-                   adonisExtensions:LayerExtension.Layer="3">
-            <StatusBar.Style>
-                <Style TargetType="{x:Type StatusBar}" BasedOn="{StaticResource {x:Type StatusBar}}">
-                    <Style.Triggers>
-                        <!--don't mind me, MultiDataTrigger just sucks-->
-                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Ready}">
-                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
-                            <Setter Property="Foreground" Value="White" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Completed}">
-                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
-                            <Setter Property="Foreground" Value="White" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Loading}">
-                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}" />
-                            <Setter Property="Foreground" Value="White" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Stopping}">
-                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}" />
-                            <Setter Property="Foreground" Value="White" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Stopped}">
-                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
-                            <Setter Property="Foreground" Value="White" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Failed}">
-                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
-                            <Setter Property="Foreground" Value="White" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding StatusChangeAttempted, Source={x:Static services:ApplicationService.ThreadWorkerView}}" Value="True">
-                            <DataTrigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard Duration="0:0:0.8">
-                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(StatusBar.Background).(SolidColorBrush.Color)" FillBehavior="Stop">
-                                            <ColorAnimationUsingKeyFrames.KeyFrames>
-                                                <DiscreteColorKeyFrame KeyTime="0:0:0" Value="#CE5555" />
-                                                <DiscreteColorKeyFrame KeyTime="0:0:0.2" Value="#C22B2B" />
-                                                <DiscreteColorKeyFrame KeyTime="0:0:0.4" Value="#CE5555" />
-                                                <DiscreteColorKeyFrame KeyTime="0:0:0.6" Value="#C22B2B" />
-                                                <DiscreteColorKeyFrame KeyTime="0:0:0.8" Value="#CE5555" />
-                                            </ColorAnimationUsingKeyFrames.KeyFrames>
-                                        </ColorAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </DataTrigger.EnterActions>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding OperationCancelled, Source={x:Static services:ApplicationService.ThreadWorkerView}}" Value="True">
-                            <DataTrigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard Duration="0:0:1">
-                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(StatusBar.Background).(SolidColorBrush.Color)" FillBehavior="Stop">
-                                            <ColorAnimationUsingKeyFrames.KeyFrames>
-                                                <DiscreteColorKeyFrame KeyTime="0:0:0" Value="#C22B2B" />
-                                                <DiscreteColorKeyFrame KeyTime="0:0:1" Value="#CE5555" />
-                                            </ColorAnimationUsingKeyFrames.KeyFrames>
-                                        </ColorAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </DataTrigger.EnterActions>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </StatusBar.Style>
+        <!--
+            StatusBar: WPF StatusBar/StatusBarItem and Style.Triggers/DataTriggers
+            replaced with a Border+DockPanel. Background colour is set from
+            code-behind (UpdateStatusBarColor) when Status.Kind changes; the
+            flash animations (StatusChangeAttempted, OperationCancelled) are
+            also handled in code-behind via DispatcherTimer.
+        -->
+        <Border x:Name="StatusBarBorder"
+                Grid.Row="3"
+                MinHeight="28"
+                MaxHeight="28"
+                Padding="5,0">
+            <DockPanel LastChildFill="False">
+                <TextBlock x:Name="StatusLabel"
+                           DockPanel.Dock="Left"
+                           VerticalAlignment="Center" />
 
-            <StatusBarItem Margin="5,0,0,0" >
-                <TextBlock>
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Text" Value="{Binding Status.Label}" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Loading}">
-                                    <Setter Property="Text" Value="{Binding Status.Label, StringFormat='{}{0} …'}" />
-                                </DataTrigger>
-                                <MultiDataTrigger>
-                                    <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding CanBeCanceled, Source={x:Static services:ApplicationService.ThreadWorkerView}}" Value="True" />
-                                        <Condition Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Loading}" />
-                                    </MultiDataTrigger.Conditions>
-                                    <Setter Property="Text" Value="{Binding Status.Label, StringFormat='{}{0} …    ESC to Cancel'}" />
-                                </MultiDataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-            </StatusBarItem>
+                <StackPanel DockPanel.Dock="Right"
+                            Orientation="Horizontal">
+                    <Viewbox Width="16"
+                             Height="16"
+                             Margin="0,0,10,0">
+                        <Canvas Width="24"
+                                Height="24">
+                            <Path Fill="{DynamicResource AccentColorBrush}"
+                                  Data="{StaticResource StatusBarIcon}" />
+                        </Canvas>
+                    </Viewbox>
 
-            <StatusBarItem Margin="0 0 5 0" HorizontalAlignment="Right">
-                <StackPanel Orientation="Horizontal">
-                    <StatusBarItem Margin="0 0 10 0" HorizontalContentAlignment="Stretch">
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource StatusBarIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </StatusBarItem>
-
-                    <StatusBarItem Margin="10 0 0 0">
-                        <TextBlock Text="{Binding LastUpdateCheck, Source={x:Static local:Settings.UserSettings.Default}, Converter={x:Static converters:RelativeDateTimeConverter.Instance}, StringFormat=Last Refresh: {0}}" />
-                    </StatusBarItem>
+                    <TextBlock VerticalAlignment="Center"
+                               Margin="10,0,0,0"
+                               Text="{Binding LastUpdateCheck, Source={x:Static settings:UserSettings.Default}, Converter={x:Static converters:RelativeDateTimeConverter.Instance}, StringFormat=Last Refresh: {0}}" />
                 </StackPanel>
-            </StatusBarItem>
-        </StatusBar>
+            </DockPanel>
+        </Border>
     </Grid>
-</adonisControls:AdonisWindow>
+</Window>

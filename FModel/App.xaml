@@ -21,6 +21,17 @@
             <Color x:Key="ErrorColor">#C22B2B</Color>
             <SolidColorBrush x:Key="ErrorColorBrush"
                              Color="{StaticResource ErrorColor}" />
+            <!--
+                WPF SystemColors aliases (M1 fix). These are stopgap values
+                matching AdonisUI dark-theme equivalents; they will be replaced
+                when the full resource-dictionary migration is done.
+            -->
+            <SolidColorBrush x:Key="SystemColors.ControlTextBrushKey"
+                             Color="#E8E8E8" />
+            <SolidColorBrush x:Key="SystemColors.ControlBrushKey"
+                             Color="#3C3C3C" />
+            <SolidColorBrush x:Key="SystemColors.AppWorkspaceBrushKey"
+                             Color="#1E1E1E" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

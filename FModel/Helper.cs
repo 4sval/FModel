@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Windows;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 
 namespace FModel;
 
@@ -38,7 +40,8 @@ public static class Helper
         else
         {
             var w = GetOpenedWindow<T>(windowName);
-            if (windowName == "Search For Packages") w.WindowState = WindowState.Normal;
+            if (windowName == "Search For Packages")
+                w.WindowState = WindowState.Normal;
             w.Focus();
         }
     }
@@ -52,26 +55,33 @@ public static class Helper
 
         var ret = (T) GetOpenedWindow<T>(windowName);
         ret.Focus();
-        ret.Activate();
         return ret;
     }
 
     public static void CloseWindow<T>(string windowName) where T : Window
     {
-        if (!IsWindowOpen<T>(windowName)) return;
+        if (!IsWindowOpen<T>(windowName))
+            return;
         GetOpenedWindow<T>(windowName).Close();
+    }
+
+    private static IEnumerable<Window> GetAllWindows()
+    {
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            return desktop.Windows;
+        return Enumerable.Empty<Window>();
     }
 
     private static bool IsWindowOpen<T>(string name = "") where T : Window
     {
         return string.IsNullOrEmpty(name)
-            ? Application.Current.Windows.OfType<T>().Any()
-            : Application.Current.Windows.OfType<T>().Any(w => w.Title.Equals(name));
+            ? GetAllWindows().OfType<T>().Any()
+            : GetAllWindows().OfType<T>().Any(w => w.Title?.Equals(name) == true);
     }
 
     private static Window GetOpenedWindow<T>(string name) where T : Window
     {
-        return Application.Current.Windows.OfType<T>().FirstOrDefault(w => w.Title.Equals(name));
+        return GetAllWindows().OfType<T>().FirstOrDefault(w => w.Title?.Equals(name) == true);
     }
 
     public static bool IsNaN(double value)

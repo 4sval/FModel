@@ -44,7 +44,7 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // TODO(#15): desktop.MainWindow = new Views.MainWindow();
+            desktop.MainWindow = new MainWindow();
             desktop.Exit += AppExit;
         }
 
