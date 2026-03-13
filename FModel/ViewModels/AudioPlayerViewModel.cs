@@ -674,10 +674,10 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
             vgmFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "vgmstream-cli.exe");
             if (!File.Exists(vgmFilePath))
             {
-                Log.Error($"Failed to convert {inputFilePath}, VgmStream is missing");
+                Log.Error("Failed to convert {InputFilePath}, vgmstream is missing", inputFilePath);
                 FLogger.Append(ELog.Error, () =>
                 {
-                    FLogger.Text("Failed to convert audio. VgmStream is missing. See: ", Constants.WHITE);
+                    FLogger.Text("Failed to convert audio because vgmstream is missing. See: ", Constants.WHITE);
                     FLogger.Link("→ link ←", Constants.AUDIO_ISSUE_LINK, true);
                 });
                 return false;
@@ -702,7 +702,7 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         var success = vgmProcess?.ExitCode == 0 && File.Exists(wavFilePath);
         if (!success)
         {
-            Log.Error($"Failed to convert {inputFilePath} to .wav format");
+            Log.Error("Failed to convert {InputFilePath} to .wav format", inputFilePath);
             if (updateUi)
             {
                 FLogger.Append(ELog.Error, () =>

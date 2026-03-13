@@ -246,7 +246,7 @@ public class ApplicationViewModel : ViewModel
             }
             else
             {
-                FLogger.Append(ELog.Error, () => FLogger.Text("Could not download VgmStream", Constants.WHITE, true));
+                FLogger.Append(ELog.Error, () => FLogger.Text("Could not download vgmstream", Constants.WHITE, true));
             }
         }
     }
