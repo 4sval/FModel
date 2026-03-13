@@ -43,6 +43,7 @@ public static class Constants
     // Common issues
     public const string MAPPING_ISSUE_LINK = "https://github.com/4sval/FModel/discussions/418";
     public const string AUDIO_ISSUE_LINK = "https://github.com/4sval/FModel/discussions/658";
+    public const string RADA_ISSUE_LINK = "https://github.com/4sval/FModel/discussions/422";
     public const string VERSION_ISSUE_LINK = "https://github.com/4sval/FModel/discussions/425";
 
     public static int PALETTE_LENGTH => COLOR_PALETTE.Length;

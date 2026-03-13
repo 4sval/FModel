@@ -722,6 +722,12 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         var decoderPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", $"{extension}dec.exe");
         if (!File.Exists(decoderPath))
         {
+            Log.Error("Failed to convert {FilePath}, rada decoder is missing", SelectedAudioFile.FilePath);
+            FLogger.Append(ELog.Error, () =>
+            {
+                FLogger.Text("Failed to convert audio because rada decoder is missing. See: ", Constants.WHITE);
+                FLogger.Link("→ link ←", Constants.RADA_ISSUE_LINK, true);
+            });
             return false;
         }
 

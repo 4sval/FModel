@@ -1196,7 +1196,7 @@ public class CUE4ParseViewModel : ViewModel
             }
             case UAkMediaAsset when (isNone || saveAudio) && pointer.Object.Value is UAkMediaAsset akMediaAsset:
             {
-                var audioName = akMediaAsset.MediaName;
+                var audioName = akMediaAsset.MediaName ?? akMediaAsset.Name;
                 if (akMediaAsset.CurrentMediaAssetData?.TryLoad<UAkMediaAssetData>(out var akMediaAssetData) is true)
                 {
                     var shouldDecompress = UserSettings.Default.CompressedAudioMode is ECompressedAudio.PlayDecompressed;
