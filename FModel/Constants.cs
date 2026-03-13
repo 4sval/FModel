@@ -28,7 +28,6 @@ public static class Constants
     public const string YELLOW = "#E5C07B";
     public const string BLUE = "#528BCC";
 
-    public const string MAPPING_ISSUE_LINK = "https://github.com/4sval/FModel/discussions/418";
     public const string ISSUE_LINK = "https://github.com/4sval/FModel/discussions/categories/q-a";
     public const string GH_REPO = "https://api.github.com/repos/4sval/FModel";
     public const string GH_COMMITS_HISTORY = GH_REPO + "/commits";
@@ -40,6 +39,11 @@ public static class Constants
     public const string _VAL_LIVE_TRIGGER = "valorant-live.manifest";
 
     public const string _NO_PRESET_TRIGGER = "Hand Made";
+
+    // Common issues
+    public const string MAPPING_ISSUE_LINK = "https://github.com/4sval/FModel/discussions/418";
+    public const string AUDIO_ISSUE_LINK = DISCORD_LINK; // TODO: add me please
+    public const string VERSION_ISSUE_LINK = "https://github.com/4sval/FModel/discussions/425";
 
     public static int PALETTE_LENGTH => COLOR_PALETTE.Length;
     public static readonly Vector3[] COLOR_PALETTE =

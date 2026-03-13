@@ -1179,7 +1179,7 @@ public class CUE4ParseViewModel : ViewModel
             case USoundWave when isNone || saveAudio:
             {
                 // If UAkMediaAsset exists in the same package it should be used to handle the audio instead (because it contains actual audio name)
-                if (pointer.Object.Value is UAkMediaAssetData dataObj && dataObj.Outer is UAkMediaAsset)
+                if (pointer.Object.Value is UAkMediaAssetData dataObj && dataObj.Outer.Object.Value is UAkMediaAsset)
                     return false;
 
                 var shouldDecompress = UserSettings.Default.CompressedAudioMode == ECompressedAudio.PlayDecompressed;
@@ -1416,25 +1416,15 @@ public class CUE4ParseViewModel : ViewModel
                 writer.Flush();
             }
 
+            bool conversionSuccess = true;
             if (UserSettings.Default.ConvertAudioOnBulkExport)
             {
-                AudioPlayerViewModel.TryConvert(savedAudioPath, data, out string wavFilePath);
-                if (!string.IsNullOrEmpty(wavFilePath))
-                {
-                    savedAudioPath = wavFilePath;
-                }
-                else if (updateUi)
-                {
-                    FLogger.Append(ELog.Error, () =>
-                    {
-                        FLogger.Text("Failed to convert audio to WAV format, aborting extraction.", Constants.WHITE, true);
-                    });
-                    return;
-                }
+                conversionSuccess = AudioPlayerViewModel.TryConvert(savedAudioPath, data, out string wavFilePath);
+                if (conversionSuccess) savedAudioPath = wavFilePath;
             }
 
             Log.Information("Successfully saved {FilePath}", savedAudioPath);
-            if (updateUi)
+            if (updateUi && conversionSuccess)
             {
                 FLogger.Append(ELog.Information, () =>
                 {

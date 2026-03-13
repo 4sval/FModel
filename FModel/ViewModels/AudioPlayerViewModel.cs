@@ -298,13 +298,23 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
                 Save(a, true);
             }
 
-            FLogger.Append(ELog.Information, () =>
-            {
-                FLogger.Text("Successfully saved audio from ", Constants.WHITE);
-                FLogger.Link(_audioFiles.First().FileName, _audioFiles.First().FilePath, true);
-            });
             if (_audioFiles.Count > 1)
-                FLogger.Append(ELog.Information, () => FLogger.Text($"Successfully saved {_audioFiles.Count} audio files", Constants.WHITE, true));
+            {
+                var dir = new DirectoryInfo(Path.GetDirectoryName(_audioFiles.First().FilePath));
+                FLogger.Append(ELog.Information, () =>
+                {
+                    FLogger.Text($"Successfully saved {_audioFiles.Count} audio files to ", Constants.WHITE);
+                    FLogger.Link(dir.Name, dir.FullName, true);
+                });
+            }
+            else
+            {
+                FLogger.Append(ELog.Information, () =>
+                {
+                    FLogger.Text("Successfully saved ", Constants.WHITE);
+                    FLogger.Link(_audioFiles.First().FileName, _audioFiles.First().FilePath, true);
+                });
+            }
         });
     }
 
@@ -654,15 +664,24 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         }
     }
 
-    private bool TryConvert(out string wavFilePath) => TryConvert(SelectedAudioFile.FilePath, SelectedAudioFile.Data, out wavFilePath);
-    public static bool TryConvert(string inputFilePath, byte[] inputFileData, out string wavFilePath)
+    private bool TryConvert(out string wavFilePath) => TryConvert(SelectedAudioFile.FilePath, SelectedAudioFile.Data, out wavFilePath, true);
+    public static bool TryConvert(string inputFilePath, byte[] inputFileData, out string wavFilePath, bool updateUi = false)
     {
         wavFilePath = string.Empty;
         var vgmFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "test.exe");
         if (!File.Exists(vgmFilePath))
         {
             vgmFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "vgmstream-cli.exe");
-            if (!File.Exists(vgmFilePath)) return false;
+            if (!File.Exists(vgmFilePath))
+            {
+                Log.Error($"Failed to convert {inputFilePath}, VgmStream is missing");
+                FLogger.Append(ELog.Error, () =>
+                {
+                    FLogger.Text("Failed to convert audio. VgmStream is missing. See: ", Constants.WHITE);
+                    FLogger.Link("→ link ←", Constants.AUDIO_ISSUE_LINK, true);
+                });
+                return false;
+            }
         }
 
         Directory.CreateDirectory(inputFilePath.SubstringBeforeLast("/"));
@@ -679,7 +698,22 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         vgmProcess?.WaitForExit(5000);
 
         File.Delete(inputFilePath);
-        return vgmProcess?.ExitCode == 0 && File.Exists(wavFilePath);
+
+        var success = vgmProcess?.ExitCode == 0 && File.Exists(wavFilePath);
+        if (!success)
+        {
+            Log.Error($"Failed to convert {inputFilePath} to .wav format");
+            if (updateUi)
+            {
+                FLogger.Append(ELog.Error, () =>
+                {
+                    FLogger.Text("Failed to convert audio to .wav format. See: ", Constants.WHITE);
+                    FLogger.Link("→ link ←", Constants.AUDIO_ISSUE_LINK, true);
+                });
+            }
+        }
+
+        return success;
     }
 
     private bool TryDecode(string extension, out string rawFilePath)
