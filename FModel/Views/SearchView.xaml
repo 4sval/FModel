@@ -1,7 +1,6 @@
 <adonisControls:AdonisWindow x:Class="FModel.Views.SearchView"
                              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                             xmlns:settings="clr-namespace:FModel.Settings"
                              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
                              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
@@ -210,8 +209,7 @@
                                         </MenuItem.IsEnabled>
                                     </MenuItem>
                                     <Separator />
-                                    <MenuItem Command="{Binding DataContext.mainApplication.RightClickMenuCommand}"
-                                              Visibility="{Binding CanExportRawData, Source={x:Static settings:UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <MenuItem Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.Header>
                                             <TextBlock Text="{Binding DataContext.SelectedItem.Extension, FallbackValue='Export Raw Data',
                                                 StringFormat='Export Raw Data (.{0})', RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
@@ -556,8 +554,7 @@
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <Separator />
-                                    <MenuItem Command="{Binding DataContext.mainApplication.RightClickMenuCommand}"
-                                              Visibility="{Binding CanExportRawData, Source={x:Static settings:UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <MenuItem Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.Header>
                                             <TextBlock Text="{Binding DataContext.SelectedItem.Extension, FallbackValue='Export Raw Data',
                                                 StringFormat='Export Raw Data (.{0})', RelativeSource={RelativeSource AncestorType=ContextMenu}}" />

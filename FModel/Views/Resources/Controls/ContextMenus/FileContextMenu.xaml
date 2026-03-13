@@ -110,8 +110,7 @@
             </MenuItem.Style>
         </MenuItem>
         <Separator />
-        <MenuItem Command="{Binding RightClickMenuCommand}"
-                  Visibility="{Binding CanExportRawData, Source={x:Static settings:UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}">
+        <MenuItem Command="{Binding RightClickMenuCommand}">
             <MenuItem.Header>
                 <TextBlock
                     Text="{Binding PlacementTarget.SelectedItem.Asset.Extension,

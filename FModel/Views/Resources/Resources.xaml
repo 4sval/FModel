@@ -926,8 +926,7 @@
                                     </MenuItem.IsEnabled>
                                 </MenuItem>
                                 <Separator />
-                                <MenuItem Command="{Binding TabCommand}" CommandParameter="Asset_Export_Data"
-                                          Visibility="{Binding CanExportRawData, Source={x:Static settings:UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <MenuItem Command="{Binding TabCommand}" CommandParameter="Asset_Export_Data">
                                     <MenuItem.Header>
                                         <TextBlock Text="{Binding Entry.Extension, FallbackValue='Export Raw Data', StringFormat='Export Raw Data (.{0})'}" />
                                     </MenuItem.Header>
