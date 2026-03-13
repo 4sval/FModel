@@ -392,6 +392,8 @@
                         <ContentControl.Style>
                             <Style TargetType="{x:Type ContentControl}">
                                 <Setter Property="Visibility" Value="Collapsed" />
+                                <EventSetter Event="Hyperlink.Click" Handler="OnHyperlinkClick" />
+
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding DataContext.SettingsView.SelectedMeshExportFormat, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Value="{x:Static c4pMeshes:EMeshFormat.UEFormat}">
                                         <Setter Property="ContentTemplate">

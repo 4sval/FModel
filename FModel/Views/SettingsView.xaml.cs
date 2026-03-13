@@ -1,9 +1,11 @@
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels;
@@ -240,5 +242,13 @@ public partial class SettingsView
             CultureInfo.InvariantCulture,
             out value
         );
+    }
+
+    private void OnHyperlinkClick(object sender, RoutedEventArgs e)
+    {
+        if (e.OriginalSource is not Hyperlink hyperlink)
+            return;
+
+        Process.Start(new ProcessStartInfo(hyperlink.NavigateUri.AbsoluteUri) { UseShellExecute = true });
     }
 }
