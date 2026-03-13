@@ -110,10 +110,10 @@ public class ThreadWorkerViewModel : ViewModel
                                 FLogger.Link("→ link ←", Constants.MAPPING_ISSUE_LINK, true);
                             });
                             break;
-                        case VersionException: // Error might be unrelated to version, but it's usually the case
+                        case VersionException v: // Error might be unrelated to version, but it's usually the case
                             FLogger.Append(ELog.Error, () =>
                             {
-                                FLogger.Text("Can't serialize. Make sure you've configured correct UE version first. See: ", Constants.WHITE);
+                                FLogger.Text(v.Message[..^1] + ", can't serialize. Make sure the correct UE version is configured. See: ", Constants.WHITE);
                                 FLogger.Link("→ link ←", Constants.VERSION_ISSUE_LINK, true);
                             });
                             break;
