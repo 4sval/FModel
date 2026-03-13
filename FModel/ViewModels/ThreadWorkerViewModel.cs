@@ -116,7 +116,6 @@ public class ThreadWorkerViewModel : ViewModel
                                 FLogger.Text("Can't serialize. Make sure you've configured correct UE version first. See: ", Constants.WHITE);
                                 FLogger.Link("→ link ←", Constants.VERSION_ISSUE_LINK, true);
                             });
-                            FLogger.Append(e);
                             break;
                         default:
                             FLogger.Append(e);
