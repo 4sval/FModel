@@ -276,19 +276,19 @@ public partial class MainWindow : Window
         }
         else if (_applicationView.Status.IsReady
                  && UserSettings.Default.FeaturePreviewNewAssetExplorer
-                 && UserSettings.Default.SwitchAssetExplorer.IsTriggered(e.Key))
+                 && UserSettings.Default.SwitchAssetExplorer.IsTriggered(e.Key, e.KeyModifiers))
             _applicationView.IsAssetsExplorerVisible = !_applicationView.IsAssetsExplorerVisible;
-        else if (UserSettings.Default.AssetAddTab.IsTriggered(e.Key))
+        else if (UserSettings.Default.AssetAddTab.IsTriggered(e.Key, e.KeyModifiers))
             _applicationView.CUE4Parse.TabControl.AddTab();
-        else if (UserSettings.Default.AssetRemoveTab.IsTriggered(e.Key))
+        else if (UserSettings.Default.AssetRemoveTab.IsTriggered(e.Key, e.KeyModifiers))
             _applicationView.CUE4Parse.TabControl.RemoveTab();
-        else if (UserSettings.Default.AssetLeftTab.IsTriggered(e.Key))
+        else if (UserSettings.Default.AssetLeftTab.IsTriggered(e.Key, e.KeyModifiers))
             _applicationView.CUE4Parse.TabControl.GoLeftTab();
-        else if (UserSettings.Default.AssetRightTab.IsTriggered(e.Key))
+        else if (UserSettings.Default.AssetRightTab.IsTriggered(e.Key, e.KeyModifiers))
             _applicationView.CUE4Parse.TabControl.GoRightTab();
-        else if (UserSettings.Default.DirLeftTab.IsTriggered(e.Key) && _applicationView.SelectedLeftTabIndex > 0)
+        else if (UserSettings.Default.DirLeftTab.IsTriggered(e.Key, e.KeyModifiers) && _applicationView.SelectedLeftTabIndex > 0)
             _applicationView.SelectedLeftTabIndex--;
-        else if (UserSettings.Default.DirRightTab.IsTriggered(e.Key) && _applicationView.SelectedLeftTabIndex < LeftTabControl.Items.Count - 1)
+        else if (UserSettings.Default.DirRightTab.IsTriggered(e.Key, e.KeyModifiers) && _applicationView.SelectedLeftTabIndex < LeftTabControl.Items.Count - 1)
             _applicationView.SelectedLeftTabIndex++;
     }
 

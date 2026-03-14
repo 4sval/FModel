@@ -1,74 +1,59 @@
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Data;
+using Avalonia.Input;
 using FModel.Framework;
 
 namespace FModel.Views.Resources.Controls;
 
 /// <summary>
-/// https://tyrrrz.me/blog/hotkey-editor-control-in-wpf
+/// Read-only TextBox that displays and captures a keyboard hotkey.
+/// Based on https://tyrrrz.me/blog/hotkey-editor-control-in-wpf, ported to Avalonia.
 /// </summary>
 public class HotkeyTextBox : TextBox
 {
+    public static readonly StyledProperty<Hotkey> HotKeyProperty =
+        AvaloniaProperty.Register<HotkeyTextBox, Hotkey>(
+            nameof(HotKey),
+            defaultValue: new Hotkey(Key.None),
+            defaultBindingMode: BindingMode.TwoWay);
+
     public Hotkey HotKey
     {
-        get => (Hotkey) GetValue(HotKeyProperty);
+        get => GetValue(HotKeyProperty);
         set => SetValue(HotKeyProperty, value);
     }
 
-    public static readonly DependencyProperty HotKeyProperty = DependencyProperty.Register("HotKey", typeof(Hotkey),
-        typeof(HotkeyTextBox), new FrameworkPropertyMetadata(new Hotkey(Key.None), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, HotKeyChanged));
-
-    private static void HotKeyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+    static HotkeyTextBox()
     {
-        if (sender is not HotkeyTextBox control) return;
-        control.Text = control.HotKey.ToString();
+        HotKeyProperty.Changed.AddClassHandler<HotkeyTextBox>(
+            (control, _) => control.Text = control.HotKey.ToString());
     }
 
     public HotkeyTextBox()
     {
         IsReadOnly = true;
-        IsReadOnlyCaretVisible = false;
-        IsUndoEnabled = false;
-
-        if (ContextMenu != null)
-            ContextMenu.Visibility = Visibility.Collapsed;
-
+        // Remove the default context menu (Cut/Copy/Paste are meaningless on a read-only hotkey box).
+        ContextMenu = null;
         Text = HotKey.ToString();
     }
 
-    private static bool HasKeyChar(Key key) =>
-        // A - Z
-        key is >= Key.A and <= Key.Z or
-            // 0 - 9
-            Key.D0 and <= Key.D9 or
-            // Numpad 0 - 9
-            Key.NumPad0 and <= Key.NumPad9 or
-            // The rest
-            Key.OemQuestion or Key.OemQuotes or Key.OemPlus or Key.OemOpenBrackets or Key.OemCloseBrackets or Key.OemMinus or Key.DeadCharProcessed or Key.Oem1 or Key.Oem5 or Key.Oem7 or Key.OemPeriod or Key.OemComma or Key.Add or Key.Divide or Key.Multiply or Key.Subtract or Key.Oem102 or Key.Decimal;
-
-    protected override void OnPreviewKeyDown(KeyEventArgs e)
+    protected override void OnKeyDown(KeyEventArgs e)
     {
-        e.Handled = true;
-
-        // Get modifiers and key data
-        var modifiers = Keyboard.Modifiers;
+        var modifiers = e.KeyModifiers;
         var key = e.Key;
 
         switch (key)
         {
-            // If nothing was pressed - return
+            // Nothing pressed.
             case Key.None:
                 return;
-            // If Alt is used as modifier - the key needs to be extracted from SystemKey
-            case Key.System:
-                key = e.SystemKey;
-                break;
-            // If Delete/Backspace/Escape is pressed without modifiers - clear current value and return
-            case Key.Delete or Key.Back or Key.Escape when modifiers == ModifierKeys.None:
+            // Delete / Backspace / Escape without modifiers → clear the hotkey.
+            case Key.Delete or Key.Back or Key.Escape when modifiers == KeyModifiers.None:
                 HotKey = new Hotkey(Key.None);
+                e.Handled = true;
                 return;
-            // If the only key pressed is one of the modifier keys - return
+            // Modifier-only key presses are not valid hotkeys — let them propagate.
             case Key.LeftCtrl:
             case Key.RightCtrl:
             case Key.LeftAlt:
@@ -78,14 +63,13 @@ public class HotkeyTextBox : TextBox
             case Key.LWin:
             case Key.RWin:
             case Key.Clear:
-            case Key.OemClear:
             case Key.Apps:
-            // If Enter/Space/Tab is pressed without modifiers - return
-            case Key.Enter or Key.Space or Key.Tab when modifiers == ModifierKeys.None:
+            // Enter / Space / Tab without modifiers — let them propagate (Tab focus navigation, etc.).
+            case Key.Enter or Key.Space or Key.Tab when modifiers == KeyModifiers.None:
                 return;
             default:
-                // Set value
                 HotKey = new Hotkey(key, modifiers);
+                e.Handled = true;
                 break;
         }
     }

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows;
-using System.Windows.Input;
+using Avalonia.Controls;
+using Avalonia.Input;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Nanite;
 using CUE4Parse.UE4.Versions;
@@ -342,21 +342,21 @@ namespace FModel.Settings
             set => SetProperty(ref _assetRightTab, value);
         }
 
-        private Hotkey _assetAddTab = new(Key.T, ModifierKeys.Control);
+        private Hotkey _assetAddTab = new(Key.T, KeyModifiers.Control);
         public Hotkey AssetAddTab
         {
             get => _assetAddTab;
             set => SetProperty(ref _assetAddTab, value);
         }
 
-        private Hotkey _assetRemoveTab = new(Key.W, ModifierKeys.Control);
+        private Hotkey _assetRemoveTab = new(Key.W, KeyModifiers.Control);
         public Hotkey AssetRemoveTab
         {
             get => _assetRemoveTab;
             set => SetProperty(ref _assetRemoveTab, value);
         }
 
-        private Hotkey _addAudio = new(Key.N, ModifierKeys.Control);
+        private Hotkey _addAudio = new(Key.N, KeyModifiers.Control);
         public Hotkey AddAudio
         {
             get => _addAudio;

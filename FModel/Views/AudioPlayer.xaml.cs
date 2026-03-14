@@ -55,15 +55,15 @@ public partial class AudioPlayer : Window
         if (e.Source is TextBox)
             return;
 
-        if (UserSettings.Default.AddAudio.IsTriggered(e.Key))
+        if (UserSettings.Default.AddAudio.IsTriggered(e.Key, e.KeyModifiers))
         {
             // TODO(P4-004): OpenFileDialog (Microsoft.Win32) not available on Linux — replace with StorageProvider
         }
-        else if (UserSettings.Default.PlayPauseAudio.IsTriggered(e.Key))
+        else if (UserSettings.Default.PlayPauseAudio.IsTriggered(e.Key, e.KeyModifiers))
             _applicationView.AudioPlayer.PlayPauseOnStart();
-        else if (UserSettings.Default.PreviousAudio.IsTriggered(e.Key))
+        else if (UserSettings.Default.PreviousAudio.IsTriggered(e.Key, e.KeyModifiers))
             _applicationView.AudioPlayer.Previous();
-        else if (UserSettings.Default.NextAudio.IsTriggered(e.Key))
+        else if (UserSettings.Default.NextAudio.IsTriggered(e.Key, e.KeyModifiers))
             _applicationView.AudioPlayer.Next();
     }
 
