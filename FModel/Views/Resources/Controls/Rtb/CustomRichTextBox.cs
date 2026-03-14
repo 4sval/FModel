@@ -1,23 +1,14 @@
 using System;
-using System.Diagnostics;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Threading;
+using System.Collections.Generic;
+using Avalonia;
+using Avalonia.Input;
+using Avalonia.Media;
+using Avalonia.Threading;
+using AvaloniaEdit;
+using AvaloniaEdit.Document;
+using AvaloniaEdit.Rendering;
 
 namespace FModel.Views.Resources.Controls;
-
-/// <summary>
-/// https://github.com/xceedsoftware/wpftoolkit/tree/master/ExtendedWPFToolkitSolution/Src/Xceed.Wpf.Toolkit/RichTextBox
-/// </summary>
-public interface ITextFormatter
-{
-    string GetText(FlowDocument document);
-    void SetText(FlowDocument document, string text);
-}
 
 public enum ELog
 {
@@ -28,38 +19,35 @@ public enum ELog
     None
 }
 
-public class FLogger : ITextFormatter
+/// <summary>
+/// Provides coloured structured logging to the on-screen log panel.
+/// <c>Append</c> overloads are thread-safe and marshal work to <see cref="Dispatcher.UIThread"/>.
+/// <c>Text</c>, <c>Link</c>, and <c>ClearLogs</c> require the UI thread and must only be
+/// called from within an <c>Append</c> lambda.
+/// Replaces the WPF FlowDocument / RichTextBox implementation.
+/// </summary>
+public static class FLogger
 {
     public static CustomRichTextBox Logger;
-    private static readonly BrushConverter _brushConverter = new();
-    private static int _previous;
 
-    private const string _at = "   at ";
-    private const char _dot = '.';
-    private const char _colon = ':';
-    private const string _gray = "#999";
+    private const string _at    = "   at ";
+    private const char   _dot   = '.';
+    private const char   _colon = ':';
+    private const string _gray  = "#999999";
 
     public static void Append(ELog type, Action job)
     {
-        Application.Current.Dispatcher.Invoke(delegate
+        Dispatcher.UIThread.InvokeAsync(() =>
         {
             switch (type)
             {
-                case ELog.Information:
-                    Text("[INF] ", Constants.BLUE);
-                    break;
-                case ELog.Warning:
-                    Text("[WRN] ", Constants.YELLOW);
-                    break;
-                case ELog.Error:
-                    Text("[ERR] ", Constants.RED);
-                    break;
-                case ELog.Debug:
-                    Text("[DBG] ", Constants.GREEN);
-                    break;
+                case ELog.Information: Text("[INF] ", Constants.BLUE);   break;
+                case ELog.Warning:     Text("[WRN] ", Constants.YELLOW); break;
+                case ELog.Error:       Text("[ERR] ", Constants.RED);    break;
+                case ELog.Debug:       Text("[DBG] ", Constants.GREEN);  break;
             }
-
             job();
+            Logger?.ScrollToEnd();
         }, DispatcherPriority.Background);
     }
 
@@ -88,9 +76,7 @@ public class FLogger : ITextFormatter
                     var p = exception.TargetSite.GetParameters();
                     var parameters = new string[p.Length];
                     for (int i = 0; i < parameters.Length; i++)
-                    {
                         parameters[i] = p[i].ParameterType.Name + " " + p[i].Name;
-                    }
 
                     Text("(" + string.Join(", ", parameters) + ")", Constants.GRAY, true);
                 }
@@ -104,174 +90,153 @@ public class FLogger : ITextFormatter
 
     public static void Text(string message, string color, bool newLine = false)
     {
-        try
-        {
-            Logger.Document.ContentEnd.InsertTextInRun(message);
-            if (newLine) Logger.Document.ContentEnd.InsertLineBreak();
-
-            Logger.Selection.Select(Logger.Document.ContentStart.GetPositionAtOffset(_previous), Logger.Document.ContentEnd);
-            Logger.Selection.ApplyPropertyValue(TextElement.ForegroundProperty, _brushConverter.ConvertFromString(color));
-        }
-        finally
-        {
-            Finally();
-        }
+        Logger?.AppendText(message, color, newLine);
     }
 
     public static void Link(string message, string url, bool newLine = false)
     {
-        try
+        Logger?.AppendLink(message, url, newLine);
+    }
+
+    public static void ClearLogs() => Logger?.ClearLog();
+}
+
+// ---------------------------------------------------------------------------
+// Internal rendering support
+// ---------------------------------------------------------------------------
+
+/// <summary>A segment of coloured (or clickable) text in the log document.</summary>
+internal sealed record LogSegment(int Offset, int Length, IBrush Brush, bool IsLink = false, string? Url = null);
+
+/// <summary>Applies per-segment foreground colours during line rendering.</summary>
+internal sealed class LogColorizer : DocumentColorizingTransformer
+{
+    private readonly List<LogSegment> _segments;
+
+    public LogColorizer(List<LogSegment> segments) => _segments = segments;
+
+    protected override void ColorizeLine(DocumentLine line)
+    {
+        var lineStart = line.Offset;
+        var lineEnd   = lineStart + line.Length;
+
+        // Segments are always appended in document order (insert at TextLength), so the list is
+        // sorted by Offset.  Binary-search for the first segment whose end passes lineStart,
+        // skipping all segments that lie entirely above the current line.  This keeps
+        // ColorizeLine O(log n + k) instead of O(n) as the log grows.
+        int lo = 0, hi = _segments.Count;
+        while (lo < hi)
         {
-            new Hyperlink(new Run(newLine ? $"{message}{Environment.NewLine}" : message), Logger.Document.ContentEnd)
-            {
-                NavigateUri = new Uri(url),
-                OverridesDefaultStyle = true,
-                Style = new Style(typeof(Hyperlink)) { Setters =
-                {
-                    new Setter(FrameworkContentElement.CursorProperty, Cursors.Hand),
-                    new Setter(TextBlock.TextDecorationsProperty, TextDecorations.Underline),
-                    new Setter(TextElement.ForegroundProperty, Brushes.Cornsilk)
-                }}
-            }.Click += (sender, _) => Process.Start("explorer.exe", $"/select, \"{((Hyperlink)sender).NavigateUri.AbsoluteUri}\"");
+            int mid = (lo + hi) >> 1;
+            if (_segments[mid].Offset + _segments[mid].Length <= lineStart)
+                lo = mid + 1;
+            else
+                hi = mid;
         }
-        finally
+
+        for (int i = lo; i < _segments.Count; i++)
         {
-            Finally();
+            var seg = _segments[i];
+            if (seg.Offset >= lineEnd)
+                break;
+
+            var start = Math.Max(seg.Offset, lineStart);
+            var end   = Math.Min(seg.Offset + seg.Length, lineEnd);
+            ChangeLinePart(start, end, el => el.TextRunProperties.SetForegroundBrush(seg.Brush));
         }
-    }
-
-    private static void Finally()
-    {
-        Logger.ScrollToEnd();
-        _previous = Math.Abs(Logger.Document.ContentEnd.GetOffsetToPosition(Logger.Document.ContentStart)) - 2;
-    }
-
-    public string GetText(FlowDocument document)
-    {
-        return new TextRange(document.ContentStart, document.ContentEnd).Text;
-    }
-
-    public void SetText(FlowDocument document, string text)
-    {
-        new TextRange(document.ContentStart, document.ContentEnd).Text = text;
-    }
-
-    public static void ClearLogs()
-    {
-        Logger.Document.Blocks.Clear();
-        _previous = 0;
     }
 }
 
-public class CustomRichTextBox : RichTextBox
+// ---------------------------------------------------------------------------
+// Public control
+// ---------------------------------------------------------------------------
+
+/// <summary>
+/// Log panel control backed by <see cref="AvaloniaEdit.TextEditor"/>.
+/// Coloured text is appended via <see cref="AppendText"/> / <see cref="AppendLink"/> and
+/// highlighted at render-time by <see cref="LogColorizer"/>.
+/// </summary>
+public class CustomRichTextBox : TextEditor
 {
-    private bool _preventDocumentUpdate;
-    private bool _preventTextUpdate;
+    private readonly List<LogSegment> _segments = [];
+
+    // Off-white (Cornsilk) distinguishes link text from regular log text.
+    // WPF Hyperlink system-blue styling is unavailable in AvaloniaEdit.
+    private static readonly IBrush _linkBrush = new SolidColorBrush(Colors.Cornsilk);
+    private static readonly Dictionary<string, IBrush> _brushCache = [];
 
     public CustomRichTextBox()
     {
+        IsReadOnly = true;
+        WordWrap   = false;
+        ShowLineNumbers = false;
+        Options.EnableHyperlinks      = false;
+        Options.EnableEmailHyperlinks = false;
+        Document.UndoStack.SizeLimit  = 0;
+        TextArea.TextView.LineTransformers.Add(new LogColorizer(_segments));
+        TextArea.PointerPressed += OnPointerPressed;
     }
 
-    public CustomRichTextBox(FlowDocument document) : base(document)
+    /// <summary>Appends a coloured text run.</summary>
+    public void AppendText(string message, string color, bool newLine)
     {
+        Dispatcher.UIThread.VerifyAccess();
+        var offset = Document.TextLength;
+        Document.Insert(offset, newLine ? message + "\n" : message);
+        _segments.Add(new LogSegment(offset, message.Length, GetBrush(color)));
     }
 
-    public static readonly DependencyProperty TextProperty = DependencyProperty.Register(
-        "Text", typeof(string), typeof(CustomRichTextBox),
-        new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
-            OnTextPropertyChanged, CoerceTextProperty, true, UpdateSourceTrigger.LostFocus));
-
-    public string Text
+    /// <summary>
+    /// Appends a clickable link run.
+    /// OS file-manager invocation is deferred to TODO(P4-001).
+    /// </summary>
+    public void AppendLink(string message, string url, bool newLine)
     {
-        get => (string) GetValue(TextProperty);
-        set => SetValue(TextProperty, value);
+        Dispatcher.UIThread.VerifyAccess();
+        var offset = Document.TextLength;
+        Document.Insert(offset, newLine ? message + "\n" : message);
+        _segments.Add(new LogSegment(offset, message.Length, _linkBrush, IsLink: true, Url: url));
     }
 
-    private static void OnTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    /// <summary>Scrolls to the last line.</summary>
+    public new void ScrollToEnd()
     {
-        ((CustomRichTextBox) d).UpdateDocumentFromText();
+        if (Document.TextLength > 0)
+            ScrollTo(Document.LineCount, 0);
     }
 
-    private static object CoerceTextProperty(DependencyObject d, object value)
+    /// <summary>Clears all log text and colour segments.</summary>
+    public void ClearLog()
     {
-        return value ?? "";
+        Dispatcher.UIThread.VerifyAccess();
+        _segments.Clear();
+        Document.Text = string.Empty;
     }
 
-    public static readonly DependencyProperty TextFormatterProperty =
-        DependencyProperty.Register(
-            "TextFormatter", typeof(ITextFormatter), typeof(CustomRichTextBox),
-            new FrameworkPropertyMetadata(new FLogger(), OnTextFormatterPropertyChanged));
-
-    public ITextFormatter TextFormatter
+    private static IBrush GetBrush(string color)
     {
-        get => (ITextFormatter) GetValue(TextFormatterProperty);
-        set => SetValue(TextFormatterProperty, value);
+        if (_brushCache.TryGetValue(color, out var cached))
+            return cached;
+
+        IBrush brush;
+        try   { brush = new SolidColorBrush(Color.Parse(color)); }
+        catch { brush = Brushes.White; }
+
+        return _brushCache[color] = brush;
     }
 
-    private static void OnTextFormatterPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (d is CustomRichTextBox richTextBox)
-        {
-            richTextBox.OnTextFormatterPropertyChanged((ITextFormatter) e.OldValue, (ITextFormatter) e.NewValue);
-        }
-    }
+        var pos    = e.GetPosition(TextArea.TextView);
+        var docPos = TextArea.TextView.GetPositionFloor(pos);
+        if (docPos == null) return;
 
-    protected virtual void OnTextFormatterPropertyChanged(ITextFormatter oldValue, ITextFormatter newValue)
-    {
-        UpdateTextFromDocument();
-    }
+        var offset = Document.GetOffset(docPos.Value.Location);
+        var link   = _segments.Find(s => s.IsLink && offset >= s.Offset && offset < s.Offset + s.Length);
+        if (link == null) return;
 
-    protected override void OnTextChanged(TextChangedEventArgs e)
-    {
-        UpdateTextFromDocument();
-        base.OnTextChanged(e);
-    }
-
-    private void UpdateTextFromDocument()
-    {
-        if (_preventTextUpdate)
-            return;
-
-        _preventDocumentUpdate = true;
-        SetCurrentValue(TextProperty, TextFormatter.GetText(Document));
-        _preventDocumentUpdate = false;
-    }
-
-    private void UpdateDocumentFromText()
-    {
-        if (_preventDocumentUpdate)
-            return;
-
-        _preventTextUpdate = true;
-        TextFormatter.SetText(Document, Text);
-        _preventTextUpdate = false;
-    }
-
-    public void Clear()
-    {
-        Document.Blocks.Clear();
-    }
-
-    public override void BeginInit()
-    {
-        base.BeginInit();
-        _preventTextUpdate = true;
-        _preventDocumentUpdate = true;
-    }
-
-    public override void EndInit()
-    {
-        base.EndInit();
-        _preventTextUpdate = false;
-        _preventDocumentUpdate = false;
-
-        if (!string.IsNullOrEmpty(Text))
-        {
-            UpdateDocumentFromText();
-        }
-        else
-        {
-            UpdateTextFromDocument();
-        }
+        // TODO(P4-001): open link.Url in the OS file manager.
+        // Note: e.Handled is intentionally NOT set until the link-open behaviour is implemented;
+        // marking events handled while performing no action breaks normal text selection.
     }
 }
