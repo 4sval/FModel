@@ -1,8 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
-using System.Windows;
-using System.Windows.Data;
-using System.Windows.Media;
+using Avalonia;
+using Avalonia.Data.Converters;
+using Avalonia.Media;
 
 namespace FModel.Views.Resources.Converters;
 
@@ -10,9 +11,9 @@ public class FileToGeometryConverter : IMultiValueConverter
 {
     public static readonly FileToGeometryConverter Instance = new();
 
-    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (values.Length < 2 || values[0] is not EAssetCategory category || values[1] is not string resolvedAssetType)
+        if (values.Count < 2 || values[0] is not EAssetCategory category || values[1] is not string resolvedAssetType)
             return null;
 
         resolvedAssetType = resolvedAssetType.ToLowerInvariant();
@@ -96,15 +97,16 @@ public class FileToGeometryConverter : IMultiValueConverter
         };
 
         if (targetType == typeof(Geometry))
-            return Application.Current.FindResource(geometry) as Geometry;
-        if (targetType == typeof(Brush))
-            return Application.Current.FindResource(brush) as Brush;
+        {
+            Application.Current!.TryGetResource(geometry, null, out var geomRes);
+            return geomRes as Geometry;
+        }
+        if (targetType == typeof(IBrush))
+        {
+            Application.Current!.TryGetResource(brush, null, out var brushRes);
+            return brushRes as IBrush;
+        }
 
         return null;
-    }
-
-    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-    {
-        throw new NotImplementedException();
     }
 }

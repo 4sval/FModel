@@ -1,8 +1,8 @@
 using System;
 using System.Globalization;
-using System.Windows;
-using System.Windows.Data;
-using System.Windows.Media;
+using Avalonia;
+using Avalonia.Data.Converters;
+using Avalonia.Media;
 
 namespace FModel.Views.Resources.Converters;
 
@@ -10,7 +10,7 @@ public class FolderToGeometryConverter : IValueConverter
 {
     public static readonly FolderToGeometryConverter Instance = new();
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is not string folderName)
             return null;
@@ -47,15 +47,19 @@ public class FolderToGeometryConverter : IValueConverter
         };
 
         if (targetType == typeof(Geometry) && geometry != null)
-            return Application.Current.FindResource(geometry) as Geometry;
-        if (targetType == typeof(Brush))
-            return Application.Current.FindResource(brush) as Brush;
+        {
+            Application.Current!.TryGetResource(geometry, null, out var geomRes);
+            return geomRes as Geometry;
+        }
+        if (targetType == typeof(IBrush))
+        {
+            Application.Current!.TryGetResource(brush, null, out var brushRes);
+            return brushRes as IBrush;
+        }
 
         return null;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        throw new NotImplementedException();
-    }
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => throw new NotImplementedException();
 }

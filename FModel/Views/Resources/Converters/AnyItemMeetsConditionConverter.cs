@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
-using System.Windows.Data;
+using Avalonia.Data.Converters;
 using CUE4Parse.UE4.IO.Objects;
 using FModel.Extensions;
 using FModel.ViewModels;
@@ -19,7 +19,7 @@ public class AnyItemMeetsConditionConverter : IValueConverter
     /// </summary>
     public EConditionMode ConditionMode { get; set; } = EConditionMode.And;
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is not IEnumerable items || Conditions.Count == 0)
             return false;
@@ -34,7 +34,7 @@ public class AnyItemMeetsConditionConverter : IValueConverter
         return items.OfType<GameFileViewModel>().Any(predicate);
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         throw new NotImplementedException();
     }

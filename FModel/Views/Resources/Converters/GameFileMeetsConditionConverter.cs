@@ -2,7 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
-using System.Windows.Data;
+using Avalonia.Data.Converters;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.IO.Objects;
 using FModel.ViewModels;
@@ -17,7 +17,7 @@ public class GameFileMeetsConditionConverter : IValueConverter
 {
     public Collection<IGameFileCondition> Conditions { get; } = [];
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         var gameFile = value switch
         {
@@ -30,7 +30,7 @@ public class GameFileMeetsConditionConverter : IValueConverter
         return Conditions.All(c => c.Matches(gameFile));
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         throw new NotImplementedException();
     }

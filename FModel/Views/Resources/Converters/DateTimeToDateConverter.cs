@@ -1,6 +1,6 @@
 using System;
 using System.Globalization;
-using System.Windows.Data;
+using Avalonia.Data.Converters;
 
 namespace FModel.Views.Resources.Converters;
 
@@ -8,7 +8,7 @@ public class DateTimeToDateConverter : IValueConverter
 {
     public static readonly DateTimeToDateConverter Instance = new();
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is DateTime dateTime)
         {
@@ -17,7 +17,7 @@ public class DateTimeToDateConverter : IValueConverter
         return value;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         throw new NotImplementedException();
     }

@@ -1,6 +1,6 @@
 using System;
 using System.Globalization;
-using System.Windows.Data;
+using Avalonia.Data.Converters;
 
 namespace FModel.Views.Resources.Converters;
 
@@ -8,7 +8,7 @@ public class InvertBooleanConverter : IValueConverter
 {
     public static readonly InvertBooleanConverter Instance = new();
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is bool boolean)
         {
@@ -17,6 +17,6 @@ public class InvertBooleanConverter : IValueConverter
         return value;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        => value is bool b ? !b : value;
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => value is bool b ? !b : (object?) value;
 }
