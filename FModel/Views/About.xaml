@@ -1,38 +1,25 @@
-﻿<adonisControls:AdonisWindow x:Class="FModel.Views.About"
-                             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                             xmlns:local="clr-namespace:FModel"
-                             xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
-                             WindowStartupLocation="CenterScreen"
-                             ResizeMode="NoResize"
-                             IconVisibility="Collapsed"
-                             Width="500"
-                             SizeToContent="Height"
-                             Loaded="OnLoaded">
-    <adonisControls:AdonisWindow.Style>
-        <Style TargetType="adonisControls:AdonisWindow"
-               BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}">
-            <Setter Property="Title"
-                    Value="About" />
-        </Style>
-    </adonisControls:AdonisWindow.Style>
+﻿<Window x:Class="FModel.Views.About"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:FModel"
+        WindowStartupLocation="CenterScreen"
+        CanResize="False"
+        Width="500"
+        SizeToContent="Height"
+        Title="About"
+        Loaded="OnLoaded">
     <StackPanel Margin="30 10">
         <StackPanel HorizontalAlignment="Center"
                     Margin="0 0 0 30">
-            <TextBlock Text="{Binding Source={x:Static local:Constants.APP_VERSION}, StringFormat={}FModel Linux {0}}"
+            <TextBlock Text="{Binding Source={x:Static local:Constants.APP_VERSION}, StringFormat={}FModel {0}}"
                        FontSize="15"
                        FontWeight="500"
                        Foreground="#9DA3DD"
                        FontStretch="Expanded" />
-            <TextBlock Text="Originally made with &#x2665; by Asval"
-                       FontSize="24"
+            <TextBlock Text="Made with &#x2665; by Asval"
+                       FontSize="30"
                        FontWeight="700"
                        Foreground="#DAE5F2"
-                       HorizontalAlignment="Center" />
-            <TextBlock Text="Linux port by r6e"
-                       FontSize="15"
-                       FontWeight="500"
-                       Foreground="#9DA3DD"
                        HorizontalAlignment="Center" />
         </StackPanel>
 
@@ -112,4 +99,4 @@
                    Margin="0 0 0 30"
                    Text="{Binding ReferencesLabel}" />
     </StackPanel>
-</adonisControls:AdonisWindow>
+</Window>

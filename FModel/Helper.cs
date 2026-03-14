@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Avalonia;
@@ -40,6 +41,7 @@ public static class Helper
         else
         {
             var w = GetOpenedWindow<T>(windowName);
+            if (w is null) return; // window deregistered between IsWindowOpen and here
             if (windowName == "Search For Packages")
                 w.WindowState = WindowState.Normal;
             w.Focus();
@@ -51,9 +53,14 @@ public static class Helper
         if (!IsWindowOpen<T>(windowName))
         {
             action();
+            // Avalonia's Show() is non-blocking; the window is registered with
+            // IClassicDesktopStyleApplicationLifetime.Windows on the next dispatcher
+            // cycle. Flush pending jobs so the lookup below always succeeds.
+            Avalonia.Threading.Dispatcher.UIThread.RunJobs();
         }
 
-        var ret = (T) GetOpenedWindow<T>(windowName);
+        var ret = GetOpenedWindow<T>(windowName) as T
+            ?? throw new InvalidOperationException($"Window '{windowName}' was not registered after action.");
         ret.Focus();
         return ret;
     }

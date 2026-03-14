@@ -273,7 +273,7 @@
                 <CheckBox Grid.Column="1"
                           Margin="5 2 5 0"
                           Unchecked="FeaturePreviewOnUnchecked"
-                          KeyboardNavigation.TabNavigation="None"
+                          IsTabStop="False"
                           IsChecked="{Binding FeaturePreviewNewAssetExplorer, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" />
             </Grid>
         </Grid>

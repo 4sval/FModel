@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
-using System.Windows.Data;
+using System.Linq;
+using Avalonia.Data.Converters;
 
 namespace FModel.Views.Resources.Converters;
 
@@ -8,13 +10,11 @@ public class MultiParameterConverter : IMultiValueConverter
 {
     public static readonly MultiParameterConverter Instance = new();
 
-    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    // Avalonia IMultiValueConverter passes IList<object?> instead of object[].
+    // Return a snapshot array so callers (CommandParameter multi-bindings) receive
+    // the same object[] they previously got from the WPF values.Clone() call.
+    public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
     {
-        return values.Clone();
-    }
-
-    public object[] ConvertBack(object value, Type[] targetType, object parameter, CultureInfo culture)
-    {
-        throw new NotImplementedException();
+        return values.ToArray();
     }
 }

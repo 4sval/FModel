@@ -1,9 +1,10 @@
-using System.Windows;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
 using FModel.ViewModels;
 
 namespace FModel.Views;
 
-public partial class BackupManager
+public partial class BackupManager : Window
 {
     private readonly BackupManagerViewModel _viewModel;
 

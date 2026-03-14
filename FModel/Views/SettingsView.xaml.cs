@@ -2,18 +2,20 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
+using System.Threading.Tasks;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels;
 using FModel.Views.Resources.Controls;
-using Microsoft.Win32;
-using Ookii.Dialogs.Wpf;
+// using Microsoft.Win32; // TODO(P4-004): OpenFileDialog not available on Linux
+// using Ookii.Dialogs.Wpf; // TODO(P4-004): VistaFolderBrowserDialog not available on Linux
 
 namespace FModel.Views;
 
-public partial class SettingsView
+public partial class SettingsView : Window
 {
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
 
@@ -27,7 +29,8 @@ public partial class SettingsView
         var i = 0;
         foreach (var item in SettingsTree.Items)
         {
-            if (item is not TreeViewItem { Visibility: Visibility.Visible } treeItem) continue;
+            if (item is not TreeViewItem { IsVisible: true } treeItem)
+                continue;
             treeItem.IsSelected = i == UserSettings.Default.LastOpenedSettingTab;
             i++;
         }
@@ -61,11 +64,14 @@ public partial class SettingsView
         _applicationView.CUE4Parse.Provider.ReadShaderMaps = UserSettings.Default.ReadShaderMaps;
     }
 
-    private void OnBrowseOutput(object sender, RoutedEventArgs e)
+    private async void OnBrowseOutput(object sender, RoutedEventArgs e)
     {
-        if (!TryBrowse(out var path)) return;
+        var path = await PickFolderAsync();
+        if (path is null)
+            return;
         UserSettings.Default.OutputDirectory = path;
-        if (_applicationView.SettingsView.UseCustomOutputFolders) return;
+        if (_applicationView.SettingsView.UseCustomOutputFolders)
+            return;
 
         path = Path.Combine(path, "Exports");
         UserSettings.Default.RawDataDirectory = path;
@@ -74,70 +80,83 @@ public partial class SettingsView
         UserSettings.Default.AudioDirectory = path;
     }
 
-    private void OnBrowseDirectories(object sender, RoutedEventArgs e)
+    private async void OnBrowseDirectories(object sender, RoutedEventArgs e)
     {
-        if (TryBrowse(out var path)) UserSettings.Default.GameDirectory = path;
+        var path = await PickFolderAsync();
+        if (path is not null)
+            UserSettings.Default.GameDirectory = path;
     }
 
-    private void OnBrowseRawData(object sender, RoutedEventArgs e)
+    private async void OnBrowseRawData(object sender, RoutedEventArgs e)
     {
-        if (TryBrowse(out var path)) UserSettings.Default.RawDataDirectory = path;
+        var path = await PickFolderAsync();
+        if (path is not null)
+            UserSettings.Default.RawDataDirectory = path;
     }
 
-    private void OnBrowseProperties(object sender, RoutedEventArgs e)
+    private async void OnBrowseProperties(object sender, RoutedEventArgs e)
     {
-        if (TryBrowse(out var path)) UserSettings.Default.PropertiesDirectory = path;
+        var path = await PickFolderAsync();
+        if (path is not null)
+            UserSettings.Default.PropertiesDirectory = path;
     }
 
-    private void OnBrowseTexture(object sender, RoutedEventArgs e)
+    private async void OnBrowseTexture(object sender, RoutedEventArgs e)
     {
-        if (TryBrowse(out var path)) UserSettings.Default.TextureDirectory = path;
+        var path = await PickFolderAsync();
+        if (path is not null)
+            UserSettings.Default.TextureDirectory = path;
     }
 
-    private void OnBrowseAudio(object sender, RoutedEventArgs e)
+    private async void OnBrowseAudio(object sender, RoutedEventArgs e)
     {
-        if (TryBrowse(out var path)) UserSettings.Default.AudioDirectory = path;
+        var path = await PickFolderAsync();
+        if (path is not null)
+            UserSettings.Default.AudioDirectory = path;
     }
 
-    private void OnBrowseModels(object sender, RoutedEventArgs e)
+    private async void OnBrowseModels(object sender, RoutedEventArgs e)
     {
-        if (TryBrowse(out var path)) UserSettings.Default.ModelDirectory = path;
+        var path = await PickFolderAsync();
+        if (path is not null)
+            UserSettings.Default.ModelDirectory = path;
     }
 
-    private void OnBrowseMappings(object sender, RoutedEventArgs e)
+    private async void OnBrowseMappings(object sender, RoutedEventArgs e)
     {
-        var openFileDialog = new OpenFileDialog
-        {
-            Title = "Select a mapping file",
-            InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, ".data"),
-            Filter = "USMAP Files (*.usmap)|*.usmap|All Files (*.*)|*.*"
-        };
-
-        if (!openFileDialog.ShowDialog().GetValueOrDefault())
+        var topLevel = TopLevel.GetTopLevel(this);
+        if (topLevel is null)
             return;
-
-        _applicationView.SettingsView.MappingEndpoint.FilePath = openFileDialog.FileName;
-    }
-
-    private bool TryBrowse(out string path)
-    {
-        var folderBrowser = new VistaFolderBrowserDialog { ShowNewFolderButton = false };
-        if (folderBrowser.ShowDialog() == true)
+        var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            path = folderBrowser.SelectedPath;
-            return true;
-        }
-
-        path = string.Empty;
-        return false;
+            AllowMultiple = false,
+            FileTypeFilter = new[]
+            {
+                new FilePickerFileType("USMAP Files") { Patterns = new[] { "*.usmap" } },
+                new FilePickerFileType("All Files") { Patterns = new[] { "*.*" } }
+            }
+        });
+        if (files.Count == 0)
+            return;
+        _applicationView.SettingsView.MappingEndpoint.FilePath = files[0].Path.LocalPath;
     }
 
-    private void OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+    private async Task<string?> PickFolderAsync()
+    {
+        var topLevel = TopLevel.GetTopLevel(this);
+        if (topLevel is null)
+            return null;
+        var folders = await topLevel.StorageProvider.OpenFolderPickerAsync(
+            new FolderPickerOpenOptions { AllowMultiple = false });
+        return folders.Count > 0 ? folders[0].Path.LocalPath : null;
+    }
+
+    private void OnSelectedItemChanged(object sender, SelectionChangedEventArgs e)
     {
         var i = 0;
         foreach (var item in SettingsTree.Items)
         {
-            if (item is not TreeViewItem { Visibility: Visibility.Visible } treeItem)
+            if (item is not TreeViewItem { IsVisible: true } treeItem)
                 continue;
             if (!treeItem.IsSelected)
             {
@@ -150,48 +169,56 @@ public partial class SettingsView
         }
     }
 
-    private void OpenCustomVersions(object sender, RoutedEventArgs e)
+    private async void OpenCustomVersions(object sender, RoutedEventArgs e)
     {
-        var editor = new DictionaryEditor(_applicationView.SettingsView.SelectedCustomVersions, "Versioning Configuration (Custom Versions)");
-        var result = editor.ShowDialog();
-        if (!result.HasValue || !result.Value)
-            return;
-
-        _applicationView.SettingsView.SelectedCustomVersions = editor.CustomVersions;
+        // TODO(P2-016): DictionaryEditor not yet migrated to Avalonia.
+        // Once migrated, replace body with:
+        //   var editor = new DictionaryEditor(_applicationView.SettingsView.SelectedCustomVersions, "Versioning Configuration (Custom Versions)");
+        //   if (await editor.ShowDialog<bool?>(this) != true) return;
+        //   _applicationView.SettingsView.SelectedCustomVersions = editor.CustomVersions;
+        await Task.CompletedTask;
     }
 
-    private void OpenOptions(object sender, RoutedEventArgs e)
+    private async void OpenOptions(object sender, RoutedEventArgs e)
     {
-        var editor = new DictionaryEditor(_applicationView.SettingsView.SelectedOptions, "Versioning Configuration (Options)");
-        var result = editor.ShowDialog();
-        if (!result.HasValue || !result.Value)
-            return;
-
-        _applicationView.SettingsView.SelectedOptions = editor.Options;
+        // TODO(P2-016): DictionaryEditor not yet migrated to Avalonia.
+        // Once migrated, replace body with:
+        //   var editor = new DictionaryEditor(_applicationView.SettingsView.SelectedOptions, "Versioning Configuration (Options)");
+        //   if (await editor.ShowDialog<bool?>(this) != true) return;
+        //   _applicationView.SettingsView.SelectedOptions = editor.Options;
+        await Task.CompletedTask;
     }
 
-    private void OpenMapStructTypes(object sender, RoutedEventArgs e)
+    private async void OpenMapStructTypes(object sender, RoutedEventArgs e)
     {
-        var editor = new DictionaryEditor(_applicationView.SettingsView.SelectedMapStructTypes, "Versioning Configuration (MapStructTypes)");
-        var result = editor.ShowDialog();
-        if (!result.HasValue || !result.Value)
-            return;
-
-        _applicationView.SettingsView.SelectedMapStructTypes = editor.MapStructTypes;
+        // TODO(P2-016): DictionaryEditor not yet migrated to Avalonia.
+        // Once migrated, replace body with:
+        //   var editor = new DictionaryEditor(_applicationView.SettingsView.SelectedMapStructTypes, "Versioning Configuration (MapStructTypes)");
+        //   if (await editor.ShowDialog<bool?>(this) != true) return;
+        //   _applicationView.SettingsView.SelectedMapStructTypes = editor.MapStructTypes;
+        await Task.CompletedTask;
     }
 
-    private void OpenAesEndpoint(object sender, RoutedEventArgs e)
+    private async void OpenAesEndpoint(object sender, RoutedEventArgs e)
     {
-        var editor = new EndpointEditor(
-            _applicationView.SettingsView.AesEndpoint, "Endpoint Configuration (AES)", EEndpointType.Aes);
-        editor.ShowDialog();
+        // TODO(P2-016): EndpointEditor not yet migrated to Avalonia.
+        // Note: the original WPF code used ShowDialog() (modal). Preserve modal behaviour
+        // in the migration — use ShowDialog(this), not Show().
+        // Once migrated, replace body with:
+        //   var editor = new EndpointEditor(_applicationView.SettingsView.AesEndpoint, "Endpoint Configuration (AES)", EEndpointType.Aes);
+        //   await editor.ShowDialog(this);
+        await Task.CompletedTask;
     }
 
-    private void OpenMappingEndpoint(object sender, RoutedEventArgs e)
+    private async void OpenMappingEndpoint(object sender, RoutedEventArgs e)
     {
-        var editor = new EndpointEditor(
-            _applicationView.SettingsView.MappingEndpoint, "Endpoint Configuration (Mapping)", EEndpointType.Mapping);
-        editor.ShowDialog();
+        // TODO(P2-016): EndpointEditor not yet migrated to Avalonia.
+        // Note: the original WPF code used ShowDialog() (modal). Preserve modal behaviour
+        // in the migration — use ShowDialog(this), not Show().
+        // Once migrated, replace body with:
+        //   var editor = new EndpointEditor(_applicationView.SettingsView.MappingEndpoint, "Endpoint Configuration (Mapping)", EEndpointType.Mapping);
+        //   await editor.ShowDialog(this);
+        await Task.CompletedTask;
     }
 
     private void CriwareKeyBox_Loaded(object sender, RoutedEventArgs e)

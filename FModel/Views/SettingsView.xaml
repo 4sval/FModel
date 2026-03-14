@@ -1,26 +1,21 @@
-<adonisControls:AdonisWindow x:Class="FModel.Views.SettingsView"
-                             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                             xmlns:local="clr-namespace:FModel"
-                             xmlns:c4pMeshes="clr-namespace:CUE4Parse_Conversion.Meshes;assembly=CUE4Parse-Conversion"
-                             xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
-                             xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
-                             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-                             xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
-                             xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-                             WindowStartupLocation="CenterScreen" ResizeMode="NoResize" IconVisibility="Collapsed" SizeToContent="Height"
-                             MinHeight="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.10'}"
-                             Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.45'}">
-    <adonisControls:AdonisWindow.Style>
-        <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
-            <Setter Property="Title" Value="Settings" />
-        </Style>
-    </adonisControls:AdonisWindow.Style>
-    <adonisControls:AdonisWindow.Resources>
+<Window x:Class="FModel.Views.SettingsView"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:FModel"
+        xmlns:c4pMeshes="clr-namespace:CUE4Parse_Conversion.Meshes;assembly=CUE4Parse-Conversion"
+        xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
+        xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+        WindowStartupLocation="CenterScreen"
+        CanResize="False"
+        SizeToContent="Height"
+        MinHeight="108"
+        Width="864"
+        Title="Settings">
+    <Window.Resources>
         <ResourceDictionary>
             <controls:OnTagDataTemplateSelector x:Key="TagTemplateSelector" />
             <DataTemplate x:Key="GeneralTemplate">
-                <Grid adonisExtensions:LayerExtension.Layer="2">
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -56,16 +51,37 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Output Directory *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Directory where log files, backups and other do-not-delete files will be put in." />
-                    <TextBox x:Name="ImJackedBro" Grid.Row="0" Grid.Column="2" IsReadOnly="True" Text="{Binding OutputDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
-                    <Button Grid.Row="0" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseOutput" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="0"
+                               Text="Output Directory *"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5"
+                               ToolTip="Directory where log files, backups and other do-not-delete files will be put in." />
+                    <TextBox x:Name="ImJackedBro"
+                             Grid.Row="0"
+                             Grid.Column="2"
+                             IsReadOnly="True"
+                             Text="{Binding OutputDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                             Margin="0 0 0 5" />
+                    <Button Grid.Row="0"
+                            Grid.Column="4"
+                            Content="..."
+                            HorizontalAlignment="Right"
+                            Click="OnBrowseOutput"
+                            Margin="0 0 0 5" />
 
-                    <CheckBox Grid.Row="0" Grid.Column="6" Margin="5 0 0 5" ToolTip="Customize the directory of more output folders"
+                    <CheckBox Grid.Row="0"
+                              Grid.Column="6"
+                              Margin="5 0 0 5"
+                              ToolTip="Customize the directory of more output folders"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
-                              IsChecked="{Binding SettingsView.UseCustomOutputFolders, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="7" HorizontalAlignment="Right"
+                              IsChecked="{Binding SettingsView.UseCustomOutputFolders, Mode=TwoWay}" />
+                    <Grid Grid.Row="1"
+                          Grid.Column="0"
+                          Grid.ColumnSpan="7"
+                          HorizontalAlignment="Right"
                           DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
-                          Visibility="{Binding SettingsView.UseCustomOutputFolders, Converter={StaticResource BoolToVisibilityConverter}}">
+                          IsVisible="{Binding SettingsView.UseCustomOutputFolders}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -80,25 +96,100 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Export Raw Data Directory *" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
-                        <TextBox Grid.Row="0" Grid.Column="2" IsReadOnly="True" Text="{Binding RawDataDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
-                        <Button Grid.Row="0" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseRawData" Margin="0 0 0 5" />
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="0"
+                                   Text="Export Raw Data Directory *"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Right"
+                                   FontSize="11"
+                                   FontStyle="Italic"
+                                   Margin="0 0 0 5" />
+                        <TextBox Grid.Row="0"
+                                 Grid.Column="2"
+                                 IsReadOnly="True"
+                                 Text="{Binding RawDataDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                                 HorizontalAlignment="Stretch"
+                                 Margin="0 0 0 5" />
+                        <Button Grid.Row="0"
+                                Grid.Column="4"
+                                Content="..."
+                                HorizontalAlignment="Right"
+                                Click="OnBrowseRawData"
+                                Margin="0 0 0 5" />
 
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Save Properties Directory *" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
-                        <TextBox Grid.Row="1" Grid.Column="2" IsReadOnly="True" Text="{Binding PropertiesDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
-                        <Button Grid.Row="1" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseProperties" Margin="0 0 0 5" />
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="0"
+                                   Text="Save Properties Directory *"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Right"
+                                   FontSize="11"
+                                   FontStyle="Italic"
+                                   Margin="0 0 0 5" />
+                        <TextBox Grid.Row="1"
+                                 Grid.Column="2"
+                                 IsReadOnly="True"
+                                 Text="{Binding PropertiesDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                                 HorizontalAlignment="Stretch"
+                                 Margin="0 0 0 5" />
+                        <Button Grid.Row="1"
+                                Grid.Column="4"
+                                Content="..."
+                                HorizontalAlignment="Right"
+                                Click="OnBrowseProperties"
+                                Margin="0 0 0 5" />
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Save Texture Directory *" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
-                        <TextBox Grid.Row="2" Grid.Column="2" IsReadOnly="True" Text="{Binding TextureDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
-                        <Button Grid.Row="2" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseTexture" Margin="0 0 0 5" />
+                        <TextBlock Grid.Row="2"
+                                   Grid.Column="0"
+                                   Text="Save Texture Directory *"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Right"
+                                   FontSize="11"
+                                   FontStyle="Italic"
+                                   Margin="0 0 0 5" />
+                        <TextBox Grid.Row="2"
+                                 Grid.Column="2"
+                                 IsReadOnly="True"
+                                 Text="{Binding TextureDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                                 HorizontalAlignment="Stretch"
+                                 Margin="0 0 0 5" />
+                        <Button Grid.Row="2"
+                                Grid.Column="4"
+                                Content="..."
+                                HorizontalAlignment="Right"
+                                Click="OnBrowseTexture"
+                                Margin="0 0 0 5" />
 
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Save Audio Directory *" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
-                        <TextBox Grid.Row="3" Grid.Column="2" IsReadOnly="True" Text="{Binding AudioDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
-                        <Button Grid.Row="3" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseAudio" Margin="0 0 0 5" />
+                        <TextBlock Grid.Row="3"
+                                   Grid.Column="0"
+                                   Text="Save Audio Directory *"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Right"
+                                   FontSize="11"
+                                   FontStyle="Italic"
+                                   Margin="0 0 0 5" />
+                        <TextBox Grid.Row="3"
+                                 Grid.Column="2"
+                                 IsReadOnly="True"
+                                 Text="{Binding AudioDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                                 HorizontalAlignment="Stretch"
+                                 Margin="0 0 0 5" />
+                        <Button Grid.Row="3"
+                                Grid.Column="4"
+                                Content="..."
+                                HorizontalAlignment="Right"
+                                Click="OnBrowseAudio"
+                                Margin="0 0 0 5" />
                     </Grid>
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Discord Rich Presence" VerticalAlignment="Center" />
-                    <ComboBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.DiscordRpcs}" SelectedItem="{Binding SettingsView.SelectedDiscordRpc, Mode=TwoWay}"
+                    <TextBlock Grid.Row="2"
+                               Grid.Column="0"
+                               Text="Discord Rich Presence"
+                               VerticalAlignment="Center" />
+                    <ComboBox Grid.Row="2"
+                              Grid.Column="2"
+                              Grid.ColumnSpan="5"
+                              ItemsSource="{Binding SettingsView.DiscordRpcs}"
+                              SelectedItem="{Binding SettingsView.SelectedDiscordRpc, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -107,14 +198,40 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="GAME"></Separator>
+                    <Separator Grid.Row="3"
+                               Grid.Column="0"
+                               Grid.ColumnSpan="7"
+                               Style="{StaticResource CustomSeparator}"
+                               Tag="GAME"></Separator>
 
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Archive Directory *" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <TextBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" IsReadOnly="True" Text="{Binding GameDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
-                    <Button Grid.Row="4" Grid.Column="6" Content="..." HorizontalAlignment="Right" Click="OnBrowseDirectories" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="4"
+                               Grid.Column="0"
+                               Text="Archive Directory *"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <TextBox Grid.Row="4"
+                             Grid.Column="2"
+                             Grid.ColumnSpan="3"
+                             IsReadOnly="True"
+                             Text="{Binding GameDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                             Margin="0 0 0 5" />
+                    <Button Grid.Row="4"
+                            Grid.Column="6"
+                            Content="..."
+                            HorizontalAlignment="Right"
+                            Click="OnBrowseDirectories"
+                            Margin="0 0 0 5" />
 
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="UE Versions *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the UE version to use when parsing packages" />
-                    <controls:FilterableComboBox Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="5" SelectedItem="{Binding SettingsView.SelectedUeGame, Mode=TwoWay}"
+                    <TextBlock Grid.Row="5"
+                               Grid.Column="0"
+                               Text="UE Versions *"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5"
+                               ToolTip="Override the UE version to use when parsing packages" />
+                    <controls:FilterableComboBox Grid.Row="5"
+                                                 Grid.Column="2"
+                                                 Grid.ColumnSpan="5"
+                                                 SelectedItem="{Binding SettingsView.SelectedUeGame, Mode=TwoWay}"
                                                  ItemsSource="{Binding SettingsView.UeGames}"
                                                  Style="{StaticResource UComboBox}"
                                                  DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
@@ -126,8 +243,17 @@
                         </ComboBox.ItemTemplate>
                     </controls:FilterableComboBox>
 
-                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Texture Platform *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the game's platform to ensure texture compatibility" />
-                    <ComboBox Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.Platforms}" SelectedItem="{Binding SettingsView.SelectedUePlatform, Mode=TwoWay}"
+                    <TextBlock Grid.Row="6"
+                               Grid.Column="0"
+                               Text="Texture Platform *"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5"
+                               ToolTip="Override the game's platform to ensure texture compatibility" />
+                    <ComboBox Grid.Row="6"
+                              Grid.Column="2"
+                              Grid.ColumnSpan="5"
+                              ItemsSource="{Binding SettingsView.Platforms}"
+                              SelectedItem="{Binding SettingsView.SelectedUePlatform, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                               Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
@@ -137,9 +263,19 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="7" Grid.Column="0" Text="Compressed Audio" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="What to do when encountering a compressed audio file" />
-                    <ComboBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.CompressedAudios}" SelectedItem="{Binding SettingsView.SelectedCompressedAudio, Mode=TwoWay}"
-                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
+                    <TextBlock Grid.Row="7"
+                               Grid.Column="0"
+                               Text="Compressed Audio"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5"
+                               ToolTip="What to do when encountering a compressed audio file" />
+                    <ComboBox Grid.Row="7"
+                              Grid.Column="2"
+                              Grid.ColumnSpan="5"
+                              ItemsSource="{Binding SettingsView.CompressedAudios}"
+                              SelectedItem="{Binding SettingsView.SelectedCompressedAudio, Mode=TwoWay}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                              Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
@@ -147,9 +283,19 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Packages Language" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Language used and shown when parsing packages" />
-                    <ComboBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.AssetLanguages}" SelectedItem="{Binding SettingsView.SelectedAssetLanguage, Mode=TwoWay}"
-                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
+                    <TextBlock Grid.Row="8"
+                               Grid.Column="0"
+                               Text="Packages Language"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5"
+                               ToolTip="Language used and shown when parsing packages" />
+                    <ComboBox Grid.Row="8"
+                              Grid.Column="2"
+                              Grid.ColumnSpan="5"
+                              ItemsSource="{Binding SettingsView.AssetLanguages}"
+                              SelectedItem="{Binding SettingsView.SelectedAssetLanguage, Mode=TwoWay}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                              Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
@@ -157,32 +303,68 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="9" Grid.Column="0" Text="Keep Directory Structure" VerticalAlignment="Center" Margin="0 5 0 10" ToolTip="Auto-save packages following their game directory" />
-                    <CheckBox Grid.Row="9" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding KeepDirectoryStructure, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"
-                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
+                    <TextBlock Grid.Row="9"
+                               Grid.Column="0"
+                               Text="Keep Directory Structure"
+                               VerticalAlignment="Center"
+                               Margin="0 5 0 10"
+                               ToolTip="Auto-save packages following their game directory" />
+                    <CheckBox Grid.Row="9"
+                              Grid.Column="2"
+                              Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                              IsChecked="{Binding KeepDirectoryStructure, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                              Margin="0 5 0 10" />
 
-                    <TextBlock Grid.Row="10" Grid.Column="0" Text="Local Mapping File" VerticalAlignment="Center" Margin="0 5 0 0" />
-                    <CheckBox Grid.Row="10" Grid.Column="2" Margin="0 5 0 0"
+                    <TextBlock Grid.Row="10"
+                               Grid.Column="0"
+                               Text="Local Mapping File"
+                               VerticalAlignment="Center"
+                               Margin="0 5 0 0" />
+                    <CheckBox Grid.Row="10"
+                              Grid.Column="2"
+                              Margin="0 5 0 0"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                               Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding SettingsView.MappingEndpoint.Overwrite, Mode=TwoWay}"
-                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
+                              IsChecked="{Binding SettingsView.MappingEndpoint.Overwrite, Mode=TwoWay}" />
 
-                    <TextBlock Grid.Row="11" Grid.Column="0" Text="Mapping File Path" VerticalAlignment="Center" Margin="0 10 0 0"
+                    <TextBlock Grid.Row="11"
+                               Grid.Column="0"
+                               Text="Mapping File Path"
+                               VerticalAlignment="Center"
+                               Margin="0 10 0 0"
                                DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
-                               Visibility="{Binding SettingsView.MappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <TextBox Grid.Row="11" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 10 0 0" Text="{Binding SettingsView.MappingEndpoint.FilePath, Mode=TwoWay}"
+                               IsVisible="{Binding SettingsView.MappingEndpoint.Overwrite}" />
+                    <TextBox Grid.Row="11"
+                             Grid.Column="2"
+                             Grid.ColumnSpan="3"
+                             Margin="0 10 0 0"
+                             Text="{Binding SettingsView.MappingEndpoint.FilePath, Mode=TwoWay}"
                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
-                             Visibility="{Binding SettingsView.MappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <Button Grid.Row="11" Grid.Column="6" Content="..." HorizontalAlignment="Right" Click="OnBrowseMappings" Margin="0 10 0 0"
+                             IsVisible="{Binding SettingsView.MappingEndpoint.Overwrite}" />
+                    <Button Grid.Row="11"
+                            Grid.Column="6"
+                            Content="..."
+                            HorizontalAlignment="Right"
+                            Click="OnBrowseMappings"
+                            Margin="0 10 0 0"
                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
-                            Visibility="{Binding SettingsView.MappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            IsVisible="{Binding SettingsView.MappingEndpoint.Overwrite}" />
 
-                    <Separator Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="ADVANCED"></Separator>
+                    <Separator Grid.Row="12"
+                               Grid.Column="0"
+                               Grid.ColumnSpan="7"
+                               Style="{StaticResource CustomSeparator}"
+                               Tag="ADVANCED"></Separator>
 
-                    <TextBlock Grid.Row="13" Grid.Column="0" Text="Versioning Configuration *" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Grid Grid.Row="13" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5">
+                    <TextBlock Grid.Row="13"
+                               Grid.Column="0"
+                               Text="Versioning Configuration *"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <Grid Grid.Row="13"
+                          Grid.Column="2"
+                          Grid.ColumnSpan="5"
+                          Margin="0 0 0 5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="5" />
@@ -191,18 +373,32 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <Button Grid.Column="0" Content="Custom Versions" Click="OpenCustomVersions" />
-                        <Button Grid.Column="2" Content="Options" Click="OpenOptions" />
-                        <Button Grid.Column="4" Content="MapStructTypes" Click="OpenMapStructTypes" />
+                        <Button Grid.Column="0"
+                                Content="Custom Versions"
+                                Click="OpenCustomVersions" />
+                        <Button Grid.Column="2"
+                                Content="Options"
+                                Click="OpenOptions" />
+                        <Button Grid.Column="4"
+                                Content="MapStructTypes"
+                                Click="OpenMapStructTypes" />
                     </Grid>
 
-                    <TextBlock Grid.Row="14" Grid.Column="0" Text="AES Reload at Launch" VerticalAlignment="Center" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="14"
+                               Grid.Column="0"
+                               Text="AES Reload at Launch"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5"
                                DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
-                               Visibility="{Binding SettingsView.AesEndpoint.IsValid, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <ComboBox Grid.Row="14" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
+                               IsVisible="{Binding SettingsView.AesEndpoint.IsValid}" />
+                    <ComboBox Grid.Row="14"
+                              Grid.Column="2"
+                              Grid.ColumnSpan="5"
+                              Margin="0 0 0 5"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
-                              ItemsSource="{Binding SettingsView.AesReloads}" SelectedItem="{Binding SettingsView.SelectedAesReload, Mode=TwoWay}"
-                              Visibility="{Binding SettingsView.AesEndpoint.IsValid, Converter={StaticResource BoolToVisibilityConverter}}">
+                              ItemsSource="{Binding SettingsView.AesReloads}"
+                              SelectedItem="{Binding SettingsView.SelectedAesReload, Mode=TwoWay}"
+                              IsVisible="{Binding SettingsView.AesEndpoint.IsValid}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
@@ -210,8 +406,15 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="15" Grid.Column="0" Text="Endpoint Configuration" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Grid Grid.Row="15" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="15"
+                               Grid.Column="0"
+                               Text="Endpoint Configuration"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <Grid Grid.Row="15"
+                          Grid.Column="2"
+                          Grid.ColumnSpan="5"
+                          Margin="0 0 0 5"
                           DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -219,29 +422,58 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <Button Grid.Column="0" Content="AES" Click="OpenAesEndpoint" />
-                        <Button Grid.Column="2" Content="Mapping" Click="OpenMappingEndpoint" />
+                        <Button Grid.Column="0"
+                                Content="AES"
+                                Click="OpenAesEndpoint" />
+                        <Button Grid.Column="2"
+                                Content="Mapping"
+                                Click="OpenMappingEndpoint" />
                     </Grid>
 
-                    <TextBlock Grid.Row="16" Grid.Column="0" Text="Allow Raw Data Export (.uasset)" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="16" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding CanExportRawData, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"
-                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
+                    <TextBlock Grid.Row="16"
+                               Grid.Column="0"
+                               Text="Allow Raw Data Export (.uasset)"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="16"
+                              Grid.Column="2"
+                              Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                              IsChecked="{Binding CanExportRawData, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                              Margin="0 5 0 10" />
 
-                    <TextBlock Grid.Row="17" Grid.Column="0" Text="Serialize Script Bytecode" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="17" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding ReadScriptData, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"
-                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
+                    <TextBlock Grid.Row="17"
+                               Grid.Column="0"
+                               Text="Serialize Script Bytecode"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="17"
+                              Grid.Column="2"
+                              Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                              IsChecked="{Binding ReadScriptData, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                              Margin="0 5 0 10" />
 
-                    <TextBlock Grid.Row="18" Grid.Column="0" Text="Serialize Inlined Shader Maps" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="18" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding ReadShaderMaps, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"
-                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
+                    <TextBlock Grid.Row="18"
+                               Grid.Column="0"
+                               Text="Serialize Inlined Shader Maps"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="18"
+                              Grid.Column="2"
+                              Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                              IsChecked="{Binding ReadShaderMaps, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                              Margin="0 5 0 10" />
 
-                    <TextBlock Grid.Row="19" Grid.Column="0" Text="Decompile Blueprint to Pseudo C++" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Adds a right click option to decompile UClass packages into a pseudo C++ friendly format" />
-                    <CheckBox Grid.Row="19" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding ShowDecompileOption, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"
-                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
+                    <TextBlock Grid.Row="19"
+                               Grid.Column="0"
+                               Text="Decompile Blueprint to Pseudo C++"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5"
+                               ToolTip="Adds a right click option to decompile UClass packages into a pseudo C++ friendly format" />
+                    <CheckBox Grid.Row="19"
+                              Grid.Column="2"
+                              Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                              IsChecked="{Binding ShowDecompileOption, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                              Margin="0 5 0 10" />
 
                     <TextBlock Grid.Row="20"
                                Grid.Column="0"
@@ -252,13 +484,25 @@
                               Grid.Column="2"
                               Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding ConvertAudioOnBulkExport, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
-                              Margin="0 5 0 10"
-                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
+                              Margin="0 5 0 10" />
 
-                    <TextBlock Grid.Row="21" Grid.Column="0" Text="Max Wwise Bank (.BNK) Prefetch" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Slider Grid.Row="21" Grid.Column="2" Grid.ColumnSpan="5" TickPlacement="None" Minimum="0" Maximum="2048" Ticks="0,8,32,128,256,512,1024,2048"
-                            AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" Margin="0 5 0 5"
-                            Value="{Binding WwiseMaxBnkPrefetch, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
+                    <TextBlock Grid.Row="21"
+                               Grid.Column="0"
+                               Text="Max Wwise Bank (.BNK) Prefetch"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <Slider Grid.Row="21"
+                            Grid.Column="2"
+                            Grid.ColumnSpan="5"
+                            TickPlacement="None"
+                            Minimum="0"
+                            Maximum="2048"
+                            Ticks="0,8,32,128,256,512,1024,2048"
+                            AutoToolTipPlacement="BottomRight"
+                            IsMoveToPointEnabled="True"
+                            IsSnapToTickEnabled="True"
+                            Margin="0 5 0 5"
+                            Value="{Binding WwiseMaxBnkPrefetch, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
 
                     <TextBlock Grid.Row="22"
                                Grid.Column="0"
@@ -277,12 +521,12 @@
                              ToolTip="Enter decryption key in numeric or hexadecimal format (valid key is up to 20 digits or 8 bytes long)"
                              TextAlignment="Right"
                              TextChanged="CriwareKeyBox_TextChanged"
-                             Loaded="CriwareKeyBox_Loaded"/>
+                             Loaded="CriwareKeyBox_Loaded" />
 
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="CreatorTemplate">
-                <Grid adonisExtensions:LayerExtension.Layer="2">
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
@@ -294,31 +538,16 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <Image Grid.Column="0" Grid.ColumnSpan="3" DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}">
-                        <Image.Style>
-                            <Style TargetType="Image">
-                                <Setter Property="Source" Value="pack://application:,,,/Resources/T_Placeholder_Item_Image.png"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding SettingsView.SelectedCosmeticStyle}" Value="{x:Static local:EIconStyle.Default}">
-                                        <Setter Property="Source" Value="pack://application:,,,/Resources/Default.png"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding SettingsView.SelectedCosmeticStyle}" Value="{x:Static local:EIconStyle.NoBackground}">
-                                        <Setter Property="Source" Value="pack://application:,,,/Resources/NoBackground.png"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding SettingsView.SelectedCosmeticStyle}" Value="{x:Static local:EIconStyle.NoText}">
-                                        <Setter Property="Source" Value="pack://application:,,,/Resources/NoText.png"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding SettingsView.SelectedCosmeticStyle}" Value="{x:Static local:EIconStyle.Flat}">
-                                        <Setter Property="Source" Value="pack://application:,,,/Resources/Flat.png"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding SettingsView.SelectedCosmeticStyle}" Value="{x:Static local:EIconStyle.Cataba}">
-                                        <Setter Property="Source" Value="pack://application:,,,/Resources/Cataba.png"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Image.Style>
-                    </Image>
-                    <Grid Grid.Column="3" Grid.ColumnSpan="5" Margin="10 0 0 0" VerticalAlignment="Top">
+                    <Image Grid.Column="0"
+                           Grid.ColumnSpan="3"
+                           DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                           Source="avares://FModel/Resources/T_Placeholder_Item_Image.png" />
+                    <!-- TODO(P2-003): Image source DataTrigger on SelectedCosmeticStyle not yet
+                    supported (needs IValueConverter or code-behind) -->
+                    <Grid Grid.Column="3"
+                          Grid.ColumnSpan="5"
+                          Margin="10 0 0 0"
+                          VerticalAlignment="Top">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -329,9 +558,17 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Cosmetic Style" VerticalAlignment="Center" Margin="0 0 0 5" />
-                        <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding SettingsView.CosmeticStyles}" SelectedItem="{Binding SettingsView.SelectedCosmeticStyle, Mode=TwoWay}"
-                                  DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="0"
+                                   Text="Cosmetic Style"
+                                   VerticalAlignment="Center"
+                                   Margin="0 0 0 5" />
+                        <ComboBox Grid.Row="0"
+                                  Grid.Column="2"
+                                  ItemsSource="{Binding SettingsView.CosmeticStyles}"
+                                  SelectedItem="{Binding SettingsView.SelectedCosmeticStyle, Mode=TwoWay}"
+                                  DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                                  Margin="0 0 0 5">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
@@ -339,15 +576,21 @@
                             </ComboBox.ItemTemplate>
                         </ComboBox>
 
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Cosmetic Shop Icon" VerticalAlignment="Center" Margin="0 0 0 5" />
-                        <CheckBox Grid.Row="1" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="0"
+                                   Text="Cosmetic Shop Icon"
+                                   VerticalAlignment="Center"
+                                   Margin="0 0 0 5" />
+                        <CheckBox Grid.Row="1"
+                                  Grid.Column="2"
+                                  Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                                   IsChecked="{Binding CosmeticDisplayAsset, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
-                                  Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 10"/>
+                                  Margin="0 5 0 10" />
                     </Grid>
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="ModelsTemplate">
-                <Grid adonisExtensions:LayerExtension.Layer="2">
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -379,14 +622,36 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Model Export Directory *" VerticalAlignment="Center" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="0"
+                               Text="Model Export Directory *"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5"
                                ToolTip="This will be the directory where Meshes, Materials and Animations will be exported" />
-                    <TextBox Grid.Row="0" Grid.Column="2" IsReadOnly="True" Text="{Binding ModelDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
-                    <Button Grid.Row="0" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseModels" Margin="0 0 0 5" />
+                    <TextBox Grid.Row="0"
+                             Grid.Column="2"
+                             IsReadOnly="True"
+                             Text="{Binding ModelDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                             Margin="0 0 0 5" />
+                    <Button Grid.Row="0"
+                            Grid.Column="4"
+                            Content="..."
+                            HorizontalAlignment="Right"
+                            Click="OnBrowseModels"
+                            Margin="0 0 0 5" />
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Mesh Format" VerticalAlignment="Center" Margin="0 0 0 5"/>
-                    <ComboBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.MeshExportFormats}" SelectedItem="{Binding SettingsView.SelectedMeshExportFormat, Mode=TwoWay}"
-                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
+                    <TextBlock Grid.Row="1"
+                               Grid.Column="0"
+                               Text="Mesh Format"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <ComboBox Grid.Row="1"
+                              Grid.Column="2"
+                              Grid.ColumnSpan="3"
+                              ItemsSource="{Binding SettingsView.MeshExportFormats}"
+                              SelectedItem="{Binding SettingsView.SelectedMeshExportFormat, Mode=TwoWay}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                              Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
@@ -394,49 +659,37 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <ContentControl Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" FontSize="10" Margin="0 0 0 5">
-                        <ContentControl.Style>
-                            <Style TargetType="{x:Type ContentControl}">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding DataContext.SettingsView.SelectedMeshExportFormat, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Value="{x:Static c4pMeshes:EMeshFormat.UEFormat}">
-                                        <Setter Property="ContentTemplate">
-                                            <Setter.Value>
-                                                <DataTemplate>
-                                                    <TextBlock>
-                                                        <Run Text="Importer (Blender/UE): " />
-                                                        <Hyperlink NavigateUri="https://github.com/h4lfheart/UEFormat">
-                                                            github.com/h4lfheart/UEFormat
-                                                        </Hyperlink>
-                                                    </TextBlock>
-                                                </DataTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                        <Setter Property="Visibility" Value="Visible" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding DataContext.SettingsView.SelectedMeshExportFormat, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Value="{x:Static c4pMeshes:EMeshFormat.ActorX}">
-                                        <Setter Property="ContentTemplate">
-                                            <Setter.Value>
-                                                <DataTemplate>
-                                                    <TextBlock>
-                                                        <Run Text="Importers (Blender): " />
-                                                        <Hyperlink NavigateUri="https://github.com/DarklightGames/io_scene_psk_psa">
-                                                            github.com/DarklightGames/io_scene_psk_psa
-                                                        </Hyperlink>
-                                                    </TextBlock>
-                                                </DataTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                        <Setter Property="Visibility" Value="Visible" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ContentControl.Style>
-                    </ContentControl>
+                    <!-- TODO(P2-003): Importer links conditionally shown by mesh format -
+                    converters not yet implemented, shown always for now -->
+                    <StackPanel Grid.Row="2"
+                                Grid.Column="2"
+                                Grid.ColumnSpan="3"
+                                FontSize="10"
+                                Margin="0 0 0 5"
+                                Orientation="Horizontal">
+                        <HyperlinkButton NavigateUri="https://github.com/h4lfheart/UEFormat"
+                                         Content="UEFormat Importer"
+                                         FontSize="10"
+                                         Margin="0 0 8 0" />
+                        <HyperlinkButton NavigateUri="https://github.com/DarklightGames/io_scene_psk_psa"
+                                         Content="ActorX Importer"
+                                         FontSize="10" />
+                    </StackPanel>
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Socket Format (ActorX)" VerticalAlignment="Center" Margin="0 0 0 5" IsEnabled="{Binding SettingsView.SocketSettingsEnabled}"/>
-                    <ComboBox Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.SocketExportFormats}" SelectedItem="{Binding SettingsView.SelectedSocketExportFormat, Mode=TwoWay}"
-                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5" IsEnabled="{Binding SettingsView.SocketSettingsEnabled}">
+                    <TextBlock Grid.Row="3"
+                               Grid.Column="0"
+                               Text="Socket Format (ActorX)"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5"
+                               IsEnabled="{Binding SettingsView.SocketSettingsEnabled}" />
+                    <ComboBox Grid.Row="3"
+                              Grid.Column="2"
+                              Grid.ColumnSpan="3"
+                              ItemsSource="{Binding SettingsView.SocketExportFormats}"
+                              SelectedItem="{Binding SettingsView.SelectedSocketExportFormat, Mode=TwoWay}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                              Margin="0 0 0 5"
+                              IsEnabled="{Binding SettingsView.SocketSettingsEnabled}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
@@ -444,9 +697,20 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Compression Format (UEFormat)" VerticalAlignment="Center" Margin="0 0 0 5" IsEnabled="{Binding SettingsView.CompressionSettingsEnabled}"/>
-                    <ComboBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.CompressionFormats}" SelectedItem="{Binding SettingsView.SelectedCompressionFormat, Mode=TwoWay}"
-                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5" IsEnabled="{Binding SettingsView.CompressionSettingsEnabled}">
+                    <TextBlock Grid.Row="4"
+                               Grid.Column="0"
+                               Text="Compression Format (UEFormat)"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5"
+                               IsEnabled="{Binding SettingsView.CompressionSettingsEnabled}" />
+                    <ComboBox Grid.Row="4"
+                              Grid.Column="2"
+                              Grid.ColumnSpan="3"
+                              ItemsSource="{Binding SettingsView.CompressionFormats}"
+                              SelectedItem="{Binding SettingsView.SelectedCompressionFormat, Mode=TwoWay}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                              Margin="0 0 0 5"
+                              IsEnabled="{Binding SettingsView.CompressionSettingsEnabled}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
@@ -454,9 +718,18 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Level Of Detail Format" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <ComboBox Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.LodExportFormats}" SelectedItem="{Binding SettingsView.SelectedLodExportFormat, Mode=TwoWay}"
-                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
+                    <TextBlock Grid.Row="5"
+                               Grid.Column="0"
+                               Text="Level Of Detail Format"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <ComboBox Grid.Row="5"
+                              Grid.Column="2"
+                              Grid.ColumnSpan="3"
+                              ItemsSource="{Binding SettingsView.LodExportFormats}"
+                              SelectedItem="{Binding SettingsView.SelectedLodExportFormat, Mode=TwoWay}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                              Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
@@ -464,58 +737,141 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <Separator Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" />
+                    <Separator Grid.Row="6"
+                               Grid.Column="0"
+                               Grid.ColumnSpan="5"
+                               Style="{StaticResource CustomSeparator}" />
 
-                    <TextBlock Grid.Row="7" Grid.Column="0" Text="Preview Max Texture Size" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Slider Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" TickPlacement="None" Minimum="4" Maximum="4096" Ticks="4,8,16,32,64,128,256,512,1024,2048,4096"
-                            AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" Margin="0 5 0 5"
-                            Value="{Binding PreviewMaxTextureSize, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
+                    <TextBlock Grid.Row="7"
+                               Grid.Column="0"
+                               Text="Preview Max Texture Size"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <Slider Grid.Row="7"
+                            Grid.Column="2"
+                            Grid.ColumnSpan="3"
+                            TickPlacement="None"
+                            Minimum="4"
+                            Maximum="4096"
+                            Ticks="4,8,16,32,64,128,256,512,1024,2048,4096"
+                            AutoToolTipPlacement="BottomRight"
+                            IsMoveToPointEnabled="True"
+                            IsSnapToTickEnabled="True"
+                            Margin="0 5 0 5"
+                            Value="{Binding PreviewMaxTextureSize, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
 
-                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Preview Static Meshes" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="8"
+                               Grid.Column="0"
+                               Text="Preview Static Meshes"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="8"
+                              Grid.Column="2"
+                              Grid.ColumnSpan="3"
+                              Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding PreviewStaticMeshes, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
-                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
+                              Margin="0 5 0 5" />
 
-                    <TextBlock Grid.Row="9" Grid.Column="0" Text="Preview Skeletal Meshes" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="9"
+                               Grid.Column="0"
+                               Text="Preview Skeletal Meshes"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="9"
+                              Grid.Column="2"
+                              Grid.ColumnSpan="3"
+                              Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding PreviewSkeletalMeshes, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
-                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
+                              Margin="0 5 0 5" />
 
-                    <TextBlock Grid.Row="10" Grid.Column="0" Text="Preview Animations" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="10"
+                               Grid.Column="0"
+                               Text="Preview Animations"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="10"
+                              Grid.Column="2"
+                              Grid.ColumnSpan="3"
+                              Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding PreviewAnimations, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
-                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
+                              Margin="0 5 0 5" />
 
-                    <TextBlock Grid.Row="11" Grid.Column="0" Text="Preview Materials" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="11" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="11"
+                               Grid.Column="0"
+                               Text="Preview Materials"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="11"
+                              Grid.Column="2"
+                              Grid.ColumnSpan="3"
+                              Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding PreviewMaterials, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
-                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
+                              Margin="0 5 0 5" />
 
-                    <TextBlock Grid.Row="12" Grid.Column="0" Text="Preview Levels (.umap)" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="12" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="12"
+                               Grid.Column="0"
+                               Text="Preview Levels (.umap)"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="12"
+                              Grid.Column="2"
+                              Grid.ColumnSpan="3"
+                              Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding PreviewWorlds, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
-                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
+                              Margin="0 5 0 5" />
 
-                    <TextBlock Grid.Row="13" Grid.Column="0" Text="Save Materials Embedded within Meshes" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="13" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="13"
+                               Grid.Column="0"
+                               Text="Save Materials Embedded within Meshes"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="13"
+                              Grid.Column="2"
+                              Grid.ColumnSpan="3"
+                              Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SaveEmbeddedMaterials, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
-                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
+                              Margin="0 5 0 5" />
 
-                    <TextBlock Grid.Row="14" Grid.Column="0" Text="Save Morph Targets in Meshes" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="14" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="14"
+                               Grid.Column="0"
+                               Text="Save Morph Targets in Meshes"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="14"
+                              Grid.Column="2"
+                              Grid.ColumnSpan="3"
+                              Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SaveMorphTargets, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
-                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
+                              Margin="0 5 0 5" />
 
-                    <TextBlock Grid.Row="15" Grid.Column="0" Text="Handle Skeletons as Empty Meshes" VerticalAlignment="Center" />
-                    <CheckBox Grid.Row="15" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="15"
+                               Grid.Column="0"
+                               Text="Handle Skeletons as Empty Meshes"
+                               VerticalAlignment="Center" />
+                    <CheckBox Grid.Row="15"
+                              Grid.Column="2"
+                              Grid.ColumnSpan="3"
+                              Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SaveSkeletonAsMesh, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
-                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 0"/>
+                              Margin="0 5 0 0" />
 
-                    <Separator Grid.Row="16" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" />
+                    <Separator Grid.Row="16"
+                               Grid.Column="0"
+                               Grid.ColumnSpan="5"
+                               Style="{StaticResource CustomSeparator}" />
 
-                    <TextBlock Grid.Row="17" Grid.Column="0" Text="Nanite Format" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <ComboBox Grid.Row="17" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.NaniteMeshExportFormats}" SelectedItem="{Binding SettingsView.SelectedNaniteMeshExportFormat, Mode=TwoWay}"
-                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
+                    <TextBlock Grid.Row="17"
+                               Grid.Column="0"
+                               Text="Nanite Format"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <ComboBox Grid.Row="17"
+                              Grid.Column="2"
+                              Grid.ColumnSpan="3"
+                              ItemsSource="{Binding SettingsView.NaniteMeshExportFormats}"
+                              SelectedItem="{Binding SettingsView.SelectedNaniteMeshExportFormat, Mode=TwoWay}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                              Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
@@ -523,9 +879,18 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="18" Grid.Column="0" Text="Material Format" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <ComboBox Grid.Row="18" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.MaterialExportFormats}" SelectedItem="{Binding SettingsView.SelectedMaterialExportFormat, Mode=TwoWay}"
-                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
+                    <TextBlock Grid.Row="18"
+                               Grid.Column="0"
+                               Text="Material Format"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <ComboBox Grid.Row="18"
+                              Grid.Column="2"
+                              Grid.ColumnSpan="3"
+                              ItemsSource="{Binding SettingsView.MaterialExportFormats}"
+                              SelectedItem="{Binding SettingsView.SelectedMaterialExportFormat, Mode=TwoWay}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                              Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
@@ -533,9 +898,18 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="19" Grid.Column="0" Text="Texture Format" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <ComboBox Grid.Row="19" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.TextureExportFormats}" SelectedItem="{Binding SettingsView.SelectedTextureExportFormat, Mode=TwoWay}"
-                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
+                    <TextBlock Grid.Row="19"
+                               Grid.Column="0"
+                               Text="Texture Format"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <ComboBox Grid.Row="19"
+                              Grid.Column="2"
+                              Grid.ColumnSpan="3"
+                              ItemsSource="{Binding SettingsView.TextureExportFormats}"
+                              SelectedItem="{Binding SettingsView.SelectedTextureExportFormat, Mode=TwoWay}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                              Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
@@ -543,14 +917,20 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="20" Grid.Column="0" Text="Save HDR Textures as Radiance .hdr" VerticalAlignment="Center" />
-                    <CheckBox Grid.Row="20" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="20"
+                               Grid.Column="0"
+                               Text="Save HDR Textures as Radiance .hdr"
+                               VerticalAlignment="Center" />
+                    <CheckBox Grid.Row="20"
+                              Grid.Column="2"
+                              Grid.ColumnSpan="3"
+                              Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SaveHdrTexturesAsHdr, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
-                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
+                              Margin="0 5 0 5" />
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="KeybindingsTemplate">
-                <Grid adonisExtensions:LayerExtension.Layer="2">
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -572,49 +952,128 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Left Switch on Directory Tab" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <controls:HotkeyTextBox Grid.Row="0" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="0"
+                               Text="Left Switch on Directory Tab"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <controls:HotkeyTextBox Grid.Row="0"
+                                            Grid.Column="2"
+                                            Style="{StaticResource TextBoxDefaultStyle}"
+                                            Margin="0 0 0 5"
                                             HotKey="{Binding DirLeftTab, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Right Switch on Directory Tab" VerticalAlignment="Center" />
-                    <controls:HotkeyTextBox Grid.Row="1" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}"
+                    <TextBlock Grid.Row="1"
+                               Grid.Column="0"
+                               Text="Right Switch on Directory Tab"
+                               VerticalAlignment="Center" />
+                    <controls:HotkeyTextBox Grid.Row="1"
+                                            Grid.Column="2"
+                                            Style="{StaticResource TextBoxDefaultStyle}"
                                             HotKey="{Binding DirRightTab, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
 
-                    <Separator Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" />
+                    <Separator Grid.Row="2"
+                               Grid.Column="0"
+                               Grid.ColumnSpan="3"
+                               Style="{StaticResource CustomSeparator}" />
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Switch Asset Explorer" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <controls:HotkeyTextBox Grid.Row="3" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="3"
+                               Grid.Column="0"
+                               Text="Switch Asset Explorer"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <controls:HotkeyTextBox Grid.Row="3"
+                                            Grid.Column="2"
+                                            Style="{StaticResource TextBoxDefaultStyle}"
+                                            Margin="0 0 0 5"
                                             HotKey="{Binding SwitchAssetExplorer, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Left Switch on Asset Tab" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <controls:HotkeyTextBox Grid.Row="4" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="4"
+                               Grid.Column="0"
+                               Text="Left Switch on Asset Tab"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <controls:HotkeyTextBox Grid.Row="4"
+                                            Grid.Column="2"
+                                            Style="{StaticResource TextBoxDefaultStyle}"
+                                            Margin="0 0 0 5"
                                             HotKey="{Binding AssetLeftTab, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Right Switch on Asset Tab" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <controls:HotkeyTextBox Grid.Row="5" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="5"
+                               Grid.Column="0"
+                               Text="Right Switch on Asset Tab"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <controls:HotkeyTextBox Grid.Row="5"
+                                            Grid.Column="2"
+                                            Style="{StaticResource TextBoxDefaultStyle}"
+                                            Margin="0 0 0 5"
                                             HotKey="{Binding AssetRightTab, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Add Asset Tab" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <controls:HotkeyTextBox Grid.Row="6" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="6"
+                               Grid.Column="0"
+                               Text="Add Asset Tab"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <controls:HotkeyTextBox Grid.Row="6"
+                                            Grid.Column="2"
+                                            Style="{StaticResource TextBoxDefaultStyle}"
+                                            Margin="0 0 0 5"
                                             HotKey="{Binding AssetAddTab, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="7" Grid.Column="0" Text="Remove Selected Asset Tab" VerticalAlignment="Center" />
-                    <controls:HotkeyTextBox Grid.Row="7" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}"
+                    <TextBlock Grid.Row="7"
+                               Grid.Column="0"
+                               Text="Remove Selected Asset Tab"
+                               VerticalAlignment="Center" />
+                    <controls:HotkeyTextBox Grid.Row="7"
+                                            Grid.Column="2"
+                                            Style="{StaticResource TextBoxDefaultStyle}"
                                             HotKey="{Binding AssetRemoveTab, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
 
-                    <Separator Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" />
+                    <Separator Grid.Row="8"
+                               Grid.Column="0"
+                               Grid.ColumnSpan="3"
+                               Style="{StaticResource CustomSeparator}" />
 
-                    <TextBlock Grid.Row="9" Grid.Column="0" Text="Add Audio File" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <controls:HotkeyTextBox Grid.Row="9" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="9"
+                               Grid.Column="0"
+                               Text="Add Audio File"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <controls:HotkeyTextBox Grid.Row="9"
+                                            Grid.Column="2"
+                                            Style="{StaticResource TextBoxDefaultStyle}"
+                                            Margin="0 0 0 5"
                                             HotKey="{Binding AddAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="10" Grid.Column="0" Text="Play / Pause Current Audio" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <controls:HotkeyTextBox Grid.Row="10" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="10"
+                               Grid.Column="0"
+                               Text="Play / Pause Current Audio"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <controls:HotkeyTextBox Grid.Row="10"
+                                            Grid.Column="2"
+                                            Style="{StaticResource TextBoxDefaultStyle}"
+                                            Margin="0 0 0 5"
                                             HotKey="{Binding PlayPauseAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="11" Grid.Column="0" Text="Previous Audio" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <controls:HotkeyTextBox Grid.Row="11" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="11"
+                               Grid.Column="0"
+                               Text="Previous Audio"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <controls:HotkeyTextBox Grid.Row="11"
+                                            Grid.Column="2"
+                                            Style="{StaticResource TextBoxDefaultStyle}"
+                                            Margin="0 0 0 5"
                                             HotKey="{Binding PreviousAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="12" Grid.Column="0" Text="Next Audio" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <controls:HotkeyTextBox Grid.Row="12" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="12"
+                               Grid.Column="0"
+                               Text="Next Audio"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <controls:HotkeyTextBox Grid.Row="12"
+                                            Grid.Column="2"
+                                            Style="{StaticResource TextBoxDefaultStyle}"
+                                            Margin="0 0 0 5"
                                             HotKey="{Binding NextAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
                 </Grid>
             </DataTemplate>
         </ResourceDictionary>
-    </adonisControls:AdonisWindow.Resources>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -625,91 +1084,130 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <TreeView Grid.Row="0" Grid.Column="0" x:Name="SettingsTree" SelectedItemChanged="OnSelectedItemChanged"
-                  Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
+        <TreeView Grid.Row="0"
+                  Grid.Column="0"
+                  x:Name="SettingsTree"
+                  SelectionChanged="OnSelectedItemChanged">
             <TreeViewItem Tag="GeneralTemplate">
                 <TreeViewItem.Header>
                     <StackPanel Orientation="Horizontal">
-                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center" Margin="-20 4 7.5 4">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M17,11c0.34,0,0.67,0.04,1,0.09V7.58c0-0.8-0.47-1.52-1.2-1.83l-5.5-2.4c-0.51-0.22-1.09-0.22-1.6,0l-5.5,2.4 C3.47,6.07,3,6.79,3,7.58v3.6c0,4.54,3.2,8.79,7.5,9.82c0.55-0.13,1.08-0.32,1.6-0.55C11.41,19.47,11,18.28,11,17 C11,13.69,13.69,11,17,11z" />
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M17,13c-2.21,0-4,1.79-4,4c0,2.21,1.79,4,4,4s4-1.79,4-4C21,14.79,19.21,13,17,13z M17,14.38c0.62,0,1.12,0.51,1.12,1.12 s-0.51,1.12-1.12,1.12s-1.12-0.51-1.12-1.12S16.38,14.38,17,14.38z M17,19.75c-0.93,0-1.74-0.46-2.24-1.17 c0.05-0.72,1.51-1.08,2.24-1.08s2.19,0.36,2.24,1.08C18.74,19.29,17.93,19.75,17,19.75z" />
+                        <Viewbox Width="16"
+                                 Height="16"
+                                 HorizontalAlignment="Center"
+                                 Margin="-20 4 7.5 4">
+                            <Canvas Width="24"
+                                    Height="24">
+                                <Path Fill="White"
+                                      Data="M17,11c0.34,0,0.67,0.04,1,0.09V7.58c0-0.8-0.47-1.52-1.2-1.83l-5.5-2.4c-0.51-0.22-1.09-0.22-1.6,0l-5.5,2.4 C3.47,6.07,3,6.79,3,7.58v3.6c0,4.54,3.2,8.79,7.5,9.82c0.55-0.13,1.08-0.32,1.6-0.55C11.41,19.47,11,18.28,11,17 C11,13.69,13.69,11,17,11z" />
+                                <Path Fill="White"
+                                      Data="M17,13c-2.21,0-4,1.79-4,4c0,2.21,1.79,4,4,4s4-1.79,4-4C21,14.79,19.21,13,17,13z M17,14.38c0.62,0,1.12,0.51,1.12,1.12 s-0.51,1.12-1.12,1.12s-1.12-0.51-1.12-1.12S16.38,14.38,17,14.38z M17,19.75c-0.93,0-1.74-0.46-2.24-1.17 c0.05-0.72,1.51-1.08,2.24-1.08s2.19,0.36,2.24,1.08C18.74,19.29,17.93,19.75,17,19.75z" />
                             </Canvas>
                         </Viewbox>
-                        <TextBlock Text="General" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        <TextBlock Text="General"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center" />
                     </StackPanel>
                 </TreeViewItem.Header>
             </TreeViewItem>
-            <TreeViewItem Tag="CreatorTemplate">
+            <TreeViewItem Tag="CreatorTemplate"
+                          IsVisible="{Binding CUE4Parse.Provider.ProjectName, Converter={x:Static converters:CaseInsensitiveStringEqualsConverter.Instance}, ConverterParameter='FortniteGame'}">
                 <TreeViewItem.Header>
                     <StackPanel Orientation="Horizontal">
-                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center" Margin="-20 4 7.5 4">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource CreatorIcon}" />
+                        <Viewbox Width="16"
+                                 Height="16"
+                                 HorizontalAlignment="Center"
+                                 Margin="-20 4 7.5 4">
+                            <Canvas Width="24"
+                                    Height="24">
+                                <Path Fill="White"
+                                      Data="{StaticResource CreatorIcon}" />
                             </Canvas>
                         </Viewbox>
-                        <TextBlock Text="Creator" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        <TextBlock Text="Creator"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center" />
                     </StackPanel>
                 </TreeViewItem.Header>
-                <TreeViewItem.Style>
-                    <Style TargetType="TreeViewItem" BasedOn="{StaticResource TreeViewItemStyle}">
-                        <Setter Property="Visibility" Value="Collapsed"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding CUE4Parse.Provider.ProjectName, Converter={x:Static converters:CaseInsensitiveStringEqualsConverter.Instance}, ConverterParameter='FortniteGame'}" Value="True">
-                                <Setter Property="Visibility" Value="Visible" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TreeViewItem.Style>
             </TreeViewItem>
             <TreeViewItem Tag="ModelsTemplate">
                 <TreeViewItem.Header>
                     <StackPanel Orientation="Horizontal">
-                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center" Margin="-20 4 7.5 4">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M2,6c0.55,0,1-0.45,1-1V4c0-0.55,0.45-1,1-1h1c0.55,0,1-0.45,1-1S5.55,1,5,1H4C2.34,1,1,2.34,1,4v1C1,5.55,1.45,6,2,6z" />
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M5,21H4c-0.55,0-1-0.45-1-1v-1c0-0.55-0.45-1-1-1c-0.55,0-1,0.45-1,1v1c0,1.66,1.34,3,3,3h1c0.55,0,1-0.45,1-1 S5.55,21,5,21z" />
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M20,1h-1c-0.55,0-1,0.45-1,1s0.45,1,1,1h1c0.55,0,1,0.45,1,1v1c0,0.55,0.45,1,1,1c0.55,0,1-0.45,1-1V4 C23,2.34,21.66,1,20,1z" />
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M22,18c-0.55,0-1,0.45-1,1v1c0,0.55-0.45,1-1,1h-1c-0.55,0-1,0.45-1,1s0.45,1,1,1h1c1.66,0,3-1.34,3-3v-1 C23,18.45,22.55,18,22,18z" />
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M19,14.87V9.13c0-0.72-0.38-1.38-1-1.73l-5-2.88c-0.31-0.18-0.65-0.27-1-0.27s-0.69,0.09-1,0.27L6,7.39 C5.38,7.75,5,8.41,5,9.13v5.74c0,0.72,0.38,1.38,1,1.73l5,2.88c0.31,0.18,0.65,0.27,1,0.27s0.69-0.09,1-0.27l5-2.88 C18.62,16.25,19,15.59,19,14.87z M11,17.17l-4-2.3v-4.63l4,2.33V17.17z M12,10.84L8.04,8.53L12,6.25l3.96,2.28L12,10.84z M17,14.87l-4,2.3v-4.6l4-2.33V14.87z" />
+                        <Viewbox Width="16"
+                                 Height="16"
+                                 HorizontalAlignment="Center"
+                                 Margin="-20 4 7.5 4">
+                            <Canvas Width="24"
+                                    Height="24">
+                                <Path Fill="White"
+                                      Data="M2,6c0.55,0,1-0.45,1-1V4c0-0.55,0.45-1,1-1h1c0.55,0,1-0.45,1-1S5.55,1,5,1H4C2.34,1,1,2.34,1,4v1C1,5.55,1.45,6,2,6z" />
+                                <Path Fill="White"
+                                      Data="M5,21H4c-0.55,0-1-0.45-1-1v-1c0-0.55-0.45-1-1-1c-0.55,0-1,0.45-1,1v1c0,1.66,1.34,3,3,3h1c0.55,0,1-0.45,1-1 S5.55,21,5,21z" />
+                                <Path Fill="White"
+                                      Data="M20,1h-1c-0.55,0-1,0.45-1,1s0.45,1,1,1h1c0.55,0,1,0.45,1,1v1c0,0.55,0.45,1,1,1c0.55,0,1-0.45,1-1V4 C23,2.34,21.66,1,20,1z" />
+                                <Path Fill="White"
+                                      Data="M22,18c-0.55,0-1,0.45-1,1v1c0,0.55-0.45,1-1,1h-1c-0.55,0-1,0.45-1,1s0.45,1,1,1h1c1.66,0,3-1.34,3-3v-1 C23,18.45,22.55,18,22,18z" />
+                                <Path Fill="White"
+                                      Data="M19,14.87V9.13c0-0.72-0.38-1.38-1-1.73l-5-2.88c-0.31-0.18-0.65-0.27-1-0.27s-0.69,0.09-1,0.27L6,7.39 C5.38,7.75,5,8.41,5,9.13v5.74c0,0.72,0.38,1.38,1,1.73l5,2.88c0.31,0.18,0.65,0.27,1,0.27s0.69-0.09,1-0.27l5-2.88 C18.62,16.25,19,15.59,19,14.87z M11,17.17l-4-2.3v-4.63l4,2.33V17.17z M12,10.84L8.04,8.53L12,6.25l3.96,2.28L12,10.84z M17,14.87l-4,2.3v-4.6l4-2.33V14.87z" />
                             </Canvas>
                         </Viewbox>
-                        <TextBlock Text="Models" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        <TextBlock Text="Models"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center" />
                     </StackPanel>
                 </TreeViewItem.Header>
             </TreeViewItem>
             <TreeViewItem Tag="KeybindingsTemplate">
                 <TreeViewItem.Header>
                     <StackPanel Orientation="Horizontal">
-                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center" Margin="-20 4 7.5 4">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource KeyboardIcon}" />
+                        <Viewbox Width="16"
+                                 Height="16"
+                                 HorizontalAlignment="Center"
+                                 Margin="-20 4 7.5 4">
+                            <Canvas Width="24"
+                                    Height="24">
+                                <Path Fill="White"
+                                      Data="{StaticResource KeyboardIcon}" />
                             </Canvas>
                         </Viewbox>
-                        <TextBlock Text="Keybindings" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        <TextBlock Text="Keybindings"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center" />
                     </StackPanel>
                 </TreeViewItem.Header>
             </TreeViewItem>
         </TreeView>
 
-        <Grid Grid.Row="0" Grid.Column="1" Margin="{adonisUi:Space 1, 0.5}" HorizontalAlignment="Stretch">
-            <ContentControl ContentTemplateSelector="{StaticResource TagTemplateSelector}" Content="{Binding SelectedItem.Tag, ElementName=SettingsTree}" />
+        <Grid Grid.Row="0"
+              Grid.Column="1"
+              Margin="10,5"
+              HorizontalAlignment="Stretch">
+            <ContentControl ContentTemplateSelector="{StaticResource TagTemplateSelector}"
+                            Content="{Binding SelectedItem.Tag, ElementName=SettingsTree}" />
         </Grid>
 
-        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" adonisExtensions:LayerExtension.IncreaseLayer="True"
-                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}">
+        <Border Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="2">
             <Grid Margin="30, 12, 6, 12">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" Text="* Require a restart for changes to take effect"
-                           HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="11" Margin="0 0 10 0"
-                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.Layer1InteractionForegroundBrush}}" />
-                <Button Grid.Column="1" MinWidth="78" Margin="0 0 12 0" IsDefault="True" IsCancel="False"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK" Click="OnClick" />
+                <TextBlock Grid.Column="0"
+                           Text="* Require a restart for changes to take effect"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           FontSize="11"
+                           Margin="0 0 10 0" />
+                <Button Grid.Column="1"
+                        MinWidth="78"
+                        Margin="0 0 12 0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Content="OK"
+                        Click="OnClick" />
             </Grid>
         </Border>
     </Grid>
-</adonisControls:AdonisWindow>
+</Window>

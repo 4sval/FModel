@@ -1,25 +1,25 @@
-using AdonisUI.Controls;
+using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap;
+using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.Threading;
 using FModel.Extensions;
 using FModel.Settings;
 using FModel.Views.Resources.Controls;
-using Microsoft.Win32;
 using Serilog;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using System.Windows.Media.Imaging;
+// TODO(P4-004): Microsoft.Win32.OpenFileDialog / SaveFileDialog not available on Linux — replace with StorageProvider
+// TODO(P4-010): System.Drawing.Imaging not available on Linux — SkiaSharp handles TIF natively
 
 namespace FModel.Views;
 
-public partial class ImageMerger
+public partial class ImageMerger : Window
 {
     private const string FILENAME = "Preview.png";
     private byte[] _imageBuffer;
@@ -29,13 +29,13 @@ public partial class ImageMerger
         InitializeComponent();
     }
 
-    private async void DrawPreview(object sender, DragCompletedEventArgs dragCompletedEventArgs)
+    private async void DrawPreview(object sender, VectorEventArgs dragCompletedEventArgs)
     {
         if (ImagePreview.Source != null)
             await DrawPreview().ConfigureAwait(false);
     }
 
-    private async void Click_DrawPreview(object sender, MouseButtonEventArgs e)
+    private async void Click_DrawPreview(object sender, PointerReleasedEventArgs e)
     {
         if (ImagePreview.Source != null)
             await DrawPreview().ConfigureAwait(false);
@@ -59,19 +59,10 @@ public partial class ImageMerger
         for (var i = 0; i < images.Length; i++)
         {
             var item = (ListBoxItem) ImagesListBox.Items[i];
-            var ms = new MemoryStream();
-            var stream = new FileStream(item.ContentStringFormat, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-
-            if (item.ContentStringFormat.EndsWith(".tif"))
-            {
-                await using var tmp = new MemoryStream();
-                await stream.CopyToAsync(tmp);
-                System.Drawing.Image.FromStream(tmp).Save(ms, ImageFormat.Png);
-            }
-            else
-            {
-                await stream.CopyToAsync(ms);
-            }
+            await using var stream = new FileStream(item.ContentStringFormat, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var ms = new MemoryStream();
+            // TODO(P4-010): Was converting TIF via System.Drawing to PNG; SkiaSharp decodes TIF natively
+            await stream.CopyToAsync(ms);
 
             var image = SKBitmap.Decode(ms.ToArray());
             positions[i] = new SKPoint(curW, curH);
@@ -101,30 +92,29 @@ public partial class ImageMerger
             num++;
         }
 
-        await Task.Run(() =>
+        try
         {
-            using var bmp = new SKBitmap(maxWidth - margin, maxHeight - margin, SKColorType.Rgba8888, SKAlphaType.Premul);
-            using var canvas = new SKCanvas(bmp);
-
-            for (var i = 0; i < images.Length; i++)
+            await Task.Run(async () =>
             {
-                using (images[i])
+                using var bmp = new SKBitmap(maxWidth - margin, maxHeight - margin, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var canvas = new SKCanvas(bmp);
+
+                for (var i = 0; i < images.Length; i++)
                 {
-                    canvas.DrawBitmap(images[i], positions[i], new SKPaint { FilterQuality = SKFilterQuality.High, IsAntialias = true });
+                    using (images[i])
+                    {
+                        canvas.DrawBitmap(images[i], positions[i], new SKPaint { FilterQuality = SKFilterQuality.High, IsAntialias = true });
+                    }
                 }
-            }
 
-            using var data = bmp.Encode(SKEncodedImageFormat.Png, 100);
-            using var stream = new MemoryStream(_imageBuffer = data.ToArray());
-            var photo = new BitmapImage();
-            photo.BeginInit();
-            photo.CacheOption = BitmapCacheOption.OnLoad;
-            photo.StreamSource = stream;
-            photo.EndInit();
-            photo.Freeze();
+                using var data = bmp.Encode(SKEncodedImageFormat.Png, 100);
+                _imageBuffer = data.ToArray();
+                var photo = new AvaloniaBitmap(new MemoryStream(_imageBuffer));
 
-            Application.Current.Dispatcher.Invoke(delegate { ImagePreview.Source = photo; });
-        }).ContinueWith(t =>
+                await Dispatcher.UIThread.InvokeAsync(() => { ImagePreview.Source = photo; });
+            });
+        }
+        finally
         {
             AddButton.IsEnabled = true;
             UpButton.IsEnabled = true;
@@ -134,99 +124,81 @@ public partial class ImageMerger
             SizeSlider.IsEnabled = true;
             OpenImageButton.IsEnabled = true;
             SaveImageButton.IsEnabled = true;
-        }, TaskScheduler.FromCurrentSynchronizationContext());
+        }
     }
 
     private async void OnImageAdd(object sender, RoutedEventArgs e)
     {
-        var fileBrowser = new OpenFileDialog
-        {
-            Title = "Add image(s)",
-            InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports"),
-            Multiselect = true,
-            Filter = "Image Files (*.png,*.bmp,*.jpg,*.jpeg,*.jfif,*.jpe,*.tiff,*.tif)|*.png;*.bmp;*.jpg;*.jpeg;*.jfif;*.jpe;*.tiff;*.tif|All Files (*.*)|*.*"
-        };
-        var result = fileBrowser.ShowDialog();
-        if (!result.HasValue || !result.Value) return;
-
-        foreach (var file in fileBrowser.FileNames)
-        {
-            ImagesListBox.Items.Add(new ListBoxItem
-            {
-                ContentStringFormat = file,
-                Content = Path.GetFileNameWithoutExtension(file)
-            });
-        }
-
-        SizeSlider.Value = Math.Min(ImagesListBox.Items.Count, Math.Round(Math.Sqrt(ImagesListBox.Items.Count)));
-        await DrawPreview().ConfigureAwait(false);
+        // TODO(P4-004): OpenFileDialog not available on Linux — replace with StorageProvider.OpenFilePickerAsync
     }
 
     private async void ModifyItemInList(object sender, RoutedEventArgs e)
     {
-        if (ImagesListBox.Items.Count <= 0 || ImagesListBox.SelectedItems.Count <= 0) return;
+        if (ImagesListBox.Items.Count <= 0 || ImagesListBox.SelectedItems.Count <= 0)
+            return;
         var indices = ImagesListBox.SelectedItems.Cast<ListBoxItem>().Select(i => ImagesListBox.Items.IndexOf(i)).ToArray();
         var reloadImage = false;
 
         switch (((Button) sender).Name)
         {
             case "UpButton":
-            {
-                if (indices.Length > 0 && indices[0] > 0)
                 {
-                    for (var i = 0; i < ImagesListBox.Items.Count; i++)
+                    if (indices.Length > 0 && indices[0] > 0)
                     {
-                        if (!indices.Contains(i)) continue;
-                        var item = (ListBoxItem) ImagesListBox.Items[i];
-                        ImagesListBox.Items.Remove(item);
-                        ImagesListBox.Items.Insert(i - 1, item);
-                        item.IsSelected = true;
-                        reloadImage = true;
+                        for (var i = 0; i < ImagesListBox.Items.Count; i++)
+                        {
+                            if (!indices.Contains(i))
+                                continue;
+                            var item = (ListBoxItem) ImagesListBox.Items[i];
+                            ImagesListBox.Items.Remove(item);
+                            ImagesListBox.Items.Insert(i - 1, item);
+                            item.IsSelected = true;
+                            reloadImage = true;
+                        }
                     }
-                }
 
-                ImagesListBox.SelectedItems.Add(indices);
-                if (reloadImage)
-                {
-                    await DrawPreview().ConfigureAwait(false);
-                }
+                    if (reloadImage)
+                    {
+                        await DrawPreview().ConfigureAwait(false);
+                    }
 
-                break;
-            }
+                    break;
+                }
             case "DownButton":
-            {
-                if (indices.Length > 0 && indices[^1] < ImagesListBox.Items.Count - 1)
                 {
-                    for (var i = ImagesListBox.Items.Count - 1; i > -1; --i)
+                    if (indices.Length > 0 && indices[^1] < ImagesListBox.Items.Count - 1)
                     {
-                        if (!indices.Contains(i)) continue;
-                        var item = (ListBoxItem) ImagesListBox.Items[i];
-                        ImagesListBox.Items.Remove(item);
-                        ImagesListBox.Items.Insert(i + 1, item);
-                        item.IsSelected = true;
-                        reloadImage = true;
+                        for (var i = ImagesListBox.Items.Count - 1; i > -1; --i)
+                        {
+                            if (!indices.Contains(i))
+                                continue;
+                            var item = (ListBoxItem) ImagesListBox.Items[i];
+                            ImagesListBox.Items.Remove(item);
+                            ImagesListBox.Items.Insert(i + 1, item);
+                            item.IsSelected = true;
+                            reloadImage = true;
+                        }
                     }
-                }
 
-                if (reloadImage)
-                {
-                    await DrawPreview().ConfigureAwait(false);
-                }
+                    if (reloadImage)
+                    {
+                        await DrawPreview().ConfigureAwait(false);
+                    }
 
-                break;
-            }
+                    break;
+                }
             case "DeleteButton":
-            {
-                if (ImagesListBox.Items.Count > 0 && ImagesListBox.SelectedItems.Count > 0)
                 {
-                    for (var i = ImagesListBox.SelectedItems.Count - 1; i >= 0; --i)
-                        ImagesListBox.Items.Remove(ImagesListBox.SelectedItems[i]);
+                    if (ImagesListBox.Items.Count > 0 && ImagesListBox.SelectedItems.Count > 0)
+                    {
+                        for (var i = ImagesListBox.SelectedItems.Count - 1; i >= 0; --i)
+                            ImagesListBox.Items.Remove(ImagesListBox.SelectedItems[i]);
+                    }
+
+                    await DrawPreview().ConfigureAwait(false);
+
+                    break;
                 }
-
-                await DrawPreview().ConfigureAwait(false);
-
-                break;
-            }
         }
     }
 
@@ -238,15 +210,16 @@ public partial class ImageMerger
 
     private void OnOpenImage(object sender, RoutedEventArgs e)
     {
-        if (ImagePreview.Source == null) return;
-        Helper.OpenWindow<AdonisWindow>("Merged Image", () =>
+        if (ImagePreview.Source == null)
+            return;
+        Helper.OpenWindow<Window>("Merged Image", () =>
         {
             new ImagePopout
             {
                 Title = "Merged Image",
-                Width = ImagePreview.Source.Width,
-                Height = ImagePreview.Source.Height,
-                WindowState = ImagePreview.Source.Height > 1000 ? WindowState.Maximized : WindowState.Normal,
+                Width = ImagePreview.Source.Size.Width,
+                Height = ImagePreview.Source.Size.Height,
+                WindowState = ImagePreview.Source.Size.Height > 1000 ? WindowState.Maximized : WindowState.Normal,
                 ImageCtrl = { Source = ImagePreview.Source }
             }.Show();
         });
@@ -254,26 +227,7 @@ public partial class ImageMerger
 
     private void OnSaveImage(object sender, RoutedEventArgs e)
     {
-        Application.Current.Dispatcher.Invoke(delegate
-        {
-            if (ImagePreview.Source == null) return;
-            var saveFileDialog = new SaveFileDialog
-            {
-                Title = "Save Image",
-                FileName = FILENAME,
-                InitialDirectory = UserSettings.Default.OutputDirectory,
-                Filter = "Png Files (*.png)|*.png|All Files (*.*)|*.*"
-            };
-            var result = saveFileDialog.ShowDialog();
-            if (!result.HasValue || !result.Value) return;
-
-            using (var fs = new FileStream(saveFileDialog.FileName, FileMode.Create, FileAccess.Write, FileShare.Read))
-            {
-                fs.Write(_imageBuffer, 0, _imageBuffer.Length);
-            }
-
-            SaveCheck(saveFileDialog.FileName, Path.GetFileName(saveFileDialog.FileName));
-        });
+        // TODO(P4-004): SaveFileDialog not available on Linux — replace with StorageProvider.SaveFilePickerAsync
     }
 
     private static void SaveCheck(string path, string fileName)

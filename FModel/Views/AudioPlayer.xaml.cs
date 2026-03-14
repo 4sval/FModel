@@ -1,18 +1,20 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using CSCore.CoreAudioAPI;
+using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+// TODO(P3-013): CSCore.CoreAudioAPI not available on Linux — swap out with cross-platform audio device API
+// using CSCore.CoreAudioAPI;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels;
-using Microsoft.Win32;
+// TODO(P4-004): Microsoft.Win32.OpenFileDialog not available on Linux — replace with StorageProvider
+// using Microsoft.Win32;
 
 namespace FModel.Views;
 
-public partial class AudioPlayer
+public partial class AudioPlayer : Window
 {
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
 
@@ -36,10 +38,10 @@ public partial class AudioPlayer
 
     private void OnDeviceSwap(object sender, SelectionChangedEventArgs e)
     {
-        if (sender is not ComboBox { SelectedItem: MMDevice selectedDevice })
+        // TODO(P3-013): MMDevice (CSCore) not available on Linux — implement with cross-platform audio device API
+        if (sender is not ComboBox comboBox || comboBox.SelectedItem is null)
             return;
 
-        UserSettings.Default.AudioDeviceId = selectedDevice.DeviceID;
         _applicationView.AudioPlayer.Device();
     }
 
@@ -50,24 +52,12 @@ public partial class AudioPlayer
 
     private void OnPreviewKeyDown(object sender, KeyEventArgs e)
     {
-        if (e.OriginalSource is TextBox)
+        if (e.Source is TextBox)
             return;
 
         if (UserSettings.Default.AddAudio.IsTriggered(e.Key))
         {
-            var openFileDialog = new OpenFileDialog
-            {
-                Title = "Select an audio file",
-                InitialDirectory = UserSettings.Default.AudioDirectory,
-                Filter = "OGG Files (*.ogg)|*.ogg|WAV Files (*.wav)|*.wav|WEM Files (*.wem)|*.wem|ADPCM Files (*.adpcm)|*.adpcm|All Files (*.*)|*.*",
-                Multiselect = true
-            };
-
-            if (!openFileDialog.ShowDialog().GetValueOrDefault()) return;
-            foreach (var file in openFileDialog.FileNames)
-            {
-                _applicationView.AudioPlayer.AddToPlaylist(file);
-            }
+            // TODO(P4-004): OpenFileDialog (Microsoft.Win32) not available on Linux — replace with StorageProvider
         }
         else if (UserSettings.Default.PlayPauseAudio.IsTriggered(e.Key))
             _applicationView.AudioPlayer.PlayPauseOnStart();
@@ -77,7 +67,7 @@ public partial class AudioPlayer
             _applicationView.AudioPlayer.Next();
     }
 
-    private void OnAudioFileMouseDoubleClick(object sender, MouseButtonEventArgs e)
+    private void OnAudioFileMouseDoubleClick(object sender, TappedEventArgs e)
     {
         _applicationView.AudioPlayer.PlayPauseOnForce();
     }

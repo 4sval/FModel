@@ -1,9 +1,10 @@
-using System.Windows;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
 using FModel.Settings;
 
 namespace FModel.Views;
 
-public partial class CustomDir
+public partial class CustomDir : Window
 {
     public CustomDir(CustomDirectory customDir)
     {
@@ -17,7 +18,11 @@ public partial class CustomDir
 
     private void OnClick(object sender, RoutedEventArgs e)
     {
-        DialogResult = true;
-        Close();
+        Close(true);
+    }
+
+    private void OnCancelClick(object sender, RoutedEventArgs e)
+    {
+        Close(false);
     }
 }

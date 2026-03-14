@@ -1,20 +1,14 @@
-﻿<adonisControls:AdonisWindow x:Class="FModel.Views.UpdateView"
-                             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                             xmlns:local="clr-namespace:FModel"
-                             xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
-                             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-                             xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-                             xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
-                             xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
-                             WindowStartupLocation="CenterScreen" IconVisibility="Collapsed" ResizeMode="CanMinimize" Loaded="OnLoaded"
-                             MinHeight="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.40'}"
-                             Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.35'}">
-    <adonisControls:AdonisWindow.Style>
-        <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
-            <Setter Property="Title" Value="Releases" />
-        </Style>
-    </adonisControls:AdonisWindow.Style>
+﻿<Window x:Class="FModel.Views.UpdateView"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:FModel"
+        xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+        xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
+        WindowStartupLocation="CenterScreen"
+        Loaded="OnLoaded"
+        MinHeight="432"
+        Width="672"
+        Title="Releases">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -23,13 +17,21 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center" Margin="10">
-            All releases listed below are available for download. They are sorted by date, with the latest release at the top.
-            We regularly remove old ones to keep the list clean and up to date with the latest UE releases.
-            If you wish to manually check for updates, this window is accessible via the Help > Releases menu.
+        <TextBlock Grid.Row="0"
+                   TextWrapping="Wrap"
+                   HorizontalAlignment="Center"
+                   TextAlignment="Center"
+                   Margin="10">
+            All releases listed below are available for download. They are sorted by date, with the
+            latest release at the top.
+            We regularly remove old ones to keep the list clean and up to date with the latest UE
+            releases.
+            If you wish to manually check for updates, this window is accessible via the Help >
+            Releases menu.
         </TextBlock>
 
-        <Grid Grid.Row="1" HorizontalAlignment="Center">
+        <Grid Grid.Row="1"
+              HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="5" />
@@ -39,87 +41,80 @@
             <!--     <Style TargetType="Grid"> -->
             <!--         <Setter Property="Visibility" Value="Visible" /> -->
             <!--         <Style.Triggers> -->
-            <!--             <DataTrigger Binding="{Binding Title, RelativeSource={RelativeSource AncestorType=adonisControls:AdonisWindow}}" Value="Releases"> -->
+            <!--             <DataTrigger Binding="{Binding Title, RelativeSource={RelativeSource
+            AncestorType=adonisControls:AdonisWindow}}" Value="Releases"> -->
             <!--                 <Setter Property="Visibility" Value="Collapsed" /> -->
             <!--             </DataTrigger> -->
             <!--         </Style.Triggers> -->
             <!--     </Style> -->
             <!-- </Grid.Style> -->
 
-            <Button Grid.Column="0" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
-                    VerticalAlignment="Top" Height="{Binding ActualHeight, ElementName=RemindButton}"
+            <Button Grid.Column="0"
+                    VerticalAlignment="Top"
+                    Height="{Binding ActualHeight, ElementName=RemindButton}"
                     Click="OnDownloadLatest">
                 Download Latest Release
             </Button>
             <StackPanel Grid.Column="2">
-                <adonisControls:SplitButton x:Name="RemindButton" Content="Remind Me Now ..." Command="{Binding RemindMeCommand}">
-                    <adonisControls:SplitButton.SplitMenu>
-                        <ContextMenu>
-                            <MenuItem Header="In 3 Days" Command="{Binding RemindMeCommand}" CommandParameter="Days" />
-                            <MenuItem Header="Next Week" Command="{Binding RemindMeCommand}" CommandParameter="Week" />
-                            <MenuItem Header="Next Month" Command="{Binding RemindMeCommand}" CommandParameter="Month" />
-                            <MenuItem Header="Never" Command="{Binding RemindMeCommand}" CommandParameter="Never" />
-                        </ContextMenu>
-                    </adonisControls:SplitButton.SplitMenu>
-                </adonisControls:SplitButton>
-                <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Right" FontSize="10" Margin="0 2.5 0 0"
+                <SplitButton x:Name="RemindButton"
+                             Content="Remind Me Now ..."
+                             Command="{Binding RemindMeCommand}">
+                    <SplitButton.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="In 3 Days"
+                                      Command="{Binding RemindMeCommand}"
+                                      CommandParameter="Days" />
+                            <MenuItem Header="Next Week"
+                                      Command="{Binding RemindMeCommand}"
+                                      CommandParameter="Week" />
+                            <MenuItem Header="Next Month"
+                                      Command="{Binding RemindMeCommand}"
+                                      CommandParameter="Month" />
+                            <MenuItem Header="Never"
+                                      Command="{Binding RemindMeCommand}"
+                                      CommandParameter="Never" />
+                        </MenuFlyout>
+                    </SplitButton.Flyout>
+                </SplitButton>
+                <TextBlock VerticalAlignment="Bottom"
+                           HorizontalAlignment="Right"
+                           FontSize="10"
+                           Margin="0 2.5 0 0"
                            Text="{Binding NextUpdateCheck, Source={x:Static local:Settings.UserSettings.Default}, StringFormat=Next Refresh: {0:MMM d, yyyy}}" />
             </StackPanel>
         </Grid>
 
-        <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="History" />
-        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <ItemsControl ItemsSource="{Binding CommitsView, IsAsync=True}">
-                <ItemsControl.GroupStyle>
-                    <GroupStyle>
-                        <GroupStyle.ContainerStyle>
-                            <Style TargetType="GroupItem">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="GroupItem">
-                                            <GroupBox adonisExtensions:LayerExtension.Layer="3"
-                                                      Header="{Binding Name}"
-                                                      HeaderStringFormat="Commits on {0:MMM d, yyyy}"
-                                                      Margin="0 0 0 5">
-                                                <ItemsPresenter />
-                                            </GroupBox>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </GroupStyle.ContainerStyle>
-                        <GroupStyle.Panel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Vertical" />
-                            </ItemsPanelTemplate>
-                        </GroupStyle.Panel>
-                    </GroupStyle>
-                </ItemsControl.GroupStyle>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <controls:CommitControl Margin="0 0 0 1" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-                <ItemsControl.Style>
-                    <Style TargetType="ItemsControl" BasedOn="{StaticResource {x:Type ItemsControl}}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Items.Count, RelativeSource={RelativeSource Self}, FallbackValue=0}" Value="0">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate>
-                                            <Grid>
-                                                <TextBlock Text="No commits found" FontWeight="SemiBold" TextAlignment="Center"
-                                                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
-                                            </Grid>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </ItemsControl.Style>
-            </ItemsControl>
+        <Separator Grid.Row="2"
+                   Style="{StaticResource CustomSeparator}"
+                   Tag="History" />
+        <ScrollViewer Grid.Row="3"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <Grid>
+                <!-- TODO(P3-UpdateVM): GroupStyle/GroupItem/HeaderStringFormat are WPF-only APIs not
+                     supported by Avalonia ItemsControl. Date grouping will be re-implemented once
+                     CommitsView is migrated from System.Windows.Data.ListCollectionView to an
+                     Avalonia-compatible collection (see TODO on CommitsView property). -->
+                <ItemsControl ItemsSource="{Binding CommitsView, IsAsync=True}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <controls:CommitControl Margin="0 0 0 1" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <TextBlock Text="No commits found."
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Top"
+                           Margin="0 20"
+                           IsVisible="{Binding CommitsView.Count, FallbackValue=0,
+                           Converter={x:Static converters:IsNotZeroConverter.Instance},
+                           ConverterParameter=invert}">
+                    <!-- TODO(P3-UpdateVM): CommitsView is System.Windows.Data.ListCollectionView.
+                         Once UpdateViewModel is migrated to Avalonia, replace CommitsView.Count
+                         with a dedicated HasNoCommits bool property or bind against the
+                         ObservableCollection directly so Count changes trigger INPC. -->
+                </TextBlock>
+            </Grid>
         </ScrollViewer>
     </Grid>
-</adonisControls:AdonisWindow>
-
+</Window>

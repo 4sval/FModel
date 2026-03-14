@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
+using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using CUE4Parse.FileProvider.Objects;
 using FModel.Services;
 using FModel.ViewModels;
@@ -17,7 +18,7 @@ public enum ESearchViewTab
     RefView
 }
 
-public partial class SearchView
+public partial class SearchView : Window
 {
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
@@ -35,6 +36,36 @@ public partial class SearchView
             RefTab = _refViewModel,
         };
         InitializeComponent();
+
+        // Restore WPF DataTrigger behavior: watermark changes when regex mode is toggled.
+        // Use named local functions captured in Closed so the long-lived singleton ViewModels
+        // don't hold a strong reference to this window after it is closed.
+        void OnSearchRegexChanged(object? _, PropertyChangedEventArgs args)
+        {
+            if (args.PropertyName != nameof(SearchViewModel.HasRegexEnabled)) return;
+            SearchTextBox.Watermark = _searchViewModel.HasRegexEnabled
+                ? "Write your regex pattern and press enter..."
+                : "Write your pattern and press enter...";
+        }
+        void OnRefRegexChanged(object? _, PropertyChangedEventArgs args)
+        {
+            if (args.PropertyName != nameof(SearchViewModel.HasRegexEnabled)) return;
+            RefSearchTextBox.Watermark = _refViewModel.HasRegexEnabled
+                ? "Write your regex pattern and press enter..."
+                : "Write your pattern and press enter...";
+        }
+
+        // Cache VM references at construction time so Closed can unsubscribe even if the
+        // application service accessor is no longer reachable at that point.
+        var searchVm = _searchViewModel;
+        var refVm = _refViewModel;
+        searchVm.PropertyChanged += OnSearchRegexChanged;
+        refVm.PropertyChanged += OnRefRegexChanged;
+        Closed += (_, _) =>
+        {
+            searchVm.PropertyChanged -= OnSearchRegexChanged;
+            refVm.PropertyChanged -= OnRefRegexChanged;
+        };
 
         Activate();
         SearchTextBox.Focus();
@@ -68,7 +99,7 @@ public partial class SearchView
 
     private async void OnFindRefs(object sender, RoutedEventArgs e)
     {
-        if (CurrentListView?.SelectedItem is not GameFile entry)
+        if (CurrentDataGrid?.SelectedItem is not GameFile entry)
             return;
 
         await _threadWorkerView.Begin(_ => _applicationView.CUE4Parse.FindReferences(entry));
@@ -76,7 +107,7 @@ public partial class SearchView
 
     private void OnTabItemChange(object sender, SelectionChangedEventArgs e)
     {
-        if (e.OriginalSource is not TabControl tabControl)
+        if (e.Source is not TabControl tabControl)
             return;
 
         _currentTab = tabControl.SelectedIndex switch
@@ -105,10 +136,10 @@ public partial class SearchView
         _ => null
     };
 
-    private ListView CurrentListView => _currentTab switch
+    private DataGrid CurrentDataGrid => _currentTab switch
     {
-        ESearchViewTab.SearchView => SearchListView,
-        ESearchViewTab.RefView => RefListView,
+        ESearchViewTab.SearchView => SearchDataGrid,
+        ESearchViewTab.RefView => RefDataGrid,
         _ => null
     };
 
@@ -126,7 +157,7 @@ public partial class SearchView
 
     private async void OnAssetDoubleClick(object sender, RoutedEventArgs e)
     {
-        if (CurrentListView?.SelectedItem is not GameFile entry)
+        if (CurrentDataGrid?.SelectedItem is not GameFile entry)
             return;
 
         await NavigateToAssetAndSelect(entry);
@@ -169,7 +200,7 @@ public partial class SearchView
 
     private async void OnAssetExtract(object sender, RoutedEventArgs e)
     {
-        if (CurrentListView?.SelectedItem is not GameFile entry)
+        if (CurrentDataGrid?.SelectedItem is not GameFile entry)
             return;
 
         WindowState = WindowState.Minimized;

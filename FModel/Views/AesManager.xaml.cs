@@ -1,11 +1,12 @@
 using System.ComponentModel;
-using System.Windows;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
 using FModel.Services;
 using FModel.ViewModels;
 
 namespace FModel.Views;
 
-public partial class AesManager
+public partial class AesManager : Window
 {
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
 

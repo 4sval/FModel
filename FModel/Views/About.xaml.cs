@@ -1,9 +1,10 @@
-using System.Windows;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
 using FModel.ViewModels;
 
 namespace FModel.Views;
 
-public partial class About
+public partial class About : Window
 {
     private readonly AboutViewModel _viewModel;
 
