@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using ICSharpCode.AvalonEdit;
-using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Folding;
+using AvaloniaEdit;
+using AvaloniaEdit.Document;
+using AvaloniaEdit.Folding;
 
 namespace FModel.Views.Resources.Controls;
 
@@ -13,7 +13,7 @@ public class JsonFoldingStrategies
     public JsonFoldingStrategies(TextEditor avalonEditor)
     {
         _foldingManager = FoldingManager.Install(avalonEditor.TextArea);
-        _strategy = new BraceFoldingStrategy(avalonEditor);
+        _strategy = new BraceFoldingStrategy();
     }
 
     public void UpdateFoldings(TextDocument document)
@@ -51,7 +51,8 @@ public class JsonFoldingStrategies
         var foldunfold = false;
         foreach (var folding in _foldingManager.AllFoldings)
         {
-            if (folding.Tag is not CustomNewFolding realFolding || realFolding.Level != level) continue;
+            if (folding.Tag is not CustomNewFolding realFolding || realFolding.Level != level)
+                continue;
 
             if (dowhat < 0) // determine if we fold or unfold based on the first one
             {
@@ -66,9 +67,8 @@ public class JsonFoldingStrategies
 
 public class BraceFoldingStrategy
 {
-    public BraceFoldingStrategy(TextEditor editor)
+    public BraceFoldingStrategy()
     {
-        UpdateFoldings(editor.Document);
     }
 
     public IEnumerable<CustomNewFolding> UpdateFoldings(TextDocument document)
@@ -93,16 +93,16 @@ public class BraceFoldingStrategy
                     startOffsets.Push(i);
                     break;
                 case '}' or ']' when startOffsets.Count > 0:
-                {
-                    var startOffset = startOffsets.Pop();
-                    if (startOffset < lastNewLineOffset)
                     {
-                        newFoldings.Add(new CustomNewFolding(startOffset, i + 1, level));
-                    }
+                        var startOffset = startOffsets.Pop();
+                        if (startOffset < lastNewLineOffset)
+                        {
+                            newFoldings.Add(new CustomNewFolding(startOffset, i + 1, level));
+                        }
 
-                    level--;
-                    break;
-                }
+                        level--;
+                        break;
+                    }
                 case '\n' or '\r':
                     lastNewLineOffset = i + 1;
                     break;

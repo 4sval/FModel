@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using FModel.Extensions;
 using FModel.Services;
 using FModel.Settings;
-using ICSharpCode.AvalonEdit.Document;
+using AvaloniaEdit.Document;
 using Newtonsoft.Json;
 
 namespace FModel.Views.Resources.Controls;
@@ -56,7 +56,8 @@ public partial class EndpointEditor
 
     private async void OnSend(object sender, RoutedEventArgs e)
     {
-        if (DataContext is not EndpointSettings endpoint) return;
+        if (DataContext is not EndpointSettings endpoint)
+            return;
 
         var body = await ApplicationService.ApiEndpointView.DynamicApi.GetRequestBody(default, endpoint.Url).ConfigureAwait(false);
         Application.Current.Dispatcher.Invoke(delegate
@@ -68,7 +69,8 @@ public partial class EndpointEditor
 
     private void OnTest(object sender, RoutedEventArgs e)
     {
-        if (DataContext is not EndpointSettings endpoint) return;
+        if (DataContext is not EndpointSettings endpoint)
+            return;
 
         endpoint.TryValidate(ApplicationService.ApiEndpointView.DynamicApi, _type, out var response);
         _isTested = true;
@@ -80,7 +82,8 @@ public partial class EndpointEditor
     private void OnTextChanged(object sender, TextChangedEventArgs e)
     {
         if (sender is not TextBox { IsLoaded: true } ||
-            DataContext is not EndpointSettings endpoint) return;
+            DataContext is not EndpointSettings endpoint)
+            return;
         endpoint.IsValid = false;
     }
 

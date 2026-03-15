@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using ICSharpCode.AvalonEdit.Rendering;
+using AvaloniaEdit.Rendering;
 
 namespace FModel.Views.Resources.Controls;
 
@@ -28,7 +28,8 @@ public class HexColorElementGenerator : VisualLineElementGenerator
     public override VisualLineElement ConstructElement(int offset)
     {
         var m = FindMatch(offset);
-        if (!m.Success || m.Index != 0) return null;
+        if (!m.Success || m.Index != 0)
+            return null;
 
         return m.Groups.TryGetValue("target", out var g) ?
             new HexColorVisualLineText(g.Value, CurrentContext.VisualLine, g.Length + g.Index + 1) :

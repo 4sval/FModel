@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using ICSharpCode.AvalonEdit.Rendering;
+using AvaloniaEdit.Rendering;
 
 namespace FModel.Views.Resources.Controls;
 

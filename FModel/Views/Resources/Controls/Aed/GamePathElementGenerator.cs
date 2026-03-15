@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 using FModel.Extensions;
-using ICSharpCode.AvalonEdit.Rendering;
+using AvaloniaEdit.Rendering;
 
 namespace FModel.Views.Resources.Controls;
 
@@ -31,7 +31,8 @@ public class GamePathElementGenerator : VisualLineElementGenerator
     {
         var m = FindMatch(offset);
         if (!m.Success || m.Index != 0 ||
-            !m.Groups.TryGetValue("target", out var g)) return null;
+            !m.Groups.TryGetValue("target", out var g))
+            return null;
 
         var parentExportType = CurrentContext.Document.GetParentExportType(offset);
         return new GamePathVisualLineText(g.Value, parentExportType, CurrentContext.VisualLine, g.Length + g.Index + 1);

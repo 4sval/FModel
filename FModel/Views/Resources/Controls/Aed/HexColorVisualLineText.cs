@@ -1,7 +1,7 @@
 using System;
-using System.Windows.Media;
-using System.Windows.Media.TextFormatting;
-using ICSharpCode.AvalonEdit.Rendering;
+using Avalonia.Media;
+using Avalonia.Media.TextFormatting;
+using AvaloniaEdit.Rendering;
 
 namespace FModel.Views.Resources.Controls;
 
@@ -16,16 +16,16 @@ public class HexColorVisualLineText : VisualLineText
 
     public override TextRun CreateTextRun(int startVisualColumn, ITextRunConstructionContext context)
     {
-        if (context == null)
-            throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
 
-        var relativeOffset = startVisualColumn - VisualColumn;
-        var text = context.GetText(context.VisualLine.FirstDocumentLine.Offset + RelativeTextOffset + relativeOffset, DocumentLength - relativeOffset);
-
-        if (text.Count != 2) // ": "
+        // Apply custom colour to everything except the 2-char separator token (":\xa0").
+        var runLength = DocumentLength - (startVisualColumn - VisualColumn);
+        if (runLength != 2)
             TextRunProperties.SetForegroundBrush(Brushes.PeachPuff);
+        else
+            TextRunProperties.SetForegroundBrush(null); // restore default for separator token
 
-        return new TextCharacters(text.Text, text.Offset, text.Count, TextRunProperties);
+        return base.CreateTextRun(startVisualColumn, context);
     }
 
     protected override VisualLineText CreateInstance(int length)

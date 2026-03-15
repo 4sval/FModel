@@ -4,8 +4,8 @@ using FModel.Framework;
 using FModel.Settings;
 using FModel.ViewModels.Commands;
 using FModel.Views.Resources.Controls;
-using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Highlighting;
+using AvaloniaEdit.Document;
+using AvaloniaEdit.Highlighting;
 using Serilog;
 using SkiaSharp;
 using System.Collections.ObjectModel;
@@ -46,7 +46,8 @@ public class TabImage : ViewModel
         get => _image;
         set
         {
-            if (_image == value) return;
+            if (_image == value)
+                return;
             SetProperty(ref _image, value);
         }
     }
@@ -230,7 +231,8 @@ public class TabItem : ViewModel
         get => _highlighter;
         set
         {
-            if (_highlighter == value) return;
+            if (_highlighter == value)
+                return;
             SetProperty(ref _highlighter, value);
         }
     }
@@ -241,7 +243,8 @@ public class TabItem : ViewModel
         get => _selectedImage;
         set
         {
-            if (_selectedImage == value) return;
+            if (_selectedImage == value)
+                return;
             SetProperty(ref _selectedImage, value);
             RaisePropertyChanged("HasImage");
             RaisePropertyChanged("Page");
@@ -331,8 +334,10 @@ public class TabItem : ViewModel
         Application.Current.Dispatcher.Invoke(() =>
         {
             var t = new TabImage(name, rnn, img);
-            if (save) SaveImage(t, updateUi);
-            if (!updateUi) return;
+            if (save)
+                SaveImage(t, updateUi);
+            if (!updateUi)
+                return;
 
             _images.Add(t);
             SelectedImage ??= t;
@@ -346,8 +351,10 @@ public class TabItem : ViewModel
         Application.Current.Dispatcher.Invoke(() =>
         {
             var t = new TabImage(name, rnn, img);
-            if (save) SaveImage(t, updateUi);
-            if (!updateUi) return;
+            if (save)
+                SaveImage(t, updateUi);
+            if (!updateUi)
+                return;
 
             _images.Add(t);
             SelectedImage ??= t;
@@ -367,7 +374,8 @@ public class TabItem : ViewModel
             Document.Text = text;
             Document.UndoStack.ClearAll();
 
-            if (save) SaveProperty(updateUi);
+            if (save)
+                SaveProperty(updateUi);
         });
     }
 
@@ -466,7 +474,8 @@ public class TabControlViewModel : ViewModel
             return;
         }
 
-        if (!CanAddTabs) return;
+        if (!CanAddTabs)
+            return;
         Application.Current.Dispatcher.Invoke(() =>
         {
             _tabItems.Add(new TabItem(entry, parentExportType ?? string.Empty));

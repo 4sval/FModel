@@ -5,7 +5,7 @@ using System.Windows.Media;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using FModel.Extensions;
-using ICSharpCode.AvalonEdit.Document;
+using AvaloniaEdit.Document;
 using Newtonsoft.Json;
 
 namespace FModel.Views.Resources.Controls;

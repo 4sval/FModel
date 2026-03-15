@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using ICSharpCode.AvalonEdit.Document;
+using AvaloniaEdit.Document;
 
 namespace FModel.Extensions;
 
@@ -11,7 +11,8 @@ public static partial class StringExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string GetReadableSize(double size)
     {
-        if (size == 0) return "0 B";
+        if (size == 0)
+            return "0 B";
 
         string[] sizes = ["B", "KB", "MB", "GB", "TB"];
         var order = 0;
@@ -62,7 +63,8 @@ public static partial class StringExtensions
                 return content.Split("\"")[3];
 
             lineNumber--;
-            if (lineNumber < 1) break;
+            if (lineNumber < 1)
+                break;
             line = doc.GetLineByNumber(lineNumber);
         }
 

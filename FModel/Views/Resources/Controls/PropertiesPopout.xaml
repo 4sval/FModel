@@ -1,15 +1,16 @@
-﻿<adonisControls:AdonisWindow x:Class="FModel.Views.Resources.Controls.PropertiesPopout"
-         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-         xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
-         xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
-         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
-         WindowStartupLocation="CenterScreen" IconVisibility="Collapsed" PreviewKeyDown="OnPreviewKeyDown"
-         Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.40'}">
-    <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <avalonEdit:TextEditor x:Name="MyAvalonEditor" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
-                               FontFamily="Consolas" FontSize="8pt" IsReadOnly="True" ShowLineNumbers="True" Foreground="#DAE5F2"
-                               MouseHover="OnMouseHover" MouseHoverStopped="OnMouseHoverStopped" PreviewMouseWheel="OnPreviewMouseWheel" />
-    </DockPanel>
-</adonisControls:AdonisWindow>
+﻿<Window x:Class="FModel.Views.Resources.Controls.PropertiesPopout"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:avalonEdit="https://github.com/avaloniaui/avaloniaedit"
+        WindowStartupLocation="CenterScreen"
+        Width="800"
+        KeyDown="OnKeyDown">
+    <!-- PointerHover/PointerHoverStopped and PointerWheelChangedEvent are wired in code-behind
+         because they live on TextArea.TextView, not directly on TextEditor. -->
+    <avalonEdit:TextEditor x:Name="MyAvalonEditor"
+                           FontFamily="Consolas"
+                           FontSize="10.67"
+                           IsReadOnly="True"
+                           ShowLineNumbers="True"
+                           Foreground="#DAE5F2" />
+</Window>

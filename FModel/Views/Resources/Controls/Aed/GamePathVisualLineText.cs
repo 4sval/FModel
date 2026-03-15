@@ -1,14 +1,14 @@
 using System;
 using System.Text.RegularExpressions;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.TextFormatting;
+using Avalonia.Input;
+using Avalonia.Media;
+using Avalonia.Media.TextFormatting;
 using CUE4Parse.Utils;
 using FModel.Extensions;
 using FModel.Services;
 using FModel.ViewModels;
-using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Rendering;
+using AvaloniaEdit.Document;
+using AvaloniaEdit.Rendering;
 
 namespace FModel.Views.Resources.Controls;
 
@@ -31,30 +31,23 @@ public class GamePathVisualLineText : VisualLineText
 
     public override TextRun CreateTextRun(int startVisualColumn, ITextRunConstructionContext context)
     {
-        if (context == null)
-            throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
 
-        var relativeOffset = startVisualColumn - VisualColumn;
-        var text = context.GetText(context.VisualLine.FirstDocumentLine.Offset + RelativeTextOffset + relativeOffset, DocumentLength - relativeOffset);
-
-        if (text.Count != 2) // ": "
+        var runLength = DocumentLength - (startVisualColumn - VisualColumn);
+        if (runLength != 2) // skip separator tokens
             TextRunProperties.SetForegroundBrush(Brushes.Plum);
+        else
+            TextRunProperties.SetForegroundBrush(null); // restore default for separator token
 
-        return new TextCharacters(text.Text, text.Offset, text.Count, TextRunProperties);
+        return base.CreateTextRun(startVisualColumn, context);
     }
 
-    private bool GamePathIsClickable() => !string.IsNullOrEmpty(_gamePath) && Keyboard.Modifiers == ModifierKeys.None;
+    private bool GamePathIsClickable(KeyModifiers modifiers) =>
+        !string.IsNullOrEmpty(_gamePath) && modifiers == KeyModifiers.None;
 
-    protected override void OnQueryCursor(QueryCursorEventArgs e)
+    protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
-        if (!GamePathIsClickable()) return;
-        e.Handled = true;
-        e.Cursor = Cursors.Hand;
-    }
-
-    protected override void OnMouseDown(MouseButtonEventArgs e)
-    {
-        if (e.ChangedButton != MouseButton.Left || !GamePathIsClickable())
+        if (!e.GetCurrentPoint(null).Properties.IsLeftButtonPressed || !GamePathIsClickable(e.KeyModifiers))
             return;
         if (e.Handled || OnGamePathClicked == null)
             return;
