@@ -1,85 +1,121 @@
-using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Input;
 
 namespace FModel.Views.Resources.Controls;
 
-public class MagnifierAdorner : Adorner
+/// <summary>
+/// Avalonia replacement for WPF MagnifierAdorner.
+/// Placed in the AdornerLayer as a Canvas that positions the <see cref="Magnifier"/> at the cursor.
+/// </summary>
+public class MagnifierAdorner : Canvas
 {
-    private Magnifier _magnifier;
-    private Point _currentMousePosition;
+    private readonly Control _adornedElement;
+    private readonly Magnifier _magnifier;
+    private Point _currentPointerPosition;
+    private Point _currentElementPosition;
     private double _currentZoomFactor;
 
-    public MagnifierAdorner(UIElement element, Magnifier magnifier) : base(element)
+    public MagnifierAdorner(Control adornedElement, Magnifier magnifier)
     {
+        _adornedElement = adornedElement;
         _magnifier = magnifier;
-        _currentZoomFactor = _magnifier.ZoomFactor;
+        _currentZoomFactor = magnifier.ZoomFactor;
 
+        // The canvas must be transparent to hit-testing so pointer events reach the adorned control.
+        IsHitTestVisible = false;
+        // Start hidden so the first ShowAdorner() call triggers IsVisible false→true,
+        // which fires OnPropertyChanged and subscribes PointerMoved correctly.
+        IsVisible = false;
+
+        Children.Add(_magnifier);
         UpdateViewBox();
-        AddVisualChild(_magnifier);
 
-        Loaded += (_, _) => InputManager.Current.PostProcessInput += OnProcessInput;
-        Unloaded += (_, _) => InputManager.Current.PostProcessInput -= OnProcessInput;
+        // Subscribe to pointer events on the adorned element.
+        // PointerPressed fires first (manager handles ShowAdorner before this handler runs,
+        // so the adorner is already in the visual tree when we call e.GetPosition(this)).
+        // PointerMoved is subscribed/unsubscribed dynamically via OnPropertyChanged(IsVisible).
+        _adornedElement.PointerPressed += OnAdornedElementPointerPressed;
     }
 
-    private void OnProcessInput(object sender, ProcessInputEventArgs e)
+    public void Detach()
     {
-        var pt = Mouse.GetPosition(this);
-        if (_currentMousePosition == pt && _magnifier.ZoomFactor == _currentZoomFactor)
+        _adornedElement.PointerPressed -= OnAdornedElementPointerPressed;
+        _adornedElement.PointerMoved -= OnAdornedElementPointerMoved;
+    }
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+        if (change.Property == IsVisibleProperty)
+        {
+            if (change.GetNewValue<bool>())
+                _adornedElement.PointerMoved += OnAdornedElementPointerMoved;
+            else
+                _adornedElement.PointerMoved -= OnAdornedElementPointerMoved;
+        }
+    }
+
+    private void OnAdornedElementPointerPressed(object? sender, PointerPressedEventArgs e)
+        => HandlePointerEvent(e);
+
+    private void OnAdornedElementPointerMoved(object? sender, PointerEventArgs e)
+        => HandlePointerEvent(e);
+
+    private void HandlePointerEvent(PointerEventArgs e)
+    {
+        // Adorner-canvas-relative position (used for magnifier placement on the canvas).
+        var pt = e.GetPosition(this);
+
+        if (_currentPointerPosition == pt && _magnifier.ZoomFactor == _currentZoomFactor)
             return;
 
         if (_magnifier.IsFrozen)
             return;
 
-        _currentMousePosition = pt;
+        _currentPointerPosition = pt;
+        // Element-relative position (used for viewbox origin calculation — avoids PointToScreen round-trip).
+        _currentElementPosition = e.GetPosition(_adornedElement);
         _currentZoomFactor = _magnifier.ZoomFactor;
 
         UpdateViewBox();
-        InvalidateArrange();
+        PositionMagnifier();
     }
 
     public void UpdateViewBox()
     {
-        var viewBoxLocation = CalculateViewBoxLocation();
-        _magnifier.ViewBox = new Rect(viewBoxLocation, _magnifier.ViewBox.Size);
+        var location = CalculateViewBoxLocation();
+        _magnifier.ViewBox = new Rect(location, _magnifier.ViewBox.Size);
+        _magnifier.UpdateViewBox();
     }
 
     private Point CalculateViewBoxLocation()
     {
-        double offsetX, offsetY;
-        var adorner = Mouse.GetPosition(this);
-        var element = Mouse.GetPosition(AdornedElement);
+        // offsetX/offsetY = coordinate delta between adorner-canvas space and adorned-element space.
+        // Both positions come from the same PointerEventArgs so they share the same root transform,
+        // making this DPI-safe without any PointToScreen / PointToClient round-trip.
+        var offsetX = _currentElementPosition.X - _currentPointerPosition.X;
+        var offsetY = _currentElementPosition.Y - _currentPointerPosition.Y;
 
-        offsetX = element.X - adorner.X;
-        offsetY = element.Y - adorner.Y;
+        // Account for the target control's offset within its parent coordinate space.
+        Point parentOffset = default;
+        if (_magnifier.Target != null)
+        {
+            var offsetVec = _magnifier.Target.TranslatePoint(default, _adornedElement);
+            if (offsetVec.HasValue)
+                parentOffset = offsetVec.Value;
+        }
 
-        var parentOffsetVector = VisualTreeHelper.GetOffset(_magnifier.Target);
-        var parentOffset = new Point(parentOffsetVector.X, parentOffsetVector.Y);
-
-        var left = _currentMousePosition.X - (_magnifier.ViewBox.Width / 2 + offsetX) + parentOffset.X;
-        var top = _currentMousePosition.Y - (_magnifier.ViewBox.Height / 2 + offsetY) + parentOffset.Y;
+        var left = _currentPointerPosition.X - (_magnifier.ViewBox.Width / 2 + offsetX) + parentOffset.X;
+        var top = _currentPointerPosition.Y - (_magnifier.ViewBox.Height / 2 + offsetY) + parentOffset.Y;
         return new Point(left, top);
     }
 
-    protected override Visual GetVisualChild(int index)
+    private void PositionMagnifier()
     {
-        return _magnifier;
-    }
-
-    protected override int VisualChildrenCount => 1;
-
-    protected override Size MeasureOverride(Size constraint)
-    {
-        _magnifier.Measure(constraint);
-        return base.MeasureOverride(constraint);
-    }
-
-    protected override Size ArrangeOverride(Size finalSize)
-    {
-        var x = _currentMousePosition.X - _magnifier.Width / 2;
-        var y = _currentMousePosition.Y - _magnifier.Height / 2;
-        _magnifier.Arrange(new Rect(x, y, _magnifier.Width, _magnifier.Height));
-        return base.ArrangeOverride(finalSize);
+        var x = _currentPointerPosition.X - _magnifier.Width / 2;
+        var y = _currentPointerPosition.Y - _magnifier.Height / 2;
+        SetLeft(_magnifier, x);
+        SetTop(_magnifier, y);
     }
 }

@@ -36,7 +36,8 @@ namespace FModel.Settings
         private static bool _bSave = true;
         public static void Save()
         {
-            if (!_bSave || Default == null) return;
+            if (!_bSave || Default == null)
+                return;
             Default.PerDirectory[Default.CurrentDir.GameDirectory] = Default.CurrentDir;
             File.WriteAllText(FilePath, JsonConvert.SerializeObject(Default, Formatting.Indented));
         }
@@ -147,7 +148,7 @@ namespace FModel.Settings
             set => SetProperty(ref _isLoggerExpanded, value);
         }
 
-        private GridLength _avalonImageSize = new (200);
+        private GridLength _avalonImageSize = new(200);
         public GridLength AvalonImageSize
         {
             get => _avalonImageSize;
@@ -300,7 +301,7 @@ namespace FModel.Settings
             set => SetProperty(ref _manualGames, value);
         }
 
-        private AuthResponse _lastAuthResponse = new() {AccessToken = "", ExpiresAt = DateTime.Now};
+        private AuthResponse _lastAuthResponse = new() { AccessToken = "", ExpiresAt = DateTime.Now };
         public AuthResponse LastAuthResponse
         {
             get => _lastAuthResponse;
