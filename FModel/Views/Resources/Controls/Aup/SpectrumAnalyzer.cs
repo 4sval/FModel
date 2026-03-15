@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Threading;
-using CSCore;
-using CSCore.SoundIn;
-using CSCore.SoundOut;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Layout;
+using Avalonia.Media;
+using Avalonia.Threading;
+// TODO(P3-013): CSCore.SoundIn not available on Linux — RecordingState will be replaced with cross-platform audio backend
+// using CSCore.SoundIn;
+// TODO(P3-013): CSCore.SoundOut not available on Linux — PlaybackState will be replaced with cross-platform audio backend
+// using CSCore.SoundOut;
 
 namespace FModel.Views.Resources.Controls.Aup;
 
-[TemplatePart(Name = "PART_Spectrum", Type = typeof(Grid))]
 public sealed class SpectrumAnalyzer : UserControl
 {
     public enum ScalingStrategy
@@ -20,301 +21,178 @@ public sealed class SpectrumAnalyzer : UserControl
         Sqrt
     }
 
-    private Grid _spectrumGrid;
-    private Border[] _bars;
+    private readonly Grid _spectrumGrid = new();
+    private Border[] _bars = Array.Empty<Border>();
 
-    static SpectrumAnalyzer()
+    // -----------------------------------------------------------------------
+    // Styled properties
+    // -----------------------------------------------------------------------
+
+    public static readonly StyledProperty<ISource?> SourceProperty =
+        AvaloniaProperty.Register<SpectrumAnalyzer, ISource?>(nameof(Source));
+    public ISource? Source
     {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(SpectrumAnalyzer), new FrameworkPropertyMetadata(typeof(SpectrumAnalyzer)));
-    }
-
-    private ISource _source;
-
-    public ISource Source
-    {
-        get => (ISource) GetValue(SourceProperty);
+        get => GetValue(SourceProperty);
         set => SetValue(SourceProperty, value);
     }
 
-    public static readonly DependencyProperty SourceProperty =
-        DependencyProperty.Register("Source", typeof(ISource), typeof(SpectrumAnalyzer),
-            new UIPropertyMetadata(null, OnSourceChanged, OnCoerceSource));
-
+    public static readonly StyledProperty<ScalingStrategy> ScalingStrategyProperty =
+        AvaloniaProperty.Register<SpectrumAnalyzer, ScalingStrategy>(nameof(SpectrumScalingStrategy),
+            defaultValue: ScalingStrategy.Linear);
     public ScalingStrategy SpectrumScalingStrategy
     {
-        get => (ScalingStrategy) GetValue(ScalingStrategyProperty);
+        get => GetValue(ScalingStrategyProperty);
         set => SetValue(ScalingStrategyProperty, value);
     }
 
-    public static readonly DependencyProperty ScalingStrategyProperty =
-        DependencyProperty.Register("ScalingStrategy", typeof(ScalingStrategy), typeof(SpectrumAnalyzer),
-            new UIPropertyMetadata(ScalingStrategy.Linear, OnScalingStrategyChanged, OnCoerceScalingStrategy));
-
+    public static readonly StyledProperty<int> FrequencyBarCountProperty =
+        AvaloniaProperty.Register<SpectrumAnalyzer, int>(nameof(FrequencyBarCount), defaultValue: 25);
     public int FrequencyBarCount
     {
-        get => (int) GetValue(FrequencyBarCountProperty);
+        get => GetValue(FrequencyBarCountProperty);
         set => SetValue(FrequencyBarCountProperty, value);
     }
 
-    public static readonly DependencyProperty FrequencyBarCountProperty =
-        DependencyProperty.Register("FrequencyBarCount", typeof(int), typeof(SpectrumAnalyzer),
-            new UIPropertyMetadata(25, OnFrequencyBarCountChanged, OnCoerceFrequencyBarCount));
-
+    public static readonly StyledProperty<int> FrequencyBarSpacingProperty =
+        AvaloniaProperty.Register<SpectrumAnalyzer, int>(nameof(FrequencyBarSpacing), defaultValue: 2);
     public int FrequencyBarSpacing
     {
-        get => (int) GetValue(FrequencyBarSpacingProperty);
+        get => GetValue(FrequencyBarSpacingProperty);
         set => SetValue(FrequencyBarSpacingProperty, value);
     }
 
-    public static readonly DependencyProperty FrequencyBarSpacingProperty =
-        DependencyProperty.Register("FrequencyBarSpacing", typeof(int), typeof(SpectrumAnalyzer),
-            new UIPropertyMetadata(2, OnFrequencyBarSpacingChanged, OnCoerceFrequencyBarSpacing));
-
-    public Brush FrequencyBarBrush
+    public static readonly StyledProperty<IBrush?> FrequencyBarBrushProperty =
+        AvaloniaProperty.Register<SpectrumAnalyzer, IBrush?>(nameof(FrequencyBarBrush),
+            defaultValue: Brushes.LightGreen);
+    public IBrush? FrequencyBarBrush
     {
-        get => (Brush) GetValue(FrequencyBarBrushProperty);
+        get => GetValue(FrequencyBarBrushProperty);
         set => SetValue(FrequencyBarBrushProperty, value);
     }
 
-    public static readonly DependencyProperty FrequencyBarBrushProperty =
-        DependencyProperty.Register("FrequencyBarBrush", typeof(Brush), typeof(SpectrumAnalyzer),
-            new UIPropertyMetadata(Brushes.LightGreen, OnFrequencyBarBrushChanged, OnCoerceFrequencyBarBrush));
-
-    public Brush FrequencyBarBorderBrush
+    public static readonly StyledProperty<IBrush?> FrequencyBarBorderBrushProperty =
+        AvaloniaProperty.Register<SpectrumAnalyzer, IBrush?>(nameof(FrequencyBarBorderBrush),
+            defaultValue: Brushes.Transparent);
+    public IBrush? FrequencyBarBorderBrush
     {
-        get => (Brush) GetValue(FrequencyBarBorderBrushProperty);
+        get => GetValue(FrequencyBarBorderBrushProperty);
         set => SetValue(FrequencyBarBorderBrushProperty, value);
     }
 
-    public static readonly DependencyProperty FrequencyBarBorderBrushProperty =
-        DependencyProperty.Register("FrequencyBarBorderBrush", typeof(Brush), typeof(SpectrumAnalyzer),
-            new UIPropertyMetadata(Brushes.Transparent, OnFrequencyBarBorderBrushChanged, OnCoerceFrequencyBarBorderBrush));
-
+    public static readonly StyledProperty<CornerRadius> FrequencyBarCornerRadiusProperty =
+        AvaloniaProperty.Register<SpectrumAnalyzer, CornerRadius>(nameof(FrequencyBarCornerRadius),
+            defaultValue: new CornerRadius(1, 1, 0, 0));
     public CornerRadius FrequencyBarCornerRadius
     {
-        get => (CornerRadius) GetValue(FrequencyBarCornerRadiusProperty);
+        get => GetValue(FrequencyBarCornerRadiusProperty);
         set => SetValue(FrequencyBarCornerRadiusProperty, value);
     }
 
-    public static readonly DependencyProperty FrequencyBarCornerRadiusProperty =
-        DependencyProperty.Register("FrequencyBarCornerRadius", typeof(CornerRadius), typeof(SpectrumAnalyzer),
-            new UIPropertyMetadata(new CornerRadius(1, 1, 0, 0), OnFrequencyBarCornerRadiusChanged, OnCoerceFrequencyBarCornerRadius));
-
+    public static readonly StyledProperty<Thickness> FrequencyBarBorderThicknessProperty =
+        AvaloniaProperty.Register<SpectrumAnalyzer, Thickness>(nameof(FrequencyBarBorderThickness),
+            defaultValue: new Thickness(0));
     public Thickness FrequencyBarBorderThickness
     {
-        get => (Thickness) GetValue(FrequencyBarBorderThicknessProperty);
+        get => GetValue(FrequencyBarBorderThicknessProperty);
         set => SetValue(FrequencyBarBorderThicknessProperty, value);
     }
 
-    public static readonly DependencyProperty FrequencyBarBorderThicknessProperty =
-        DependencyProperty.Register("FrequencyBarBorderThickness", typeof(Thickness), typeof(SpectrumAnalyzer),
-            new UIPropertyMetadata(new Thickness(0), OnFrequencyBarBorderThicknessChanged, OnCoerceFrequencyBarBorderThickness));
-
-    private void OnSourceChanged(ISource oldValue, ISource newValue)
+    // -----------------------------------------------------------------------
+    // Static ctor — wire property-changed callbacks
+    // -----------------------------------------------------------------------
+    static SpectrumAnalyzer()
     {
-        _source = Source;
+        SourceProperty.Changed.AddClassHandler<SpectrumAnalyzer>((m, e) =>
+            m.OnSourceChanged(e.GetOldValue<ISource?>(), e.GetNewValue<ISource?>()));
+
+        FrequencyBarCountProperty.Changed.AddClassHandler<SpectrumAnalyzer>((m, e) =>
+        {
+            var nv = (int) e.NewValue!;
+            if (nv < 1)
+            { m.FrequencyBarCount = 1; return; }
+            if (nv > 100)
+            { m.FrequencyBarCount = 100; return; }
+            m.CreateBars();
+        });
+
+        BoundsProperty.Changed.AddClassHandler<SpectrumAnalyzer>((m, e) =>
+        {
+            if (e.OldValue is Rect old && e.NewValue is Rect nw && old.Size != nw.Size)
+                m.UpdateFrequencyMapping();
+        });
+        FrequencyBarBorderThicknessProperty.Changed.AddClassHandler<SpectrumAnalyzer>((m, _) => m.CreateBars());
+        FrequencyBarBrushProperty.Changed.AddClassHandler<SpectrumAnalyzer>((m, _) => m.CreateBars());
+        FrequencyBarBorderBrushProperty.Changed.AddClassHandler<SpectrumAnalyzer>((m, _) => m.CreateBars());
+        FrequencyBarCornerRadiusProperty.Changed.AddClassHandler<SpectrumAnalyzer>((m, _) => m.CreateBars());
+    }
+
+    public SpectrumAnalyzer()
+    {
+        Content = _spectrumGrid;
+    }
+
+    // -----------------------------------------------------------------------
+    // Source wiring
+    // -----------------------------------------------------------------------
+
+    private ISource? _source;
+    private SpectrumProvider? _spectrumProvider;
+
+    private void OnSourceChanged(ISource? oldValue, ISource? newValue)
+    {
+        if (oldValue != null)
+        {
+            oldValue.SourceEvent -= OnSourceEvent;
+            oldValue.SourcePropertyChangedEvent -= OnSourcePropertyChangedEvent;
+        }
+
+        _source = newValue;
+        if (_source == null)
+            return;
+
         _source.SourceEvent += OnSourceEvent;
         _source.SourcePropertyChangedEvent += OnSourcePropertyChangedEvent;
     }
 
-    private SpectrumProvider _spectrumProvider;
-
-    private void OnSourceEvent(object sender, SourceEventArgs e)
+    private void OnSourceEvent(object? sender, SourceEventArgs e)
     {
-        if (e.Event != ESourceEventType.Loading) return;
-        _spectrumProvider = Source.Spectrum;
+        if (e.Event != ESourceEventType.Loading)
+            return;
+        _spectrumProvider = Source?.Spectrum;
         UpdateFrequencyMapping();
+        CreateBars();
     }
 
-    private void OnSourcePropertyChangedEvent(object sender, SourcePropertyChangedEventArgs e)
+    private void OnSourcePropertyChangedEvent(object? sender, SourcePropertyChangedEventArgs e)
     {
         switch (e.Property)
         {
             case ESourceProperty.FftData:
-                UpdateSpectrum(SpectrumResolution, _source.FftData);
+                UpdateSpectrum(SpectrumResolution, _source!.FftData);
                 break;
-            case ESourceProperty.HideToggle when (bool) e.Value == false:
-            case ESourceProperty.PlaybackState when (PlaybackState) e.Value == PlaybackState.Playing:
-            case ESourceProperty.RecordingState when (RecordingState) e.Value == RecordingState.Recording:
+            case ESourceProperty.HideToggle when e.Value is false:
                 CreateBars();
                 break;
-            case ESourceProperty.HideToggle when (bool) e.Value:
-            case ESourceProperty.RecordingState when (RecordingState) e.Value == RecordingState.Stopped:
+            // TODO(P3-013): PlaybackState / RecordingState come from CSCore which is not available on Linux.
+            // Re-enable these case arms when the cross-platform audio backend is integrated (P3-013).
+            // case ESourceProperty.PlaybackState when (PlaybackState) e.Value == PlaybackState.Playing:
+            //     CreateBars();
+            //     break;
+            // case ESourceProperty.RecordingState when (RecordingState) e.Value == RecordingState.Recording:
+            //     CreateBars();
+            //     break;
+            case ESourceProperty.HideToggle when e.Value is true:
                 SilenceBars();
                 break;
+                // case ESourceProperty.RecordingState when (RecordingState) e.Value == RecordingState.Stopped:
+                //     SilenceBars();
+                //     break;
         }
     }
 
-    private ISource OnCoerceSource(ISource value) => value;
-
-    private static object OnCoerceSource(DependencyObject o, object value)
-    {
-        if (o is SpectrumAnalyzer spectrumAnalyzer)
-            return spectrumAnalyzer.OnCoerceSource((ISource) value);
-        return value;
-    }
-
-    private static void OnSourceChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-    {
-        if (o is SpectrumAnalyzer spectrumAnalyzer)
-            spectrumAnalyzer.OnSourceChanged((ISource) e.OldValue, (ISource) e.NewValue);
-    }
-
-    private ScalingStrategy OnCoerceScalingStrategy(ScalingStrategy value) => value;
-
-    private static object OnCoerceScalingStrategy(DependencyObject o, object value)
-    {
-        if (o is SpectrumAnalyzer spectrumAnalyzer)
-            return spectrumAnalyzer.OnCoerceScalingStrategy((ScalingStrategy) value);
-        return value;
-    }
-
-    private void OnScalingStrategyChanged(ScalingStrategy oldValue, ScalingStrategy newValue)
-    {
-    }
-
-    private static void OnScalingStrategyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-    {
-        if (o is SpectrumAnalyzer spectrumAnalyzer)
-            spectrumAnalyzer.OnScalingStrategyChanged((ScalingStrategy) e.OldValue, (ScalingStrategy) e.NewValue);
-    }
-
-    private int OnCoerceFrequencyBarCount(int value) => value;
-
-    private static object OnCoerceFrequencyBarCount(DependencyObject o, object value)
-    {
-        if (o is SpectrumAnalyzer spectrumAnalyzer)
-            return spectrumAnalyzer.OnCoerceFrequencyBarCount((int) value);
-        return value;
-    }
-
-    private static void OnFrequencyBarCountChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-    {
-        if (o is SpectrumAnalyzer spectrumAnalyzer)
-            spectrumAnalyzer.OnFrequencyBarCountChanged((int) e.OldValue, (int) e.NewValue);
-    }
-
-    private void OnFrequencyBarCountChanged(int oldValue, int newValue)
-    {
-        FrequencyBarCount = newValue switch
-        {
-            < 1 => 1,
-            > 100 => 100,
-            _ => FrequencyBarCount
-        };
-
-        CreateBars();
-    }
-
-    private int OnCoerceFrequencyBarSpacing(int value) => value;
-
-    private static object OnCoerceFrequencyBarSpacing(DependencyObject o, object value)
-    {
-        if (o is SpectrumAnalyzer spectrumAnalyzer)
-            return spectrumAnalyzer.OnCoerceFrequencyBarSpacing((int) value);
-        return value;
-    }
-
-    private void OnFrequencyBarSpacingChanged(int oldValue, int newValue)
-    {
-    }
-
-    private static void OnFrequencyBarSpacingChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-    {
-        if (o is SpectrumAnalyzer spectrumAnalyzer)
-            spectrumAnalyzer.OnFrequencyBarSpacingChanged((int) e.OldValue, (int) e.NewValue);
-    }
-
-    private Brush OnCoerceFrequencyBarBrush(Brush value) => value;
-
-    private static object OnCoerceFrequencyBarBrush(DependencyObject o, object value)
-    {
-        if (o is SpectrumAnalyzer spectrumAnalyzer)
-            return spectrumAnalyzer.OnCoerceFrequencyBarBrush((Brush) value);
-        return value;
-    }
-
-    private void OnFrequencyBarBrushChanged(Brush oldValue, Brush newValue)
-    {
-    }
-
-    private static void OnFrequencyBarBrushChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-    {
-        if (o is SpectrumAnalyzer spectrumAnalyzer)
-            spectrumAnalyzer.OnFrequencyBarBrushChanged((Brush) e.OldValue, (Brush) e.NewValue);
-    }
-
-    private Brush OnCoerceFrequencyBarBorderBrush(Brush value) => value;
-
-    private static object OnCoerceFrequencyBarBorderBrush(DependencyObject o, object value)
-    {
-        if (o is SpectrumAnalyzer spectrumAnalyzer)
-            return spectrumAnalyzer.OnCoerceFrequencyBarBorderBrush((Brush) value);
-        return value;
-    }
-
-    private void OnFrequencyBarBorderBrushChanged(Brush oldValue, Brush newValue)
-    {
-    }
-
-    private static void OnFrequencyBarBorderBrushChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-    {
-        if (o is SpectrumAnalyzer spectrumAnalyzer)
-            spectrumAnalyzer.OnFrequencyBarBorderBrushChanged((Brush) e.OldValue, (Brush) e.NewValue);
-    }
-
-    private CornerRadius OnCoerceFrequencyBarCornerRadius(CornerRadius value) => value;
-
-    private static object OnCoerceFrequencyBarCornerRadius(DependencyObject o, object value)
-    {
-        if (o is SpectrumAnalyzer spectrumAnalyzer)
-            return spectrumAnalyzer.OnCoerceFrequencyBarCornerRadius((CornerRadius) value);
-        return value;
-    }
-
-    private void OnFrequencyBarCornerRadiusChanged(CornerRadius oldValue, CornerRadius newValue)
-    {
-    }
-
-    private static void OnFrequencyBarCornerRadiusChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-    {
-        if (o is SpectrumAnalyzer spectrumAnalyzer)
-            spectrumAnalyzer.OnFrequencyBarCornerRadiusChanged((CornerRadius) e.OldValue, (CornerRadius) e.NewValue);
-    }
-
-    private Thickness OnCoerceFrequencyBarBorderThickness(Thickness value) => value;
-
-    private static object OnCoerceFrequencyBarBorderThickness(DependencyObject o, object value)
-    {
-        if (o is SpectrumAnalyzer spectrumAnalyzer)
-            return spectrumAnalyzer.OnCoerceFrequencyBarBorderThickness((Thickness) value);
-        return value;
-    }
-
-    private void OnFrequencyBarBorderThicknessChanged(Thickness oldValue, Thickness newValue)
-    {
-    }
-
-    private static void OnFrequencyBarBorderThicknessChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-    {
-        if (o is SpectrumAnalyzer spectrumAnalyzer)
-            spectrumAnalyzer.OnFrequencyBarBorderThicknessChanged((Thickness) e.OldValue, (Thickness) e.NewValue);
-    }
-
-    public override void OnApplyTemplate()
-    {
-        base.OnApplyTemplate();
-
-        _spectrumGrid = GetTemplateChild("PART_Spectrum") as Grid;
-
-        CreateBars();
-        UpdateFrequencyMapping();
-    }
-
-    protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
-    {
-        UpdateFrequencyMapping();
-    }
+    // -----------------------------------------------------------------------
+    // Internal rendering constants and state
+    // -----------------------------------------------------------------------
 
     private const int ScaleFactorLinear = 50;
     private const int ScaleFactorSqr = 2;
@@ -324,21 +202,14 @@ public sealed class SpectrumAnalyzer : UserControl
     private const int SpectrumResolution = 100;
     private const double MinDbValue = -90;
     private const double DbScale = 0 - MinDbValue;
-    private int[] _spectrumIndexMax = new int[100];
+    private int[] _spectrumIndexMax = new int[SpectrumResolution];
     private int _maximumFrequencyIndex;
     private int _minimumFrequencyIndex;
 
     private void CreateBars()
     {
-        Dispatcher.BeginInvoke((Action) delegate
+        Dispatcher.UIThread.Post(() =>
         {
-            if (_spectrumGrid == null) return;
-
-            var borderBrush = FrequencyBarBorderBrush.Clone();
-            var barBrush = FrequencyBarBrush.Clone();
-            borderBrush.Freeze();
-            barBrush.Freeze();
-
             _spectrumGrid.Children.Clear();
             _bars = new Border[FrequencyBarCount];
             for (var i = 0; i < _bars.Length; i++)
@@ -350,8 +221,8 @@ public sealed class SpectrumAnalyzer : UserControl
                     HorizontalAlignment = HorizontalAlignment.Left,
                     VerticalAlignment = VerticalAlignment.Bottom,
                     Height = 0,
-                    BorderBrush = borderBrush,
-                    Background = barBrush
+                    BorderBrush = FrequencyBarBorderBrush,
+                    Background = FrequencyBarBrush,
                 };
                 _spectrumGrid.Children.Add(_bars[i]);
             }
@@ -360,22 +231,26 @@ public sealed class SpectrumAnalyzer : UserControl
 
     private void SilenceBars()
     {
-        Dispatcher.BeginInvoke((Action) delegate
+        Dispatcher.UIThread.Post(() =>
         {
-            if (_spectrumGrid == null) return;
-
             _spectrumGrid.Children.Clear();
-            _spectrumGrid.CacheMode = new BitmapCache();
+            _bars = Array.Empty<Border>();
         }, DispatcherPriority.Render);
     }
 
     private void UpdateFrequencyMapping()
     {
-        if (_spectrumProvider == null) return;
+        if (_spectrumProvider == null)
+            return;
 
         _maximumFrequencyIndex = Math.Min(_spectrumProvider.GetFftBandIndex(MaximumFrequency) + 1, MaxFftIndex);
         _minimumFrequencyIndex = Math.Min(_spectrumProvider.GetFftBandIndex(MinimumFrequency), MaxFftIndex);
-        _spectrumIndexMax = _spectrumIndexMax.CheckBuffer(SpectrumResolution, true);
+
+        // Inline replacement for CSCore's array.CheckBuffer(size, clear):
+        if (_spectrumIndexMax.Length != SpectrumResolution)
+            _spectrumIndexMax = new int[SpectrumResolution];
+        else
+            Array.Clear(_spectrumIndexMax, 0, SpectrumResolution);
 
         var indexCount = _maximumFrequencyIndex - _minimumFrequencyIndex;
         var linearIndexBucketSize = Math.Round(indexCount / (double) SpectrumResolution, 3);
@@ -389,8 +264,13 @@ public sealed class SpectrumAnalyzer : UserControl
 
     private void UpdateSpectrum(double maxValue, IReadOnlyList<float> fftBuffer)
     {
-        var spectrumScalingStrategy = ScalingStrategy.Decibel;
-        Dispatcher.Invoke(delegate { spectrumScalingStrategy = SpectrumScalingStrategy; });
+        // Snapshot the array reference — SilenceBars() may replace _bars on the UI thread
+        // concurrently; the snapshot keeps the closure and the loop bound in sync.
+        var bars = _bars;
+        if (bars.Length == 0)
+            return;
+        // SpectrumScalingStrategy is a value-type StyledProperty — safe to read from any thread.
+        var spectrumScalingStrategy = SpectrumScalingStrategy;
 
         var lastValue = 0D;
         var spectrumPointIndex = 0;
@@ -426,20 +306,24 @@ public sealed class SpectrumAnalyzer : UserControl
             }
         }
 
-        Dispatcher.Invoke(delegate
+        Dispatcher.UIThread.Post(() =>
         {
-            for (var i = 0; i < FrequencyBarCount; i++)
+            // Use the snapshotted array as the authoritative bar count so that
+            // FrequencyBarCount changes or a concurrent SilenceBars() call cannot
+            // cause the loop to index past the end of the array.
+            var barCount = Math.Min(bars.Length, dataPoints.Count);
+            for (var i = 0; i < barCount; i++)
             {
-                var barSpacing = RenderSize.Width / FrequencyBarCount;
+                var barSpacing = Bounds.Width / bars.Length;
                 var barWidth = barSpacing - FrequencyBarSpacing;
                 if (barWidth < .5)
                     barWidth = .5;
 
-                var b = _bars[i];
-                b.Height = dataPoints[i] / 100 * RenderSize.Height;
+                var b = bars[i];
+                b.Height = dataPoints[i] / 100 * Bounds.Height;
                 b.Width = barWidth;
                 b.Margin = new Thickness(i * barSpacing, 0, 0, 0);
             }
-        }, DispatcherPriority.ApplicationIdle);
+        }, DispatcherPriority.Background);
     }
 }

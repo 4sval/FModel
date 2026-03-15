@@ -1,300 +1,267 @@
 using System;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Shapes;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Layout;
+using Avalonia.Media;
+using Avalonia.Threading;
 
 namespace FModel.Views.Resources.Controls.Aup;
 
-[TemplatePart(Name = "PART_ControlContainer")]
-[TemplatePart(Name = "PART_TimelineArea", Type = typeof(Border))]
-[TemplatePart(Name = "PART_MousePosition", Type = typeof(Rectangle))]
-[TemplatePart(Name = "PART_Timeline", Type = typeof(Grid))]
-[TemplatePart(Name = "PART_Length", Type = typeof(Canvas))]
-[TemplatePart(Name = "PART_ProgressLine", Type = typeof(Border))]
 public sealed class Timeline : UserControl
 {
-    private Grid _controlContainer;
-    private Border _timelineArea;
-    private Rectangle _position;
-    private Grid _timelineGrid;
-    private Grid _lengthGrid;
-    private Border _progressLine;
-
-    static Timeline()
+    // Visual structure built directly in the constructor — no ControlTemplate needed.
+    private static readonly IBrush s_defaultProgressBrush = new LinearGradientBrush
     {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(Timeline), new FrameworkPropertyMetadata(typeof(Timeline)));
-    }
+        StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+        EndPoint = new RelativePoint(1, 1, RelativeUnit.Relative),
+        GradientStops = new GradientStops
+        {
+            new GradientStop(Color.FromRgb(0x45, 0xB6, 0x49), 0.0),
+            new GradientStop(Color.FromRgb(0xDC, 0xE3, 0x5B), 1.0)
+        }
+    };
 
-    private ISource _source;
-    public ISource Source
+    private readonly Grid _lengthGrid = new();
+    private readonly Border _progressLine = new()
     {
-        get => (ISource) GetValue(SourceProperty);
+        HorizontalAlignment = HorizontalAlignment.Left,
+        VerticalAlignment = VerticalAlignment.Stretch,
+        BorderThickness = new Thickness(0, 0, 1, 0),
+        Width = 0
+    };
+    private readonly Border _positionLine = new()
+    {
+        Width = 1,
+        HorizontalAlignment = HorizontalAlignment.Left,
+        VerticalAlignment = VerticalAlignment.Stretch,
+        IsVisible = false
+    };
+    // -----------------------------------------------------------------------
+    // Styled properties
+    // -----------------------------------------------------------------------
+
+    public static readonly StyledProperty<ISource?> SourceProperty =
+        AvaloniaProperty.Register<Timeline, ISource?>(nameof(Source));
+    public ISource? Source
+    {
+        get => GetValue(SourceProperty);
         set => SetValue(SourceProperty, value);
     }
-    public static readonly DependencyProperty SourceProperty =
-        DependencyProperty.Register("Source", typeof(ISource), typeof(Timeline),
-            new UIPropertyMetadata(null, OnSourceChanged, OnCoerceSource));
 
+    public static readonly StyledProperty<TimeSpan> PositionProperty =
+        AvaloniaProperty.Register<Timeline, TimeSpan>(nameof(Position), defaultValue: TimeSpan.Zero);
     public TimeSpan Position
     {
-        get => (TimeSpan) GetValue(PositionProperty);
+        get => GetValue(PositionProperty);
         set => SetValue(PositionProperty, value);
     }
-    public static readonly DependencyProperty PositionProperty =
-        DependencyProperty.Register("Position", typeof(TimeSpan), typeof(Timeline),
-            new UIPropertyMetadata(TimeSpan.Zero, OnPositionChanged, OnCoercePosition));
 
-    public Brush TickBrush
+    public static readonly StyledProperty<IBrush?> TickBrushProperty =
+        AvaloniaProperty.Register<Timeline, IBrush?>(nameof(TickBrush),
+            defaultValue: new SolidColorBrush(Color.FromRgb(0x7F, 0x84, 0x8E)));
+    public IBrush? TickBrush
     {
-        get => (Brush) GetValue(TickBrushProperty);
+        get => GetValue(TickBrushProperty);
         set => SetValue(TickBrushProperty, value);
     }
-    public static readonly DependencyProperty TickBrushProperty =
-        DependencyProperty.Register("TickBrush", typeof(Brush), typeof(Timeline),
-            new UIPropertyMetadata(Brushes.Red, OnTickBrushChanged, OnCoerceTickBrush));
 
-    public Brush TimeBrush
+    public static readonly StyledProperty<IBrush?> TimeBrushProperty =
+        AvaloniaProperty.Register<Timeline, IBrush?>(nameof(TimeBrush),
+            defaultValue: new SolidColorBrush(Color.FromRgb(0xDA, 0xE5, 0xF2)));
+    public IBrush? TimeBrush
     {
-        get => (Brush) GetValue(TimeBrushProperty);
+        get => GetValue(TimeBrushProperty);
         set => SetValue(TimeBrushProperty, value);
     }
-    public static readonly DependencyProperty TimeBrushProperty =
-        DependencyProperty.Register("TimeBrush", typeof(Brush), typeof(Timeline),
-            new UIPropertyMetadata(Brushes.Blue, OnTimeBrushChanged, OnCoerceTimeBrush));
 
-    public Brush ProgressLineBrush
+    public static readonly StyledProperty<IBrush?> ProgressLineBrushProperty =
+        AvaloniaProperty.Register<Timeline, IBrush?>(nameof(ProgressLineBrush), defaultValue: Brushes.Brown);
+    public IBrush? ProgressLineBrush
     {
-        get => (Brush) GetValue(ProgressLineBrushProperty);
+        get => GetValue(ProgressLineBrushProperty);
         set => SetValue(ProgressLineBrushProperty, value);
     }
-    public static readonly DependencyProperty ProgressLineBrushProperty =
-        DependencyProperty.Register("ProgressLineBrush", typeof(Brush), typeof(Timeline),
-            new UIPropertyMetadata(Brushes.Violet, OnProgressLineBrushChanged, OnCoerceProgressLineBrush));
 
-    public Brush ProgressBrush
+    public static readonly StyledProperty<IBrush?> ProgressBrushProperty =
+        AvaloniaProperty.Register<Timeline, IBrush?>(nameof(ProgressBrush), defaultValue: s_defaultProgressBrush);
+    public IBrush? ProgressBrush
     {
-        get => (Brush) GetValue(ProgressBrushProperty);
+        get => GetValue(ProgressBrushProperty);
         set => SetValue(ProgressBrushProperty, value);
     }
-    public static readonly DependencyProperty ProgressBrushProperty =
-        DependencyProperty.Register("ProgressBrush", typeof(Brush), typeof(Timeline),
-            new UIPropertyMetadata(Brushes.DarkGreen, OnProgressBrushChanged, OnCoerceProgressBrush));
 
-    public Brush MousePositionBrush
+    public static readonly StyledProperty<IBrush?> MousePositionBrushProperty =
+        AvaloniaProperty.Register<Timeline, IBrush?>(nameof(MousePositionBrush), defaultValue: Brushes.Brown);
+    public IBrush? MousePositionBrush
     {
-        get => (Brush) GetValue(MousePositionBrushProperty);
+        get => GetValue(MousePositionBrushProperty);
         set => SetValue(MousePositionBrushProperty, value);
     }
-    public static readonly DependencyProperty MousePositionBrushProperty =
-        DependencyProperty.Register("MousePositionBrush", typeof(Brush), typeof(Timeline),
-            new UIPropertyMetadata(Brushes.Brown, OnMousePositionBrushChanged, OnCoerceMousePositionBrush));
 
-    private void OnSourceChanged(ISource oldValue, ISource newValue)
+    // -----------------------------------------------------------------------
+    // Static ctor — wire property-changed callbacks
+    // -----------------------------------------------------------------------
+    static Timeline()
     {
-        _source = Source;
-        _source.SourceEvent += OnSourceEvent;
-        _source.SourcePropertyChangedEvent += OnSourcePropertyChangedEvent;
-        OnSourceEvent(this, null);
-    }
+        SourceProperty.Changed.AddClassHandler<Timeline>((m, e) =>
+            m.OnSourceChanged(e.GetOldValue<ISource?>(), e.GetNewValue<ISource?>()));
 
-    private void OnSourceEvent(object sender, SourceEventArgs e)
-    {
-        if (Source == null) return;
-        Dispatcher.BeginInvoke((Action) UpdateTimeline);
-    }
+        TickBrushProperty.Changed.AddClassHandler<Timeline>((m, _) => Dispatcher.UIThread.Post(m.UpdateTimeline));
+        TimeBrushProperty.Changed.AddClassHandler<Timeline>((m, _) => Dispatcher.UIThread.Post(m.UpdateTimeline));
 
-    private void OnSourcePropertyChangedEvent(object sender, SourcePropertyChangedEventArgs e)
-    {
-        if (e.Property != ESourceProperty.Position) return;
-
-        var position = (TimeSpan) e.Value;
-        Dispatcher.BeginInvoke((Action) delegate
+        ProgressBrushProperty.Changed.AddClassHandler<Timeline>((m, e) =>
+            m._progressLine.Background = e.GetNewValue<IBrush?>());
+        MousePositionBrushProperty.Changed.AddClassHandler<Timeline>((m, e) =>
+            m._positionLine.Background = e.GetNewValue<IBrush?>());
+        ProgressLineBrushProperty.Changed.AddClassHandler<Timeline>((m, e) =>
+            m._progressLine.BorderBrush = e.GetNewValue<IBrush?>());
+        PositionProperty.Changed.AddClassHandler<Timeline>((m, e) =>
         {
-            Position = position;
-            if (_lengthGrid == null) return;
+            var position = e.GetNewValue<TimeSpan>();
+            var totalMs = m._source?.PlayedFile?.Duration.TotalMilliseconds ?? 0;
+            m._progressLine.Width = totalMs > 0
+                ? position.TotalMilliseconds / totalMs * m._lengthGrid.Bounds.Width
+                : 0;
+        });
 
-            var x = 0d;
-            if (_source.PlayedFile.Duration.TotalMilliseconds != 0)
+        // Replaces WPF OnRenderSizeChanged — re-draw ticks and recompute progress width when size changes.
+        BoundsProperty.Changed.AddClassHandler<Timeline>((m, e) =>
+        {
+            if (e.OldValue is Rect old && e.NewValue is Rect nw && old.Size != nw.Size)
             {
-                x = position.TotalMilliseconds / _source.PlayedFile.Duration.TotalMilliseconds * _lengthGrid.RenderSize.Width;
+                m.UpdateTimeline();
+                var totalMs = m._source?.PlayedFile?.Duration.TotalMilliseconds ?? 0;
+                if (totalMs > 0)
+                    m._progressLine.Width = m.Position.TotalMilliseconds / totalMs * nw.Width;
             }
-
-            _progressLine.Width = x;
         });
     }
 
-    private ISource OnCoerceSource(ISource value) => value;
-    private static object OnCoerceSource(DependencyObject o, object value)
+    public Timeline()
     {
-        if (o is Timeline timeline)
-            return timeline.OnCoerceSource((ISource) value);
-        return value;
+        // Initialise visual brushes from default property values.
+        _progressLine.Background = ProgressBrush;
+        _progressLine.BorderBrush = ProgressLineBrush;
+        _positionLine.Background = MousePositionBrush;
+
+        // Two-row layout faithful to the WPF PART_Timeline template:
+        //   Row 0 (20px): _lengthGrid (tick marks + time labels)
+        //   Row 1 (*):    _progressLine (playback progress fill + right-edge cursor border)
+        //   _positionLine (mouse cursor indicator) spans both rows.
+        var root = new Grid { ClipToBounds = true };
+        root.RowDefinitions.Add(new RowDefinition(20, GridUnitType.Pixel));
+        root.RowDefinitions.Add(new RowDefinition(1, GridUnitType.Star));
+
+        _lengthGrid.ClipToBounds = true;
+        Grid.SetRow(_lengthGrid, 0);
+        Grid.SetRow(_positionLine, 0);
+        Grid.SetRowSpan(_positionLine, 2);
+        Grid.SetRow(_progressLine, 1);
+
+        root.Children.Add(_lengthGrid);
+        root.Children.Add(_progressLine);
+        root.Children.Add(_positionLine); // on top — must remain visible over the advancing progress fill
+
+        root.PointerEntered += (_, _) => _positionLine.IsVisible = true;
+        root.PointerExited += (_, _) => _positionLine.IsVisible = false;
+        root.PointerMoved += OnOverlayPointerMoved;
+        root.PointerPressed += OnOverlayPointerPressed;
+
+        Content = root;
     }
 
-    private static void OnSourceChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+    // -----------------------------------------------------------------------
+    // Pointer handlers (replaces WPF MouseEnter/Leave/Move/LeftButtonDown)
+    // -----------------------------------------------------------------------
+
+    private void OnOverlayPointerMoved(object? sender, PointerEventArgs e)
     {
-        if (o is Timeline timeline)
-            timeline.OnSourceChanged((ISource) e.OldValue, (ISource) e.NewValue);
+        var x = e.GetPosition((Visual?) sender).X;
+        _positionLine.Margin = new Thickness(x, 0, 0, 0);
     }
 
-    private TimeSpan OnCoercePosition(TimeSpan value) => value;
-    private static object OnCoercePosition(DependencyObject o, object value)
+    private void OnOverlayPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (o is Timeline timeline)
-            return timeline.OnCoercePosition((TimeSpan) value);
-        return value;
+        if (!e.GetCurrentPoint(null).Properties.IsLeftButtonPressed)
+            return;
+        if (Source == null)
+            return;
+        var overlayWidth = ((Control?) sender)?.Bounds.Width ?? 0;
+        if (overlayWidth <= 0)
+            return;
+        var ratio = e.GetPosition((Visual?) sender).X / overlayWidth;
+        Source.SkipTo(Math.Clamp(ratio, 0.0, 1.0));
     }
 
-    private void OnPositionChanged(TimeSpan oldValue, TimeSpan newValue)
+    // -----------------------------------------------------------------------
+    // Source wiring
+    // -----------------------------------------------------------------------
+
+    private ISource? _source;
+
+    private void OnSourceChanged(ISource? oldValue, ISource? newValue)
     {
+        if (oldValue != null)
+        {
+            oldValue.SourceEvent -= OnSourceEvent;
+            oldValue.SourcePropertyChangedEvent -= OnSourcePropertyChangedEvent;
+        }
+
+        _source = newValue;
+        if (_source == null)
+            return;
+
+        _source.SourceEvent += OnSourceEvent;
+        _source.SourcePropertyChangedEvent += OnSourcePropertyChangedEvent;
+        Dispatcher.UIThread.Post(UpdateTimeline);
     }
 
-    private static void OnPositionChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+    private void OnSourceEvent(object? sender, SourceEventArgs e)
     {
-        if (o is Timeline timeline)
-            timeline.OnPositionChanged((TimeSpan) e.OldValue, (TimeSpan) e.NewValue);
+        if (Source == null)
+            return;
+        Dispatcher.UIThread.Post(UpdateTimeline);
     }
 
-    private Brush OnCoerceTickBrush(Brush value) => value;
-    private static object OnCoerceTickBrush(DependencyObject o, object value)
+    private void OnSourcePropertyChangedEvent(object? sender, SourcePropertyChangedEventArgs e)
     {
-        if (o is Timeline timeline)
-            return timeline.OnCoerceTickBrush((Brush) value);
-        return value;
+        if (e.Property != ESourceProperty.Position)
+            return;
+
+        // Setting Position triggers PositionProperty.Changed which updates _progressLine.Width.
+        var position = (TimeSpan) e.Value;
+        Dispatcher.UIThread.Post(() => Position = position);
     }
 
-    private void OnTickBrushChanged(Brush oldValue, Brush newValue) => UpdateTimeline();
-    private static void OnTickBrushChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-    {
-        if (o is Timeline timeline)
-            timeline.OnTickBrushChanged((Brush) e.OldValue, (Brush) e.NewValue);
-    }
-
-    private Brush OnCoerceTimeBrush(Brush value) => value;
-    private static object OnCoerceTimeBrush(DependencyObject o, object value)
-    {
-        if (o is Timeline timeline)
-            return timeline.OnCoerceTimeBrush((Brush) value);
-        return value;
-    }
-
-    private void OnTimeBrushChanged(Brush oldValue, Brush newValue) => UpdateTimeline();
-    private static void OnTimeBrushChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-    {
-        if (o is Timeline timeline)
-            timeline.OnTimeBrushChanged((Brush) e.OldValue, (Brush) e.NewValue);
-    }
-
-    private Brush OnCoerceProgressLineBrush(Brush value) => value;
-    private static object OnCoerceProgressLineBrush(DependencyObject o, object value)
-    {
-        if (o is Timeline timeline)
-            return timeline.OnCoerceProgressLineBrush((Brush) value);
-        return value;
-    }
-
-    private void OnProgressLineBrushChanged(Brush oldValue, Brush newValue)
-    {
-    }
-
-    private static void OnProgressLineBrushChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-    {
-        if (o is Timeline timeline)
-            timeline.OnProgressLineBrushChanged((Brush) e.OldValue, (Brush) e.NewValue);
-    }
-
-    private Brush OnCoerceProgressBrush(Brush value) => value;
-    private static object OnCoerceProgressBrush(DependencyObject o, object value)
-    {
-        if (o is Timeline timeline)
-            return timeline.OnCoerceProgressBrush((Brush) value);
-        return value;
-    }
-
-    private void OnProgressBrushChanged(Brush oldValue, Brush newValue)
-    {
-    }
-
-    private static void OnProgressBrushChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-    {
-        if (o is Timeline timeline)
-            timeline.OnProgressBrushChanged((Brush) e.OldValue, (Brush) e.NewValue);
-    }
-
-    private Brush OnCoerceMousePositionBrush(Brush value) => value;
-    private static object OnCoerceMousePositionBrush(DependencyObject o, object value)
-    {
-        if (o is Timeline timeline)
-            return timeline.OnCoerceMousePositionBrush((Brush) value);
-        return value;
-    }
-
-    private void OnMousePositionBrushChanged(Brush oldValue, Brush newValue)
-    {
-    }
-
-    private static void OnMousePositionBrushChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-    {
-        if (o is Timeline timeline)
-            timeline.OnMousePositionBrushChanged((Brush) e.OldValue, (Brush) e.NewValue);
-    }
-
-    public override void OnApplyTemplate()
-    {
-        base.OnApplyTemplate();
-
-        _controlContainer = GetTemplateChild("PART_ControlContainer") as Grid;
-        _timelineGrid = GetTemplateChild("PART_Timeline") as Grid;
-        _lengthGrid = GetTemplateChild("PART_Length") as Grid;
-        _progressLine = GetTemplateChild("PART_ProgressLine") as Border;
-        _timelineGrid.CacheMode = new BitmapCache();
-
-        _timelineArea = GetTemplateChild("PART_TimelineArea") as Border;
-        _position = GetTemplateChild("PART_MousePosition") as Rectangle;
-        _timelineArea.MouseEnter += (_, _) => _position.Visibility = Visibility.Visible;
-        _timelineArea.MouseLeave += (_, _) => _position.Visibility = Visibility.Collapsed;
-        _timelineArea.MouseMove += (_, args)
-            => _position.Margin = new Thickness(args.GetPosition(_timelineArea).X, 0, _position.ActualWidth, 0);
-        _timelineArea.MouseLeftButtonDown += (_, args)
-            => Source.SkipTo(args.GetPosition(_timelineArea).X / _timelineArea.ActualWidth);
-
-        OnSourceEvent(this, null);
-    }
-
-    protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
-    {
-        base.OnRenderSizeChanged(sizeInfo);
-        UpdateTimeline();
-    }
-
-    private readonly Border _bottomBorder = new()
-    {
-        Height = 1,
-        VerticalAlignment = VerticalAlignment.Bottom,
-        HorizontalAlignment = HorizontalAlignment.Stretch
-    };
+    // -----------------------------------------------------------------------
+    // Timeline rendering (replaces WPF UpdateTimeline)
+    // -----------------------------------------------------------------------
 
     private void UpdateTimeline()
     {
-        if (_source == null || _source.PlayedFile.Duration == TimeSpan.Zero || _lengthGrid == null ||
-            _lengthGrid.RenderSize.Width < 1 || _lengthGrid.RenderSize.Height < 1) return;
+        if (_source == null || _source.PlayedFile.Duration == TimeSpan.Zero)
+            return;
+
+        var width = _lengthGrid.Bounds.Width;
+        var height = _lengthGrid.Bounds.Height;
+        if (width < 1 || height < 1)
+            return;
 
         _lengthGrid.Children.Clear();
 
-        // freeze brushes
-        var tickBrush = TickBrush.Clone();
-        var timeBrush = TimeBrush.Clone();
-        tickBrush.Freeze();
-        timeBrush.Freeze();
+        var tickBrush = TickBrush;
+        var timeBrush = TimeBrush;
 
-        // Draw the bottom border
-        _bottomBorder.Background = tickBrush;
-        _lengthGrid.Children.Add(_bottomBorder);
+        // Bottom border line
+        _lengthGrid.Children.Add(new Border
+        {
+            Height = 1,
+            VerticalAlignment = VerticalAlignment.Bottom,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            Background = tickBrush
+        });
 
-        // Determine the number of major ticks that we should display.
-        // This depends on the width of the timeline.
-        var width = _lengthGrid.RenderSize.Width;
         var majorTickCount = Math.Floor(width / 100);
         var totalSeconds = _source.PlayedFile.Duration.TotalSeconds;
         var majorTickSecondInterval = Math.Floor(totalSeconds / majorTickCount);
@@ -323,7 +290,7 @@ public sealed class Timeline : UserControl
             }
             else
             {
-                // Major tick
+                // Major tick — full height
                 _lengthGrid.Children.Add(new Border
                 {
                     Width = 1,
@@ -333,17 +300,16 @@ public sealed class Timeline : UserControl
                     Margin = new Thickness(x, 0, 0, 0)
                 });
 
-                // Add time label
-                var time = new TextBlock
+                // Time label
+                var ts = TimeSpan.FromSeconds(interval);
+                _lengthGrid.Children.Add(new TextBlock
                 {
                     VerticalAlignment = VerticalAlignment.Bottom,
                     HorizontalAlignment = HorizontalAlignment.Left,
-                    Foreground = timeBrush
-                };
-                var ts = TimeSpan.FromSeconds(interval);
-                time.Text = ts.TotalHours >= 1 ? ts.ToString(@"h\:mm\:ss") : ts.ToString(@"mm\:ss");
-                time.Margin = new Thickness(x + 5, 0, 0, 7);
-                _lengthGrid.Children.Add(time);
+                    Foreground = timeBrush,
+                    Text = ts.TotalHours >= 1 ? ts.ToString(@"h\:mm\:ss") : ts.ToString(@"mm\:ss"),
+                    Margin = new Thickness(x + 5, 0, 0, 7)
+                });
             }
         }
     }
