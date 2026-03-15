@@ -4,10 +4,13 @@
         WindowStartupLocation="CenterScreen"
         Icon="{x:Null}">
     <DockPanel x:Name="RootPanel"
-               HorizontalAlignment="Center" VerticalAlignment="Center">
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center">
 
-        <Border BorderBrush="#3b3d4a" BorderThickness="1"
-                HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Border BorderBrush="#3b3d4a"
+                BorderThickness="1"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
             <Image x:Name="ImageCtrl" />
         </Border>
     </DockPanel>
