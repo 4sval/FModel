@@ -13,7 +13,6 @@
         Title="Settings">
     <Window.Resources>
         <ResourceDictionary>
-            <controls:OnTagDataTemplateSelector x:Key="TagTemplateSelector" />
             <DataTemplate x:Key="GeneralTemplate">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -1181,7 +1180,7 @@
               Grid.Column="1"
               Margin="10,5"
               HorizontalAlignment="Stretch">
-            <ContentControl ContentTemplateSelector="{StaticResource TagTemplateSelector}"
+            <ContentControl x:Name="SettingsContentControl"
                             Content="{Binding SelectedItem.Tag, ElementName=SettingsTree}" />
         </Grid>
 

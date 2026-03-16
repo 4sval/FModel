@@ -1,13 +1,6 @@
-using System.Windows;
-using System.Windows.Controls;
-
+// WPF's DataTemplateSelector has no direct Avalonia equivalent.
+// Template selection is handled in code-behind (SettingsView.xaml.cs → OnSelectedItemChanged).
 namespace FModel.Views.Resources.Controls;
 
-public class OnTagDataTemplateSelector : DataTemplateSelector
-{
-    public override DataTemplate SelectTemplate(object item, DependencyObject container)
-    {
-        if (item is not string s || container is not FrameworkElement f) return null;
-        return f.FindResource(s) as DataTemplate;
-    }
-}
+// kept as a stub so any stale XAML/project references don't cause build errors.
+public sealed class OnTagDataTemplateSelector { }

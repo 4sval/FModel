@@ -1,45 +1,74 @@
-﻿<adonisControls:AdonisWindow x:Class="FModel.Views.Resources.Controls.DictionaryEditor"
-         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-         xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
-         xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
-         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
-         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-         WindowStartupLocation="CenterScreen" IconVisibility="Collapsed" ResizeMode="NoResize" SizeToContent="Width"
-         MinWidth="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.30'}"
-         Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.20'}">
+﻿<Window x:Class="FModel.Views.Resources.Controls.DictionaryEditor"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:avalonEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+        WindowStartupLocation="CenterScreen"
+        CanResize="False"
+        SizeToContent="Width"
+        MinWidth="480"
+        Height="320">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <avalonEdit:TextEditor x:Name="MyAvalonEditor" Grid.Row="0" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
-                               FontFamily="Consolas" FontSize="8pt" ShowLineNumbers="True" Foreground="#DAE5F2" />
+        <avalonEdit:TextEditor x:Name="MyAvalonEditor"
+                               Grid.Row="0"
+                               Background="#2A2A3E"
+                               FontFamily="Consolas"
+                               FontSize="8pt"
+                               ShowLineNumbers="True"
+                               Foreground="#DAE5F2" />
 
         <Border Grid.Row="1"
-                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
-                adonisExtensions:LayerExtension.IncreaseLayer="True">
+                Background="#1A1A2E">
             <Grid Margin="30, 12, 6, 12">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock x:Name="HeBrokeIt" Grid.Column="0" Text="IF YOU DON'T KNOW WHAT THIS DOES, DON'T TOUCH IT!"
-                           HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="11" Margin="0 0 10 0" FontWeight="DemiBold"
-                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.Layer1InteractionForegroundBrush}}" />
+                <TextBlock x:Name="HeBrokeIt"
+                           Grid.Column="0"
+                           Text="IF YOU DON'T KNOW WHAT THIS DOES, DON'T TOUCH IT!"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           FontSize="11"
+                           Margin="0 0 10 0"
+                           FontWeight="DemiBold"
+                           Foreground="#E5C07B" />
 
-                <Button Grid.Column="1" MinWidth="78" Margin="0 0 12 0" IsDefault="True" IsCancel="False"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK" Click="OnClick" />
-                <Button Grid.Column="2" MinWidth="78" Margin="0 0 12 0" IsDefault="False" IsCancel="False"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Reset" Click="OnReset" />
-                <Button Grid.Column="3" MinWidth="78" Margin="0 0 12 0" IsDefault="False"  IsCancel="True"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Cancel" />
+                <Button Grid.Column="1"
+                        MinWidth="78"
+                        Margin="0 0 12 0"
+                        IsDefault="True"
+                        IsCancel="False"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Content="OK"
+                        Click="OnClick" />
+                <Button Grid.Column="2"
+                        MinWidth="78"
+                        Margin="0 0 12 0"
+                        IsDefault="False"
+                        IsCancel="False"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Content="Reset"
+                        Click="OnReset" />
+                <Button Grid.Column="3"
+                        MinWidth="78"
+                        Margin="0 0 12 0"
+                        IsDefault="False"
+                        IsCancel="True"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Content="Cancel"
+                        Click="OnCancel" />
             </Grid>
         </Border>
     </Grid>
-</adonisControls:AdonisWindow>
+</Window>

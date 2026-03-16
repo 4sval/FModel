@@ -1,5 +1,7 @@
+using System;
 using System.Diagnostics;
-using System.Windows.Controls;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Threading;
 using FModel.Extensions;
 using FModel.Services;
@@ -9,10 +11,11 @@ using Newtonsoft.Json;
 
 namespace FModel.Views.Resources.Controls;
 
-public partial class EndpointEditor
+public partial class EndpointEditor : Window
 {
     private readonly EEndpointType _type;
     private bool _isTested;
+    private bool _isInitialized;
 
     public EndpointEditor(EndpointSettings endpoint, string title, EEndpointType type)
     {
@@ -26,6 +29,7 @@ public partial class EndpointEditor
         TargetResponse.SyntaxHighlighting =
             EndpointResponse.SyntaxHighlighting = AvalonExtensions.HighlighterSelector("json");
 
+        _isInitialized = true;
         InstructionBox.Text = type switch
         {
             EEndpointType.Aes =>
@@ -48,13 +52,12 @@ public partial class EndpointEditor
         };
     }
 
-    private void OnClick(object sender, RoutedEventArgs e)
+    private void OnClick(object? sender, RoutedEventArgs e)
     {
-        DialogResult = _isTested && DataContext is EndpointSettings { IsValid: true };
-        Close();
+        Close(_isTested && DataContext is EndpointSettings { IsValid: true });
     }
 
-    private async void OnSend(object sender, RoutedEventArgs e)
+    private async void OnSend(object? sender, RoutedEventArgs e)
     {
         if (DataContext is not EndpointSettings endpoint)
             return;
@@ -67,7 +70,7 @@ public partial class EndpointEditor
         });
     }
 
-    private void OnTest(object sender, RoutedEventArgs e)
+    private void OnTest(object? sender, RoutedEventArgs e)
     {
         if (DataContext is not EndpointSettings endpoint)
             return;
@@ -79,20 +82,21 @@ public partial class EndpointEditor
         TargetResponse.Document.Text = JsonConvert.SerializeObject(response, Formatting.Indented);
     }
 
-    private void OnTextChanged(object sender, TextChangedEventArgs e)
+    private void OnTextChanged(object? sender, TextChangedEventArgs e)
     {
-        if (sender is not TextBox { IsLoaded: true } ||
+        if (!_isInitialized ||
+            sender is not TextBox ||
             DataContext is not EndpointSettings endpoint)
             return;
         endpoint.IsValid = false;
     }
 
-    private void OnSyntax(object sender, RoutedEventArgs e)
+    private void OnSyntax(object? sender, RoutedEventArgs e)
     {
         Process.Start(new ProcessStartInfo { FileName = "https://support.smartbear.com/alertsite/docs/monitors/api/endpoint/jsonpath.html", UseShellExecute = true });
     }
 
-    private void OnEvaluator(object sender, RoutedEventArgs e)
+    private void OnEvaluator(object? sender, RoutedEventArgs e)
     {
         Process.Start(new ProcessStartInfo { FileName = "https://jsonpath.herokuapp.com/", UseShellExecute = true });
     }

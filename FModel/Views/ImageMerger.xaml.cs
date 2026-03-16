@@ -250,6 +250,6 @@ public partial class ImageMerger : Window
 
     private void OnCopyImage(object sender, RoutedEventArgs e)
     {
-        ClipboardExtensions.SetImage(_imageBuffer, FILENAME);
+        ClipboardExtensions.SetImage(_imageBuffer);
     }
 }

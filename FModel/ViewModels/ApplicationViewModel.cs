@@ -5,7 +5,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using CUE4Parse_Conversion.Textures.BC;
 using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
@@ -18,9 +19,7 @@ using FModel.Settings;
 using FModel.ViewModels.Commands;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
-using MessageBox = AdonisUI.Controls.MessageBox;
-using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
-using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
+using Serilog;
 
 namespace FModel.ViewModels;
 
@@ -65,7 +64,8 @@ public class ApplicationViewModel : ViewModel
         get => _selectedLeftTabIndex;
         set
         {
-            if (value is < 0 or > 2) return;
+            if (value is < 0 or > 2)
+                return;
             SetProperty(ref _selectedLeftTabIndex, value);
         }
     }
@@ -78,15 +78,17 @@ public class ApplicationViewModel : ViewModel
     private CopyCommand _copyCommand;
 
     public string InitialWindowTitle => $"FModel ({Constants.APP_SHORT_COMMIT_ID} - {Constants.APP_BUILD_DATE:MMM d, yyyy})";
-    public string GameDisplayName => CUE4Parse.Provider.GameDisplayName ?? "Unknown";
-    public string TitleExtra => $"({UserSettings.Default.CurrentDir.UeVersion}){(Build != EBuildKind.Release ? $" ({Build})" : "")}";
+    public string GameDisplayName => CUE4Parse?.Provider.GameDisplayName ?? "Unknown";
+    public string TitleExtra => UserSettings.Default.CurrentDir is { } dir
+        ? $"({dir.UeVersion}){(Build != EBuildKind.Release ? $" ({Build})" : "")}"
+        : Build != EBuildKind.Release ? $"({Build})" : string.Empty;
 
     public LoadingModesViewModel LoadingModes { get; }
-    public CustomDirectoriesViewModel CustomDirectories { get; }
-    public CUE4ParseViewModel CUE4Parse { get; }
-    public SettingsViewModel SettingsView { get; }
-    public AesManagerViewModel AesManager { get; }
-    public AudioPlayerViewModel AudioPlayer { get; }
+    public CustomDirectoriesViewModel? CustomDirectories { get; private set; }
+    public CUE4ParseViewModel? CUE4Parse { get; private set; }
+    public SettingsViewModel? SettingsView { get; private set; }
+    public AesManagerViewModel? AesManager { get; private set; }
+    public AudioPlayerViewModel? AudioPlayer { get; private set; }
 
     public ApplicationViewModel()
     {
@@ -100,30 +102,60 @@ public class ApplicationViewModel : ViewModel
 #endif
         LoadingModes = new LoadingModesViewModel();
 
-        UserSettings.Default.CurrentDir = AvoidEmptyGameDirectory(false);
-        if (UserSettings.Default.CurrentDir is null)
+        // For existing installations, use the cached directory settings immediately.
+        // For first-run (no settings), initialization is deferred to EnsureInitializedAsync()
+        // which is called from MainWindow.OnLoaded after the window is visible.
+        var gameDirectory = UserSettings.Default.GameDirectory;
+        if (!string.IsNullOrEmpty(gameDirectory) &&
+            UserSettings.Default.PerDirectory.TryGetValue(gameDirectory, out var currentDir))
         {
-            //If no game is selected, many things will break before a shutdown request is processed in the normal way.
-            //A hard exit is preferable to an unhandled expection in this case
+            UserSettings.Default.CurrentDir = currentDir;
+            InitializeInternals();
+        }
+    }
+
+    /// <summary>
+    /// Handles the first-run case: shows the directory-selector dialog and then
+    /// completes internal initialization. Should be called from MainWindow.OnLoaded
+    /// when <see cref="CUE4Parse"/> is still null (i.e., no prior configuration exists).
+    /// </summary>
+    public async Task EnsureInitializedAsync(Window owner)
+    {
+        if (CUE4Parse != null)
+            return; // Already initialized synchronously in constructor.
+
+        var dir = await AvoidEmptyGameDirectoryAsync(false, owner);
+        if (dir is null)
+        {
             Environment.Exit(0);
+            return;
         }
 
+        UserSettings.Default.CurrentDir = dir;
+        InitializeInternals();
+    }
+
+    private void InitializeInternals()
+    {
         CUE4Parse = new CUE4ParseViewModel();
         CUE4Parse.Provider.VfsRegistered += (sender, count) =>
         {
-            if (sender is not IAesVfsReader reader) return;
+            if (sender is not IAesVfsReader reader)
+                return;
             Status.UpdateStatusLabel($"{count} Archives ({reader.Name})", "Registered");
             CUE4Parse.GameDirectory.Add(reader);
         };
         CUE4Parse.Provider.VfsMounted += (sender, count) =>
         {
-            if (sender is not IAesVfsReader reader) return;
+            if (sender is not IAesVfsReader reader)
+                return;
             Status.UpdateStatusLabel($"{count:N0} Packages ({reader.Name})", "Mounted");
             CUE4Parse.GameDirectory.Verify(reader);
         };
         CUE4Parse.Provider.VfsUnmounted += (sender, _) =>
         {
-            if (sender is not IAesVfsReader reader) return;
+            if (sender is not IAesVfsReader reader)
+                return;
             CUE4Parse.GameDirectory.Disable(reader);
         };
 
@@ -135,29 +167,85 @@ public class ApplicationViewModel : ViewModel
         Status.SetStatus(EStatusKind.Ready);
     }
 
-    public DirectorySettings AvoidEmptyGameDirectory(bool bAlreadyLaunched)
+    public async Task<DirectorySettings?> AvoidEmptyGameDirectoryAsync(bool bAlreadyLaunched, Window? owner)
     {
         var gameDirectory = UserSettings.Default.GameDirectory;
         if (!bAlreadyLaunched && UserSettings.Default.PerDirectory.TryGetValue(gameDirectory, out var currentDir))
             return currentDir;
 
         var gameLauncherViewModel = new GameSelectorViewModel(gameDirectory);
-        var result = new DirectorySelector(gameLauncherViewModel).ShowDialog();
-        if (!result.HasValue || !result.Value) return null;
+        var selector = new DirectorySelector(gameLauncherViewModel);
+
+        // Fall back to MainWindow when no explicit owner is provided.
+        owner ??= (Avalonia.Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+        if (owner == null)
+            return null;
+
+        var ok = await selector.ShowDialog<bool?>(owner);
+        if (ok != true)
+            return null;
 
         UserSettings.Default.GameDirectory = gameLauncherViewModel.SelectedDirectory.GameDirectory;
-        if (!bAlreadyLaunched || UserSettings.Default.CurrentDir.Equals(gameLauncherViewModel.SelectedDirectory))
+        if (!bAlreadyLaunched || UserSettings.Default.CurrentDir?.Equals(gameLauncherViewModel.SelectedDirectory) == true)
             return gameLauncherViewModel.SelectedDirectory;
 
         // UserSettings.Save(); // ??? change key then change game, key saved correctly what?
         UserSettings.Default.CurrentDir = gameLauncherViewModel.SelectedDirectory;
-        RestartWithWarning();
+        await RestartWithWarningAsync();
         return null;
     }
 
-    public void RestartWithWarning()
+    public Task RestartWithWarningAsync() => RestartWithWarningAsync(null);
+
+    public async Task RestartWithWarningAsync(Window? owner)
     {
-        MessageBox.Show("It looks like you just changed something.\nFModel will restart to apply your changes.", "Uh oh, a restart is needed", MessageBoxButton.OK, MessageBoxImage.Warning);
+        Log.Information("FModel will restart to apply your changes.");
+
+        var okButton = new Avalonia.Controls.Button
+        {
+            Content = "OK",
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right
+        };
+
+        var dialog = new Window
+        {
+            Title = "Uh oh, a restart is needed",
+            Width = 420,
+            Height = 160,
+            CanResize = false,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Content = new Avalonia.Controls.StackPanel
+            {
+                Margin = new Avalonia.Thickness(16),
+                Spacing = 12,
+                Children =
+                {
+                    new Avalonia.Controls.TextBlock
+                    {
+                        Text = "It looks like you just changed something.\nFModel will restart to apply your changes.",
+                        TextWrapping = Avalonia.Media.TextWrapping.Wrap
+                    },
+                    okButton
+                }
+            }
+        };
+
+        okButton.Click += (_, _) => dialog.Close();
+
+        owner ??= (Avalonia.Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+        if (owner != null)
+        {
+            await dialog.ShowDialog(owner);
+        }
+        else
+        {
+            // No owner available — show non-modal and wait for it to close.
+            var tcs = new TaskCompletionSource();
+            dialog.Closed += (_, _) => tcs.TrySetResult();
+            dialog.Show();
+            await tcs.Task;
+        }
+
         Restart();
     }
 
@@ -194,12 +282,19 @@ public class ApplicationViewModel : ViewModel
             }.Start();
         }
 
-        Application.Current.Shutdown();
+        if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            desktop.Shutdown();
+        else
+            Environment.Exit(0);
     }
 
     public async Task UpdateProvider(bool isLaunch)
     {
-        if (!isLaunch && !AesManager.HasChange) return;
+        if (AesManager is null || CUE4Parse is null)
+            return;
+
+        if (!isLaunch && !AesManager.HasChange)
+            return;
 
         CUE4Parse.ClearProvider();
         await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
@@ -210,7 +305,8 @@ public class ApplicationViewModel : ViewModel
                 cancellationToken.ThrowIfCancellationRequested(); // cancel if needed
 
                 var k = x.Key.Trim();
-                if (k.Length != 66) k = Constants.ZERO_64_CHAR;
+                if (k.Length != 66)
+                    k = Constants.ZERO_64_CHAR;
                 return new KeyValuePair<FGuid, FAesKey>(x.Guid, new FAesKey(k));
             });
 
@@ -256,8 +352,10 @@ public class ApplicationViewModel : ViewModel
         const string imgui = "imgui.ini";
         var imguiPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", imgui);
 
-        if (File.Exists(imgui)) File.Move(imgui, imguiPath, true);
-        if (File.Exists(imguiPath) && !forceDownload) return;
+        if (File.Exists(imgui))
+            File.Move(imgui, imguiPath, true);
+        if (File.Exists(imguiPath) && !forceDownload)
+            return;
 
         await ApplicationService.ApiEndpointView.DownloadFileAsync($"https://cdn.fmodel.app/d/configurations/{imgui}", imguiPath);
         if (new FileInfo(imguiPath).Length == 0)
@@ -289,7 +387,8 @@ public class ApplicationViewModel : ViewModel
             if (!await ZlibHelper.DownloadDllAsync(zlibPath))
             {
                 FLogger.Append(ELog.Error, () => FLogger.Text("Failed to download Zlib-ng", Constants.WHITE, true));
-                if (!zlibFileInfo.Exists) return;
+                if (!zlibFileInfo.Exists)
+                    return;
             }
         }
 

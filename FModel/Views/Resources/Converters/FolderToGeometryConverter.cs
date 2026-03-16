@@ -46,6 +46,9 @@ public class FolderToGeometryConverter : IValueConverter
             _ => (null, "NeutralBrush"),
         };
 
+        if (targetType == typeof(bool) || (parameter is string { Length: > 0 } p && p.Equals("visible", StringComparison.OrdinalIgnoreCase)))
+            return geometry != null;
+
         if (targetType == typeof(Geometry) && geometry != null)
         {
             Application.Current!.TryGetResource(geometry, null, out var geomRes);

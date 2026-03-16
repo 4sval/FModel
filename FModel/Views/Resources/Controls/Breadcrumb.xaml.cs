@@ -1,9 +1,11 @@
 using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Shapes;
+using System;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Layout;
+using Avalonia.Media;
+using Avalonia.Media.Immutable;
 using FModel.Services;
 
 namespace FModel.Views.Resources.Controls;
@@ -17,22 +19,26 @@ public partial class Breadcrumb
         InitializeComponent();
     }
 
-    private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+    private void OnDataContextChanged(object? sender, EventArgs e)
     {
-        if (e.NewValue is not string pathAtThisPoint) return;
+        if (DataContext is not string pathAtThisPoint)
+            return;
         InMeDaddy.Children.Clear();
 
         var folders = pathAtThisPoint.Split('/');
         for (var i = 0; i < folders.Length; i++)
         {
+            var capturedIndex = i + 1;
+            var capturedPath = pathAtThisPoint;
+
             var border = new Border
             {
                 BorderThickness = new Thickness(1),
                 BorderBrush = Brushes.Transparent,
                 Background = Brushes.Transparent,
                 Padding = new Thickness(6, 3, 6, 3),
-                Cursor = Cursors.Hand,
-                Tag = i + 1,
+                Cursor = new Cursor(StandardCursorType.Hand),
+                Tag = capturedIndex,
                 IsEnabled = i < folders.Length - 1,
                 Child = new TextBlock
                 {
@@ -41,12 +47,29 @@ public partial class Breadcrumb
                 }
             };
 
-            border.MouseEnter += OnMouseEnter;
-            border.MouseLeave += OnMouseLeave;
-            border.MouseUp += OnMouseClick;
+            border.PointerEntered += (_, _) =>
+            {
+                border.BorderBrush = new ImmutableSolidColorBrush(Color.FromRgb(127, 127, 144));
+                border.Background = new ImmutableSolidColorBrush(Color.FromRgb(72, 73, 92));
+            };
+            border.PointerExited += (_, _) =>
+            {
+                border.BorderBrush = Brushes.Transparent;
+                border.Background = Brushes.Transparent;
+            };
+            border.PointerReleased += (_, args) =>
+            {
+                if (args.InitialPressMouseButton != Avalonia.Input.MouseButton.Left)
+                    return;
+                var directory = string.Join('/', capturedPath.Split('/').Take(capturedIndex));
+                if (capturedPath.Equals(directory))
+                    return;
+                ApplicationService.ApplicationView.CustomDirectories?.GoToCommand.JumpTo(directory);
+            };
 
             InMeDaddy.Children.Add(border);
-            if (i >= folders.Length - 1) continue;
+            if (i >= folders.Length - 1)
+                continue;
 
             InMeDaddy.Children.Add(new Viewbox
             {
@@ -59,7 +82,7 @@ public partial class Breadcrumb
                     Height = 24,
                     Children =
                     {
-                        new Path
+                        new Avalonia.Controls.Shapes.Path
                         {
                             Fill = Brushes.White,
                             Data = Geometry.Parse(NavigateNext),
@@ -69,33 +92,5 @@ public partial class Breadcrumb
                 }
             });
         }
-    }
-
-    private void OnMouseEnter(object sender, MouseEventArgs e)
-    {
-        if (sender is Border border)
-        {
-            border.BorderBrush = new SolidColorBrush(Color.FromRgb(127, 127, 144));
-            border.Background = new SolidColorBrush(Color.FromRgb(72, 73, 92));
-        }
-    }
-
-    private void OnMouseLeave(object sender, MouseEventArgs e)
-    {
-        if (sender is Border border)
-        {
-            border.BorderBrush = Brushes.Transparent;
-            border.Background = Brushes.Transparent;
-        }
-    }
-
-    private void OnMouseClick(object sender, MouseButtonEventArgs e)
-    {
-        if (sender is not Border { DataContext: string pathAtThisPoint, Tag: int index }) return;
-
-        var directory = string.Join('/', pathAtThisPoint.Split('/').Take(index));
-        if (pathAtThisPoint.Equals(directory)) return;
-
-        ApplicationService.ApplicationView.CustomDirectories.GoToCommand.JumpTo(directory);
     }
 }

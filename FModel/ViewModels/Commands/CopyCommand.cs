@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Windows;
 using CUE4Parse.FileProvider.Objects;
+using FModel.Extensions;
 using FModel.Framework;
 
 namespace FModel.ViewModels.Commands;
@@ -34,22 +34,28 @@ public class CopyCommand : ViewModelCommand<ApplicationViewModel>
         switch (trigger)
         {
             case "File_Path":
-                foreach (var entry in entries) sb.AppendLine(entry.Path);
+                foreach (var entry in entries)
+                    sb.AppendLine(entry.Path);
                 break;
             case "File_Name":
-                foreach (var entry in entries) sb.AppendLine(entry.Name);
+                foreach (var entry in entries)
+                    sb.AppendLine(entry.Name);
                 break;
             case "Directory_Path":
-                foreach (var entry in entries) sb.AppendLine(entry.Directory);
+                foreach (var entry in entries)
+                    sb.AppendLine(entry.Directory);
                 break;
             case "File_Path_No_Extension":
-                foreach (var entry in entries) sb.AppendLine(entry.PathWithoutExtension);
+                foreach (var entry in entries)
+                    sb.AppendLine(entry.PathWithoutExtension);
                 break;
             case "File_Name_No_Extension":
-                foreach (var entry in entries) sb.AppendLine(entry.NameWithoutExtension);
+                foreach (var entry in entries)
+                    sb.AppendLine(entry.NameWithoutExtension);
                 break;
         }
 
-        Clipboard.SetText(sb.ToString().TrimEnd());
+        var text = sb.ToString().TrimEnd();
+        ClipboardExtensions.SetText(text);
     }
 }

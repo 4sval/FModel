@@ -9,9 +9,7 @@ using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-
-using AdonisUI.Controls;
+using Avalonia.Controls;
 
 using CUE4Parse;
 using CUE4Parse.Compression;
@@ -367,7 +365,7 @@ public class CUE4ParseViewModel : ViewModel
 
         AssetsFolder.Folders.Clear();
         SearchVm.SearchResults.Clear();
-        Helper.CloseWindow<AdonisWindow>("Search For Packages");
+        Helper.CloseWindow<Window>("Search For Packages");
         Provider.UnloadNonStreamedVfs();
         GC.Collect();
     }

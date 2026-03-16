@@ -146,7 +146,7 @@ public partial class App : Application
         Dispatcher.UIThread.UnhandledExceptionFilter += (_, e) =>
         {
             Log.Error("{Exception}", e.Exception);
-            e.Handled = true;
+            e.RequestCatch = true;
             ShowErrorDialog(e.Exception);
         };
 

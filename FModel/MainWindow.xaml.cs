@@ -143,6 +143,9 @@ public partial class MainWindow : Window
             Height = screen.WorkingArea.Height * 0.95 / dpi;
         }
 
+        // First-run: may show the DirectorySelector dialog before proceeding.
+        await _applicationView.EnsureInitializedAsync(this);
+
         UpdateStatusBarColor();
 
         var newOrUpdated = UserSettings.Default.ShowChangelog;
