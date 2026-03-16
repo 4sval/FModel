@@ -1,6 +1,6 @@
 using System;
 using System.Numerics;
-using System.Windows;
+using Avalonia.Platform;
 using CUE4Parse_Conversion.Textures;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
@@ -29,7 +29,7 @@ public class Texture : IDisposable
     public int Width;
     public int Height;
 
-    private const int DisabledChannel = (int)BlendingFactor.Zero;
+    private const int DisabledChannel = (int) BlendingFactor.Zero;
     private readonly bool[] _values = [true, true, true, true];
     private readonly string[] _labels = ["R", "G", "B", "A"];
     public int[] SwizzleMask =
@@ -164,8 +164,8 @@ public class Texture : IDisposable
 
     private void ProcessPixels(string texture, TextureTarget target)
     {
-        var info = Application.GetResourceStream(new Uri($"/FModel;component/Resources/{texture}.png", UriKind.Relative));
-        using var img = Image.Load<Rgba32>(info.Stream);
+        using var stream = AssetLoader.Open(new Uri($"avares://FModel/Resources/{texture}.png"));
+        using var img = Image.Load<Rgba32>(stream);
         Width = img.Width;
         Height = img.Height;
         GL.TexImage2D(target, 0, PixelInternalFormat.Rgba8, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
@@ -228,16 +228,18 @@ public class Texture : IDisposable
         GL.DeleteTexture(_handle);
     }
 
-    private Vector3 _scrolling = new (0.0f, 0.0f, 1.0f);
+    private Vector3 _scrolling = new(0.0f, 0.0f, 1.0f);
     public void ImGuiTextureInspector()
     {
         if (ImGui.BeginTable("texture_inspector", 2, ImGuiTableFlags.SizingStretchProp))
         {
             SnimGui.NoFramePaddingOnY(() =>
             {
-                SnimGui.Layout("Type");ImGui.Text($" :  ({Format}) {Name}");
+                SnimGui.Layout("Type");
+                ImGui.Text($" :  ({Format}) {Name}");
                 SnimGui.TooltipCopy("(?) Click to Copy Path", Path);
-                SnimGui.Layout("Guid");ImGui.Text($" :  {Guid.ToString(EGuidFormats.UniqueObjectGuid)}");
+                SnimGui.Layout("Guid");
+                ImGui.Text($" :  {Guid.ToString(EGuidFormats.UniqueObjectGuid)}");
                 SnimGui.Layout("Size");
                 ImGui.Text($" :  {Width}x{Height}");
 
@@ -259,8 +261,10 @@ public class Texture : IDisposable
         var io = ImGui.GetIO();
         var canvasP0 = ImGui.GetCursorScreenPos();
         var canvasSize = ImGui.GetContentRegionAvail();
-        if (canvasSize.X < 50.0f) canvasSize.X = 50.0f;
-        if (canvasSize.Y < 50.0f) canvasSize.Y = 50.0f;
+        if (canvasSize.X < 50.0f)
+            canvasSize.X = 50.0f;
+        if (canvasSize.Y < 50.0f)
+            canvasSize.Y = 50.0f;
         var canvasP1 = canvasP0 + canvasSize;
         var origin = new Vector2(canvasP0.X + _scrolling.X, canvasP0.Y + _scrolling.Y);
         var absoluteMiddle = canvasSize / 2.0f;

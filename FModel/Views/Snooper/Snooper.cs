@@ -2,18 +2,17 @@ using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Windows.Forms;
 using CUE4Parse.UE4.Assets.Exports;
 using FModel.Views.Snooper.Buffers;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
+using Avalonia.Platform;
 using Avalonia.Threading;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
-using Application = System.Windows.Application;
 
 namespace FModel.Views.Snooper;
 
@@ -83,8 +82,8 @@ public class Snooper : GameWindow
 
     private unsafe void LoadWindowIcon()
     {
-        var info = Application.GetResourceStream(new Uri("/FModel;component/Resources/engine.png", UriKind.Relative));
-        using var img = SixLabors.ImageSharp.Image.Load<Rgba32>(info.Stream);
+        using var stream = AssetLoader.Open(new Uri("avares://FModel/Resources/engine.png"));
+        using var img = SixLabors.ImageSharp.Image.Load<Rgba32>(stream);
         var memoryGroup = img.GetPixelMemoryGroup();
         Memory<byte> array = new byte[memoryGroup.TotalLength * sizeof(Rgba32)];
         var block = MemoryMarshal.Cast<byte, Rgba32>(array.Span);

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
+using Avalonia.Platform;
 using CUE4Parse.GameTypes.FN.Enums;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Engine;
@@ -30,9 +30,12 @@ public class BaseIcon : UCreator
     public void ParseForReward(bool isUsingDisplayAsset)
     {
         // rarity
-        if (Object.TryGetValue(out FPackageIndex series, "Series")) GetSeries(series);
-        else if (Object.TryGetValue(out FStructFallback componentContainer, "ComponentContainer")) GetSeries(componentContainer);
-        else GetRarity(Object.GetOrDefault("Rarity", EFortRarity.Uncommon)); // default is uncommon
+        if (Object.TryGetValue(out FPackageIndex series, "Series"))
+            GetSeries(series);
+        else if (Object.TryGetValue(out FStructFallback componentContainer, "ComponentContainer"))
+            GetSeries(componentContainer);
+        else
+            GetRarity(Object.GetOrDefault("Rarity", EFortRarity.Uncommon)); // default is uncommon
 
         if (Object.TryGetValue(out FInstancedStruct[] dataList, "DataList"))
         {
@@ -134,7 +137,8 @@ public class BaseIcon : UCreator
 
     private void GetSeries(FPackageIndex s)
     {
-        if (!Utils.TryGetPackageIndexExport(s, out UObject export)) return;
+        if (!Utils.TryGetPackageIndexExport(s, out UObject export))
+            return;
 
         GetSeries(export);
     }
@@ -147,10 +151,12 @@ public class BaseIcon : UCreator
 
     private void GetSeries(FStructFallback s)
     {
-        if (!s.TryGetValue(out FPackageIndex[] components, "Components")) return;
+        if (!s.TryGetValue(out FPackageIndex[] components, "Components"))
+            return;
         if (components.FirstOrDefault(c => c.Name.Contains("Series")) is not { } seriesDef ||
             !seriesDef.TryLoad(out var seriesDefObj) || seriesDefObj is null ||
-            !seriesDefObj.TryGetValue(out UObject series, "Series")) return;
+            !seriesDefObj.TryGetValue(out UObject series, "Series"))
+            return;
 
         GetSeries(series);
     }
@@ -193,7 +199,8 @@ public class BaseIcon : UCreator
 
     private void GetRarity(EFortRarity r)
     {
-        if (!Utils.TryLoadObject("FortniteGame/Content/Balance/RarityData.RarityData", out UObject export)) return;
+        if (!Utils.TryLoadObject("FortniteGame/Content/Balance/RarityData.RarityData", out UObject export))
+            return;
 
         if (export.GetByIndex<FStructFallback>((int) r) is { } data &&
             data.TryGetValue(out FLinearColor color1, "Color1") &&
@@ -241,7 +248,8 @@ public class BaseIcon : UCreator
 
         var season = Utils.GetLocalizedResource("AthenaSeasonItemDefinitionInternal", "SeasonTextFormat", "Season {0}");
         var introduced = Utils.GetLocalizedResource("Fort.Cosmetics", "CosmeticItemDescription_Season", "\nIntroduced in <SeasonText>{0}</>.");
-        if (onlySeason) return Utils.RemoveHtmlTags(string.Format(introduced, string.Format(season, seasonIdx)));
+        if (onlySeason)
+            return Utils.RemoveHtmlTags(string.Format(introduced, string.Format(season, seasonIdx)));
 
         var chapter = Utils.GetLocalizedResource("AthenaSeasonItemDefinitionInternal", "ChapterTextFormat", "Chapter {0}");
         var chapterFormat = Utils.GetLocalizedResource("AthenaSeasonItemDefinitionInternal", "ChapterSeasonTextFormat", "{0}, {1}");
@@ -287,8 +295,15 @@ public class BaseIcon : UCreator
             if (flag.Equals("Cosmetics.UserFacingFlags.HasUpgradeQuests", StringComparison.OrdinalIgnoreCase))
             {
                 if (Object.ExportType.Equals("AthenaPetCarrierItemDefinition", StringComparison.OrdinalIgnoreCase))
-                    UserFacingFlags[flag] = SKBitmap.Decode(Application.GetResourceStream(new Uri("pack://application:,,,/Resources/T-Icon-Pets-64.png"))?.Stream);
-                else UserFacingFlags[flag] = SKBitmap.Decode(Application.GetResourceStream(new Uri("pack://application:,,,/Resources/T-Icon-Quests-64.png"))?.Stream);
+                {
+                    using var stream = AssetLoader.Open(new Uri("avares://FModel/Resources/T-Icon-Pets-64.png"));
+                    UserFacingFlags[flag] = SKBitmap.Decode(stream);
+                }
+                else
+                {
+                    using var stream = AssetLoader.Open(new Uri("avares://FModel/Resources/T-Icon-Quests-64.png"));
+                    UserFacingFlags[flag] = SKBitmap.Decode(stream);
+                }
             }
             else
             {
@@ -307,7 +322,8 @@ public class BaseIcon : UCreator
 
     private void DrawUserFacingFlags(SKCanvas c)
     {
-        if (UserFacingFlags == null) return;
+        if (UserFacingFlags == null)
+            return;
 
         const int size = 25;
         var x = Margin * (int) 2.5;

@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Windows;
+using Avalonia.Platform;
 using CUE4Parse.UE4.Versions;
 using FModel.Settings;
 using FModel.ViewModels;
@@ -10,7 +10,7 @@ namespace FModel.Creator;
 
 public class Typefaces
 {
-    private readonly Uri _BURBANK_BIG_CONDENSED_BOLD = new("pack://application:,,,/Resources/BurbankBigCondensed-Bold.ttf");
+    private readonly Uri _BURBANK_BIG_CONDENSED_BOLD = new("avares://FModel/Resources/BurbankBigCondensed-Bold.ttf");
     private const string _EXT = ".ufont";
 
     // FortniteGame
@@ -65,134 +65,136 @@ public class Typefaces
         _viewModel = viewModel;
         var language = UserSettings.Default.AssetLanguage;
 
-        Default = SKTypeface.FromStream(Application.GetResourceStream(_BURBANK_BIG_CONDENSED_BOLD)?.Stream);
+        using var fontStream = AssetLoader.Open(_BURBANK_BIG_CONDENSED_BOLD);
+        Default = SKTypeface.FromStream(fontStream);
 
         switch (viewModel.Provider.ProjectName.ToUpperInvariant())
         {
             case "FORTNITEGAME":
-            {
-                DisplayName = OnTheFly(_FORTNITE_BASE_PATH +
-                                       language switch
-                                       {
-                                           ELanguage.Korean => _ASIA_ERINM,
-                                           ELanguage.Russian => _BURBANK_BIG_CONDENSED_BLACK,
-                                           ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
-                                           ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
-                                           ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
-                                           ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
-                                           _ => string.Empty
-                                       } + _EXT);
+                {
+                    DisplayName = OnTheFly(_FORTNITE_BASE_PATH +
+                                           language switch
+                                           {
+                                               ELanguage.Korean => _ASIA_ERINM,
+                                               ELanguage.Russian => _BURBANK_BIG_CONDENSED_BLACK,
+                                               ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
+                                               ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
+                                               ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
+                                               ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
+                                               _ => string.Empty
+                                           } + _EXT);
 
-                Description = OnTheFly(_FORTNITE_BASE_PATH +
-                                       language switch
-                                       {
-                                           ELanguage.Korean => _NOTO_SANS_KR_REGULAR,
-                                           ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
-                                           ELanguage.Arabic => _NOTO_SANS_ARABIC_REGULAR,
-                                           ELanguage.TraditionalChinese => _NOTO_SANS_TC_REGULAR,
-                                           ELanguage.Chinese => _NOTO_SANS_SC_REGULAR,
-                                           _ => _NOTO_SANS_REGULAR
-                                       } + _EXT);
+                    Description = OnTheFly(_FORTNITE_BASE_PATH +
+                                           language switch
+                                           {
+                                               ELanguage.Korean => _NOTO_SANS_KR_REGULAR,
+                                               ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
+                                               ELanguage.Arabic => _NOTO_SANS_ARABIC_REGULAR,
+                                               ELanguage.TraditionalChinese => _NOTO_SANS_TC_REGULAR,
+                                               ELanguage.Chinese => _NOTO_SANS_SC_REGULAR,
+                                               _ => _NOTO_SANS_REGULAR
+                                           } + _EXT);
 
-                Bottom = OnTheFly(_FORTNITE_BASE_PATH +
-                                  language switch
-                                  {
-                                      ELanguage.Korean => string.Empty,
-                                      ELanguage.Japanese => string.Empty,
-                                      ELanguage.Arabic => string.Empty,
-                                      ELanguage.TraditionalChinese => string.Empty,
-                                      ELanguage.Chinese => string.Empty,
-                                      _ => _BURBANK_SMALL_BOLD
-                                  } + _EXT, true);
+                    Bottom = OnTheFly(_FORTNITE_BASE_PATH +
+                                      language switch
+                                      {
+                                          ELanguage.Korean => string.Empty,
+                                          ELanguage.Japanese => string.Empty,
+                                          ELanguage.Arabic => string.Empty,
+                                          ELanguage.TraditionalChinese => string.Empty,
+                                          ELanguage.Chinese => string.Empty,
+                                          _ => _BURBANK_SMALL_BOLD
+                                      } + _EXT, true);
 
-                BundleNumber = OnTheFly(_FORTNITE_BASE_PATH + _BURBANK_SMALL_BOLD + _EXT);
+                    BundleNumber = OnTheFly(_FORTNITE_BASE_PATH + _BURBANK_SMALL_BOLD + _EXT);
 
-                Bundle = OnTheFly(_FORTNITE_BASE_PATH +
-                                  language switch
-                                  {
-                                      ELanguage.Korean => _ASIA_ERINM,
-                                      ELanguage.Russian => _BURBANK_BIG_CONDENSED_BLACK,
-                                      ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
-                                      ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
-                                      ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
-                                      ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
-                                      _ => _BURBANK_SMALL_BOLD
-                                  } + _EXT, true) ?? BundleNumber;
+                    Bundle = OnTheFly(_FORTNITE_BASE_PATH +
+                                      language switch
+                                      {
+                                          ELanguage.Korean => _ASIA_ERINM,
+                                          ELanguage.Russian => _BURBANK_BIG_CONDENSED_BLACK,
+                                          ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
+                                          ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
+                                          ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
+                                          ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
+                                          _ => _BURBANK_SMALL_BOLD
+                                      } + _EXT, true) ?? BundleNumber;
 
-                TandemDisplayName = OnTheFly(_FORTNITE_BASE_PATH +
-                                             language switch
-                                             {
-                                                 ELanguage.Korean => _ASIA_ERINM,
-                                                 ELanguage.Russian => _BURBANK_BIG_CONDENSED_BLACK,
-                                                 ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
-                                                 ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
-                                                 ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
-                                                 ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
-                                                 _ => _BURBANK_BIG_REGULAR_BLACK
-                                             } + _EXT);
+                    TandemDisplayName = OnTheFly(_FORTNITE_BASE_PATH +
+                                                 language switch
+                                                 {
+                                                     ELanguage.Korean => _ASIA_ERINM,
+                                                     ELanguage.Russian => _BURBANK_BIG_CONDENSED_BLACK,
+                                                     ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
+                                                     ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
+                                                     ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
+                                                     ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
+                                                     _ => _BURBANK_BIG_REGULAR_BLACK
+                                                 } + _EXT);
 
-                TandemGenDescription = OnTheFly(_FORTNITE_BASE_PATH +
-                                                language switch
-                                                {
-                                                    ELanguage.Korean => _ASIA_ERINM,
-                                                    ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
-                                                    ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
-                                                    ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
-                                                    ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
-                                                    _ => _BURBANK_SMALL_BLACK
-                                                } + _EXT);
+                    TandemGenDescription = OnTheFly(_FORTNITE_BASE_PATH +
+                                                    language switch
+                                                    {
+                                                        ELanguage.Korean => _ASIA_ERINM,
+                                                        ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
+                                                        ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
+                                                        ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
+                                                        ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
+                                                        _ => _BURBANK_SMALL_BLACK
+                                                    } + _EXT);
 
-                TandemAddDescription = OnTheFly(_FORTNITE_BASE_PATH +
-                                                language switch
-                                                {
-                                                    ELanguage.Korean => _ASIA_ERINM,
-                                                    ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
-                                                    ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
-                                                    ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
-                                                    ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
-                                                    _ => _BURBANK_SMALL_BOLD
-                                                } + _EXT);
-                break;
-            }
+                    TandemAddDescription = OnTheFly(_FORTNITE_BASE_PATH +
+                                                    language switch
+                                                    {
+                                                        ELanguage.Korean => _ASIA_ERINM,
+                                                        ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
+                                                        ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
+                                                        ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
+                                                        ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
+                                                        _ => _BURBANK_SMALL_BOLD
+                                                    } + _EXT);
+                    break;
+                }
             case "MULTIVERSUS":
-            {
-                DisplayName = OnTheFly(_PANDAGAME_BASE_PATH + language switch
                 {
-                    ELanguage.Chinese => _XIANGHEHEI_SC_PRO_HEAVY,
-                    _ => _NORMS_PRO_EXTRABOLD_ITALIC
-                } + _EXT);
+                    DisplayName = OnTheFly(_PANDAGAME_BASE_PATH + language switch
+                    {
+                        ELanguage.Chinese => _XIANGHEHEI_SC_PRO_HEAVY,
+                        _ => _NORMS_PRO_EXTRABOLD_ITALIC
+                    } + _EXT);
 
-                Description = OnTheFly(_PANDAGAME_BASE_PATH + language switch
-                {
-                    ELanguage.Chinese => _XIANGHEHEI_SC_PRO_BLACK,
-                    _ => _NORMS_STD_CONDENSED_MEDIUM
-                } + _EXT);
+                    Description = OnTheFly(_PANDAGAME_BASE_PATH + language switch
+                    {
+                        ELanguage.Chinese => _XIANGHEHEI_SC_PRO_BLACK,
+                        _ => _NORMS_STD_CONDENSED_MEDIUM
+                    } + _EXT);
 
-                TandemDisplayName = OnTheFly(_PANDAGAME_BASE_PATH + language switch
-                {
-                    ELanguage.Chinese => _XIANGHEHEI_SC_PRO_BLACK,
-                    _ => _NORMS_STD_CONDENSED_EXTRABOLD_ITALIC
-                } + _EXT);
+                    TandemDisplayName = OnTheFly(_PANDAGAME_BASE_PATH + language switch
+                    {
+                        ELanguage.Chinese => _XIANGHEHEI_SC_PRO_BLACK,
+                        _ => _NORMS_STD_CONDENSED_EXTRABOLD_ITALIC
+                    } + _EXT);
 
-                TandemGenDescription = OnTheFly(_PANDAGAME_BASE_PATH + language switch
-                {
-                    ELanguage.Chinese => _XIANGHEHEI_SC_PRO_HEAVY,
-                    _ => _NORMS_STD_CONDENSED_MEDIUM
-                } + _EXT);
-                break;
-            }
+                    TandemGenDescription = OnTheFly(_PANDAGAME_BASE_PATH + language switch
+                    {
+                        ELanguage.Chinese => _XIANGHEHEI_SC_PRO_HEAVY,
+                        _ => _NORMS_STD_CONDENSED_MEDIUM
+                    } + _EXT);
+                    break;
+                }
             default:
-            {
-                DisplayName = Default;
-                Description = Default;
-                break;
-            }
+                {
+                    DisplayName = Default;
+                    Description = Default;
+                    break;
+                }
         }
     }
 
     public SKTypeface OnTheFly(string path, bool fallback = false)
     {
-        if (!_viewModel.Provider.TrySaveAsset(path, out var data)) return fallback ? null : Default;
+        if (!_viewModel.Provider.TrySaveAsset(path, out var data))
+            return fallback ? null : Default;
         var m = new MemoryStream(data) { Position = _viewModel.Provider.Versions.Game >= EGame.GAME_UE5_6 ? 4 : 0 };
         return SKTypeface.FromStream(m);
     }

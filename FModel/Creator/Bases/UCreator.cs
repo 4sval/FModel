@@ -1,5 +1,5 @@
 using System;
-using System.Windows;
+using Avalonia.Platform;
 using CUE4Parse.UE4.Assets.Exports;
 using FModel.Creator.Bases.FN;
 using FModel.Framework;
@@ -27,7 +27,8 @@ public abstract class UCreator
 
     protected UCreator(UObject uObject, EIconStyle style)
     {
-        DefaultPreview = SKBitmap.Decode(Application.GetResourceStream(new Uri("pack://application:,,,/Resources/T_Placeholder_Item_Image.png"))?.Stream);
+        using var placeholderStream = AssetLoader.Open(new Uri("avares://FModel/Resources/T_Placeholder_Item_Image.png"));
+        DefaultPreview = SKBitmap.Decode(placeholderStream);
         Background = new[] { SKColor.Parse("5BFD00"), SKColor.Parse("003700") };
         Border = new[] { SKColor.Parse("1E8500"), SKColor.Parse("5BFD00") };
         DisplayName = string.Empty;
@@ -42,34 +43,44 @@ public abstract class UCreator
     private const int _STARTER_TEXT_POSITION = 380, _NAME_TEXT_SIZE = 45, _BOTTOM_TEXT_SIZE = 15;
     protected readonly SKPaint DisplayNamePaint = new()
     {
-        IsAntialias = true, FilterQuality = SKFilterQuality.High,
-        Typeface = Utils.Typefaces.DisplayName, TextSize = _NAME_TEXT_SIZE,
-        Color = SKColors.White, TextAlign = SKTextAlign.Center
+        IsAntialias = true,
+        FilterQuality = SKFilterQuality.High,
+        Typeface = Utils.Typefaces.DisplayName,
+        TextSize = _NAME_TEXT_SIZE,
+        Color = SKColors.White,
+        TextAlign = SKTextAlign.Center
     };
     protected readonly SKPaint DescriptionPaint = new()
     {
-        IsAntialias = true, FilterQuality = SKFilterQuality.High,
-        Typeface = Utils.Typefaces.Description, TextSize = 13,
+        IsAntialias = true,
+        FilterQuality = SKFilterQuality.High,
+        Typeface = Utils.Typefaces.Description,
+        TextSize = 13,
         Color = SKColors.White
     };
     protected readonly SKPaint ImagePaint = new()
     {
-        IsAntialias = true, FilterQuality = SKFilterQuality.High
+        IsAntialias = true,
+        FilterQuality = SKFilterQuality.High
     };
     private readonly SKPaint _textBackgroundPaint = new()
     {
-        IsAntialias = true, FilterQuality = SKFilterQuality.High, Color = new SKColor(0, 0, 50, 75)
+        IsAntialias = true,
+        FilterQuality = SKFilterQuality.High,
+        Color = new SKColor(0, 0, 50, 75)
     };
     private readonly SKPaint _shortDescriptionPaint = new()
     {
-        IsAntialias = true, FilterQuality = SKFilterQuality.High,
+        IsAntialias = true,
+        FilterQuality = SKFilterQuality.High,
         Color = SKColors.White
     };
 
     public void DrawBackground(SKCanvas c)
     {
         // reverse doesn't affect basic rarities
-        if (Background[0] == Background[1]) Background[0] = Border[0];
+        if (Background[0] == Background[1])
+            Background[0] = Border[0];
         Background[0].ToHsl(out _, out _, out var l1);
         Background[1].ToHsl(out _, out _, out var l2);
         var reverse = l1 > l2;
@@ -78,7 +89,8 @@ public abstract class UCreator
         c.DrawRect(new SKRect(0, 0, Width, Height),
             new SKPaint
             {
-                IsAntialias = true, FilterQuality = SKFilterQuality.High,
+                IsAntialias = true,
+                FilterQuality = SKFilterQuality.High,
                 Shader = SKShader.CreateLinearGradient(
                     new SKPoint(Width / 2, Height), new SKPoint(Width, Height / 4), Border, SKShaderTileMode.Clamp)
             });
@@ -91,41 +103,44 @@ public abstract class UCreator
             switch (Style)
             {
                 case EIconStyle.Flat:
-                {
-                    c.DrawRect(new SKRect(Margin, Margin, Width - Margin, Height - Margin),
-                        new SKPaint
-                        {
-                            IsAntialias = true, FilterQuality = SKFilterQuality.High,
-                            Shader = SKShader.CreateLinearGradient(new SKPoint(Width / 2, Height), new SKPoint(Width, Height / 4),
-                                new[] { Background[reverse ? 0 : 1].WithAlpha(150), Border[0] }, SKShaderTileMode.Clamp)
-                        });
-                    if (string.IsNullOrEmpty(DisplayName) && string.IsNullOrEmpty(Description)) return;
-
-                    var pathTop = new SKPath { FillType = SKPathFillType.EvenOdd };
-                    pathTop.MoveTo(Margin, Margin);
-                    pathTop.LineTo(Margin + Width / 17 * 10, Margin);
-                    pathTop.LineTo(Margin, Margin + Height / 17);
-                    pathTop.Close();
-                    c.DrawPath(pathTop, new SKPaint
                     {
-                        IsAntialias = true,
-                        FilterQuality = SKFilterQuality.High,
-                        Color = Background[1].WithAlpha(75)
-                    });
-                    break;
-                }
-                default:
-                {
-                    c.DrawRect(new SKRect(Margin, Margin, Width - Margin, Height - Margin),
-                        new SKPaint
+                        c.DrawRect(new SKRect(Margin, Margin, Width - Margin, Height - Margin),
+                            new SKPaint
+                            {
+                                IsAntialias = true,
+                                FilterQuality = SKFilterQuality.High,
+                                Shader = SKShader.CreateLinearGradient(new SKPoint(Width / 2, Height), new SKPoint(Width, Height / 4),
+                                    new[] { Background[reverse ? 0 : 1].WithAlpha(150), Border[0] }, SKShaderTileMode.Clamp)
+                            });
+                        if (string.IsNullOrEmpty(DisplayName) && string.IsNullOrEmpty(Description))
+                            return;
+
+                        var pathTop = new SKPath { FillType = SKPathFillType.EvenOdd };
+                        pathTop.MoveTo(Margin, Margin);
+                        pathTop.LineTo(Margin + Width / 17 * 10, Margin);
+                        pathTop.LineTo(Margin, Margin + Height / 17);
+                        pathTop.Close();
+                        c.DrawPath(pathTop, new SKPaint
                         {
-                            IsAntialias = true, FilterQuality = SKFilterQuality.High,
-                            Shader = SKShader.CreateRadialGradient(new SKPoint(Width / 2, Height / 2), Width / 5 * 4,
-                                new[] { Background[reverse ? 0 : 1], Background[reverse ? 1 : 0] },
-                                SKShaderTileMode.Clamp)
+                            IsAntialias = true,
+                            FilterQuality = SKFilterQuality.High,
+                            Color = Background[1].WithAlpha(75)
                         });
-                    break;
-                }
+                        break;
+                    }
+                default:
+                    {
+                        c.DrawRect(new SKRect(Margin, Margin, Width - Margin, Height - Margin),
+                            new SKPaint
+                            {
+                                IsAntialias = true,
+                                FilterQuality = SKFilterQuality.High,
+                                Shader = SKShader.CreateRadialGradient(new SKPoint(Width / 2, Height / 2), Width / 5 * 4,
+                                    new[] { Background[reverse ? 0 : 1], Background[reverse ? 1 : 0] },
+                                    SKShaderTileMode.Clamp)
+                            });
+                        break;
+                    }
             }
         }
     }
@@ -135,20 +150,21 @@ public abstract class UCreator
 
     protected void DrawTextBackground(SKCanvas c)
     {
-        if (string.IsNullOrEmpty(DisplayName) && string.IsNullOrEmpty(Description)) return;
+        if (string.IsNullOrEmpty(DisplayName) && string.IsNullOrEmpty(Description))
+            return;
         switch (Style)
         {
             case EIconStyle.Flat:
-            {
-                var pathBottom = new SKPath { FillType = SKPathFillType.EvenOdd };
-                pathBottom.MoveTo(Margin, Height - Margin);
-                pathBottom.LineTo(Margin, Height - Margin - Height / 17 * 2.5f);
-                pathBottom.LineTo(Width - Margin, Height - Margin - Height / 17 * 4.5f);
-                pathBottom.LineTo(Width - Margin, Height - Margin);
-                pathBottom.Close();
-                c.DrawPath(pathBottom, _textBackgroundPaint);
-                break;
-            }
+                {
+                    var pathBottom = new SKPath { FillType = SKPathFillType.EvenOdd };
+                    pathBottom.MoveTo(Margin, Height - Margin);
+                    pathBottom.LineTo(Margin, Height - Margin - Height / 17 * 2.5f);
+                    pathBottom.LineTo(Width - Margin, Height - Margin - Height / 17 * 4.5f);
+                    pathBottom.LineTo(Width - Margin, Height - Margin);
+                    pathBottom.Close();
+                    c.DrawPath(pathBottom, _textBackgroundPaint);
+                    break;
+                }
             default:
                 c.DrawRect(new SKRect(Margin, _STARTER_TEXT_POSITION, Width - Margin, Height - Margin), _textBackgroundPaint);
                 break;
@@ -157,7 +173,8 @@ public abstract class UCreator
 
     protected void DrawDisplayName(SKCanvas c)
     {
-        if (string.IsNullOrWhiteSpace(DisplayName)) return;
+        if (string.IsNullOrWhiteSpace(DisplayName))
+            return;
 
         while (DisplayNamePaint.MeasureText(DisplayName) > Width - Margin * 2)
         {
@@ -172,11 +189,11 @@ public abstract class UCreator
         switch (Style)
         {
             case EIconStyle.Flat:
-            {
-                DisplayNamePaint.TextAlign = SKTextAlign.Right;
-                x = Width - Margin * 2;
-                break;
-            }
+                {
+                    DisplayNamePaint.TextAlign = SKTextAlign.Right;
+                    x = Width - Margin * 2;
+                    break;
+                }
         }
 
 #if DEBUG
@@ -191,7 +208,8 @@ public abstract class UCreator
 
     protected void DrawDescription(SKCanvas c)
     {
-        if (string.IsNullOrWhiteSpace(Description)) return;
+        if (string.IsNullOrWhiteSpace(Description))
+            return;
 
         var maxLine = string.IsNullOrEmpty(DisplayName) ? 8 : 4;
         var side = SKTextAlign.Center;
@@ -208,7 +226,8 @@ public abstract class UCreator
 
     protected void DrawToBottom(SKCanvas c, SKTextAlign side, string text)
     {
-        if (string.IsNullOrEmpty(text)) return;
+        if (string.IsNullOrEmpty(text))
+            return;
 
         _shortDescriptionPaint.TextAlign = side;
         _shortDescriptionPaint.TextSize = Utils.Typefaces.Bottom == null ? 15 : 13;
