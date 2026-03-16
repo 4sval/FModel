@@ -16,7 +16,8 @@
     <!--
         Title is set in code-behind (OnLoaded / property change) to replicate the
         DataTrigger-based title logic that was in the WPF AdonisWindow style.
-        TaskbarItemInfo (Windows-only) is handled in code-behind with an OS guard.
+        TaskbarItemInfo (Windows-only) has no Avalonia equivalent; taskbar progress
+        is silently omitted.
     -->
     <Grid>
         <Grid.RowDefinitions>

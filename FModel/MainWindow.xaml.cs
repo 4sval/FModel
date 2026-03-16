@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -47,16 +46,6 @@ public partial class MainWindow : Window
         _applicationView.PropertyChanged += OnApplicationViewPropertyChanged;
         UpdateWindowTitle();
 
-        // Windows-only: set up TaskbarItemInfo progress
-        if (OperatingSystem.IsWindows())
-            InitTaskbarInfo();
-    }
-
-    [SupportedOSPlatform("windows")]
-    private void InitTaskbarInfo()
-    {
-        // TODO(P2-015): set up Windows taskbar progress indicator once
-        // StatusToTaskbarStateConverter is migrated.
     }
 
     private void UpdateWindowTitle()
