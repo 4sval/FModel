@@ -6,14 +6,13 @@ using FModel.ViewModels.Commands;
 using FModel.Views.Resources.Controls;
 using AvaloniaEdit.Document;
 using AvaloniaEdit.Highlighting;
+using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using Serilog;
 using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Windows;
-using System.Windows.Media.Imaging;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse_Conversion.Textures;
 using CUE4Parse.FileProvider.Objects;
@@ -41,8 +40,8 @@ public class TabImage : ViewModel
         SetImage(img);
     }
 
-    private BitmapImage _image;
-    public BitmapImage Image
+    private Bitmap _image;
+    public Bitmap Image
     {
         get => _image;
         set
@@ -84,13 +83,7 @@ public class TabImage : ViewModel
         ExportName += "." + (NoAlpha ? "jpg" : "png");
         using var data = _bmp.Encode(NoAlpha ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
         using var stream = new MemoryStream(ImageBuffer = data.ToArray(), false);
-        var image = new BitmapImage();
-        image.BeginInit();
-        image.CacheOption = BitmapCacheOption.OnLoad;
-        image.StreamSource = stream;
-        image.EndInit();
-        image.Freeze();
-        Image = image;
+        Image = new Bitmap(stream);
     }
 
     private void SetImage(CTexture bitmap)
@@ -117,13 +110,7 @@ public class TabImage : ViewModel
         }
 
         using var stream = new MemoryStream(imageData);
-        var image = new BitmapImage();
-        image.BeginInit();
-        image.CacheOption = BitmapCacheOption.OnLoad;
-        image.StreamSource = stream;
-        image.EndInit();
-        image.Freeze();
-        Image = image;
+        Image = new Bitmap(stream);
     }
 
     private SKBitmap _bmp;

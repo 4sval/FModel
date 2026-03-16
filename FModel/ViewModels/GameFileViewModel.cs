@@ -2,9 +2,8 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using Avalonia.Media.Imaging;
+using Avalonia.Threading;
 
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.GameTypes.Borderlands3.Assets.Exports;
@@ -107,8 +106,8 @@ public class GameFileViewModel(GameFile asset) : ViewModel
         }
     }
 
-    private ImageSource _previewImage;
-    public ImageSource PreviewImage
+    private Bitmap _previewImage;
+    public Bitmap PreviewImage
     {
         get => _previewImage;
         private set
@@ -190,8 +189,10 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 throw new InvalidOperationException($"Failed to load {Asset.Path} as UE package.");
 
             var mainIndex = pkg.GetExportIndex(Asset.NameWithoutExtension, StringComparison.OrdinalIgnoreCase);
-            if (mainIndex < 0) mainIndex = pkg.GetExportIndex($"{Asset.NameWithoutExtension}_C", StringComparison.OrdinalIgnoreCase);
-            if (mainIndex < 0) mainIndex = 0;
+            if (mainIndex < 0)
+                mainIndex = pkg.GetExportIndex($"{Asset.NameWithoutExtension}_C", StringComparison.OrdinalIgnoreCase);
+            if (mainIndex < 0)
+                mainIndex = 0;
 
             var pointer = new FPackageIndex(pkg, mainIndex + 1).ResolvedObject;
             if (pointer?.Object is null)
@@ -269,29 +270,30 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             switch (AssetCategory)
             {
                 case EAssetCategory.Texture when pointer.Object.Value is UTexture texture:
-                {
-                    if (!resolve.HasFlag(EResolveCompute.Preview))
-                        break;
-
-                    if (pointer.Object.Value is UTexture2DArray textureArray && textureArray.GetFirstMip() is { SizeZ: > 1 } firstMip)
-                        NumTextures = firstMip.SizeZ;
-
-                    var img = texture.Decode(MaxPreviewSize, UserSettings.Default.CurrentDir.TexturePlatform);
-                    if (img != null)
                     {
-                        using var bitmap = img.ToSkBitmap();
-                        using var image = bitmap.Encode(SKEncodedImageFormat.Png, 100);
-                        SetPreviewImage(image);
+                        if (!resolve.HasFlag(EResolveCompute.Preview))
+                            break;
+
+                        if (pointer.Object.Value is UTexture2DArray textureArray && textureArray.GetFirstMip() is { SizeZ: > 1 } firstMip)
+                            NumTextures = firstMip.SizeZ;
+
+                        var img = texture.Decode(MaxPreviewSize, UserSettings.Default.CurrentDir.TexturePlatform);
+                        if (img != null)
+                        {
+                            using var bitmap = img.ToSkBitmap();
+                            using var image = bitmap.Encode(SKEncodedImageFormat.Png, 100);
+                            SetPreviewImage(image);
+                        }
+                        break;
                     }
-                    break;
-                }
                 case EAssetCategory.ItemDefinitionBase:
                     if (!resolve.HasFlag(EResolveCompute.Preview))
                         break;
 
                     if (pointer.Object.Value is UItemDefinitionBase itemDef)
                     {
-                        if (LookupPreview(itemDef.DataList)) break;
+                        if (LookupPreview(itemDef.DataList))
+                            break;
 
                         if (itemDef is UAthenaPickaxeItemDefinition pickaxe && pickaxe.WeaponDefinition.TryLoad(out UItemDefinitionBase weaponDef))
                         {
@@ -307,7 +309,8 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                                     continue;
 
                                 var img = texture.Decode(MaxPreviewSize, UserSettings.Default.CurrentDir.TexturePlatform);
-                                if (img == null) return false;
+                                if (img == null)
+                                    return false;
 
                                 using var bitmap = img.ToSkBitmap();
                                 using var image = bitmap.Encode(SKEncodedImageFormat.Png, 100);
@@ -388,48 +391,48 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             case "png":
             case "bmp":
             case "svg":
-            {
-                Resolved |= ~EResolveCompute.Preview;
-                AssetCategory = EAssetCategory.Texture;
-                AssetActions = EBulkType.Textures;
-                if (!resolve.HasFlag(EResolveCompute.Preview))
-                    break;
-
-                return Task.Run(() =>
                 {
-                    var data = _applicationView.CUE4Parse.Provider.SaveAsset(Asset);
-                    using var stream = new MemoryStream(data);
-                    stream.Position = 0;
+                    Resolved &= ~EResolveCompute.Preview;
+                    AssetCategory = EAssetCategory.Texture;
+                    AssetActions = EBulkType.Textures;
+                    if (!resolve.HasFlag(EResolveCompute.Preview))
+                        break;
 
-                    SKBitmap bitmap;
-                    if (lowercaseExtension == "svg")
+                    return Task.Run(() =>
                     {
-                        var svg = new SKSvg();
-                        svg.Load(stream);
-                        if (svg.Picture == null)
-                            return;
+                        var data = _applicationView.CUE4Parse.Provider.SaveAsset(Asset);
+                        using var stream = new MemoryStream(data);
+                        stream.Position = 0;
 
-                        bitmap = new SKBitmap(MaxPreviewSize, MaxPreviewSize);
-                        using var canvas = new SKCanvas(bitmap);
-                        canvas.Clear(SKColors.Transparent);
+                        SKBitmap bitmap;
+                        if (lowercaseExtension == "svg")
+                        {
+                            var svg = new SKSvg();
+                            svg.Load(stream);
+                            if (svg.Picture == null)
+                                return;
 
-                        var bounds = svg.Picture.CullRect;
-                        float scale = Math.Min(MaxPreviewSize / bounds.Width, MaxPreviewSize / bounds.Height);
-                        canvas.Scale(scale);
-                        canvas.Translate(-bounds.Left, -bounds.Top);
-                        canvas.DrawPicture(svg.Picture);
-                    }
-                    else
-                    {
-                        bitmap = SKBitmap.Decode(stream);
-                    }
+                            bitmap = new SKBitmap(MaxPreviewSize, MaxPreviewSize);
+                            using var canvas = new SKCanvas(bitmap);
+                            canvas.Clear(SKColors.Transparent);
 
-                    using var image = bitmap.Encode(lowercaseExtension == "jpg" ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
-                    SetPreviewImage(image);
+                            var bounds = svg.Picture.CullRect;
+                            float scale = Math.Min(MaxPreviewSize / bounds.Width, MaxPreviewSize / bounds.Height);
+                            canvas.Scale(scale);
+                            canvas.Translate(-bounds.Left, -bounds.Top);
+                            canvas.DrawPicture(svg.Picture);
+                        }
+                        else
+                        {
+                            bitmap = SKBitmap.Decode(stream);
+                        }
 
-                    bitmap.Dispose();
-                });
-            }
+                        using var image = bitmap.Encode(lowercaseExtension == "jpg" ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
+                        SetPreviewImage(image);
+
+                        bitmap.Dispose();
+                    });
+                }
             // Game specific extensions below
             case "ace" when GameVersion is EGame.GAME_Borderlands3:
             case "ncs" when GameVersion is EGame.GAME_Borderlands4:
@@ -449,16 +452,11 @@ public class GameFileViewModel(GameFile asset) : ViewModel
     private void SetPreviewImage(SKData data)
     {
         using var ms = new MemoryStream(data.ToArray());
-        ms.Position = 0;
 
-        var bitmap = new BitmapImage();
-        bitmap.BeginInit();
-        bitmap.CacheOption = BitmapCacheOption.OnLoad;
-        bitmap.StreamSource = ms;
-        bitmap.EndInit();
-        bitmap.Freeze();
-
-        Application.Current.Dispatcher.InvokeAsync(() => PreviewImage = bitmap);
+        // Bitmap reads the stream to an internal buffer during construction;
+        // it is safe to construct on a background thread and assign on the UI thread.
+        var bitmap = new Bitmap(ms);
+        Dispatcher.UIThread.Post(() => PreviewImage = bitmap);
     }
 
     private CancellationTokenSource _previewCts;
@@ -473,7 +471,8 @@ public class GameFileViewModel(GameFile asset) : ViewModel
 
         Task.Delay(100, token).ContinueWith(t =>
         {
-            if (t.IsCanceled) return;
+            if (t.IsCanceled)
+                return;
             ResolveAsync(EResolveCompute.All);
         }, TaskScheduler.FromCurrentSynchronizationContext());
     }

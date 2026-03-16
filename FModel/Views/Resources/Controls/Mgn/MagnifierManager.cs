@@ -78,10 +78,10 @@ public class MagnifierManager
             _element.PointerWheelChanged -= ElementOnPointerWheelChanged;
             _element.DetachedFromVisualTree -= OnElementDetached;
 
-            // Remove the adorner control from the AdornerLayer so it is not left
-            // as an invisible orphan child for the lifetime of the host window.
-            // Use the static API to match the add path in VerifyAdornerLayer.
-            AdornerLayer.SetAdornment(_element, null);
+            // Remove the adorner from the AdornerLayer's Children collection so it
+            // is not left as an invisible orphan for the lifetime of the host window.
+            if (_adorner?.Parent is AdornerLayer detachLayer)
+                detachLayer.Children.Remove(_adorner);
         }
         _adorner?.Detach();
         _adorner = null;
@@ -123,20 +123,31 @@ public class MagnifierManager
 
         // WPF Delta < 0 = scroll down = zoom out (larger viewbox); Delta > 0 = scroll up = zoom in.
         // Avalonia Delta.Y > 0 = scroll up.
+        bool zoomed = false;
         if (e.Delta.Y < 0)
         {
             var newValue = magnifier.ZoomFactor + magnifier.ZoomFactorOnMouseWheel;
             magnifier.SetCurrentValue(Magnifier.ZoomFactorProperty, newValue);
+            zoomed = true;
         }
         else if (e.Delta.Y > 0)
         {
-            var newValue = magnifier.ZoomFactor >= magnifier.ZoomFactorOnMouseWheel
+            // Clamp: the property validator rejects values <= 0, so floor at
+            // ZoomFactorOnMouseWheel to stay positive after subtraction.
+            var newValue = magnifier.ZoomFactor > magnifier.ZoomFactorOnMouseWheel
                 ? magnifier.ZoomFactor - magnifier.ZoomFactorOnMouseWheel
-                : 0d;
+                : magnifier.ZoomFactorOnMouseWheel;
             magnifier.SetCurrentValue(Magnifier.ZoomFactorProperty, newValue);
+            zoomed = true;
         }
 
-        _adorner?.UpdateViewBox();
+        if (zoomed && _adorner is { IsVisible: true })
+        {
+            _adorner.UpdateViewBox();
+            // Consume the event so a parent ScrollViewer does not also scroll
+            // while the magnifier is active.
+            e.Handled = true;
+        }
     }
 
     private void ShowAdorner()
@@ -156,7 +167,10 @@ public class MagnifierManager
 
         var layer = AdornerLayer.GetAdornerLayer(_element);
         if (layer != null)
-            AdornerLayer.SetAdornment(_element, _adorner);
+        {
+            AdornerLayer.SetAdornedElement(_adorner, _element);
+            layer.Children.Add(_adorner);
+        }
     }
 
     private void HideAdorner()

@@ -269,10 +269,10 @@
     <Resource Include="Resources\Flat.png" />
     <Resource Include="Resources\Cataba.png" />
     <Resource Include="Resources\BurbankBigCondensed-Bold.ttf" />
-    <Resource Include="Resources\add_directory.png" />
-    <Resource Include="Resources\delete.png" />
-    <Resource Include="Resources\edit.png" />
-    <Resource Include="Resources\go_to_directory.png" />
+    <AvaloniaResource Include="Resources\add_directory.png" />
+    <AvaloniaResource Include="Resources\delete.png" />
+    <AvaloniaResource Include="Resources\edit.png" />
+    <AvaloniaResource Include="Resources\go_to_directory.png" />
     <Resource Include="Resources\npcleftside.png" />
     <Resource Include="Resources\nx.png" />
     <Resource Include="Resources\ny.png" />

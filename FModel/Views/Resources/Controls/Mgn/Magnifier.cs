@@ -46,7 +46,7 @@ public class Magnifier : Control
 
     public static readonly StyledProperty<double> ZoomFactorProperty =
         AvaloniaProperty.Register<Magnifier, double>(nameof(ZoomFactor), defaultValue: 0.5,
-            validate: v => v >= 0);
+            validate: v => v > 0);
     public double ZoomFactor
     {
         get => GetValue(ZoomFactorProperty);

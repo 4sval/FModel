@@ -2,7 +2,13 @@
 description: Expert principal-engineer-level code reviewer for WPF-to-Avalonia migrations — checks behavioral parity, threading model, style/trigger conversions, and MVVM correctness
 name: Avalonia Migration Reviewer
 argument-hint: Point me at the files just migrated (e.g. "review FModel/Views/SettingsView.xaml and its code-behind") or say "review all recent Avalonia migration changes"
-tools: [read, search]
+tools:
+    - read
+    - search
+    - github/list_pull_requests
+    - github/pull_request_read
+    - github/issue_read
+    - github/list_issues
 handoffs:
     - label: Fix Review Findings
       agent: WPF → Avalonia Migrator

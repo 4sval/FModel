@@ -67,6 +67,12 @@ public class MagnifierAdorner : Canvas
         // Adorner-canvas-relative position (used for magnifier placement on the canvas).
         var pt = e.GetPosition(this);
 
+        // Before the first layout pass the canvas Bounds are zero — positions are
+        // meaningless until the adorner has been measured.  The next PointerMoved
+        // event (which fires after layout) will have correct coordinates.
+        if (Bounds.Width == 0 && Bounds.Height == 0)
+            return;
+
         if (_currentPointerPosition == pt && _magnifier.ZoomFactor == _currentZoomFactor)
             return;
 
