@@ -3,8 +3,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows;
 using System.Windows.Data;
+using Avalonia.Threading;
 using CUE4Parse.Compression;
 using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Objects.Core.Misc;
@@ -74,7 +74,7 @@ public class FileItem : ViewModel
     public CompressionMethod[] CompressionMethods
     {
         get => _compressionMethods;
-        set => SetProperty(ref  _compressionMethods, value);
+        set => SetProperty(ref _compressionMethods, value);
     }
 
     public FileItem(string name, long length)
@@ -118,15 +118,17 @@ public class GameDirectoryViewModel : ViewModel
 
     public void Add(IAesVfsReader reader)
     {
-        if (!_hiddenArchives.IsMatch(reader.Name)) return;
+        if (!_hiddenArchives.IsMatch(reader.Name))
+            return;
 
         var fileItem = new FileItem(reader);
-        Application.Current.Dispatcher.Invoke(() => DirectoryFiles.Add(fileItem));
+        Dispatcher.UIThread.Post(() => DirectoryFiles.Add(fileItem));
     }
 
     public void Verify(IAesVfsReader reader)
     {
-        if (DirectoryFiles.FirstOrDefault(x => x.Name == reader.Name) is not { } file) return;
+        if (DirectoryFiles.FirstOrDefault(x => x.Name == reader.Name) is not { } file)
+            return;
 
         file.IsEnabled = true;
         file.MountPoint = reader.MountPoint;
@@ -135,7 +137,8 @@ public class GameDirectoryViewModel : ViewModel
 
     public void Disable(IAesVfsReader reader)
     {
-        if (DirectoryFiles.FirstOrDefault(x => x.Name == reader.Name) is not { } file) return;
+        if (DirectoryFiles.FirstOrDefault(x => x.Name == reader.Name) is not { } file)
+            return;
         file.IsEnabled = false;
     }
 }

@@ -4,8 +4,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Data;
+using Avalonia.Threading;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.VirtualFileSystem;
@@ -130,9 +130,9 @@ public class TreeItem : ViewModel
                     };
                 }
 
-                if (!Application.Current.Dispatcher.CheckAccess())
+                if (!Dispatcher.UIThread.CheckAccess())
                 {
-                    Application.Current.Dispatcher.Invoke(CreateCombinedEntries);
+                    Dispatcher.UIThread.InvokeAsync(CreateCombinedEntries).GetAwaiter().GetResult();
                 }
                 else
                 {
@@ -171,19 +171,19 @@ public class TreeItem : ViewModel
         switch (item)
         {
             case GameFileViewModel entry:
-            {
-                bool matchesSearch = f.Length == 0 || f.All(x => entry.Asset.Name.Contains(x, StringComparison.OrdinalIgnoreCase));
-                bool matchesCategory = SelectedCategory == EAssetCategory.All || entry.AssetCategory.IsOfCategory(SelectedCategory);
+                {
+                    bool matchesSearch = f.Length == 0 || f.All(x => entry.Asset.Name.Contains(x, StringComparison.OrdinalIgnoreCase));
+                    bool matchesCategory = SelectedCategory == EAssetCategory.All || entry.AssetCategory.IsOfCategory(SelectedCategory);
 
-                return matchesSearch && matchesCategory;
-            }
+                    return matchesSearch && matchesCategory;
+                }
             case TreeItem folder:
-            {
-                bool matchesSearch = f.Length == 0 || f.All(x => folder.Header.Contains(x, StringComparison.OrdinalIgnoreCase));
-                bool matchesCategory = SelectedCategory == EAssetCategory.All;
+                {
+                    bool matchesSearch = f.Length == 0 || f.All(x => folder.Header.Contains(x, StringComparison.OrdinalIgnoreCase));
+                    bool matchesCategory = SelectedCategory == EAssetCategory.All;
 
-                return matchesSearch && matchesCategory;
-            }
+                    return matchesSearch && matchesCategory;
+                }
         }
         return false;
     }
@@ -213,7 +213,7 @@ public class AssetsFolderViewModel
         if (entries == null || entries.Count == 0)
             return;
 
-        Application.Current.Dispatcher.Invoke(() =>
+        Dispatcher.UIThread.Post(() =>
         {
             var treeItems = new RangeObservableCollection<TreeItem>();
             treeItems.SetSuppressionState(true);

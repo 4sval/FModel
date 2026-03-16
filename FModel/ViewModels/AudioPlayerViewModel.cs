@@ -6,8 +6,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Windows;
 using System.Windows.Data;
+using Avalonia.Threading;
 using CSCore;
 using CSCore.CoreAudioAPI;
 using CSCore.DSP;
@@ -217,33 +217,34 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     public void Load()
     {
-        Application.Current.Dispatcher.Invoke(() =>
-        {
-            if (!ConvertIfNeeded())
-                return;
+        // All callers are already on the UI thread (command handlers, key handlers, or an
+        // enclosing Post lambda), so there is no need to defer — running synchronously
+        // ensures LoadSoundOut() has finished before the caller invokes Play().
+        if (!ConvertIfNeeded())
+            return;
 
-            _waveSource = new CustomCodecFactory().GetCodec(SelectedAudioFile.Data, SelectedAudioFile.Extension);
-            if (_waveSource == null)
-                return;
+        _waveSource = new CustomCodecFactory().GetCodec(SelectedAudioFile.Data, SelectedAudioFile.Extension);
+        if (_waveSource == null)
+            return;
 
-            PlayedFile = new AudioFile(SelectedAudioFile, _waveSource);
-            Spectrum = new SpectrumProvider(_waveSource.WaveFormat.Channels, _waveSource.WaveFormat.SampleRate, FftSize.Fft4096);
+        PlayedFile = new AudioFile(SelectedAudioFile, _waveSource);
+        Spectrum = new SpectrumProvider(_waveSource.WaveFormat.Channels, _waveSource.WaveFormat.SampleRate, FftSize.Fft4096);
 
-            var notificationSource = new SingleBlockNotificationStream(_waveSource.ToSampleSource());
-            notificationSource.SingleBlockRead += (s, a) => Spectrum.Add(a.Left, a.Right);
-            _waveSource = notificationSource.ToWaveSource(16);
+        var notificationSource = new SingleBlockNotificationStream(_waveSource.ToSampleSource());
+        notificationSource.SingleBlockRead += (s, a) => Spectrum.Add(a.Left, a.Right);
+        _waveSource = notificationSource.ToWaveSource(16);
 
-            RaiseSourceEvent(ESourceEventType.Loading);
-            LoadSoundOut();
-        });
+        RaiseSourceEvent(ESourceEventType.Loading);
+        LoadSoundOut();
     }
 
     public void AddToPlaylist(byte[] data, string filePath)
     {
-        Application.Current.Dispatcher.Invoke(() =>
+        Dispatcher.UIThread.Post(() =>
         {
             _audioFiles.Add(new AudioFile(_audioFiles.Count, data, filePath));
-            if (_audioFiles.Count > 1) return;
+            if (_audioFiles.Count > 1)
+                return;
 
             SelectedAudioFile = _audioFiles.Last();
             Load();
@@ -253,10 +254,11 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     public void AddToPlaylist(string filePath)
     {
-        Application.Current.Dispatcher.Invoke(() =>
+        Dispatcher.UIThread.Post(() =>
         {
             _audioFiles.Add(new AudioFile(_audioFiles.Count, new FileInfo(filePath)));
-            if (_audioFiles.Count > 1) return;
+            if (_audioFiles.Count > 1)
+                return;
 
             SelectedAudioFile = _audioFiles.Last();
             Load();
@@ -266,8 +268,9 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     public void Remove()
     {
-        if (_audioFiles.Count < 1) return;
-        Application.Current.Dispatcher.Invoke(() =>
+        if (_audioFiles.Count < 1)
+            return;
+        Dispatcher.UIThread.Post(() =>
         {
             _audioFiles.RemoveAt(SelectedAudioFile.Id);
             for (var i = 0; i < _audioFiles.Count; i++)
@@ -279,8 +282,9 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     public void Replace(AudioFile newAudio)
     {
-        if (_audioFiles.Count < 1) return;
-        Application.Current.Dispatcher.Invoke(() =>
+        if (_audioFiles.Count < 1)
+            return;
+        Dispatcher.UIThread.Post(() =>
         {
             _audioFiles.Insert(SelectedAudioFile.Id, newAudio);
             _audioFiles.RemoveAt(SelectedAudioFile.Id + 1);
@@ -290,8 +294,9 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     public void SavePlaylist()
     {
-        if (_audioFiles.Count < 1) return;
-        Application.Current.Dispatcher.Invoke(() =>
+        if (_audioFiles.Count < 1)
+            return;
+        Dispatcher.UIThread.Post(() =>
         {
             foreach (var a in _audioFiles)
             {
@@ -311,7 +316,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
     public void Save(AudioFile file = null, bool auto = false)
     {
         var fileToSave = file ?? SelectedAudioFile;
-        if (_audioFiles.Count < 1 || fileToSave?.Data == null) return;
+        if (_audioFiles.Count < 1 || fileToSave?.Data == null)
+            return;
         var path = fileToSave.FilePath;
 
         if (!auto)
@@ -322,7 +328,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
                 FileName = fileToSave.FileName,
                 InitialDirectory = UserSettings.Default.AudioDirectory
             };
-            if (!saveFileDialog.ShowDialog().GetValueOrDefault()) return;
+            if (!saveFileDialog.ShowDialog().GetValueOrDefault())
+                return;
             path = saveFileDialog.FileName;
         }
         else
@@ -378,7 +385,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     public void PlayPauseOnForce()
     {
-        if (_audioFiles.Count < 1 || SelectedAudioFile.Id == PlayedFile.Id) return;
+        if (_audioFiles.Count < 1 || SelectedAudioFile.Id == PlayedFile.Id)
+            return;
 
         Stop();
         Load();
@@ -387,7 +395,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     public void Next()
     {
-        if (_audioFiles.Count < 1) return;
+        if (_audioFiles.Count < 1)
+            return;
 
         Stop();
         SelectedAudioFile = _audioFiles.Next(PlayedFile.Id);
@@ -397,7 +406,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     public void Previous()
     {
-        if (_audioFiles.Count < 1) return;
+        if (_audioFiles.Count < 1)
+            return;
 
         Stop();
         SelectedAudioFile = _audioFiles.Previous(PlayedFile.Id);
@@ -407,51 +417,59 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     public void Play()
     {
-        if (_soundOut == null || IsPlaying) return;
+        if (_soundOut == null || IsPlaying)
+            return;
         _discordHandler.UpdateButDontSavePresence(null, $"Audio Player: {PlayedFile.FileName} ({PlayedFile.Duration:g})");
         _soundOut.Play();
     }
 
     public void Pause()
     {
-        if (_soundOut == null || IsPaused) return;
+        if (_soundOut == null || IsPaused)
+            return;
         _soundOut.Pause();
     }
 
     public void Resume()
     {
-        if (_soundOut == null || !IsPaused) return;
+        if (_soundOut == null || !IsPaused)
+            return;
         _soundOut.Resume();
     }
 
     public void Stop()
     {
-        if (_soundOut == null || IsStopped) return;
+        if (_soundOut == null || IsStopped)
+            return;
         _soundOut.Stop();
     }
 
     public void HideToggle()
     {
-        if (!IsPlaying) return;
+        if (!IsPlaying)
+            return;
         _hideToggle = !_hideToggle;
         RaiseSourcePropertyChangedEvent(ESourceProperty.HideToggle, _hideToggle);
     }
 
     public void SkipTo(double percentage)
     {
-        if (_soundOut == null || _waveSource == null) return;
+        if (_soundOut == null || _waveSource == null)
+            return;
         _waveSource.Position = (long) (_waveSource.Length * percentage);
     }
 
     public void Volume()
     {
-        if (_soundOut == null) return;
+        if (_soundOut == null)
+            return;
         _soundOut.Volume = UserSettings.Default.AudioPlayerVolume / 100;
     }
 
     public void Device()
     {
-        if (_soundOut == null) return;
+        if (_soundOut == null)
+            return;
 
         Pause();
         LoadSoundOut();
@@ -460,36 +478,38 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     public void Dispose()
     {
-        Application.Current.Dispatcher.Invoke(() =>
+        // Stop the timer synchronously first to eliminate any window in which a
+        // threadpool tick could access _waveSource / _soundOut while they are
+        // being torn down (use-after-dispose race).
+        _sourceTimer.Change(Timeout.Infinite, Timeout.Infinite);
+
+        // Dispose() is invoked from OnClosing which fires on the UI thread, so all
+        // of the following runs inline without needing to be posted.
+        if (_waveSource != null)
         {
-            if (_waveSource != null)
-            {
-                _waveSource.Dispose();
-                _waveSource = null;
-            }
+            _waveSource.Dispose();
+            _waveSource = null;
+        }
 
-            if (_soundOut != null)
-            {
-                _soundOut.Dispose();
-                _soundOut = null;
-            }
+        if (_soundOut != null)
+        {
+            _soundOut.Dispose();
+            _soundOut = null;
+        }
 
-            if (Spectrum != null)
-                Spectrum = null;
+        Spectrum = null;
 
-            foreach (var a in _audioFiles)
-            {
-                a.Data = null;
-            }
+        foreach (var a in _audioFiles)
+            a.Data = null;
 
-            _audioFiles.Clear();
-            PlayedFile = new AudioFile(-1, "No audio file");
-        });
+        _audioFiles.Clear();
+        PlayedFile = new AudioFile(-1, "No audio file");
     }
 
     private void TimerTick(object state)
     {
-        if (_waveSource == null || _soundOut == null) return;
+        if (_waveSource == null || _soundOut == null)
+            return;
 
         if (_position != PlayedFile.Position)
         {
@@ -513,7 +533,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     private void LoadSoundOut()
     {
-        if (_waveSource == null) return;
+        if (_waveSource == null)
+            return;
         _soundOut = new WasapiOut(true, AudioClientShareMode.Shared, 100, ThreadPriority.Highest) { Device = SelectedAudioDevice };
         _soundOut.Initialize(_waveSource.ToSampleSource().ToWaveSource(16));
         _soundOut.Volume = UserSettings.Default.AudioPlayerVolume / 100;
@@ -536,16 +557,17 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     public event EventHandler<SourcePropertyChangedEventArgs> SourcePropertyChangedEvent = (sender, args) =>
     {
-        if (sender is not AudioPlayerViewModel viewModel) return;
+        if (sender is not AudioPlayerViewModel viewModel)
+            return;
         switch (args.Property)
         {
             case ESourceProperty.PlaybackState:
-            {
-                if (viewModel._position == viewModel._length && (PlaybackState) args.Value == PlaybackState.Stopped)
-                    viewModel.Next();
+                {
+                    if (viewModel._position == viewModel._length && (PlaybackState) args.Value == PlaybackState.Stopped)
+                        viewModel.Next();
 
-                break;
-            }
+                    break;
+                }
         }
     };
 
@@ -573,30 +595,30 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
             case "wem":
             case "at9":
             case "raw":
-            {
-                if (TryConvert(out var wavFilePath))
                 {
-                    var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(wavFilePath));
-                    Replace(newAudio);
-                    return true;
-                }
+                    if (TryConvert(out var wavFilePath))
+                    {
+                        var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(wavFilePath));
+                        Replace(newAudio);
+                        return true;
+                    }
 
-                return false;
-            }
+                    return false;
+                }
             case "adx":
             case "hca":
                 return TryConvertCriware();
             case "rada":
-            {
-                if (TryDecode(SelectedAudioFile.Extension, out var rawFilePath))
                 {
-                    var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(rawFilePath));
-                    Replace(newAudio);
-                    return true;
-                }
+                    if (TryDecode(SelectedAudioFile.Extension, out var rawFilePath))
+                    {
+                        var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(rawFilePath));
+                        Replace(newAudio);
+                        return true;
+                    }
 
-                return false;
-            }
+                    return false;
+                }
         }
 
         return true;
@@ -662,7 +684,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         if (!File.Exists(vgmFilePath))
         {
             vgmFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "vgmstream-cli.exe");
-            if (!File.Exists(vgmFilePath)) return false;
+            if (!File.Exists(vgmFilePath))
+                return false;
         }
 
         Directory.CreateDirectory(inputFilePath.SubstringBeforeLast("/"));

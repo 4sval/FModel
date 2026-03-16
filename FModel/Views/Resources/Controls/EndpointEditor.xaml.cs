@@ -1,6 +1,6 @@
 using System.Diagnostics;
-using System.Windows;
 using System.Windows.Controls;
+using Avalonia.Threading;
 using FModel.Extensions;
 using FModel.Services;
 using FModel.Settings;
@@ -60,7 +60,7 @@ public partial class EndpointEditor
             return;
 
         var body = await ApplicationService.ApiEndpointView.DynamicApi.GetRequestBody(default, endpoint.Url).ConfigureAwait(false);
-        Application.Current.Dispatcher.Invoke(delegate
+        Dispatcher.UIThread.Post(delegate
         {
             EndpointResponse.Document ??= new TextDocument();
             EndpointResponse.Document.Text = body.ToString(Formatting.Indented);

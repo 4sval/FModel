@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
-using System.Windows;
+using Avalonia.Threading;
 using CUE4Parse_Conversion.Animations;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse.UE4.Assets.Exports;
@@ -115,10 +115,11 @@ public class Renderer : IDisposable
 
     public void Swap(UMaterialInstance unrealMaterial)
     {
-        if (!Options.TryGetModel(out var model) || !Options.TryGetSection(model, out var section)) return;
+        if (!Options.TryGetModel(out var model) || !Options.TryGetSection(model, out var section))
+            return;
 
         model.Materials[section.MaterialIndex].SwapMaterial(unrealMaterial);
-        Application.Current.Dispatcher.Invoke(() => model.Materials[section.MaterialIndex].Setup(Options, model.UvCount));
+        Dispatcher.UIThread.Invoke(() => model.Materials[section.MaterialIndex].Setup(Options, model.UvCount));
     }
 
     public void Animate(UObject anim)
@@ -133,12 +134,14 @@ public class Renderer : IDisposable
                 {
                     // do nothing, selected model has the correct skeleton for this animation
                 }
-                else */if (animBase.Skeleton.TryLoad(out USkeleton skeleton))
+                else */
+                if (animBase.Skeleton.TryLoad(out USkeleton skeleton))
                 {
                     LoadSkeleton(skeleton);
                 }
             }
-            else return; // should never end here
+            else
+                return; // should never end here
         }
 
         Animate(anim, Options.SelectedModel);
@@ -179,29 +182,29 @@ public class Renderer : IDisposable
             switch (export)
             {
                 case UStaticMesh st:
-                {
-                    guid = st.LightingGuid;
-                    if (Options.TryGetModel(guid, out addedModel))
                     {
-                        addedModel.AddInstance(t);
+                        guid = st.LightingGuid;
+                        if (Options.TryGetModel(guid, out addedModel))
+                        {
+                            addedModel.AddInstance(t);
+                        }
+                        else if (st.TryConvert(out var mesh))
+                        {
+                            addedModel = new StaticModel(st, mesh, t);
+                            Options.Models[guid] = addedModel;
+                        }
+                        break;
                     }
-                    else if (st.TryConvert(out var mesh))
-                    {
-                        addedModel = new StaticModel(st, mesh, t);
-                        Options.Models[guid] = addedModel;
-                    }
-                    break;
-                }
                 case USkeletalMesh sk:
-                {
-                    guid = Guid.NewGuid();
-                    if (!Options.Models.ContainsKey(guid) && sk.TryConvert(out var mesh))
                     {
-                        addedModel = new SkeletalModel(sk, mesh, t);
-                        Options.Models[guid] = addedModel;
+                        guid = Guid.NewGuid();
+                        if (!Options.Models.ContainsKey(guid) && sk.TryConvert(out var mesh))
+                        {
+                            addedModel = new SkeletalModel(sk, mesh, t);
+                            Options.Models[guid] = addedModel;
+                        }
+                        break;
                     }
-                    break;
-                }
             }
 
             if (addedModel == null)
@@ -251,8 +254,10 @@ public class Renderer : IDisposable
         var viewMatrix = CameraOp.GetViewMatrix();
         var projMatrix = CameraOp.GetProjectionMatrix();
 
-        if (ShowSkybox) _skybox.Render(viewMatrix, projMatrix);
-        if (ShowGrid) _grid.Render(viewMatrix, projMatrix, CameraOp.Near, CameraOp.Far);
+        if (ShowSkybox)
+            _skybox.Render(viewMatrix, projMatrix);
+        if (ShowGrid)
+            _grid.Render(viewMatrix, projMatrix, CameraOp.Near, CameraOp.Far);
 
         _shader.Render(viewMatrix, CameraOp.Position, projMatrix);
         for (int i = 0; i < 5; i++)
@@ -261,7 +266,8 @@ public class Renderer : IDisposable
         // render model pass
         foreach (var model in Options.Models.Values)
         {
-            if (!model.IsVisible) continue;
+            if (!model.IsVisible)
+                continue;
             model.Render(_shader, Color == VertexColor.TextureCoordinates ? Options.Icons["checker"] : null);
         }
 
@@ -302,13 +308,15 @@ public class Renderer : IDisposable
 
     public void Update(Snooper wnd, float deltaSeconds)
     {
-        if (Options.Animations.Count > 0) Options.Tracker.Update(deltaSeconds);
+        if (Options.Animations.Count > 0)
+            Options.Tracker.Update(deltaSeconds);
         foreach (var animation in Options.Animations)
         {
             animation.TimeCalculation(Options.Tracker.ElapsedTime);
             foreach (var guid in animation.AttachedModels)
             {
-                if (!Options.TryGetModel(guid, out var m) || m is not SkeletalModel skeletalModel) continue;
+                if (!Options.TryGetModel(guid, out var m) || m is not SkeletalModel skeletalModel)
+                    continue;
                 skeletalModel.Skeleton.UpdateAnimationMatrices(animation, AnimateWithRotationOnly);
             }
         }
@@ -350,7 +358,7 @@ public class Renderer : IDisposable
         if (Options.TryGetModel(guid, out var model))
         {
             model.AddInstance(Transform.Identity);
-            Application.Current.Dispatcher.Invoke(() => model.SetupInstances());
+            Dispatcher.UIThread.Invoke(() => model.SetupInstances());
             return;
         }
 
@@ -364,7 +372,8 @@ public class Renderer : IDisposable
     private void LoadSkeletalMesh(USkeletalMesh original)
     {
         var guid = new FGuid((uint) original.GetFullName().GetHashCode());
-        if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh)) return;
+        if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh))
+            return;
 
         var skeletalModel = new SkeletalModel(original, mesh);
         Options.Models[guid] = skeletalModel;
@@ -374,7 +383,8 @@ public class Renderer : IDisposable
     private void LoadSkeleton(USkeleton original)
     {
         var guid = original.Guid;
-        if (Options.Models.ContainsKey(guid) || !original.TryConvert(out _, out var box)) return;
+        if (Options.Models.ContainsKey(guid) || !original.TryConvert(out _, out var box))
+            return;
 
         var fakeSkeletalModel = new SkeletalModel(original, box);
         Options.Models[guid] = fakeSkeletalModel;
@@ -391,7 +401,7 @@ public class Renderer : IDisposable
         if (Options.TryGetModel(guid, out var model))
         {
             model.Materials[0].SwapMaterial(original);
-            Application.Current.Dispatcher.Invoke(() => model.Materials[0].Setup(Options, model.UvCount));
+            Dispatcher.UIThread.Invoke(() => model.Materials[0].Setup(Options, model.UvCount));
             return;
         }
 
@@ -411,7 +421,7 @@ public class Renderer : IDisposable
         if (Options.TryGetModel(guid, out var model))
         {
             model.AddInstance(Transform.Identity);
-            Application.Current.Dispatcher.Invoke(() => model.SetupInstances());
+            Dispatcher.UIThread.Invoke(() => model.SetupInstances());
             return;
         }
 
@@ -476,15 +486,16 @@ public class Renderer : IDisposable
             cancellationToken.ThrowIfCancellationRequested();
 
             IPropertyHolder actor;
-            if (allNodes is {Length: > 0} && allNodes[i].TryLoad(out UObject node))
+            if (allNodes is { Length: > 0 } && allNodes[i].TryLoad(out UObject node))
             {
                 actor = node;
             }
-            else if (records is {Length: > 0})
+            else if (records is { Length: > 0 })
             {
                 actor = records[i];
             }
-            else continue;
+            else
+                continue;
 
             Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} ... {i}/{length}");
             WorldMesh(actor, transform, true);
@@ -503,7 +514,8 @@ public class Renderer : IDisposable
     private void WorldCamera(UObject actor)
     {
         if (actor.ExportType != "LevelBounds" || !actor.TryGetValue(out FPackageIndex boxComponent, "BoxComponent") ||
-            boxComponent.Load() is not { } boxObject) return;
+            boxComponent.Load() is not { } boxObject)
+            return;
 
         var direction = boxObject.GetOrDefault("RelativeLocation", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO;
         var position = boxObject.GetOrDefault("RelativeScale3D", FVector.OneVector) / 2f * Constants.SCALE_DOWN_RATIO;
@@ -513,7 +525,8 @@ public class Renderer : IDisposable
     private void WorldLight(UObject actor)
     {
         if (!actor.TryGetValue(out FPackageIndex lightComponent, "LightComponent") ||
-            lightComponent.Load() is not { } lightObject) return;
+            lightComponent.Load() is not { } lightObject)
+            return;
 
         switch (actor.ExportType)
         {
@@ -555,7 +568,8 @@ public class Renderer : IDisposable
                         });
                     }
                 }
-                else ProcessMesh(actor, staticMeshComp, m, relation);
+                else
+                    ProcessMesh(actor, staticMeshComp, m, relation);
             }
         }
         else if (actor.TryGetValue(out FPackageIndex componentTemplate, "ComponentTemplate") &&
@@ -596,11 +610,11 @@ public class Renderer : IDisposable
         {
             model.AddInstance(transform);
             if (bSpline && model is SplineModel splineModel)
-                splineModel.AddComponent((USplineMeshComponent)staticMeshComp);
+                splineModel.AddComponent((USplineMeshComponent) staticMeshComp);
         }
         else if (m.TryConvert(out var mesh, UserSettings.Default.NaniteMeshExportFormat))
         {
-            model = bSpline ? new SplineModel(m, mesh, (USplineMeshComponent)staticMeshComp, transform) : new StaticModel(m, mesh, transform);
+            model = bSpline ? new SplineModel(m, mesh, (USplineMeshComponent) staticMeshComp, transform) : new StaticModel(m, mesh, transform);
             model.IsTwoSided = actor.GetOrDefault("bMirrored", staticMeshComp.GetOrDefault("bDisallowMeshPaintPerInstance", model.IsTwoSided));
 
             if (actor.TryGetAllValues(out FPackageIndex[] textureData, "TextureData"))
@@ -645,7 +659,8 @@ public class Renderer : IDisposable
                 {
                     var matIndex = model.Sections[j].MaterialIndex;
                     if (matIndex < 0 || matIndex >= model.Materials.Length || matIndex >= overrideMaterials.Length ||
-                        overrideMaterials[matIndex].Load() is not UMaterialInterface unrealMaterial) continue;
+                        overrideMaterials[matIndex].Load() is not UMaterialInterface unrealMaterial)
+                        continue;
 
                     model.Materials[matIndex].SwapMaterial(unrealMaterial);
                 }
@@ -702,7 +717,8 @@ public class Renderer : IDisposable
             {
                 ref var vertexColor = ref staticMesh.RenderData.LODs[0].ColorVertexBuffer.Data[i];
                 var indexAsByte = vertexColor.R;
-                if (indexAsByte == 255) indexAsByte = vertexColor.A;
+                if (indexAsByte == 255)
+                    indexAsByte = vertexColor.A;
                 distinctReds.Add(indexAsByte);
             }
 
@@ -721,9 +737,11 @@ public class Renderer : IDisposable
                 dico[indexAsByte] = color.ToFColor(true);
             }
         }
-        else foreach (var material in geometryCollection.Materials)
+        else
+        foreach (var material in geometryCollection.Materials)
         {
-            if (!material.TryLoad(out UMaterialInterface unrealMaterial)) continue;
+            if (!material.TryLoad(out UMaterialInterface unrealMaterial))
+                continue;
 
             var parameters = new CMaterialParams2();
             unrealMaterial.GetParams(parameters, EMaterialFormat.FirstLayer);
@@ -751,7 +769,8 @@ public class Renderer : IDisposable
         for (var lod = 0; lod < staticMeshComp.LODData.Length; lod++)
         {
             var vertexColors = staticMeshComp.LODData[lod].OverrideVertexColors;
-            if (vertexColors == null) continue;
+            if (vertexColors == null)
+                continue;
 
             staticMesh.RenderData.LODs[lod].ColorVertexBuffer = vertexColors;
         }
@@ -795,7 +814,8 @@ public class Renderer : IDisposable
         Options.SwapMaterial(false);
         Options.AnimateMesh(false);
 
-        if (_saveCameraMode) UserSettings.Default.CameraMode = CameraOp.Mode;
+        if (_saveCameraMode)
+            UserSettings.Default.CameraMode = CameraOp.Mode;
         UserSettings.Default.ShowSkybox = ShowSkybox;
         UserSettings.Default.ShowGrid = ShowGrid;
         UserSettings.Default.AnimateWithRotationOnly = AnimateWithRotationOnly;

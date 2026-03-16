@@ -6,6 +6,7 @@ using FModel.ViewModels.Commands;
 using FModel.Views.Resources.Controls;
 using AvaloniaEdit.Document;
 using AvaloniaEdit.Highlighting;
+using Avalonia.Threading;
 using Serilog;
 using SkiaSharp;
 using System.Collections.ObjectModel;
@@ -281,7 +282,7 @@ public class TabItem : ViewModel
         TitleExtra = string.Empty;
         ParentExportType = string.Empty;
         ScrollTrigger = null;
-        Application.Current.Dispatcher.Invoke(() =>
+        Dispatcher.UIThread.Invoke(() =>
         {
             _images.Clear();
             SelectedImage = null;
@@ -331,7 +332,7 @@ public class TabItem : ViewModel
 
     public void AddImage(string name, bool rnn, CTexture img, bool save, bool updateUi)
     {
-        Application.Current.Dispatcher.Invoke(() =>
+        Dispatcher.UIThread.Invoke(() =>
         {
             var t = new TabImage(name, rnn, img);
             if (save)
@@ -348,7 +349,7 @@ public class TabItem : ViewModel
 
     public void AddImage(string name, bool rnn, SKBitmap img, bool save, bool updateUi)
     {
-        Application.Current.Dispatcher.Invoke(() =>
+        Dispatcher.UIThread.Invoke(() =>
         {
             var t = new TabImage(name, rnn, img);
             if (save)
@@ -368,7 +369,7 @@ public class TabItem : ViewModel
 
     public void SetDocumentText(string text, bool save, bool updateUi)
     {
-        Application.Current.Dispatcher.Invoke(() =>
+        Dispatcher.UIThread.Invoke(() =>
         {
             Document ??= new TextDocument();
             Document.Text = text;
@@ -412,7 +413,7 @@ public class TabItem : ViewModel
 
         Directory.CreateDirectory(directory.SubstringBeforeLast('/'));
 
-        Application.Current.Dispatcher.Invoke(() => File.WriteAllText(directory, Document.Text));
+        Dispatcher.UIThread.Invoke(() => File.WriteAllText(directory, Document.Text));
         SaveCheck(directory, fileName, updateUi);
     }
 
@@ -476,7 +477,7 @@ public class TabControlViewModel : ViewModel
 
         if (!CanAddTabs)
             return;
-        Application.Current.Dispatcher.Invoke(() =>
+        Dispatcher.UIThread.Invoke(() =>
         {
             _tabItems.Add(new TabItem(entry, parentExportType ?? string.Empty));
             SelectedTab = _tabItems.Last();
@@ -485,7 +486,7 @@ public class TabControlViewModel : ViewModel
 
     public void RemoveTab(TabItem tab = null)
     {
-        Application.Current.Dispatcher.Invoke(() =>
+        Dispatcher.UIThread.Invoke(() =>
         {
             var tabCount = _tabItems.Count;
             var tabToDelete = tab ?? SelectedTab;
@@ -520,7 +521,7 @@ public class TabControlViewModel : ViewModel
 
     public void RemoveOtherTabs(TabItem tab)
     {
-        Application.Current.Dispatcher.Invoke(() =>
+        Dispatcher.UIThread.Invoke(() =>
         {
             foreach (var t in _tabItems.Where(t => t != tab).ToList())
             {
@@ -531,7 +532,7 @@ public class TabControlViewModel : ViewModel
 
     public void RemoveAllTabs()
     {
-        Application.Current.Dispatcher.Invoke(() =>
+        Dispatcher.UIThread.Invoke(() =>
         {
             SelectedTab = null;
             _tabItems.Clear();

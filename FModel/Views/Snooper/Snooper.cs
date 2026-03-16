@@ -9,6 +9,7 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
+using Avalonia.Threading;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
@@ -48,25 +49,36 @@ public class Snooper : GameWindow
             Renderer.Save();
         }
 
+        // GLFW.SetWindowShouldClose is thread-safe; IsVisible (glfwShowWindow/
+        // glfwHideWindow) must be called from the GLFW main thread (UI thread).
         GLFW.SetWindowShouldClose(WindowPtr, value); // start / stop game loop
-        IsVisible = !value;
+        Dispatcher.UIThread.Post(() => IsVisible = !value);
     }
 
     public unsafe void WindowShouldFreeze(bool value)
     {
         GLFW.SetWindowShouldClose(WindowPtr, value); // start / stop game loop
-        IsVisible = true;
+        Dispatcher.UIThread.Post(() => IsVisible = true);
     }
 
     public override void Run()
     {
         Renderer.Options.SwapMaterial(false);
         Renderer.Options.AnimateMesh(false);
-        Application.Current.Dispatcher.Invoke(delegate
-        {
-            WindowShouldClose(false, false);
-            base.Run();
-        });
+
+        // GLFW.SetWindowShouldClose is documented as callable from any thread.
+        unsafe
+        { GLFW.SetWindowShouldClose(WindowPtr, false); }
+
+        // glfwShowWindow must be called from the GLFW main thread (the thread that
+        // created the window, which is the Avalonia UI thread).
+        Dispatcher.UIThread.Post(() => IsVisible = true);
+
+        // Run the blocking GLFW game loop on a dedicated background thread so that
+        // neither the calling thread nor the Avalonia UI event loop is blocked for
+        // the lifetime of the 3D viewer window. OpenTK transfers the GL context to
+        // this thread via Context.MakeCurrent() at the start of base.Run().
+        new Thread(() => base.Run()) { IsBackground = true, Name = "Snooper-GameLoop" }.Start();
     }
 
     private unsafe void LoadWindowIcon()

@@ -4,8 +4,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Data;
+using Avalonia.Threading;
 using CUE4Parse.FileProvider.Objects;
 using FModel.Framework;
 using FModel.Services;
@@ -49,11 +49,13 @@ public class BackupManagerViewModel : ViewModel
         await _threadWorkerView.Begin(cancellationToken =>
         {
             var backups = _apiEndpointView.DillyApi.GetBackups(cancellationToken);
-            if (backups == null) return;
+            if (backups == null)
+                return;
 
-            Application.Current.Dispatcher.Invoke(() =>
+            Dispatcher.UIThread.Post(() =>
             {
-                foreach (var backup in backups) Backups.Add(backup);
+                foreach (var backup in backups)
+                    Backups.Add(backup);
                 SelectedBackup = Backups.FirstOrDefault();
             });
         });
@@ -77,7 +79,8 @@ public class BackupManagerViewModel : ViewModel
 
             foreach (var asset in _applicationView.CUE4Parse.Provider.Files.Values)
             {
-                if (!func(asset)) continue;
+                if (!func(asset))
+                    continue;
                 writer.Write(asset.Size);
                 writer.Write(asset.IsEncrypted);
                 writer.Write(asset.Path);
@@ -89,7 +92,8 @@ public class BackupManagerViewModel : ViewModel
 
     public async Task Download()
     {
-        if (SelectedBackup == null) return;
+        if (SelectedBackup == null)
+            return;
         await _threadWorkerView.Begin(_ =>
         {
             var fullPath = Path.Combine(Path.Combine(UserSettings.Default.OutputDirectory, "Backups"), SelectedBackup.FileName);
