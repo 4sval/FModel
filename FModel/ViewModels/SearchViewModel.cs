@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows.Data;
+using Avalonia.Collections;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.VirtualFileSystem;
 using FModel.Framework;
@@ -62,12 +62,12 @@ public class SearchViewModel : ViewModel
     }
 
     public RangeObservableCollection<GameFile> SearchResults { get; }
-    public ListCollectionView SearchResultsView { get; }
+    public DataGridCollectionView SearchResultsView { get; }
 
     public SearchViewModel()
     {
         SearchResults = [];
-        SearchResultsView = new ListCollectionView(SearchResults)
+        SearchResultsView = new DataGridCollectionView(SearchResults)
         {
             Filter = e => ItemFilter(e, FilterText.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries)),
         };
@@ -130,6 +130,11 @@ public class SearchViewModel : ViewModel
         SearchResults.AddRange(sorted);
     }
 
+    private Regex? _cachedFilterRegex;
+    private string? _cachedFilterText;
+    private bool _cachedMatchCase;
+    private bool _cachedRegexInvalid;
+
     private bool ItemFilter(object item, IEnumerable<string> filters)
     {
         if (item is not GameFile entry)
@@ -138,8 +143,37 @@ public class SearchViewModel : ViewModel
         if (!HasRegexEnabled)
             return filters.All(x => entry.Path.Contains(x, HasMatchCaseEnabled ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase));
 
-        var o = RegexOptions.None;
-        if (!HasMatchCaseEnabled) o |= RegexOptions.IgnoreCase;
-        return new Regex(FilterText, o).Match(entry.Path).Success;
+        if (_cachedFilterText != FilterText || _cachedMatchCase != HasMatchCaseEnabled)
+        {
+            var o = RegexOptions.None;
+            if (!HasMatchCaseEnabled)
+                o |= RegexOptions.IgnoreCase;
+
+            try
+            {
+                _cachedFilterRegex = new Regex(FilterText, o, TimeSpan.FromSeconds(1));
+                _cachedRegexInvalid = false;
+            }
+            catch (ArgumentException)
+            {
+                _cachedFilterRegex = null;
+                _cachedRegexInvalid = true;
+            }
+
+            _cachedFilterText = FilterText;
+            _cachedMatchCase = HasMatchCaseEnabled;
+        }
+
+        if (_cachedRegexInvalid)
+            return false;
+
+        try
+        {
+            return _cachedFilterRegex?.Match(entry.Path).Success == true;
+        }
+        catch (RegexMatchTimeoutException)
+        {
+            return false;
+        }
     }
 }

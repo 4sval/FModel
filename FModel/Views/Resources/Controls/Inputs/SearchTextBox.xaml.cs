@@ -1,35 +1,35 @@
-using System.Windows;
-using System.Windows.Controls;
+using System;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
 
 namespace FModel.Views.Resources.Controls.Inputs;
 
 public partial class SearchTextBox : UserControl
 {
-    public static readonly DependencyProperty TextProperty =
-        DependencyProperty.Register(nameof(Text), typeof(string), typeof(SearchTextBox),
-            new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+    public static readonly StyledProperty<string> TextProperty =
+        AvaloniaProperty.Register<SearchTextBox, string>(nameof(Text), defaultValue: string.Empty,
+            defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
 
-    public static readonly DependencyProperty WatermarkProperty =
-        DependencyProperty.Register(nameof(Watermark), typeof(string), typeof(SearchTextBox),
-            new PropertyMetadata("Search by name..."));
+    public static readonly StyledProperty<string> WatermarkProperty =
+        AvaloniaProperty.Register<SearchTextBox, string>(nameof(Watermark), defaultValue: "Search by name...");
 
-    public static readonly RoutedEvent ClearButtonClickEvent =
-        EventManager.RegisterRoutedEvent(nameof(ClearButtonClick), RoutingStrategy.Bubble,
-            typeof(RoutedEventHandler), typeof(SearchTextBox));
+    public static readonly RoutedEvent<RoutedEventArgs> ClearButtonClickEvent =
+        RoutedEvent.Register<SearchTextBox, RoutedEventArgs>(nameof(ClearButtonClick), RoutingStrategies.Bubble);
 
     public string Text
     {
-        get => (string)GetValue(TextProperty);
+        get => GetValue(TextProperty);
         set => SetValue(TextProperty, value);
     }
 
     public string Watermark
     {
-        get => (string)GetValue(WatermarkProperty);
+        get => GetValue(WatermarkProperty);
         set => SetValue(WatermarkProperty, value);
     }
 
-    public event RoutedEventHandler ClearButtonClick
+    public event EventHandler<RoutedEventArgs> ClearButtonClick
     {
         add => AddHandler(ClearButtonClickEvent, value);
         remove => RemoveHandler(ClearButtonClickEvent, value);
@@ -40,7 +40,7 @@ public partial class SearchTextBox : UserControl
         InitializeComponent();
     }
 
-    private void OnClearButtonClick(object sender, RoutedEventArgs e)
+    private void OnClearButtonClick(object? sender, RoutedEventArgs e)
     {
         Text = string.Empty;
         RaiseEvent(new RoutedEventArgs(ClearButtonClickEvent, this));

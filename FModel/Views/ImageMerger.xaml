@@ -29,7 +29,7 @@
                          Grid.Row="0"
                          SelectionMode="Extended" />
                 <Separator Grid.Row="1"
-                           Style="{StaticResource CustomSeparator}"
+                           Theme="{StaticResource CustomSeparator}"
                            Tag="COMMANDS" />
                 <Grid Grid.Row="2"
                       Margin="0 0 0 10">

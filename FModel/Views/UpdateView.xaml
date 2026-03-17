@@ -37,21 +37,11 @@
                 <ColumnDefinition Width="5" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <!-- <Grid.Style> -->
-            <!--     <Style TargetType="Grid"> -->
-            <!--         <Setter Property="Visibility" Value="Visible" /> -->
-            <!--         <Style.Triggers> -->
-            <!--             <DataTrigger Binding="{Binding Title, RelativeSource={RelativeSource
-            AncestorType=adonisControls:AdonisWindow}}" Value="Releases"> -->
-            <!--                 <Setter Property="Visibility" Value="Collapsed" /> -->
-            <!--             </DataTrigger> -->
-            <!--         </Style.Triggers> -->
-            <!--     </Style> -->
-            <!-- </Grid.Style> -->
+
 
             <Button Grid.Column="0"
                     VerticalAlignment="Top"
-                    Height="{Binding ActualHeight, ElementName=RemindButton}"
+                    Height="{Binding Bounds.Height, ElementName=RemindButton}"
                     Click="OnDownloadLatest">
                 Download Latest Release
             </Button>
@@ -85,20 +75,27 @@
         </Grid>
 
         <Separator Grid.Row="2"
-                   Style="{StaticResource CustomSeparator}"
+                   Theme="{StaticResource CustomSeparator}"
                    Tag="History" />
         <ScrollViewer Grid.Row="3"
                       VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled">
             <Grid>
-                <!-- TODO(P3-UpdateVM): GroupStyle/GroupItem/HeaderStringFormat are WPF-only APIs not
-                     supported by Avalonia ItemsControl. Date grouping will be re-implemented once
-                     CommitsView is migrated from System.Windows.Data.ListCollectionView to an
-                     Avalonia-compatible collection (see TODO on CommitsView property). -->
-                <ItemsControl ItemsSource="{Binding CommitsView, IsAsync=True}">
+                <ItemsControl ItemsSource="{Binding CommitGroups}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <controls:CommitControl Margin="0 0 0 1" />
+                            <StackPanel>
+                                <TextBlock Text="{Binding Date, StringFormat={}{0:dddd, MMMM d, yyyy}}"
+                                           FontWeight="SemiBold"
+                                           Margin="0 8 0 4" />
+                                <ItemsControl ItemsSource="{Binding Items}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <controls:CommitControl Margin="0 0 0 1" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -106,14 +103,7 @@
                            HorizontalAlignment="Center"
                            VerticalAlignment="Top"
                            Margin="0 20"
-                           IsVisible="{Binding CommitsView.Count, FallbackValue=0,
-                           Converter={x:Static converters:IsNotZeroConverter.Instance},
-                           ConverterParameter=invert}">
-                    <!-- TODO(P3-UpdateVM): CommitsView is System.Windows.Data.ListCollectionView.
-                         Once UpdateViewModel is migrated to Avalonia, replace CommitsView.Count
-                         with a dedicated HasNoCommits bool property or bind against the
-                         ObservableCollection directly so Count changes trigger INPC. -->
-                </TextBlock>
+                           IsVisible="{Binding HasNoCommits}" />
             </Grid>
         </ScrollViewer>
     </Grid>

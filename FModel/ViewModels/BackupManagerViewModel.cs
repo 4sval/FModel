@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Data;
+using Avalonia.Collections;
 using Avalonia.Threading;
 using CUE4Parse.FileProvider.Objects;
 using FModel.Framework;
@@ -35,13 +35,13 @@ public class BackupManagerViewModel : ViewModel
     }
 
     public ObservableCollection<Backup> Backups { get; }
-    public ICollectionView BackupsView { get; }
+    public DataGridCollectionView BackupsView { get; }
 
     public BackupManagerViewModel(string gameName)
     {
         _gameName = gameName;
         Backups = new ObservableCollection<Backup>();
-        BackupsView = new ListCollectionView(Backups) { SortDescriptions = { new SortDescription("FileName", ListSortDirection.Ascending) } };
+        BackupsView = new DataGridCollectionView(Backups) { SortDescriptions = { DataGridSortDescription.FromPath("FileName", ListSortDirection.Ascending) } };
     }
 
     public async Task Initialize()

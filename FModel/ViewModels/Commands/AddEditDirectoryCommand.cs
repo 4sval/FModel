@@ -1,7 +1,11 @@
-using AdonisUI.Controls;
+using System;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using FModel.Framework;
 using FModel.Settings;
 using FModel.Views;
+using Serilog;
 
 namespace FModel.ViewModels.Commands;
 
@@ -11,25 +15,44 @@ public class AddEditDirectoryCommand : ViewModelCommand<CustomDirectoriesViewMod
     {
     }
 
-    public override void Execute(CustomDirectoriesViewModel contextViewModel, object parameter)
+    public override async void Execute(CustomDirectoriesViewModel contextViewModel, object parameter)
     {
-        if (parameter is not CustomDirectory customDir)
-            customDir = new CustomDirectory();
-
-        Helper.OpenWindow<AdonisWindow>("Custom Directory", () =>
+        try
         {
-            var index = contextViewModel.GetIndex(customDir);
-            var input = new CustomDir(customDir);
-            var result = input.ShowDialog();
-            if (!result.HasValue || !result.Value || string.IsNullOrEmpty(customDir.Header) && string.IsNullOrEmpty(customDir.DirectoryPath))
-                return;
+            var sourceDir = parameter as CustomDirectory ?? new CustomDirectory();
+            var editableDir = new CustomDirectory(sourceDir.Header, sourceDir.DirectoryPath);
 
-            if (index > 1)
+            var index = contextViewModel.GetIndex(sourceDir);
+            var input = new CustomDir(editableDir);
+            var owner = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+
+            if (owner == null)
             {
-                contextViewModel.Edit(index, customDir);
+                Log.Warning("AddEditDirectoryCommand: no owner window available, cannot show dialog");
+                return;
             }
-            else
-                contextViewModel.Add(customDir);
-        });
+
+            var result = await input.ShowDialog<bool?>(owner);
+            Apply(result);
+
+            void Apply(bool? dialogResult)
+            {
+                if (dialogResult is not true || string.IsNullOrEmpty(editableDir.Header) && string.IsNullOrEmpty(editableDir.DirectoryPath))
+                    return;
+
+                // Sync edits back to sourceDir so menu CommandParameters stay in sync
+                sourceDir.Header = editableDir.Header;
+                sourceDir.DirectoryPath = editableDir.DirectoryPath;
+
+                if (index > 1)
+                    contextViewModel.Edit(index, sourceDir);
+                else
+                    contextViewModel.Add(sourceDir);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "AddEditDirectoryCommand failed");
+        }
     }
 }

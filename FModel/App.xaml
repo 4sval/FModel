@@ -4,13 +4,17 @@
              RequestedThemeVariant="Dark">
     <Application.Styles>
         <FluentTheme />
-        <!--
-            Views/Resources/* dictionaries will be re-added here as each
-            file is migrated from WPF to Avalonia XAML in later issues.
-        -->
+        <StyleInclude Source="avares://FModel/Views/Resources/Resources.xaml" />
     </Application.Styles>
     <Application.Resources>
         <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://FModel/Views/Resources/Colors.xaml" />
+                <ResourceInclude Source="avares://FModel/Views/Resources/Icons.xaml" />
+                <ResourceInclude Source="avares://FModel/Views/Resources/Controls/ContextMenus/FileContextMenu.xaml" />
+                <ResourceInclude Source="avares://FModel/Views/Resources/Controls/ContextMenus/FolderContextMenu.xaml" />
+                <ResourceInclude Source="avares://FModel/Views/Resources/Controls/TiledExplorer/Resources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
             <!-- Accent colours preserved from original AdonisUI scheme -->
             <Color x:Key="AccentColor">#206BD4</Color>
             <SolidColorBrush x:Key="AccentColorBrush"

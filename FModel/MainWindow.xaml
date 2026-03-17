@@ -294,7 +294,7 @@
                 <TabControl x:Name="LeftTabControl"
                             SelectionChanged="OnTabItemChange"
                             SelectedIndex="{Binding SelectedLeftTabIndex, Mode=TwoWay}">
-                    <TabItem Style="{StaticResource TabItemFillSpace}"
+                    <TabItem Theme="{StaticResource TabItemFillSpace}"
                              Header="Archives">
                         <DockPanel>
                             <Grid DockPanel.Dock="Top">
@@ -341,14 +341,14 @@
                                 </Grid.RowDefinitions>
 
                                 <Separator Grid.Row="0"
-                                           Style="{StaticResource CustomSeparator}"
+                                           Theme="{StaticResource CustomSeparator}"
                                            Tag="GAME ARCHIVES" />
                                 <ListBox Grid.Row="1"
                                          x:Name="DirectoryFilesListBox"
-                                         Style="{StaticResource DirectoryFilesListBox}"
+                                         Theme="{StaticResource DirectoryFilesListBox}"
                                          DoubleTapped="OnMouseDoubleClick" />
                                 <Separator Grid.Row="2"
-                                           Style="{StaticResource CustomSeparator}"
+                                           Theme="{StaticResource CustomSeparator}"
                                            Tag="INFORMATION" />
                                 <StackPanel Grid.Row="3"
                                             Orientation="Vertical"
@@ -410,7 +410,7 @@
                             </Grid>
                         </DockPanel>
                     </TabItem>
-                    <TabItem Style="{StaticResource TabItemFillSpace}"
+                    <TabItem Theme="{StaticResource TabItemFillSpace}"
                              Header="Folders">
                         <Grid>
                             <Grid.RowDefinitions>
@@ -500,17 +500,17 @@
                                 </StackPanel>
                             </Grid>
                             <Separator Grid.Row="1"
-                                       Style="{StaticResource CustomSeparator}"
+                                       Theme="{StaticResource CustomSeparator}"
                                        Margin="0" />
                             <TreeView Grid.Row="2"
                                       x:Name="AssetsFolderName"
-                                      Style="{StaticResource AssetsFolderTreeView}"
+                                      Theme="{StaticResource AssetsFolderTreeView}"
                                       SelectionChanged="OnAssetsTreeSelectedItemChanged"
                                       KeyDown="OnFoldersPreviewKeyDown"
                                       DoubleTapped="OnAssetsTreeMouseDoubleClick">
                             </TreeView>
                             <Separator Grid.Row="3"
-                                       Style="{StaticResource CustomSeparator}"
+                                       Theme="{StaticResource CustomSeparator}"
                                        Tag="INFORMATION" />
                             <StackPanel Grid.Row="4"
                                         Orientation="Vertical"
@@ -582,7 +582,7 @@
                             </StackPanel>
                         </Grid>
                     </TabItem>
-                    <TabItem Style="{StaticResource TabItemFillSpace}"
+                    <TabItem Theme="{StaticResource TabItemFillSpace}"
                              Header="{Binding SelectedItem.AssetsList.Assets.Count, FallbackValue=0, ElementName=AssetsFolderName}"
                              HeaderStringFormat="{}{0} Packages">
                         <DockPanel>
@@ -603,17 +603,17 @@
                                 <controls:Breadcrumb Grid.Row="0"
                                                      HorizontalAlignment="Left"
                                                      Margin="0 5 0 5"
-                                                     MaxWidth="{Binding ActualWidth, ElementName=AssetsSearchTextBox}"
+                                                     MaxWidth="{Binding Bounds.Width, ElementName=AssetsSearchTextBox}"
                                                      DataContext="{Binding SelectedItem.PathAtThisPoint, ElementName=AssetsFolderName, FallbackValue='No/Directory/Detected/In/Folder'}" />
 
                                 <ListBox Grid.Row="1"
                                          x:Name="AssetsListName"
-                                         Style="{StaticResource AssetsListBox}"
+                                         Theme="{StaticResource AssetsListBox}"
                                          DoubleTapped="OnAssetsListMouseDoubleClick"
                                          KeyDown="OnPreviewKeyDown" />
 
                                 <Separator Grid.Row="2"
-                                           Style="{StaticResource CustomSeparator}"
+                                           Theme="{StaticResource CustomSeparator}"
                                            Tag="INFORMATION" />
                                 <StackPanel Grid.Row="3"
                                             Orientation="Vertical"
@@ -744,15 +744,15 @@
 
                                 <ListBox x:Name="AssetsExplorer"
                                          Grid.Row="2"
-                                         ItemsSource="{Binding SelectedItem.CombinedEntries, ElementName=AssetsFolderName, IsAsync=True}"
-                                         Style="{StaticResource TiledExplorer}"
+                                         ItemsSource="{Binding SelectedItem.CombinedEntries, ElementName=AssetsFolderName}"
+                                         Theme="{StaticResource TiledExplorer}"
                                          Background="{DynamicResource SystemColors.AppWorkspaceBrushKey}"
                                          KeyDown="OnPreviewKeyDown" />
                             </Grid>
                         </Border>
 
                         <TabControl x:Name="TabControlName"
-                                    Style="{StaticResource GameFilesTabControl}"
+                                    Theme="{StaticResource GameFilesTabControl}"
                                     IsVisible="{Binding IsAssetsExplorerVisible, Converter={x:Static converters:InvertBooleanConverter.Instance}}" />
                     </Grid>
 
@@ -783,6 +783,7 @@
                                           Height="32"
                                           Cursor="Hand"
                                           Margin="0,0,2,0"
+                                          Classes="AssetsExplorerToggle"
                                           IsChecked="{Binding IsAssetsExplorerVisible, Mode=TwoWay}"
                                           Theme="{StaticResource AssetsExplorerToggleButtonStyle}" />
                             <ToggleButton Width="32"
@@ -827,8 +828,7 @@
 
                             <controls:CustomRichTextBox Grid.Column="0"
                                                         Grid.ColumnSpan="3"
-                                                        x:Name="LogRtbName"
-                                                        Style="{StaticResource CustomRichTextBox}" />
+                                                        x:Name="LogRtbName" />
                             <StackPanel Grid.Column="2"
                                         Orientation="Vertical"
                                         VerticalAlignment="Bottom"

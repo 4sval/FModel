@@ -1,10 +1,12 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using Avalonia.Media.Imaging;
 using FModel.Framework;
 using FModel.Settings;
 using Serilog;
 using J = Newtonsoft.Json.JsonPropertyAttribute;
+using JI = Newtonsoft.Json.JsonIgnoreAttribute;
 
 namespace FModel.ViewModels.ApiEndpoints.Models;
 
@@ -116,17 +118,37 @@ public class GitHubCommit : ViewModel
     }
 }
 
-public class Commit
+public class Commit : ViewModel
 {
-    [J("author")] public Author Author { get; set; }
-    [J("message")] public string Message { get; set; }
+    private Author _author = null!;
+    [J("author")] public Author Author
+    {
+        get => _author;
+        set => SetProperty(ref _author, value);
+    }
+
+    private string _message = null!;
+    [J("message")] public string Message
+    {
+        get => _message;
+        set => SetProperty(ref _message, value);
+    }
 }
 
-public class Author
+public class Author : ViewModel
 {
-    [J("name")] public string Name { get; set; }
-    [J("login")] public string Login { get; set; }
+    [J("name")] public string Name { get; set; } = null!;
+    [J("login")] public string Login { get; set; } = null!;
     [J("date")] public DateTime Date { get; set; }
-    [J("avatar_url")] public string AvatarUrl { get; set; }
-    [J("html_url")] public string HtmlUrl { get; set; }
+    [J("avatar_url")] public string AvatarUrl { get; set; } = null!;
+    [J("html_url")] public string HtmlUrl { get; set; } = null!;
+
+    private Bitmap? _avatarImage;
+
+    [JI]
+    public Bitmap? AvatarImage
+    {
+        get => _avatarImage;
+        set => SetProperty(ref _avatarImage, value);
+    }
 }

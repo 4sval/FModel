@@ -49,6 +49,7 @@ public class CustomDirectoriesViewModel : ViewModel
 
         dir.Header = newDir.Header;
         dir.Tag = newDir.DirectoryPath;
+        dir.ItemsSource = EnumerateCommands(newDir);
         Save();
     }
 

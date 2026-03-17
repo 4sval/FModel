@@ -43,7 +43,7 @@
         <Separator Grid.Row="3"
                    Grid.Column="0"
                    Grid.ColumnSpan="3"
-                   Style="{StaticResource CustomSeparator}"
+                   Theme="{StaticResource CustomSeparator}"
                    Tag="PRE-CREATED BACKUP FILES" />
 
         <TextBlock Grid.Row="4"

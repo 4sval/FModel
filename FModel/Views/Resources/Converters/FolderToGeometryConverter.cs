@@ -46,18 +46,23 @@ public class FolderToGeometryConverter : IValueConverter
             _ => (null, "NeutralBrush"),
         };
 
-        if (targetType == typeof(bool) || (parameter is string { Length: > 0 } p && p.Equals("visible", StringComparison.OrdinalIgnoreCase)))
+        var paramStr = parameter?.ToString();
+
+        if (paramStr?.Equals("visible", StringComparison.OrdinalIgnoreCase) == true || targetType == typeof(bool))
             return geometry != null;
 
-        if (targetType == typeof(Geometry) && geometry != null)
+        if (paramStr?.Equals("brush", StringComparison.OrdinalIgnoreCase) == true || targetType == typeof(IBrush))
         {
-            Application.Current!.TryGetResource(geometry, null, out var geomRes);
-            return geomRes as Geometry;
-        }
-        if (targetType == typeof(IBrush))
-        {
-            Application.Current!.TryGetResource(brush, null, out var brushRes);
+            if (Application.Current is null) return null;
+            Application.Current.TryGetResource(brush, null, out var brushRes);
             return brushRes as IBrush;
+        }
+
+        if (geometry != null)
+        {
+            if (Application.Current is null) return null;
+            Application.Current.TryGetResource(geometry, null, out var geomRes);
+            return geomRes as Geometry;
         }
 
         return null;

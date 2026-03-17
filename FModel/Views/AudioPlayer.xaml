@@ -43,7 +43,7 @@
                                Margin="0 0 0 10" />
                     <ComboBox Grid.Row="0"
                               Grid.Column="2"
-                              ItemsSource="{Binding AudioPlayer.AudioDevicesView, IsAsync=True}"
+                              ItemsSource="{Binding AudioPlayer.AudioDevicesView}"
                               SelectedItem="{Binding AudioPlayer.SelectedAudioDevice, Mode=TwoWay}"
                               SelectionChanged="OnDeviceSwap">
                         <ComboBox.ItemTemplate>
@@ -103,7 +103,7 @@
                 </Grid>
                 <Separator DockPanel.Dock="Top"
                            Tag="PLAYLIST"
-                           Style="{StaticResource CustomSeparator}" />
+                           Theme="{StaticResource CustomSeparator}" />
                 <Grid DockPanel.Dock="Top"
                       Height="24"
                       Margin="0 0 0 5">
@@ -135,7 +135,7 @@
                              Watermark="Search by name..." />
                 </Grid>
                 <ListBox DockPanel.Dock="Top"
-                         Style="{StaticResource AudioFilesListBox}"
+                         Theme="{StaticResource AudioFilesListBox}"
                          DoubleTapped="OnAudioFileMouseDoubleClick">
                     <ListBox.ContextMenu>
                         <ContextMenu>
@@ -214,7 +214,7 @@
                         HorizontalAlignment="Right"
                         VerticalAlignment="Top"
                         Orientation="Horizontal">
-                <Button ToolTip="Previous"
+                <Button ToolTip.Tip="Previous"
                         Command="{Binding AudioPlayer.AudioCommand}"
                         CommandParameter="Previous">
                     <Viewbox Width="16"
@@ -226,10 +226,10 @@
                         </Canvas>
                     </Viewbox>
                 </Button>
-                <Button Style="{StaticResource PlayPauseToolbarButton}"
+                <Button Theme="{StaticResource PlayPauseToolbarButton}"
                         Command="{Binding AudioPlayer.AudioCommand}"
                         CommandParameter="PlayPause" />
-                <Button ToolTip="Next"
+                <Button ToolTip.Tip="Next"
                         Command="{Binding AudioPlayer.AudioCommand}"
                         CommandParameter="Next">
                     <Viewbox Width="16"

@@ -59,7 +59,7 @@
                                                  Grid.ColumnSpan="3"
                                                  ItemsSource="{Binding DetectedDirectories}"
                                                  Margin="0 0 0 5"
-                                                 Style="{StaticResource UComboBox}"
+                                                 Theme="{StaticResource UComboBox}"
                                                  VerticalAlignment="Center"
                                                  SelectedItem="{Binding SelectedDirectory, Mode=TwoWay}">
                         <ComboBox.ItemTemplate>
@@ -79,7 +79,7 @@
                                                  Grid.ColumnSpan="3"
                                                  Margin="0 0 0 5"
                                                  ItemsSource="{Binding UeGames}"
-                                                 Style="{StaticResource UComboBox}"
+                                                 Theme="{StaticResource UComboBox}"
                                                  VerticalAlignment="Center"
                                                  SelectedItem="{Binding SelectedDirectory.UeVersion, Mode=TwoWay}">
                         <ComboBox.ItemTemplate>
@@ -105,8 +105,8 @@
                             Grid.Column="4"
                             Padding="0"
                             Click="OnDeleteDirectory"
-                            Width="{Binding ActualWidth, ElementName=OkGuysButWhoFuckingAsked}"
-                            ToolTip="Delete Game"
+                            Width="{Binding Bounds.Width, ElementName=OkGuysButWhoFuckingAsked}"
+                            ToolTip.Tip="Delete Game"
                             IsVisible="{Binding SelectedDirectory.IsManual}">
                         <Viewbox Width="16"
                                  Height="16"
@@ -120,12 +120,12 @@
                     </Button>
                 </Grid>
 
-                <Separator Style="{StaticResource CustomSeparator}"
+                <Separator Theme="{StaticResource CustomSeparator}"
                            Tag="ADD UNDETECTED GAME" />
 
                 <Expander ExpandDirection="Down"
                           IsExpanded="False">
-                    <Grid MaxWidth="{Binding ActualWidth, ElementName=Hello}">
+                    <Grid MaxWidth="{Binding Bounds.Width, ElementName=Hello}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="5" />
@@ -167,7 +167,7 @@
                                 Grid.Column="6"
                                 Padding="0"
                                 Click="OnAddDirectory"
-                                ToolTip="Add Game">
+                                ToolTip.Tip="Add Game">
                             <Viewbox Width="16"
                                      Height="16"
                                      HorizontalAlignment="Center">

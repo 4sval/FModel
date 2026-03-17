@@ -9,7 +9,9 @@ using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 
 using CUE4Parse;
 using CUE4Parse.Compression;
@@ -136,13 +138,16 @@ public class CUE4ParseViewModel : ViewModel
                 {
                     var scale = ImGuiController.GetDpiScale();
                     var htz = Snooper.GetMaxRefreshFrequency();
+                    var primaryScreen = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow?.Screens.Primary;
+                    var screenWidth = primaryScreen?.Bounds.Width ?? 1920;
+                    var screenHeight = primaryScreen?.Bounds.Height ?? 1080;
                     return _snooper = new Snooper(
                         new GameWindowSettings { UpdateFrequency = htz },
                         new NativeWindowSettings
                         {
                             ClientSize = new OpenTK.Mathematics.Vector2i(
-                                Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenWidth * .75 * scale),
-                                Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenHeight * .85 * scale)),
+                                Convert.ToInt32(screenWidth * .75 * scale),
+                                Convert.ToInt32(screenHeight * .85 * scale)),
                             NumberOfSamples = Constants.SAMPLES_COUNT,
                             WindowBorder = WindowBorder.Resizable,
                             Flags = ContextFlags.ForwardCompatible,

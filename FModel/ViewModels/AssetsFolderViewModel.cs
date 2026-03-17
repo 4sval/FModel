@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Data;
+using Avalonia.Collections;
 using Avalonia.Threading;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.Versions;
@@ -87,35 +87,35 @@ public class TreeItem : ViewModel
     public AssetsListViewModel AssetsList { get; } = new();
     public RangeObservableCollection<TreeItem> Folders { get; } = [];
 
-    private ICollectionView _foldersView;
-    public ICollectionView FoldersView
+    private DataGridCollectionView _foldersView;
+    public DataGridCollectionView FoldersView
     {
         get
         {
-            _foldersView ??= new ListCollectionView(Folders)
+            _foldersView ??= new DataGridCollectionView(Folders)
             {
-                SortDescriptions = { new SortDescription(nameof(Header), ListSortDirection.Ascending) }
+                SortDescriptions = { DataGridSortDescription.FromPath(nameof(Header), ListSortDirection.Ascending) }
             };
             return _foldersView;
         }
     }
 
-    private ICollectionView? _filteredFoldersView;
-    public ICollectionView? FilteredFoldersView
+    private DataGridCollectionView? _filteredFoldersView;
+    public DataGridCollectionView? FilteredFoldersView
     {
         get
         {
-            _filteredFoldersView ??= new ListCollectionView(Folders)
+            _filteredFoldersView ??= new DataGridCollectionView(Folders)
             {
-                SortDescriptions = { new SortDescription(nameof(Header), ListSortDirection.Ascending) },
+                SortDescriptions = { DataGridSortDescription.FromPath(nameof(Header), ListSortDirection.Ascending) },
                 Filter = e => ItemFilter(e, SearchText.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries))
             };
             return _filteredFoldersView;
         }
     }
 
-    private CompositeCollection _combinedEntries;
-    public CompositeCollection CombinedEntries
+    private Framework.CompositeCollection _combinedEntries;
+    public Framework.CompositeCollection CombinedEntries
     {
         get
         {
@@ -123,11 +123,8 @@ public class TreeItem : ViewModel
             {
                 void CreateCombinedEntries()
                 {
-                    _combinedEntries = new CompositeCollection
-                    {
-                        new CollectionContainer { Collection = FilteredFoldersView },
-                        new CollectionContainer { Collection = AssetsList.AssetsView }
-                    };
+                    _combinedEntries?.Dispose();
+                    _combinedEntries = new Framework.CompositeCollection(FilteredFoldersView, AssetsList.AssetsView);
                 }
 
                 if (!Dispatcher.UIThread.CheckAccess())
@@ -200,12 +197,12 @@ public class TreeItem : ViewModel
 public class AssetsFolderViewModel
 {
     public RangeObservableCollection<TreeItem> Folders { get; }
-    public ICollectionView FoldersView { get; }
+    public DataGridCollectionView FoldersView { get; }
 
     public AssetsFolderViewModel()
     {
         Folders = [];
-        FoldersView = new ListCollectionView(Folders) { SortDescriptions = { new SortDescription("Header", ListSortDirection.Ascending) } };
+        FoldersView = new DataGridCollectionView(Folders) { SortDescriptions = { DataGridSortDescription.FromPath("Header", ListSortDirection.Ascending) } };
     }
 
     public void BulkPopulate(IReadOnlyCollection<GameFile> entries)

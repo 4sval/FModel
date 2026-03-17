@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Windows.Data;
+using Avalonia.Collections;
 using Avalonia.Threading;
 using CSCore;
 using CSCore.CoreAudioAPI;
@@ -201,17 +201,17 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
     public bool IsPaused => PlayedFile.PlaybackState == PlaybackState.Paused;
 
     private readonly ObservableCollection<AudioFile> _audioFiles;
-    public ICollectionView AudioFilesView { get; }
-    public ICollectionView AudioDevicesView { get; }
+    public DataGridCollectionView AudioFilesView { get; }
+    public DataGridCollectionView AudioDevicesView { get; }
 
     public AudioPlayerViewModel()
     {
         _sourceTimer = new Timer(TimerTick, null, 0, 10);
         _audioFiles = new ObservableCollection<AudioFile>();
-        AudioFilesView = new ListCollectionView(_audioFiles);
+        AudioFilesView = new DataGridCollectionView(_audioFiles);
 
         var audioDevices = new ObservableCollection<MMDevice>(EnumerateDevices());
-        AudioDevicesView = new ListCollectionView(audioDevices) { SortDescriptions = { new SortDescription("FriendlyName", ListSortDirection.Ascending) } };
+        AudioDevicesView = new DataGridCollectionView(audioDevices) { SortDescriptions = { DataGridSortDescription.FromPath("FriendlyName", ListSortDirection.Ascending) } };
         SelectedAudioDevice ??= audioDevices.FirstOrDefault();
     }
 
@@ -322,6 +322,7 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
         if (!auto)
         {
+            // TODO(P4-004): Replace Microsoft.Win32.SaveFileDialog with Avalonia StorageProvider API.
             var saveFileDialog = new SaveFileDialog
             {
                 Title = "Save Audio",

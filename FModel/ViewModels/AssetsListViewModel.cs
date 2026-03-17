@@ -1,5 +1,5 @@
 using System.ComponentModel;
-using System.Windows.Data;
+using Avalonia.Collections;
 using CUE4Parse.FileProvider.Objects;
 using FModel.Framework;
 
@@ -9,14 +9,14 @@ public class AssetsListViewModel
 {
     public RangeObservableCollection<GameFileViewModel> Assets { get; } = [];
 
-    private ICollectionView _assetsView;
-    public ICollectionView AssetsView
+    private DataGridCollectionView _assetsView;
+    public DataGridCollectionView AssetsView
     {
         get
         {
-            _assetsView ??= new ListCollectionView(Assets)
+            _assetsView ??= new DataGridCollectionView(Assets)
             {
-                SortDescriptions = { new SortDescription("Asset.Path", ListSortDirection.Ascending) }
+                SortDescriptions = { DataGridSortDescription.FromPath("Asset.Path", ListSortDirection.Ascending) }
             };
             return _assetsView;
         }

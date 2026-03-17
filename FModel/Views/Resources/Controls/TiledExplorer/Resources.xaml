@@ -1,28 +1,31 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
-          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-          xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
-          xmlns:local="clr-namespace:FModel.Views.Resources.Controls.TiledExplorer"
-          xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
-          x:Class="FModel.Views.Resources.Controls.TiledExplorer.ResourcesDictionary">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
+                    xmlns:local="clr-namespace:FModel.Views.Resources.Controls.TiledExplorer"
+                    xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+                    x:Class="FModel.Views.Resources.Controls.TiledExplorer.ResourcesDictionary">
     <controls:TypeDataTemplateSelector x:Key="TemplateSelector" />
 
-    <Style x:Key="TiledExplorer"
-       Selector="ListBox">
+    <ControlTheme x:Key="TiledExplorer"
+                  TargetType="ListBox"
+                  BasedOn="{StaticResource {x:Type ListBox}}">
         <Setter Property="local:SmoothScroll.IsEnabled"
-            Value="True" />
+                Value="True" />
         <Setter Property="local:SmoothScroll.Factor"
-            Value="1.25" />
+                Value="1.25" />
         <!-- Avalonia Multiple = WPF Extended (Ctrl/Shift multi-select) -->
         <Setter Property="SelectionMode"
-            Value="Multiple" />
-        <Setter Property="ContextMenu"
-            Value="{StaticResource FileContextMenu}" />
+                Value="Multiple" />
+        <!-- ContextMenu is assigned programmatically by ListBoxItemBehavior
+             on right-click via TryFindResource, because Avalonia does not
+             support x:Shared="False" (every StaticResource lookup would
+             return the same ContextMenu instance). -->
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility"
-            Value="Auto" />
+                Value="Auto" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"
-            Value="Disabled" />
+                Value="Disabled" />
         <Setter Property="BorderThickness"
-            Value="0" />
+                Value="0" />
 
         <Setter Property="ItemsPanel">
             <Setter.Value>
@@ -35,34 +38,34 @@
         </Setter>
 
         <Setter Property="ItemTemplate"
-            Value="{StaticResource TemplateSelector}" />
+                Value="{StaticResource TemplateSelector}" />
 
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
                     <Border Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
                         <Grid>
                             <ScrollViewer x:Name="PART_ScrollViewer"
-                                   Focusable="False"
-                                   VerticalScrollBarVisibility="Auto"
-                                   HorizontalScrollBarVisibility="Disabled">
+                                          Focusable="False"
+                                          VerticalScrollBarVisibility="Auto"
+                                          HorizontalScrollBarVisibility="Disabled">
                                 <ItemsPresenter />
                             </ScrollViewer>
                             <TextBlock HorizontalAlignment="Center"
-                                 VerticalAlignment="Center"
-                                 FontWeight="SemiBold"
-                                 TextAlignment="Center"
-                                 Foreground="#FF8A80"
-                                 Text="No folders or packages found"
-                                 IsHitTestVisible="False">
+                                       VerticalAlignment="Center"
+                                       FontWeight="SemiBold"
+                                       TextAlignment="Center"
+                                       Foreground="#FF8A80"
+                                       Text="No folders or packages found"
+                                       IsHitTestVisible="False">
                                 <TextBlock.IsVisible>
                                     <MultiBinding Converter="{x:Static converters:ItemsSourceEmptyToBoolConverter.Instance}">
                                         <Binding Path="ItemsSource"
-                                            RelativeSource="{RelativeSource TemplatedParent}" />
+                                                 RelativeSource="{RelativeSource TemplatedParent}" />
                                         <Binding Path="Items.Count"
-                                            RelativeSource="{RelativeSource TemplatedParent}" />
+                                                 RelativeSource="{RelativeSource TemplatedParent}" />
                                     </MultiBinding>
                                 </TextBlock.IsVisible>
                             </TextBlock>
@@ -74,80 +77,83 @@
 
         <Style Selector="^ > ListBoxItem">
             <Setter Property="IsSelected"
-                Value="{Binding IsSelected, Mode=OneWay}" />
+                    Value="{Binding IsSelected, Mode=OneWay}" />
             <Setter Property="Margin"
-                Value="5" />
+                    Value="5" />
             <Setter Property="Padding"
-                Value="5" />
+                    Value="5" />
             <Setter Property="BorderThickness"
-                Value="1.5" />
+                    Value="1.5" />
             <Setter Property="Cursor"
-                Value="Hand" />
+                    Value="Hand" />
             <Setter Property="Background"
-                Value="#252535" />
+                    Value="#252535" />
             <Setter Property="BorderBrush"
-                Value="#3A3F57" />
+                    Value="#3A3F57" />
             <Setter Property="controls:ListBoxItemBehavior.IsBroughtIntoViewWhenSelected"
-                Value="True" />
+                    Value="True" />
             <Setter Property="controls:ListBoxItemBehavior.OpenOnDoubleTap"
-                Value="True" />
+                    Value="True" />
             <Setter Property="controls:ListBoxItemBehavior.SelectFileOnRightClick"
-                Value="True" />
+                    Value="True" />
         </Style>
 
         <Style Selector="^ > ListBoxItem:pointerover">
             <Setter Property="BorderBrush"
-                Value="#575F7A" />
+                    Value="#575F7A" />
         </Style>
 
         <Style Selector="^ > ListBoxItem:selected">
             <Setter Property="Background"
-                Value="#2E3850" />
+                    Value="#2E3850" />
             <Setter Property="BorderBrush"
-                Value="#80B8FF" />
+                    Value="#80B8FF" />
         </Style>
-    </Style>
+    </ControlTheme>
 
     <DataTemplate x:Key="TextureNumTemplate">
         <Border VerticalAlignment="Top"
-            HorizontalAlignment="Right"
-            Margin="4"
-            Padding="6,2"
-            CornerRadius="3"
-            Opacity="0.85"
-            Background="#2C3245">
+                HorizontalAlignment="Right"
+                Margin="4"
+                Padding="6,2"
+                CornerRadius="3"
+                Opacity="0.85"
+                Background="#2C3245">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{Binding}"
-                     Foreground="White"
-                     FontSize="11"
-                     FontWeight="SemiBold"
-                     VerticalAlignment="Center"
-                     Margin="0,0,5,0" />
+                           Foreground="White"
+                           FontSize="11"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center"
+                           Margin="0,0,5,0" />
                 <Path Data="{StaticResource TextureIcon}"
-                   Fill="White"
-                   Width="12"
-                   Height="12"
-                   Stretch="Uniform"
-                   VerticalAlignment="Center" />
+                      Fill="White"
+                      Width="12"
+                      Height="12"
+                      Stretch="Uniform"
+                      VerticalAlignment="Center" />
             </StackPanel>
         </Border>
     </DataTemplate>
 
-    <Style x:Key="AssetsListBox"
-       Selector="ListBox">
+    <ControlTheme x:Key="AssetsListBox"
+                  TargetType="ListBox"
+                  BasedOn="{StaticResource {x:Type ListBox}}">
         <Setter Property="ItemsSource"
-            Value="{Binding SelectedItem.AssetsList.AssetsView, ElementName=AssetsFolderName}" />
+                Value="{Binding SelectedItem.AssetsList.AssetsView, ElementName=AssetsFolderName}" />
         <!-- Avalonia Multiple = WPF Extended (Ctrl/Shift multi-select) -->
         <Setter Property="SelectionMode"
-            Value="Multiple" />
-        <Setter Property="ContextMenu"
-            Value="{StaticResource FileContextMenu}" />
+                Value="Multiple" />
+        <!-- ContextMenu is assigned programmatically by ListBoxItemBehavior
+             on right-click via TryFindResource, because Avalonia does not
+             support x:Shared="False" (every StaticResource lookup would
+             return the same ContextMenu instance). -->
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility"
-            Value="Auto" />
+                Value="Auto" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"
-            Value="Disabled" />
+                Value="Disabled" />
         <Setter Property="BorderThickness"
-            Value="0" />
+                Value="0" />
         <Setter Property="ItemTemplate">
             <Setter.Value>
                 <DataTemplate>
@@ -158,14 +164,14 @@
                         </Grid.ColumnDefinitions>
 
                         <Image Source="{Binding Asset.Extension, Converter={x:Static converters:AssetExtensionToIconConverter.Instance}}"
-                           Width="16"
-                           Height="16"
-                           HorizontalAlignment="Center"
-                           Margin="0 0 3 0" />
+                               Width="16"
+                               Height="16"
+                               HorizontalAlignment="Center"
+                               Margin="0 0 3 0" />
                         <TextBlock Grid.Column="1"
-                             HorizontalAlignment="Left"
-                             Text="{Binding Asset.Name}"
-                             TextTrimming="CharacterEllipsis" />
+                                   HorizontalAlignment="Left"
+                                   Text="{Binding Asset.Name}"
+                                   TextTrimming="CharacterEllipsis" />
                     </Grid>
                 </DataTemplate>
             </Setter.Value>
@@ -174,28 +180,28 @@
             <Setter.Value>
                 <ControlTemplate>
                     <Border Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
                         <Grid>
                             <ScrollViewer x:Name="PART_ScrollViewer"
-                                   Focusable="False"
-                                   VerticalScrollBarVisibility="Auto"
-                                   HorizontalScrollBarVisibility="Disabled">
+                                          Focusable="False"
+                                          VerticalScrollBarVisibility="Auto"
+                                          HorizontalScrollBarVisibility="Disabled">
                                 <ItemsPresenter />
                             </ScrollViewer>
                             <TextBlock HorizontalAlignment="Center"
-                                 VerticalAlignment="Center"
-                                 FontWeight="SemiBold"
-                                 TextAlignment="Center"
-                                 Foreground="#FF8A80"
-                                 Text="No packages found in folder"
-                                 IsHitTestVisible="False">
+                                       VerticalAlignment="Center"
+                                       FontWeight="SemiBold"
+                                       TextAlignment="Center"
+                                       Foreground="#FF8A80"
+                                       Text="No packages found in folder"
+                                       IsHitTestVisible="False">
                                 <TextBlock.IsVisible>
                                     <MultiBinding Converter="{x:Static converters:ItemsSourceEmptyToBoolConverter.Instance}">
                                         <Binding Path="ItemsSource"
-                                            RelativeSource="{RelativeSource TemplatedParent}" />
+                                                 RelativeSource="{RelativeSource TemplatedParent}" />
                                         <Binding Path="Items.Count"
-                                            RelativeSource="{RelativeSource TemplatedParent}" />
+                                                 RelativeSource="{RelativeSource TemplatedParent}" />
                                     </MultiBinding>
                                 </TextBlock.IsVisible>
                             </TextBlock>
@@ -207,16 +213,16 @@
 
         <Style Selector="^ > ListBoxItem">
             <Setter Property="HorizontalContentAlignment"
-                Value="Stretch" />
+                    Value="Stretch" />
             <Setter Property="Padding"
-                Value="5 3" />
+                    Value="5 3" />
             <Setter Property="IsSelected"
-                Value="{Binding IsSelected, Mode=TwoWay}" />
+                    Value="{Binding IsSelected, Mode=TwoWay}" />
             <Setter Property="controls:ListBoxItemBehavior.IsBroughtIntoViewWhenSelected"
-                Value="True" />
+                    Value="True" />
             <Setter Property="controls:ListBoxItemBehavior.SelectFileOnRightClick"
-                Value="True" />
+                    Value="True" />
         </Style>
-    </Style>
+    </ControlTheme>
 
 </ResourceDictionary>

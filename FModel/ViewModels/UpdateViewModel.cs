@@ -4,7 +4,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows.Data;
+using Avalonia.Collections;
+using Avalonia.Threading;
 using CUE4Parse.Utils;
 using FModel.Framework;
 using FModel.Services;
@@ -12,8 +13,21 @@ using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
 using FModel.ViewModels.Commands;
 using FModel.Views.Resources.Converters;
+using Serilog;
 
 namespace FModel.ViewModels;
+
+public class CommitGroup
+{
+    public DateTime Date { get; }
+    public IReadOnlyList<GitHubCommit> Items { get; }
+
+    public CommitGroup(DateTime date, IReadOnlyList<GitHubCommit> items)
+    {
+        Date = date;
+        Items = items;
+    }
+}
 
 public partial class UpdateViewModel : ViewModel
 {
@@ -23,14 +37,19 @@ public partial class UpdateViewModel : ViewModel
     public RemindMeCommand RemindMeCommand => _remindMeCommand ??= new RemindMeCommand(this);
 
     public RangeObservableCollection<GitHubCommit> Commits { get; }
-    public ICollectionView CommitsView { get; }
+    public RangeObservableCollection<CommitGroup> CommitGroups { get; }
+    public bool HasNoCommits => CommitGroups.Count == 0;
+
+    private bool _suppressRegroup;
 
     public UpdateViewModel()
     {
         Commits = [];
-        CommitsView = new ListCollectionView(Commits)
+        CommitGroups = [];
+        Commits.CollectionChanged += (_, _) =>
         {
-            GroupDescriptions = { new PropertyGroupDescription("Commit.Author.Date", new DateTimeToDateConverter()) }
+            if (!_suppressRegroup)
+                RebuildCommitGroups();
         };
 
         if (UserSettings.Default.NextUpdateCheck < DateTime.Now)
@@ -44,11 +63,20 @@ public partial class UpdateViewModel : ViewModel
             return;
 
         Commits.AddRange(commits);
+        _ = LoadAvatars();
 
         try
         {
-            _ = LoadCoAuthors();
-            _ = LoadAssets();
+            _ = LoadCoAuthors().ContinueWith(t =>
+            {
+                if (t.IsFaulted)
+                    Log.Error(t.Exception, "Failed to load co-authors");
+            }, TaskScheduler.Default);
+            _ = LoadAssets().ContinueWith(t =>
+            {
+                if (t.IsFaulted)
+                    Log.Error(t.Exception, "Failed to load assets");
+            }, TaskScheduler.Default);
         }
         catch
         {
@@ -56,58 +84,76 @@ public partial class UpdateViewModel : ViewModel
         }
     }
 
-    private Task LoadCoAuthors()
+    private async Task LoadCoAuthors()
     {
-        return Task.Run(async () =>
+        var snapshot = Commits.ToList();
+        var coAuthorMap = await Task.Run(() =>
         {
-            var coAuthorMap = new Dictionary<GitHubCommit, HashSet<string>>();
-            foreach (var commit in Commits)
+            var map = new Dictionary<GitHubCommit, (string CleanMessage, HashSet<string> Usernames)>();
+            var regex = GetCoAuthorRegex();
+
+            foreach (var commit in snapshot)
             {
                 if (!commit.Commit.Message.Contains("Co-authored-by"))
                     continue;
 
-                var regex = GetCoAuthorRegex();
                 var matches = regex.Matches(commit.Commit.Message);
-                if (matches.Count == 0) continue;
+                if (matches.Count == 0)
+                    continue;
 
-                commit.Commit.Message = regex.Replace(commit.Commit.Message, string.Empty).Trim();
-
-                coAuthorMap[commit] = [];
+                var usernames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 foreach (Match match in matches)
                 {
-                    if (match.Groups.Count < 3) continue;
+                    if (match.Groups.Count < 3)
+                        continue;
 
                     var username = match.Groups[1].Value;
                     if (username.Equals("Asval", StringComparison.OrdinalIgnoreCase))
-                    {
                         username = "4sval"; // found out the hard way co-authored usernames can't be trusted
-                    }
 
-                    coAuthorMap[commit].Add(username);
+                    usernames.Add(username);
                 }
+
+                if (usernames.Count == 0)
+                    continue;
+
+                var cleanMessage = regex.Replace(commit.Commit.Message, string.Empty).Trim();
+                map[commit] = (cleanMessage, usernames);
             }
 
-            if (coAuthorMap.Count == 0) return;
+            return map;
+        });
 
-            var uniqueUsernames = coAuthorMap.Values.SelectMany(x => x).Distinct().ToArray();
-            var authorCache = new Dictionary<string, Author>();
-            foreach (var username in uniqueUsernames)
+        if (coAuthorMap.Count == 0)
+            return;
+
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            foreach (var (commit, data) in coAuthorMap)
+                commit.Commit.Message = data.CleanMessage;
+        });
+
+        var uniqueUsernames = coAuthorMap.Values.SelectMany(x => x.Usernames).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+        var authorCache = new Dictionary<string, Author>();
+        foreach (var username in uniqueUsernames)
+        {
+            try
             {
-                try
-                {
-                    var author = await _apiEndpointView.GitHubApi.GetUserAsync(username);
-                    if (author != null)
-                        authorCache[username] = author;
-                }
-                catch
-                {
-                    //
-                }
+                var author = await _apiEndpointView.GitHubApi.GetUserAsync(username);
+                if (author != null)
+                    authorCache[username] = author;
             }
-
-            foreach (var (commit, usernames) in coAuthorMap)
+            catch
             {
-                var coAuthors = usernames
+                //
+            }
+        }
+
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            foreach (var (commit, data) in coAuthorMap)
+            {
+                var coAuthors = data.Usernames
                     .Where(username => authorCache.ContainsKey(username))
                     .Select(username => authorCache[username])
                     .ToArray();
@@ -116,42 +162,94 @@ public partial class UpdateViewModel : ViewModel
                     commit.CoAuthors = coAuthors;
             }
         });
+
+        await LoadAvatars();
     }
 
-    private Task LoadAssets()
+    private async Task LoadAssets()
     {
-        return Task.Run(async () =>
+        var qa = await _apiEndpointView.GitHubApi.GetReleaseAsync("qa");
+        var assets = qa.Assets.OrderByDescending(x => x.CreatedAt).ToList();
+
+        await Dispatcher.UIThread.InvokeAsync(() =>
         {
-            var qa = await _apiEndpointView.GitHubApi.GetReleaseAsync("qa");
-            var assets = qa.Assets.OrderByDescending(x => x.CreatedAt).ToList();
-
-            for (var i = 0; i < assets.Count; i++)
+            _suppressRegroup = true;
+            try
             {
-                var asset = assets[i];
-                asset.IsLatest = i == 0;
+                for (var i = 0; i < assets.Count; i++)
+                {
+                    var asset = assets[i];
+                    asset.IsLatest = i == 0;
 
-                var commitSha = asset.Name.SubstringBeforeLast(".zip");
-                var commit = Commits.FirstOrDefault(x => x.Sha == commitSha);
-                if (commit != null)
-                {
-                    commit.Asset = asset;
-                }
-                else
-                {
-                    Commits.Add(new GitHubCommit
+                    var commitSha = asset.Name.SubstringBeforeLast(".zip");
+                    var commit = Commits.FirstOrDefault(x => x.Sha == commitSha);
+                    if (commit != null)
                     {
-                        Sha = commitSha,
-                        Commit = new Commit
+                        commit.Asset = asset;
+                    }
+                    else
+                    {
+                        Commits.Add(new GitHubCommit
                         {
-                            Message = $"FModel ({commitSha[..7]})",
-                            Author = new Author { Name = asset.Uploader.Login, Date = asset.CreatedAt }
-                        },
-                        Author = asset.Uploader,
-                        Asset = asset
-                    });
+                            Sha = commitSha,
+                            Commit = new Commit
+                            {
+                                Message = $"FModel ({commitSha[..7]})",
+                                Author = new Author { Name = asset.Uploader.Login, Date = asset.CreatedAt }
+                            },
+                            Author = asset.Uploader,
+                            Asset = asset
+                        });
+                    }
                 }
             }
+            finally
+            {
+                _suppressRegroup = false;
+                RebuildCommitGroups();
+            }
         });
+
+        await LoadAvatars();
+    }
+
+    private void RebuildCommitGroups()
+    {
+        var groups = Commits
+            .OrderByDescending(x => x.Commit?.Author?.Date ?? DateTime.MinValue)
+            .GroupBy(x => (x.Commit?.Author?.Date ?? DateTime.MinValue).Date)
+            .Select(g => new CommitGroup(g.Key, g.ToList()))
+            .ToList();
+
+        CommitGroups.Clear();
+        CommitGroups.AddRange(groups);
+        RaisePropertyChanged(nameof(HasNoCommits));
+    }
+
+    private async Task LoadAvatars()
+    {
+        var authorsByUrl = Commits
+            .SelectMany(x => x.Authors)
+            .Where(x => x != null && !string.IsNullOrWhiteSpace(x.AvatarUrl))
+            .ToArray()
+            .GroupBy(x => x.AvatarUrl, StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        foreach (var authors in authorsByUrl)
+        {
+            if (authors.All(x => x.AvatarImage != null))
+                continue;
+
+            var bitmap = await UrlToBitmapConverter.LoadAsync(authors.Key);
+            if (bitmap == null)
+                continue;
+
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                foreach (var author in authors)
+                    author.AvatarImage = bitmap;
+            });
+        }
     }
 
     public void DownloadLatest()

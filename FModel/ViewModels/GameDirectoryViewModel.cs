@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows.Data;
+using Avalonia.Collections;
 using Avalonia.Threading;
 using CUE4Parse.Compression;
 using CUE4Parse.UE4.IO;
@@ -105,7 +105,7 @@ public class GameDirectoryViewModel : ViewModel
 {
     public bool HasNoFile => DirectoryFiles.Count < 1;
     public readonly ObservableCollection<FileItem> DirectoryFiles;
-    public ICollectionView DirectoryFilesView { get; }
+    public DataGridCollectionView DirectoryFilesView { get; }
 
     private readonly Regex _hiddenArchives = new(@"^(?!global|pakchunk.+(optional|ondemand)\-).+(pak|utoc)$", // should be universal
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
@@ -113,7 +113,7 @@ public class GameDirectoryViewModel : ViewModel
     public GameDirectoryViewModel()
     {
         DirectoryFiles = new ObservableCollection<FileItem>();
-        DirectoryFilesView = new ListCollectionView(DirectoryFiles) { SortDescriptions = { new SortDescription("Name", ListSortDirection.Ascending) } };
+        DirectoryFilesView = new DataGridCollectionView(DirectoryFiles) { SortDescriptions = { DataGridSortDescription.FromPath("Name", ListSortDirection.Ascending) } };
     }
 
     public void Add(IAesVfsReader reader)
