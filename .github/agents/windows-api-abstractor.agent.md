@@ -2,7 +2,30 @@
 description: Replaces Windows-specific APIs (P/Invoke, Registry, shell, paths) with cross-platform equivalents in FModel
 name: Windows API Abstractor
 argument-hint: Name a specific file or area to fix (e.g. "fix App.xaml.cs P/Invoke calls" or "abstract all Registry usage")
-tools: [read, search, edit, execute, todo, web]
+tools:
+    [
+        vscode/memory,
+        execute,
+        read,
+        edit,
+        search,
+        web,
+        github/add_issue_comment,
+        github/add_reply_to_pull_request_comment,
+        github/create_pull_request,
+        github/issue_read,
+        github/issue_write,
+        github/list_issue_types,
+        github/list_issues,
+        github/list_pull_requests,
+        github/pull_request_read,
+        github/pull_request_review_write,
+        github/search_issues,
+        github/search_pull_requests,
+        github/sub_issue_write,
+        github/update_pull_request,
+        todo,
+    ]
 handoffs:
     - label: Review Platform Abstractions
       agent: Cross-Platform .NET Reviewer
