@@ -36,6 +36,7 @@ public class BaseIcon : UCreator
 
         if (Object.TryGetValue(out FInstancedStruct[] dataList, "DataList"))
         {
+            GetRarity(dataList);
             GetSeries(dataList);
             Preview = Utils.GetBitmap(dataList);
         }
@@ -137,6 +138,12 @@ public class BaseIcon : UCreator
         if (!Utils.TryGetPackageIndexExport(s, out UObject export)) return;
 
         GetSeries(export);
+    }
+
+    private void GetRarity(FInstancedStruct[] s)
+    {
+        if (s.FirstOrDefault(d => d.NonConstStruct?.TryGetValue(out EFortRarity _, "Rarity") == true) is { } dl)
+            GetRarity(dl.NonConstStruct.Get<EFortRarity>("Rarity"));
     }
 
     private void GetSeries(FInstancedStruct[] s)
