@@ -18,6 +18,7 @@
     <Color name="BooleanConstants" foreground="#569cd6" fontWeight="bold" />
 
     <RuleSet ignoreCase="false">
+        <Rule color="Comment">(\/\/.*|\/\*[\s\S]*?\*\/)</Rule>
         <Span color="String" begin="&quot;" end="&quot;" />
         <!-- UE Macros -->
         <Keywords color="UEMacro">
@@ -44,10 +45,19 @@
             <Word>Int16</Word>
             <Word>Int32</Word>
             <Word>Int64</Word>
+            <Word>int8</Word>
+            <Word>int16</Word>
+            <Word>int32</Word>
+            <Word>int64</Word>
             <Word>uint</Word>
+            <Word>UInt8</Word>
             <Word>UInt16</Word>
             <Word>UInt32</Word>
             <Word>UInt64</Word>
+            <Word>uint8</Word>
+            <Word>uint16</Word>
+            <Word>uint32</Word>
+            <Word>uint64</Word>
             <Word>float</Word>
             <Word>double</Word>
             <Word>bool</Word>
@@ -83,6 +93,7 @@
             <Word>inline</Word>
             <Word>constexpr</Word>
             <Word>default</Word>
+            <Word>&amp;&amp;</Word>
         </Keywords>
 
         <Keywords color="Pointer">
@@ -119,8 +130,6 @@
         <Rule color="Function">[A-Za-z_][A-Za-z0-9_]*\s*(?=\()</Rule>
 
         <Rule color="Brace">[\[\]\{\}]</Rule>
-
-        <Rule color="Comment">(\/\/.*|\/\*[\s\S]*?\*\/)</Rule>
 
         <!-- Template Functions -->
         <Rule color="Function">\b[A-Za-z_][A-Za-z0-9_]*\b(?=&lt;)</Rule>
