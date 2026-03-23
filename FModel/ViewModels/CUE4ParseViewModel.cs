@@ -284,6 +284,20 @@ public class CUE4ParseViewModel : ViewModel
                                     it => new FRandomAccessStreamArchive(it, manifest.FindFile(it)!.GetStream(), p.Versions));
                             });
 
+                            var manifests = _apiEndpointView.DillyApi.GetManifests(cancellationToken);
+                            var downloadUrl = manifests.First(x => x.AppName == "Fortnite_Studio").DownloadUrl;
+
+                            using var client = new HttpClient();
+                            var manifestBytes = client.GetByteArrayAsync(downloadUrl).GetAwaiter().GetResult();
+
+                            var uefnManifest = FBuildPatchAppManifest.Deserialize(manifestBytes, manifestOptions);
+
+                            Parallel.ForEach(uefnManifest.Files.Where(x => _fnLiveRegex.IsMatch(x.FileName)), fileManifest =>
+                            {
+                                p.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream()],
+                                    it => new FRandomAccessStreamArchive(it, uefnManifest.FindFile(it)!.GetStream(), p.Versions));
+                            });
+
                             var elapsedTime = Stopwatch.GetElapsedTime(startTs);
                             FLogger.Append(ELog.Information, () =>
                                 FLogger.Text($"Fortnite [LIVE] has been loaded successfully in {elapsedTime.TotalMilliseconds:F1}ms", Constants.WHITE, true));

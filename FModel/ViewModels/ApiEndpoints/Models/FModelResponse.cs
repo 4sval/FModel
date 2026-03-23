@@ -23,6 +23,13 @@ public class Backup
     [J] public string Url { get; private set; }
 }
 
+[DebuggerDisplay("{" + nameof(AppName) + "}")]
+public class ManifestInfoDilly
+{
+    [J] public string AppName { get; private set; }
+    [J] public string DownloadUrl { get; private set; }
+}
+
 public class Donator
 {
     [J] public string Username { get; private set; }
