@@ -222,14 +222,12 @@ public class CUE4ParseViewModel : ViewModel
 
     public async Task Initialize()
     {
-        await _apiEndpointView.EpicApi.VerifyAuth(CancellationToken.None);
         await _threadWorkerView.Begin(cancellationToken =>
         {
             Provider.OnDemandOptions = new IoStoreOnDemandOptions
             {
                 ChunkHostUri = new Uri("https://download.epicgames.com/", UriKind.Absolute),
                 ChunkCacheDirectory = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data")),
-                Authorization = new AuthenticationHeaderValue("Bearer", UserSettings.Default.LastAuthResponse.AccessToken),
                 Timeout = TimeSpan.FromSeconds(30)
             };
 
