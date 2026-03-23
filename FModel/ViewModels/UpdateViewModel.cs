@@ -81,6 +81,9 @@ public partial class UpdateViewModel : ViewModel
                     if (username.Equals("Asval", StringComparison.OrdinalIgnoreCase))
                     {
                         username = "4sval"; // found out the hard way co-authored usernames can't be trusted
+                    } else if (username.Equals("Krowe Moh", StringComparison.OrdinalIgnoreCase))
+                    {
+                        username = "Krowe-moh";
                     }
 
                     coAuthorMap[commit].Add(username);
@@ -101,7 +104,7 @@ public partial class UpdateViewModel : ViewModel
                 }
                 catch
                 {
-                    //
+                    // Ignore
                 }
             }
 
