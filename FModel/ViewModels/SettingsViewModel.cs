@@ -301,14 +301,6 @@ public class SettingsViewModel : ViewModel
             whatShouldIDo.Add(SettingsOut.ReloadMappings);
 
         if (_ueGameSnapshot != SelectedUeGame || _customVersionsSnapshot != SelectedCustomVersions ||
-            _uePlatformSnapshot != SelectedUePlatform || _optionsSnapshot != SelectedOptions || // combobox
-            _mapStructTypesSnapshot != SelectedMapStructTypes ||
-            _outputSnapshot != UserSettings.Default.OutputDirectory || // textbox
-            _rawDataSnapshot != UserSettings.Default.RawDataDirectory || // textbox
-            _propertiesSnapshot != UserSettings.Default.PropertiesDirectory || // textbox
-            _textureSnapshot != UserSettings.Default.TextureDirectory || // textbox
-            _audioSnapshot != UserSettings.Default.AudioDirectory || // textbox
-            _modelSnapshot != UserSettings.Default.ModelDirectory || // textbox
             _gameSnapshot != UserSettings.Default.GameDirectory) // textbox
             restart = true;
 
