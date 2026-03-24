@@ -104,7 +104,7 @@ public class ApplicationViewModel : ViewModel
         if (UserSettings.Default.CurrentDir is null)
         {
             //If no game is selected, many things will break before a shutdown request is processed in the normal way.
-            //A hard exit is preferable to an unhandled expection in this case
+            //A hard exit is preferable to an unhandled exception in this case
             Environment.Exit(0);
         }
 
@@ -126,7 +126,6 @@ public class ApplicationViewModel : ViewModel
             if (sender is not IAesVfsReader reader) return;
             CUE4Parse.GameDirectory.Disable(reader);
         };
-
         CustomDirectories = new CustomDirectoriesViewModel();
         SettingsView = new SettingsViewModel();
         AesManager = new AesManagerViewModel(CUE4Parse);
