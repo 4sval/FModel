@@ -67,6 +67,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
     private const int MaxPreviewSize = 128;
 
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
+    private EGame? GameVersion => _applicationView.CUE4Parse?.Provider.Versions.Game;
 
     public EResolveCompute Resolved { get; private set; } = EResolveCompute.None;
     public GameFile Asset { get; } = asset;
@@ -260,7 +261,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 // Game specific assets below
                 UBorderlandsDialogObject => (EAssetCategory.Borderlands, EBulkType.None), // Borderlands 3;
                 UGbxGraphAsset or UDialogScriptData or UDialogPerformanceData => (EAssetCategory.Borderlands, EBulkType.Audio), // Borderlands 4; Borderlands 3;
-                UFaceFXAnimSet when _applicationView.CUE4Parse?.Provider.Versions.Game is EGame.GAME_Borderlands4 => (EAssetCategory.Borderlands, EBulkType.Audio), // Borderlands 4;
+                UFaceFXAnimSet when GameVersion is EGame.GAME_Borderlands4 => (EAssetCategory.Borderlands, EBulkType.Audio), // Borderlands 4;
 
                 _ => (EAssetCategory.All, EBulkType.None),
             };
@@ -355,6 +356,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             case "csv":
                 AssetCategory = EAssetCategory.Data;
                 break;
+            case "stinfo":
             case "ushaderbytecode":
                 AssetCategory = EAssetCategory.ByteCode;
                 break;
@@ -430,9 +432,12 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 });
             }
             // Game specific extensions below
-            case "ace": // Borderlands 3
-            case "ncs": // Borderlands 4
+            case "ace" when GameVersion is EGame.GAME_Borderlands3:
+            case "ncs" when GameVersion is EGame.GAME_Borderlands4:
                 AssetCategory = EAssetCategory.Borderlands;
+                break;
+            case "dat" when GameVersion is EGame.GAME_Aion2:
+                AssetCategory = EAssetCategory.Aion2;
                 break;
             default:
                 AssetCategory = EAssetCategory.All; // just so it sets resolved

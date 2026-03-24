@@ -1,4 +1,4 @@
-﻿<adonisControls:AdonisWindow x:Class="FModel.Views.DirectorySelector"
+<adonisControls:AdonisWindow x:Class="FModel.Views.DirectorySelector"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
@@ -8,7 +8,8 @@
         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize" IconVisibility="Collapsed" SizeToContent="Height"
         MinHeight="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.20'}"
-        Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.25'}">
+        Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.25'}"
+        AllowDrop="True">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
             <Setter Property="Title" Value="Directory Selector" />
@@ -83,9 +84,12 @@
                     </Button>
                 </Grid>
 
-                <Separator Style="{StaticResource CustomSeparator}" Tag="ADD UNDETECTED GAME" />
-
-                <Expander ExpandDirection="Down" IsExpanded="False">
+                <Separator Style="{StaticResource CustomSeparator}" Tag="ADD UNDETECTED GAME" Margin="0,0,0,0"/>
+                <TextBlock Text="Drag &amp; drop folder to quickly configure new game" 
+                           HorizontalAlignment="Center"
+                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                           Margin="0,0,0,5" />
+                <Expander x:Name="ManualGameExpander" ExpandDirection="Down" IsExpanded="False">
                     <Grid MaxWidth="{Binding ActualWidth, ElementName=Hello}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -137,5 +141,8 @@
                         HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Cancel" />
             </Grid>
         </Border>
+        <controls:DropOverlay Grid.RowSpan="99"
+                              Grid.ColumnSpan="99"
+                              Panel.ZIndex="1000" />
     </Grid>
 </adonisControls:AdonisWindow>

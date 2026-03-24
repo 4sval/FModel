@@ -4,6 +4,8 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -67,10 +69,101 @@ public class GameSelectorViewModel : ViewModel
     public void AddUndetectedDir(string gameDirectory) => AddUndetectedDir(gameDirectory.SubstringAfterLast('\\'), gameDirectory);
     public void AddUndetectedDir(string gameName, string gameDirectory)
     {
-        var setting = DirectorySettings.Default(gameName, gameDirectory, true);
+        if (TryDetectUeVersion(gameDirectory, out var ueVersion, out var newGameDirectory))
+        {
+            // gameDirectory = newGameDirectory; // directory was changed to point to the correct paks folder
+        }
+
+        var setting = DirectorySettings.Default(gameName, gameDirectory, true, ueVersion);
         UserSettings.Default.PerDirectory[gameDirectory] = setting;
         _detectedDirectories.Add(setting);
         SelectedDirectory = DetectedDirectories.Last();
+    }
+
+    private bool TryDetectUeVersion(string gameDirectory, out EGame ueVersion, [MaybeNullWhen(false)] out string newGameDirectory)
+    {
+        var targetGameDir = gameDirectory;
+        if (!targetGameDir.EndsWith("Paks", StringComparison.OrdinalIgnoreCase))
+        {
+            var dirs = Directory.GetDirectories(targetGameDir, "Paks", SearchOption.AllDirectories);
+            var paksDir = dirs.Length == 1 ? dirs[0] : dirs.FirstOrDefault(x => !x.EndsWith("Engine\\Programs\\CrashReportClient\\Content\\Paks"));
+            if (!string.IsNullOrEmpty(paksDir))
+            {
+                Log.Warning("Selected directory \"{GameDirectory}\" does not end with \"Paks\". Looking in \"{PaksDir}\" instead.", targetGameDir, paksDir);
+                targetGameDir = paksDir;
+            }
+
+            if (Directory.GetFiles(gameDirectory, "*.exe") is { Length: 1 } exe && TryGetUeVersionFromExe(exe[0], out ueVersion))
+            {
+                // we checked the exe in the original directory, the BootstrapPackagedGame one
+                // but we still want c4p to use the paks folder as the game directory (if any), not the original one
+                newGameDirectory = targetGameDir;
+                Log.Information("Detected UE version {UeVersion} from \"{Exe}\"", ueVersion, exe[0]);
+                return true;
+            }
+        }
+
+        // past this point, we assume targetGameDir is the correct Paks folder
+        newGameDirectory = targetGameDir;
+        var projectDir = Path.Combine(targetGameDir, "..", "..");
+
+        var projectBinariesDir = Path.Combine(projectDir, "Binaries", "Win64");
+        if (Directory.Exists(projectBinariesDir))
+        {
+            if (Directory.GetFiles(projectBinariesDir, "*-Win64-Shipping.exe") is { Length: > 0 } shipping)
+            {
+                foreach (var exe in shipping)
+                {
+                    if (TryGetUeVersionFromExe(exe, out ueVersion))
+                    {
+                        Log.Information("Detected UE version {UeVersion} from \"{Exe}\"", ueVersion, exe);
+                        return true;
+                    }
+                }
+            }
+            else if (Directory.GetFiles(projectBinariesDir, "*.exe") is { Length: < 3 } exes)
+            {
+                foreach (var exe in exes)
+                {
+                    if (TryGetUeVersionFromExe(exe, out ueVersion))
+                    {
+                        Log.Information("Detected UE version {UeVersion} from \"{Exe}\"", ueVersion, exe);
+                        return true;
+                    }
+                }
+            }
+        }
+
+        var crashReportClientExe = Path.Combine(projectDir, "..", "Engine", "Binaries", "Win64", "CrashReportClient.exe");
+        if (File.Exists(crashReportClientExe) && TryGetUeVersionFromExe(crashReportClientExe, out ueVersion))
+        {
+            Log.Information("Detected UE version {UeVersion} from \"{Exe}\"", ueVersion, crashReportClientExe);
+            return true;
+        }
+
+        ueVersion = EGame.GAME_UE4_LATEST;
+        Log.Warning("Failed to detect UE version for \"{GameDirectory}\".", gameDirectory);
+        return false;
+    }
+
+    private bool TryGetUeVersionFromExe(string exePath, out EGame ueVersion)
+    {
+        ueVersion = EGame.GAME_UE4_LATEST;
+        try
+        {
+            var info = FileVersionInfo.GetVersionInfo(exePath);
+            ueVersion = info.FileMajorPart switch
+            {
+                4 => (EGame) Math.Min((uint)(GameUtils.GameUe4Base + (info.FileMinorPart << 16)), (uint) EGame.GAME_UE4_LATEST),
+                5 => (EGame) Math.Min((uint)(GameUtils.GameUe5Base + (info.FileMinorPart << 16)), (uint) EGame.GAME_UE5_LATEST),
+                _ => throw new InvalidOperationException($"Unsupported UE major version {info.FileMajorPart} detected from {exePath}")
+            };
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     public void DeleteSelectedGame()

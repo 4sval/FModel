@@ -51,4 +51,5 @@
 
     <!-- For specific games -->
     <SolidColorBrush x:Key="BorderlandsBrush" Color="Yellow"></SolidColorBrush>
+    <SolidColorBrush x:Key="AionBrush" Color="DeepSkyBlue"></SolidColorBrush>
 </ResourceDictionary>

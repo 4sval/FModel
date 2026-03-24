@@ -93,7 +93,7 @@ public abstract class UModel : IRenderableModel
     {
         _export = export;
         Path = _export.GetPathName();
-        Name = Path.SubstringAfterLast('/').SubstringBefore('.');
+        Name = export.Name;
         Type = export.ExportType;
         UvCount = 1;
 

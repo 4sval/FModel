@@ -34,34 +34,34 @@ public class TabCommand : ViewModelCommand<TabItem>
             case "Find_References":
                 _applicationView.CUE4Parse.FindReferences(tabViewModel.Entry);
                 break;
-            case "Asset_Export_Data":
+            case "Save_Data":
                 await _threadWorkerView.Begin(_ => _applicationView.CUE4Parse.ExportData(tabViewModel.Entry));
                 break;
-            case "Asset_Save_Properties":
+            case "Save_Properties":
                 await _threadWorkerView.Begin(cancellationToken =>
                 {
                     _applicationView.CUE4Parse.Extract(cancellationToken, tabViewModel.Entry, false, EBulkType.Properties);
                 });
                 break;
-            case "Asset_Save_Textures":
+            case "Save_Textures":
                 await _threadWorkerView.Begin(cancellationToken =>
                 {
                     _applicationView.CUE4Parse.Extract(cancellationToken, tabViewModel.Entry, false, EBulkType.Textures);
                 });
                 break;
-            case "Asset_Save_Models":
+            case "Save_Models":
                 await _threadWorkerView.Begin(cancellationToken =>
                 {
                     _applicationView.CUE4Parse.Extract(cancellationToken, tabViewModel.Entry, false, EBulkType.Meshes);
                 });
                 break;
-            case "Asset_Save_Animations":
+            case "Save_Animations":
                 await _threadWorkerView.Begin(cancellationToken =>
                 {
                     _applicationView.CUE4Parse.Extract(cancellationToken, tabViewModel.Entry, false, EBulkType.Animations);
                 });
                 break;
-            case "Asset_Save_Audio":
+            case "Save_Audio":
                 await _threadWorkerView.Begin(cancellationToken =>
                 {
                     _applicationView.CUE4Parse.Extract(cancellationToken, tabViewModel.Entry, false, EBulkType.Audio);

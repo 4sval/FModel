@@ -12,7 +12,8 @@
         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
         WindowStartupLocation="CenterScreen" Closing="OnClosing" Loaded="OnLoaded" PreviewKeyDown="OnWindowKeyDown"
         Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.95'}"
-        Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.90'}">
+        Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.90'}"
+        AllowDrop="True">
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo ProgressValue="1.0">
             <TaskbarItemInfo.ProgressState>
@@ -628,6 +629,10 @@
                             <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}" />
                             <Setter Property="Foreground" Value="White" />
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Configuring}">
+                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}" />
+                            <Setter Property="Foreground" Value="White" />
+                        </DataTrigger>
                         <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Stopped}">
                             <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             <Setter Property="Foreground" Value="White" />
@@ -709,5 +714,7 @@
                 </StackPanel>
             </StatusBarItem>
         </StatusBar>
+        <controls:DropOverlay Grid.RowSpan="99"
+                              Panel.ZIndex="1000" />
     </Grid>
 </adonisControls:AdonisWindow>
