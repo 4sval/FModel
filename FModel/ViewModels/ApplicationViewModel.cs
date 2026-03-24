@@ -140,8 +140,10 @@ public class ApplicationViewModel : ViewModel
         if (!bAlreadyLaunched && UserSettings.Default.PerDirectory.TryGetValue(gameDirectory, out var currentDir))
             return currentDir;
 
+        Status.SetStatus(EStatusKind.Configuring);
         var gameLauncherViewModel = new GameSelectorViewModel(gameDirectory);
         var result = new DirectorySelector(gameLauncherViewModel).ShowDialog();
+        Status.SetStatus(EStatusKind.Ready);
         if (!result.HasValue || !result.Value) return null;
 
         UserSettings.Default.GameDirectory = gameLauncherViewModel.SelectedDirectory.GameDirectory;
@@ -152,6 +154,35 @@ public class ApplicationViewModel : ViewModel
         UserSettings.Default.CurrentDir = gameLauncherViewModel.SelectedDirectory;
         RestartWithWarning();
         return null;
+    }
+
+    public DirectorySettings AddGameDirectory(string directory)
+    {
+        if (Status.Kind is EStatusKind.Configuring)
+        {
+            var directorySelector = Helper.GetWindow<DirectorySelector>("Directory Selector", null);
+            directorySelector.AddManualGame(directory);
+            return null;
+        }
+        else
+        {
+            Status.SetStatus(EStatusKind.Configuring);
+            var gameLauncherViewModel = new GameSelectorViewModel(UserSettings.Default.GameDirectory);
+            var directorySelector = new DirectorySelector(gameLauncherViewModel);
+            directorySelector.AddManualGame(directory);
+            var result = directorySelector.ShowDialog();
+            Status.SetStatus(EStatusKind.Ready);
+            if (!result.HasValue || !result.Value)
+                return null;
+
+            UserSettings.Default.GameDirectory = gameLauncherViewModel.SelectedDirectory.GameDirectory;
+            if (UserSettings.Default.CurrentDir.Equals(gameLauncherViewModel.SelectedDirectory))
+                return gameLauncherViewModel.SelectedDirectory;
+
+            UserSettings.Default.CurrentDir = gameLauncherViewModel.SelectedDirectory;
+            RestartWithWarning();
+            return null;
+        }
     }
 
     public void RestartWithWarning()

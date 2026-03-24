@@ -216,7 +216,7 @@
                                         </MenuItem.Header>
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Export_Data" />
+                                                <Binding Source="Save_Data" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -231,7 +231,7 @@
                                     <MenuItem Header="Save Properties (.json)" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Save_Properties" />
+                                                <Binding Source="Save_Properties" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -246,7 +246,7 @@
                                     <MenuItem Header="Save Texture" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Save_Textures" />
+                                                <Binding Source="Save_Textures" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -261,7 +261,7 @@
                                     <MenuItem Header="Save Model" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Save_Models" />
+                                                <Binding Source="Save_Models" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -276,7 +276,7 @@
                                     <MenuItem Header="Save Animation" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Save_Animations" />
+                                                <Binding Source="Save_Animations" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -291,7 +291,7 @@
                                     <MenuItem Header="Save Audio" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Save_Audio" />
+                                                <Binding Source="Save_Audio" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -561,7 +561,7 @@
                                         </MenuItem.Header>
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Export_Data" />
+                                                <Binding Source="Save_Data" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -576,7 +576,7 @@
                                     <MenuItem Header="Save Properties (.json)" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Save_Properties" />
+                                                <Binding Source="Save_Properties" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -591,7 +591,7 @@
                                     <MenuItem Header="Save Texture" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Save_Textures" />
+                                                <Binding Source="Save_Textures" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -606,7 +606,7 @@
                                     <MenuItem Header="Save Model" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Save_Models" />
+                                                <Binding Source="Save_Models" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -621,7 +621,7 @@
                                     <MenuItem Header="Save Animation" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Save_Animations" />
+                                                <Binding Source="Save_Animations" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -636,7 +636,7 @@
                                     <MenuItem Header="Save Audio" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Save_Audio" />
+                                                <Binding Source="Save_Audio" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
