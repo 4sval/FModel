@@ -69,7 +69,7 @@
                   Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                    <Binding Source="Folders_Save_Code" />
+                    <Binding Source="Save_Code" />
                     <Binding Path="Tag"
                              RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                 </MultiBinding>
