@@ -92,6 +92,12 @@ public partial class App
             UserSettings.Default.AudioDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports");
         }
 
+        if (!Directory.Exists(UserSettings.Default.CodeDirectory))
+        {
+            createMe = true;
+            UserSettings.Default.CodeDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports");
+        }
+
         if (!Directory.Exists(UserSettings.Default.ModelDirectory))
         {
             createMe = true;

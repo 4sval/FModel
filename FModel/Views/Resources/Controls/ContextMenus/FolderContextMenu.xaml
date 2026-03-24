@@ -65,6 +65,26 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
+        <MenuItem Header="Save Folder's Decompiled Blueprints"
+                  Command="{Binding RightClickMenuCommand}">
+            <MenuItem.CommandParameter>
+                <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                    <Binding Source="Folders_Save_Code" />
+                    <Binding Path="Tag"
+                             RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
+                </MultiBinding>
+            </MenuItem.CommandParameter>
+            <MenuItem.Icon>
+                <Viewbox Width="16"
+                         Height="16">
+                    <Canvas Width="24"
+                            Height="24">
+                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                              Data="{StaticResource CodeIcon}" />
+                    </Canvas>
+                </Viewbox>
+            </MenuItem.Icon>
+        </MenuItem>
         <MenuItem Header="Save Folder's Packages Models"
                   Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>

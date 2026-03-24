@@ -195,6 +195,7 @@ public class SettingsViewModel : ViewModel
     private string _propertiesSnapshot;
     private string _textureSnapshot;
     private string _audioSnapshot;
+    private string _codeSnapshot;
     private string _modelSnapshot;
     private string _gameSnapshot;
     private ETexturePlatform _uePlatformSnapshot;
@@ -227,6 +228,7 @@ public class SettingsViewModel : ViewModel
         _propertiesSnapshot = UserSettings.Default.PropertiesDirectory;
         _textureSnapshot = UserSettings.Default.TextureDirectory;
         _audioSnapshot = UserSettings.Default.AudioDirectory;
+        _codeSnapshot = UserSettings.Default.CodeDirectory;
         _modelSnapshot = UserSettings.Default.ModelDirectory;
         _gameSnapshot = UserSettings.Default.GameDirectory;
         _uePlatformSnapshot = UserSettings.Default.CurrentDir.TexturePlatform;

@@ -207,6 +207,20 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                         });
                     }
                     break;
+                case "Folders_Save_Code":
+                    foreach (var folder in folders)
+                    {
+                        Thread.Yield();
+                        cancellationToken.ThrowIfCancellationRequested();
+                        contextViewModel.CUE4Parse.CodeFolder(cancellationToken, folder);
+
+                        FLogger.Append(ELog.Information, () =>
+                        {
+                            FLogger.Text("Successfully saved decompiled blueprints from ", Constants.WHITE);
+                            FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.CodeDirectory, true);
+                        });
+                    }
+                    break;
                 #endregion
             }
         });

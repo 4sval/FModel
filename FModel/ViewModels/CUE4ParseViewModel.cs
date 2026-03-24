@@ -628,6 +628,9 @@ public class CUE4ParseViewModel : ViewModel
     public void AudioFolder(CancellationToken cancellationToken, TreeItem folder)
         => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, EBulkType.Audio | EBulkType.Auto));
 
+    public void CodeFolder(CancellationToken cancellationToken, TreeItem folder)
+        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, EBulkType.Code | EBulkType.Auto));
+
     public void Extract(CancellationToken cancellationToken, GameFile entry, bool addNewTab = false, EBulkType bulk = EBulkType.None)
     {
         ApplicationService.ApplicationView.IsAssetsExplorerVisible = false;
@@ -641,6 +644,7 @@ public class CUE4ParseViewModel : ViewModel
         var saveProperties = HasFlag(bulk, EBulkType.Properties);
         var saveTextures = HasFlag(bulk, EBulkType.Textures);
         var saveAudio = HasFlag(bulk, EBulkType.Audio);
+        var saveDecompiled = HasFlag(bulk, EBulkType.Code);
         switch (entry.Extension)
         {
             case "uasset":
@@ -653,6 +657,13 @@ public class CUE4ParseViewModel : ViewModel
                 {
                     TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(saveProperties), Formatting.Indented), saveProperties, updateUi);
                     if (saveProperties) break; // do not search for viewable exports if we are dealing with jsons
+                }
+
+                if (saveDecompiled)
+                {
+                    if (Decompile(entry, false))
+                        TabControl.SelectedTab.SaveDecompiled(updateUi);
+                    break;
                 }
 
                 for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
@@ -1364,11 +1375,13 @@ public class CUE4ParseViewModel : ViewModel
     }
 
 
-    public void Decompile(GameFile entry)
+    public bool Decompile(GameFile entry, bool AddTab = true)
     {
-        ApplicationService.ApplicationView.IsAssetsExplorerVisible = false;
-
-        if (TabControl.CanAddTabs) TabControl.AddTab(entry);
+        if (TabControl.CanAddTabs && AddTab)
+        {
+            ApplicationService.ApplicationView.IsAssetsExplorerVisible = false;
+            TabControl.AddTab(entry);
+        }
         else TabControl.SelectedTab.SoftReset(entry);
 
         TabControl.SelectedTab.TitleExtra = "Decompiled";
@@ -1410,6 +1423,7 @@ public class CUE4ParseViewModel : ViewModel
         cpp = Regex.Replace(cpp, @"K2Node_([A-Za-z0-9_]+)", "$1");
 
         TabControl.SelectedTab.SetDocumentText(cpp, false, false);
+        return cpp.Length > 0;
     }
 
     private void SaveAndPlaySound(CancellationToken cancellationToken, string fullPath, string ext, byte[] data, bool isBulk, bool updateUi)

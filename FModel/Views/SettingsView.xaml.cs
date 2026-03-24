@@ -76,6 +76,7 @@ public partial class SettingsView
         UserSettings.Default.PropertiesDirectory = path;
         UserSettings.Default.TextureDirectory = path;
         UserSettings.Default.AudioDirectory = path;
+        UserSettings.Default.CodeDirectory = path;
     }
 
     private void OnBrowseDirectories(object sender, RoutedEventArgs e)

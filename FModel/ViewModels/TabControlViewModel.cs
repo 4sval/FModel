@@ -407,7 +407,17 @@ public class TabItem : ViewModel
         Application.Current.Dispatcher.Invoke(() => File.WriteAllText(directory, Document.Text));
         SaveCheck(directory, fileName, updateUi);
     }
+    public void SaveDecompiled(bool updateUi)
+    {
+        var fileName = Path.ChangeExtension(Entry.Name, ".cpp");
+        var directory = Path.Combine(UserSettings.Default.PropertiesDirectory,
+            UserSettings.Default.KeepDirectoryStructure ? Entry.Directory : "", fileName).Replace('\\', '/');
 
+        Directory.CreateDirectory(directory.SubstringBeforeLast('/'));
+
+        Application.Current.Dispatcher.Invoke(() => File.WriteAllText(directory, Document.Text));
+        SaveCheck(directory, fileName, updateUi);
+    }
     private void SaveCheck(string path, string fileName, bool updateUi)
     {
         if (File.Exists(path))

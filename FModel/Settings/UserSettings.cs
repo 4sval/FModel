@@ -119,6 +119,13 @@ namespace FModel.Settings
             set => SetProperty(ref _audioDirectory, value);
         }
 
+        private string _codeDirectory;
+        public string CodeDirectory
+        {
+            get => _codeDirectory;
+            set => SetProperty(ref _codeDirectory, value);
+        }
+
         private string _modelDirectory;
         public string ModelDirectory
         {
