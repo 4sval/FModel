@@ -771,9 +771,15 @@
                                 </Image.ContextMenu>
                             </Image>
                         </Border>
-                        <TextBlock Grid.Column="2" VerticalAlignment="Bottom" HorizontalAlignment="Center"
-                                   Visibility="{Binding SelectedItem.HasMultipleImages, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}"
-                                   Text="{Binding SelectedItem.Page, ElementName=TabControlName}" />
+                        <StackPanel Grid.Column="2" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                            <TextBlock HorizontalAlignment="Center"
+                                       Text="{Binding SelectedItem.SelectedImage.ExportName, Converter={x:Static converters:FileNameWithoutExtensionConverter.Instance}, ElementName=TabControlName}"
+                                       FontSize="10" FontWeight="SemiBold"
+                                       Visibility="{Binding SelectedItem.HasImage, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            <TextBlock HorizontalAlignment="Center"
+                                       Visibility="{Binding SelectedItem.HasMultipleImages, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}"
+                                       Text="{Binding SelectedItem.Page, ElementName=TabControlName}" />
+                        </StackPanel>
                     </Grid>
                     <DataTemplate.Triggers>
                         <DataTrigger Binding="{Binding SelectedItem.HasImage, ElementName=TabControlName}" Value="False">
