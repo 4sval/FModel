@@ -1,10 +1,6 @@
-using System;
-using System.IO;
-using System.Linq;
 using FModel.ViewModels;
 using Ookii.Dialogs.Wpf;
 using System.Windows;
-using CUE4Parse.Utils;
 
 namespace FModel.Views;
 
@@ -43,28 +39,7 @@ public partial class DirectorySelector
         if (folderBrowser.ShowDialog() == true)
         {
             HelloGameMyNameIsDirectory.Text = folderBrowser.SelectedPath;
-
-            // install_folder/
-            //     ├─ Engine/
-            //     ├─ GameName/
-            //     │  ├─ Binaries/
-            //     │  ├─ Content/
-            //     │  │  ├─ Paks/
-            // our goal is to get the GameName folder
-            var currentFolder = folderBrowser.SelectedPath.SubstringAfterLast('\\');
-            if (currentFolder.Equals("Paks", StringComparison.InvariantCulture))
-            {
-                var dir = new DirectoryInfo(folderBrowser.SelectedPath);
-                if (dir.Parent is { Parent: not null } &&
-                    dir.Parent.Name.Equals("Content", StringComparison.InvariantCulture) &&
-                    dir.Parent.Parent.GetDirectories().Any(x => x.Name == "Binaries"))
-                {
-                    HelloMyNameIsGame.Text = dir.Parent.Parent.Name;
-                    return;
-                }
-            }
-
-            HelloMyNameIsGame.Text = folderBrowser.SelectedPath.SubstringAfterLast('\\');
+            HelloMyNameIsGame.Text = Helper.GetGameName(folderBrowser.SelectedPath);
         }
     }
 
@@ -86,5 +61,12 @@ public partial class DirectorySelector
             return;
 
         gameLauncherViewModel.DeleteSelectedGame();
+    }
+
+    public void AddManualGame(string directory)
+    {
+        ManualGameExpander.IsExpanded = true;
+        HelloMyNameIsGame.Text = Helper.GetGameName(directory);
+        HelloGameMyNameIsDirectory.Text = directory;
     }
 }

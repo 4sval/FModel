@@ -1,6 +1,17 @@
 using System;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Windows;
+using System.Windows.Media.Imaging;
+using CUE4Parse.FileProvider.Objects;
+using CUE4Parse.UE4.Assets.Exports.Texture;
+using CUE4Parse.Utils;
+using CUE4Parse_Conversion.Textures;
 using FModel.Extensions;
 using FModel.Framework;
+using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels.Commands;
 using FModel.Views.Resources.Controls;
@@ -8,15 +19,6 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using Serilog;
 using SkiaSharp;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Windows;
-using System.Windows.Media.Imaging;
-using CUE4Parse.UE4.Assets.Exports.Texture;
-using CUE4Parse_Conversion.Textures;
-using CUE4Parse.FileProvider.Objects;
-using CUE4Parse.Utils;
 
 namespace FModel.ViewModels;
 
@@ -374,8 +376,7 @@ public class TabItem : ViewModel
     public void SaveImage() => SaveImage(SelectedImage, true);
     private void SaveImage(TabImage image, bool updateUi)
     {
-        if (image == null)
-            return;
+        if (image is null) return;
 
         var path = Path.Combine(UserSettings.Default.TextureDirectory, UserSettings.Default.KeepDirectoryStructure ? Entry.Directory : "", image.ExportName).Replace('\\', '/');
 
@@ -392,6 +393,7 @@ public class TabItem : ViewModel
 
     private void SaveImage(TabImage image, string path)
     {
+        if (image.ImageBuffer is null)  return;
         using var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read);
         fs.Write(image.ImageBuffer, 0, image.ImageBuffer.Length);
     }
@@ -412,6 +414,7 @@ public class TabItem : ViewModel
     {
         if (File.Exists(path))
         {
+            Interlocked.Increment(ref ApplicationService.ApplicationView.CUE4Parse.ExportedCount);
             Log.Information("{FileName} successfully saved", fileName);
             if (updateUi)
             {
@@ -424,6 +427,7 @@ public class TabItem : ViewModel
         }
         else
         {
+            Interlocked.Increment(ref ApplicationService.ApplicationView.CUE4Parse.FailedExportCount);
             Log.Error("{FileName} could not be saved", fileName);
             if (updateUi)
                 FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{fileName}'", Constants.WHITE, true));

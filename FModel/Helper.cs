@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -62,7 +63,7 @@ public static class Helper
         GetOpenedWindow<T>(windowName).Close();
     }
 
-    private static bool IsWindowOpen<T>(string name = "") where T : Window
+    public static bool IsWindowOpen<T>(string name = "") where T : Window
     {
         return string.IsNullOrEmpty(name)
             ? Application.Current.Windows.OfType<T>().Any()
@@ -110,5 +111,25 @@ public static class Helper
     {
         const float ratio = 180f / MathF.PI;
         return radians * ratio;
+    }
+
+    public static string GetGameName(string path)
+    {
+        // install_folder/
+        //     ├─ Engine/
+        //     ├─ GameName/
+        //     │  ├─ Binaries/
+        //     │  ├─ Content/
+        //     │  │  ├─ Paks/
+        // our goal is to get the GameName folder
+        var dir = new DirectoryInfo(path);
+        if (dir.Name.Equals("Paks", StringComparison.InvariantCulture) && dir.Parent is { Parent: not null } &&
+                dir.Parent.Name.Equals("Content", StringComparison.InvariantCulture) &&
+                dir.Parent.Parent.GetDirectories().Any(x => x.Name == "Binaries"))
+        {
+            return dir.Parent.Parent.Name;
+        }
+
+        return dir.Name;
     }
 }

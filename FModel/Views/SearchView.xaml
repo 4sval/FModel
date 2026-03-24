@@ -1,7 +1,6 @@
 <adonisControls:AdonisWindow x:Class="FModel.Views.SearchView"
                              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                             xmlns:settings="clr-namespace:FModel.Settings"
                              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
                              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
@@ -235,15 +234,14 @@
                                         </MenuItem.IsEnabled>
                                     </MenuItem>
                                     <Separator />
-                                    <MenuItem Command="{Binding DataContext.mainApplication.RightClickMenuCommand}"
-                                              Visibility="{Binding CanExportRawData, Source={x:Static settings:UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <MenuItem Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.Header>
                                             <TextBlock Text="{Binding DataContext.SelectedItem.Extension, FallbackValue='Export Raw Data',
                                                 StringFormat='Export Raw Data (.{0})', RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
                                         </MenuItem.Header>
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Export_Data" />
+                                                <Binding Source="Save_Data" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -258,7 +256,7 @@
                                     <MenuItem Header="Save Properties (.json)" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Save_Properties" />
+                                                <Binding Source="Save_Properties" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -273,7 +271,7 @@
                                     <MenuItem Header="Save Texture" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Save_Textures" />
+                                                <Binding Source="Save_Textures" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -288,7 +286,7 @@
                                     <MenuItem Header="Save Model" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Save_Models" />
+                                                <Binding Source="Save_Models" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -303,7 +301,7 @@
                                     <MenuItem Header="Save Animation" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Save_Animations" />
+                                                <Binding Source="Save_Animations" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -318,7 +316,7 @@
                                     <MenuItem Header="Save Audio" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Save_Audio" />
+                                                <Binding Source="Save_Audio" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -596,15 +594,14 @@
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <Separator />
-                                    <MenuItem Command="{Binding DataContext.mainApplication.RightClickMenuCommand}"
-                                              Visibility="{Binding CanExportRawData, Source={x:Static settings:UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <MenuItem Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.Header>
                                             <TextBlock Text="{Binding DataContext.SelectedItem.Extension, FallbackValue='Export Raw Data',
                                                 StringFormat='Export Raw Data (.{0})', RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
                                         </MenuItem.Header>
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Export_Data" />
+                                                <Binding Source="Save_Data" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -619,7 +616,7 @@
                                     <MenuItem Header="Save Properties (.json)" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Save_Properties" />
+                                                <Binding Source="Save_Properties" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -634,7 +631,7 @@
                                     <MenuItem Header="Save Texture" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Save_Textures" />
+                                                <Binding Source="Save_Textures" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -649,7 +646,7 @@
                                     <MenuItem Header="Save Model" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Save_Models" />
+                                                <Binding Source="Save_Models" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -664,7 +661,7 @@
                                     <MenuItem Header="Save Animation" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Save_Animations" />
+                                                <Binding Source="Save_Animations" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>
@@ -679,7 +676,7 @@
                                     <MenuItem Header="Save Audio" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                <Binding Source="Assets_Save_Audio" />
+                                                <Binding Source="Save_Audio" />
                                                 <Binding Path="SelectedItems" />
                                             </MultiBinding>
                                         </MenuItem.CommandParameter>

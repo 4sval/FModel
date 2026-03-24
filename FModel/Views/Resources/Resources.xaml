@@ -975,8 +975,7 @@
                                     </MenuItem.IsEnabled>
                                 </MenuItem>
                                 <Separator />
-                                <MenuItem Command="{Binding TabCommand}" CommandParameter="Asset_Export_Data"
-                                          Visibility="{Binding CanExportRawData, Source={x:Static settings:UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <MenuItem Command="{Binding TabCommand}" CommandParameter="Save_Data">
                                     <MenuItem.Header>
                                         <TextBlock Text="{Binding Entry.Extension, FallbackValue='Export Raw Data', StringFormat='Export Raw Data (.{0})'}" />
                                     </MenuItem.Header>
@@ -988,7 +987,7 @@
                                         </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Save Properties (.json)" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Properties">
+                                <MenuItem Header="Save Properties (.json)" Command="{Binding TabCommand}" CommandParameter="Save_Properties">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
                                             <Canvas Width="24" Height="24">
@@ -997,7 +996,7 @@
                                         </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Save Texture" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Textures">
+                                <MenuItem Header="Save Texture" Command="{Binding TabCommand}" CommandParameter="Save_Textures">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
                                             <Canvas Width="24" Height="24">
@@ -1006,7 +1005,7 @@
                                         </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Save Model" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Models">
+                                <MenuItem Header="Save Model" Command="{Binding TabCommand}" CommandParameter="Save_Models">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
                                             <Canvas Width="24" Height="24">
@@ -1015,7 +1014,7 @@
                                         </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Save Animation" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Animations">
+                                <MenuItem Header="Save Animation" Command="{Binding TabCommand}" CommandParameter="Save_Animations">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
                                             <Canvas Width="24" Height="24">
@@ -1024,7 +1023,7 @@
                                         </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Save Audio" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Audio">
+                                <MenuItem Header="Save Audio" Command="{Binding TabCommand}" CommandParameter="Save_Audio">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
                                             <Canvas Width="24" Height="24">

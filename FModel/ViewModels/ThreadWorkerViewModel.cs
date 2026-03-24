@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CUE4Parse.UE4.Exceptions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Views.Resources.Controls;
@@ -100,7 +101,26 @@ public class ThreadWorkerViewModel : ViewModel
                     CurrentCancellationTokenSource = null; // kill token
 
                     Log.Error("{Exception}", e);
-                    FLogger.Append(e);
+                    switch (e)
+                    {
+                        case MappingException:
+                            FLogger.Append(ELog.Error, () =>
+                            {
+                                FLogger.Text("Package has unversioned properties but mapping file (.usmap) is missing, can't serialize. See: ", Constants.WHITE);
+                                FLogger.Link("→ link ←", Constants.MAPPING_ISSUE_LINK, true);
+                            });
+                            break;
+                        case VersionException v: // Error might be unrelated to version, but it's usually the case
+                            FLogger.Append(ELog.Error, () =>
+                            {
+                                FLogger.Text(v.Message[..^1] + ", can't serialize. Make sure the correct UE version is configured. See: ", Constants.WHITE);
+                                FLogger.Link("→ link ←", Constants.VERSION_ISSUE_LINK, true);
+                            });
+                            break;
+                        default:
+                            FLogger.Append(e);
+                            break;
+                    }
                     return;
                 }
             }
