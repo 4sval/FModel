@@ -303,6 +303,8 @@ public class SettingsViewModel : ViewModel
             whatShouldIDo.Add(SettingsOut.ReloadMappings);
 
         if (_ueGameSnapshot != SelectedUeGame || _customVersionsSnapshot != SelectedCustomVersions ||
+            _uePlatformSnapshot != SelectedUePlatform || _optionsSnapshot != SelectedOptions || // combobox
+            _mapStructTypesSnapshot != SelectedMapStructTypes ||
             _gameSnapshot != UserSettings.Default.GameDirectory) // textbox
             restart = true;
 
