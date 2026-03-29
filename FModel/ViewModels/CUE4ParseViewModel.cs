@@ -1424,6 +1424,7 @@ public class CUE4ParseViewModel : ViewModel
             cppList.Add(blueprint.DecompileBlueprintToPseudo(cookedMetaData));
         }
 
+        if (cppList.Count == 0) return false;
         var cpp = cppList.Count > 1 ? string.Join("\n\n", cppList) : cppList.FirstOrDefault() ?? string.Empty;
         if (entry.Path.Contains("_Verse.uasset"))
         {
@@ -1434,7 +1435,7 @@ public class CUE4ParseViewModel : ViewModel
         cpp = Regex.Replace(cpp, @"K2Node_([A-Za-z0-9_]+)", "$1");
 
         TabControl.SelectedTab.SetDocumentText(cpp, false, false);
-        return cpp.Length > 0;
+        return true;
     }
 
     private void SaveAndPlaySound(CancellationToken cancellationToken, string fullPath, string ext, byte[] data, bool saveAudio, bool updateUi)
