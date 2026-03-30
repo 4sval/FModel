@@ -1421,7 +1421,7 @@ public class CUE4ParseViewModel : ViewModel
             if (dummy is not UClass || pointer.Object.Value is not UClass blueprint)
                 continue;
 
-            cppList.Add(blueprint.DecompileBlueprintToPseudo(cookedMetaData));
+            cppList.Add(blueprint.DecompileBlueprintToPseudo(pkg.Mappings, cookedMetaData));
         }
 
         if (cppList.Count == 0) return false;
