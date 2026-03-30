@@ -758,6 +758,8 @@ public class CUE4ParseViewModel : ViewModel
             case "po":
             case "md":
             case "h":
+            case "non" when Provider.Versions.Game is EGame.GAME_RocoKingdomWorld:
+            case "cam" when Provider.Versions.Game is EGame.GAME_RocoKingdomWorld:
             // Uncharted Waters Origin
             case "crn":
             case "uwt":
