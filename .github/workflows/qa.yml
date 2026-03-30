@@ -20,7 +20,7 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: .NET Restore
-        run: dotnet restore "./FModel/FModel.slnx"
+        run: dotnet restore "./FModel/FModel.slnx" -r win-x64
 
       - name: .NET Publish
         run: dotnet publish "./FModel/FModel.csproj" -c Release --no-restore --no-self-contained -r win-x64 -f net8.0-windows -o "./FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false

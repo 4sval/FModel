@@ -680,7 +680,7 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
             }
         }
 
-        var success = TryConvertToWAV(inputFilePath, inputFileData, vgmFilePath, true, out var tempWavFilePath);
+        var success = TryConvertToWAV(inputFilePath, inputFileData, vgmFilePath, true, out wavFilePath);
 
         if (!success)
         {
