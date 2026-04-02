@@ -172,6 +172,13 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _criwareDecryptionKey, value);
     }
 
+    private uint _onDemandTimeout = 120;
+    public uint OnDemandTimeout
+    {
+        get => Math.Max(_onDemandTimeout, 60);
+        set => SetProperty(ref _onDemandTimeout, Math.Max(_onDemandTimeout, 60));
+    }
+
     public bool SocketSettingsEnabled => SelectedMeshExportFormat == EMeshFormat.ActorX;
     public bool CompressionSettingsEnabled => SelectedMeshExportFormat == EMeshFormat.UEFormat;
 
@@ -237,6 +244,7 @@ public class SettingsViewModel : ViewModel
         _optionsSnapshot = UserSettings.Default.CurrentDir.Versioning.Options;
         _mapStructTypesSnapshot = UserSettings.Default.CurrentDir.Versioning.MapStructTypes;
         _criwareDecryptionKey = UserSettings.Default.CurrentDir.CriwareDecryptionKey;
+        _onDemandTimeout = UserSettings.Default.CurrentDir.OnDemandTimeout;
 
         AesEndpoint = UserSettings.Default.CurrentDir.Endpoints[0];
         MappingEndpoint = UserSettings.Default.CurrentDir.Endpoints[1];
@@ -273,6 +281,7 @@ public class SettingsViewModel : ViewModel
         SelectedMaterialExportFormat = _materialExportFormatSnapshot;
         SelectedTextureExportFormat = _textureExportFormatSnapshot;
         CriwareDecryptionKey = _criwareDecryptionKey;
+        OnDemandTimeout = _onDemandTimeout;
         SelectedAesReload = UserSettings.Default.AesReload;
         SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
 
@@ -314,7 +323,8 @@ public class SettingsViewModel : ViewModel
         UserSettings.Default.CurrentDir.Versioning.Options = SelectedOptions;
         UserSettings.Default.CurrentDir.Versioning.MapStructTypes = SelectedMapStructTypes;
         UserSettings.Default.CurrentDir.CriwareDecryptionKey = CriwareDecryptionKey;
-
+        UserSettings.Default.CurrentDir.OnDemandTimeout = OnDemandTimeout;
+        
         UserSettings.Default.AssetLanguage = SelectedAssetLanguage;
         UserSettings.Default.CompressedAudioMode = SelectedCompressedAudio;
         UserSettings.Default.CosmeticStyle = SelectedCosmeticStyle;

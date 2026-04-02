@@ -44,6 +44,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -267,6 +268,28 @@
                              TextAlignment="Right"
                              TextChanged="CriwareKeyBox_TextChanged"
                              Loaded="CriwareKeyBox_Loaded"/>
+
+
+                    <TextBlock Grid.Row="21"
+                               Grid.Column="0"
+                               Text="OnDemand Timeout"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 10" />
+
+                    <TextBox x:Name="OnDemandTimeoutBox"
+                             Grid.Row="21"
+                             Grid.Column="2"
+                             Grid.ColumnSpan="5"
+                             Margin="0 5 0 10"
+                             VerticalAlignment="Center"
+                             VerticalContentAlignment="Center"
+                             MaxLength="10"
+                             ToolTip="Maximum time in seconds to wait for on-demand downloads to complete before aborting the request."
+                             TextAlignment="Right"
+                             PreviewTextInput="OnDemandTimeout_PreviewTextInput"
+                             DataObject.Pasting="OnDemandTimeout_Pasting"
+                             Loaded="OnDemandTimeout_Loaded"
+                             TextChanged="OnDemandTimeout_TextChanged"/>
 
                 </Grid>
             </DataTemplate>

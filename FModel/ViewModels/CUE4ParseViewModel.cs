@@ -231,7 +231,7 @@ public class CUE4ParseViewModel : ViewModel
             {
                 ChunkHostUri = new Uri("https://download.epicgames.com/", UriKind.Absolute),
                 ChunkCacheDirectory = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data")),
-                Timeout = TimeSpan.FromSeconds(30)
+                Timeout = TimeSpan.FromSeconds(UserSettings.Default.CurrentDir.OnDemandTimeout)
             };
 
             switch (Provider)

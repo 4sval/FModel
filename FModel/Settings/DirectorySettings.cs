@@ -106,6 +106,13 @@ public class DirectorySettings : ViewModel, ICloneable
         set => SetProperty(ref _criwareDecryptionKey, value);
     }
 
+    private uint _onDemandTimeout = 120;
+    public uint OnDemandTimeout
+    {
+        get => Math.Max(_onDemandTimeout, 60);
+        set => SetProperty(ref _onDemandTimeout, Math.Max(_onDemandTimeout, 60));
+    }
+
     private bool Equals(DirectorySettings other)
     {
         return GameDirectory == other.GameDirectory && UeVersion == other.UeVersion;
