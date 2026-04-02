@@ -62,6 +62,8 @@ public partial class SettingsView
 
         _applicationView.CUE4Parse.Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
         _applicationView.CUE4Parse.Provider.ReadShaderMaps = UserSettings.Default.ReadShaderMaps;
+
+        UserSettings.Save();
     }
 
     private void OnBrowseOutput(object sender, RoutedEventArgs e)
@@ -75,6 +77,7 @@ public partial class SettingsView
         UserSettings.Default.PropertiesDirectory = path;
         UserSettings.Default.TextureDirectory = path;
         UserSettings.Default.AudioDirectory = path;
+        UserSettings.Default.CodeDirectory = path;
     }
 
     private void OnBrowseDirectories(object sender, RoutedEventArgs e)
@@ -273,34 +276,35 @@ public partial class SettingsView
         Process.Start(new ProcessStartInfo(hyperlink.NavigateUri.AbsoluteUri) { UseShellExecute = true });
     }
 
-    private void OnDemandTimeout_Loaded(object sender, RoutedEventArgs e)
+    private void HttpRequestTimeoutBox_Loaded(object sender, RoutedEventArgs e)
     {
         if (sender is not TextBox textBox)
             return;
-        textBox.Text = _applicationView.SettingsView.OnDemandTimeout.ToString();
+        textBox.Text = UserSettings.Default.HttpRequestTimeout.ToString();
     }
 
-    private void OnDemandTimeout_TextChanged(object sender, TextChangedEventArgs e)
+    private void HttpRequestTimeoutBox_TextChanged(object sender, TextChangedEventArgs e)
     {
         if (sender is not TextBox textBox)
             return;
 
         string input = textBox.Text?.Trim() ?? string.Empty;
+
         if (string.IsNullOrEmpty(input))
             return;
 
-        if (uint.TryParse(input, out uint seconds))
-            _applicationView.SettingsView.OnDemandTimeout = seconds;
+        if (int.TryParse(input, out int seconds))
+            UserSettings.Default.HttpRequestTimeout = seconds;
         else
-            textBox.Text = uint.MaxValue.ToString();
+            textBox.Text = int.MaxValue.ToString();
     }
 
-    private void OnDemandTimeout_PreviewTextInput(object sender, TextCompositionEventArgs e)
+    private void HttpRequestTimeoutBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
     {
         e.Handled = !e.Text.All(char.IsDigit);
     }
 
-    private void OnDemandTimeout_Pasting(object sender, DataObjectPastingEventArgs e)
+    private void HttpRequestTimeoutBox_Pasting(object sender, DataObjectPastingEventArgs e)
     {
         if (e.DataObject.GetDataPresent(typeof(string)))
         {

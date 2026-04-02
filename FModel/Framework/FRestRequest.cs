@@ -1,11 +1,12 @@
 using System;
+using FModel.Settings;
 using RestSharp;
 
 namespace FModel.Framework;
 
 public class FRestRequest : RestRequest
 {
-    private const int TimeoutSeconds = 5;
+    private int TimeoutSeconds = UserSettings.Default.HttpRequestTimeout;
 
     public FRestRequest(string url, Method method = Method.Get) : base(url, method)
     {

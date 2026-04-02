@@ -544,5 +544,12 @@ namespace FModel.Settings
             get => _previewTexturesAssetExplorer;
             set => SetProperty(ref _previewTexturesAssetExplorer, value);
         }
+
+        private int _httpRequestTimeout = 30;
+        public int HttpRequestTimeout
+        {
+            get => _httpRequestTimeout;
+            set => SetProperty(ref _httpRequestTimeout, Math.Max(value, 30));
+        }
     }
 }

@@ -272,11 +272,11 @@
 
                     <TextBlock Grid.Row="21"
                                Grid.Column="0"
-                               Text="OnDemand Timeout"
+                               Text="HTTP Request Timeout"
                                VerticalAlignment="Center"
                                Margin="0 0 0 10" />
 
-                    <TextBox x:Name="OnDemandTimeoutBox"
+                    <TextBox x:Name="HttpRequestTimeoutBox"
                              Grid.Row="21"
                              Grid.Column="2"
                              Grid.ColumnSpan="5"
@@ -284,12 +284,12 @@
                              VerticalAlignment="Center"
                              VerticalContentAlignment="Center"
                              MaxLength="10"
-                             ToolTip="Maximum time in seconds to wait for on-demand downloads to complete before aborting the request."
+                             ToolTip="Maximum time in seconds to wait for HTTP requests to complete before aborting."
                              TextAlignment="Right"
-                             PreviewTextInput="OnDemandTimeout_PreviewTextInput"
-                             DataObject.Pasting="OnDemandTimeout_Pasting"
-                             Loaded="OnDemandTimeout_Loaded"
-                             TextChanged="OnDemandTimeout_TextChanged"/>
+                             PreviewTextInput="HttpRequestTimeoutBox_PreviewTextInput"
+                             DataObject.Pasting="HttpRequestTimeoutBox_Pasting"
+                             Loaded="HttpRequestTimeoutBox_Loaded"
+                             TextChanged="HttpRequestTimeoutBox_TextChanged"/>
 
                 </Grid>
             </DataTemplate>

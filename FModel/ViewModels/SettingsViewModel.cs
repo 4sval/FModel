@@ -172,13 +172,6 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _criwareDecryptionKey, value);
     }
 
-    private uint _onDemandTimeout = 120;
-    public uint OnDemandTimeout
-    {
-        get => Math.Max(_onDemandTimeout, 60);
-        set => SetProperty(ref _onDemandTimeout, Math.Max(_onDemandTimeout, 60));
-    }
-
     public bool SocketSettingsEnabled => SelectedMeshExportFormat == EMeshFormat.ActorX;
     public bool CompressionSettingsEnabled => SelectedMeshExportFormat == EMeshFormat.UEFormat;
 
@@ -205,6 +198,7 @@ public class SettingsViewModel : ViewModel
     private string _codeSnapshot;
     private string _modelSnapshot;
     private string _gameSnapshot;
+    private int _httpRequestTimeout;
     private ETexturePlatform _uePlatformSnapshot;
     private EGame _ueGameSnapshot;
     private IList<FCustomVersion> _customVersionsSnapshot;
@@ -238,13 +232,13 @@ public class SettingsViewModel : ViewModel
         _codeSnapshot = UserSettings.Default.CodeDirectory;
         _modelSnapshot = UserSettings.Default.ModelDirectory;
         _gameSnapshot = UserSettings.Default.GameDirectory;
+        _httpRequestTimeout = UserSettings.Default.HttpRequestTimeout;
         _uePlatformSnapshot = UserSettings.Default.CurrentDir.TexturePlatform;
         _ueGameSnapshot = UserSettings.Default.CurrentDir.UeVersion;
         _customVersionsSnapshot = UserSettings.Default.CurrentDir.Versioning.CustomVersions;
         _optionsSnapshot = UserSettings.Default.CurrentDir.Versioning.Options;
         _mapStructTypesSnapshot = UserSettings.Default.CurrentDir.Versioning.MapStructTypes;
         _criwareDecryptionKey = UserSettings.Default.CurrentDir.CriwareDecryptionKey;
-        _onDemandTimeout = UserSettings.Default.CurrentDir.OnDemandTimeout;
 
         AesEndpoint = UserSettings.Default.CurrentDir.Endpoints[0];
         MappingEndpoint = UserSettings.Default.CurrentDir.Endpoints[1];
@@ -281,7 +275,6 @@ public class SettingsViewModel : ViewModel
         SelectedMaterialExportFormat = _materialExportFormatSnapshot;
         SelectedTextureExportFormat = _textureExportFormatSnapshot;
         CriwareDecryptionKey = _criwareDecryptionKey;
-        OnDemandTimeout = _onDemandTimeout;
         SelectedAesReload = UserSettings.Default.AesReload;
         SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
 
@@ -323,7 +316,6 @@ public class SettingsViewModel : ViewModel
         UserSettings.Default.CurrentDir.Versioning.Options = SelectedOptions;
         UserSettings.Default.CurrentDir.Versioning.MapStructTypes = SelectedMapStructTypes;
         UserSettings.Default.CurrentDir.CriwareDecryptionKey = CriwareDecryptionKey;
-        UserSettings.Default.CurrentDir.OnDemandTimeout = OnDemandTimeout;
         
         UserSettings.Default.AssetLanguage = SelectedAssetLanguage;
         UserSettings.Default.CompressedAudioMode = SelectedCompressedAudio;
