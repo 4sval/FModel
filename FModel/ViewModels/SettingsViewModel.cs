@@ -198,7 +198,6 @@ public class SettingsViewModel : ViewModel
     private string _codeSnapshot;
     private string _modelSnapshot;
     private string _gameSnapshot;
-    private int _httpRequestTimeout;
     private ETexturePlatform _uePlatformSnapshot;
     private EGame _ueGameSnapshot;
     private IList<FCustomVersion> _customVersionsSnapshot;
@@ -232,7 +231,6 @@ public class SettingsViewModel : ViewModel
         _codeSnapshot = UserSettings.Default.CodeDirectory;
         _modelSnapshot = UserSettings.Default.ModelDirectory;
         _gameSnapshot = UserSettings.Default.GameDirectory;
-        _httpRequestTimeout = UserSettings.Default.HttpRequestTimeout;
         _uePlatformSnapshot = UserSettings.Default.CurrentDir.TexturePlatform;
         _ueGameSnapshot = UserSettings.Default.CurrentDir.UeVersion;
         _customVersionsSnapshot = UserSettings.Default.CurrentDir.Versioning.CustomVersions;

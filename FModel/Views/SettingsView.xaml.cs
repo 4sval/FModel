@@ -275,46 +275,4 @@ public partial class SettingsView
 
         Process.Start(new ProcessStartInfo(hyperlink.NavigateUri.AbsoluteUri) { UseShellExecute = true });
     }
-
-    private void HttpRequestTimeoutBox_Loaded(object sender, RoutedEventArgs e)
-    {
-        if (sender is not TextBox textBox)
-            return;
-        textBox.Text = UserSettings.Default.HttpRequestTimeout.ToString();
-    }
-
-    private void HttpRequestTimeoutBox_TextChanged(object sender, TextChangedEventArgs e)
-    {
-        if (sender is not TextBox textBox)
-            return;
-
-        string input = textBox.Text?.Trim() ?? string.Empty;
-
-        if (string.IsNullOrEmpty(input))
-            return;
-
-        if (int.TryParse(input, out int seconds))
-            UserSettings.Default.HttpRequestTimeout = seconds;
-        else
-            textBox.Text = int.MaxValue.ToString();
-    }
-
-    private void HttpRequestTimeoutBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
-    {
-        e.Handled = !e.Text.All(char.IsDigit);
-    }
-
-    private void HttpRequestTimeoutBox_Pasting(object sender, DataObjectPastingEventArgs e)
-    {
-        if (e.DataObject.GetDataPresent(typeof(string)))
-        {
-            var text = (string)e.DataObject.GetData(typeof(string));
-            if (!text.All(char.IsDigit))
-                e.CancelCommand();
-        }
-        else
-        {
-            e.CancelCommand();
-        }
-    }
 }

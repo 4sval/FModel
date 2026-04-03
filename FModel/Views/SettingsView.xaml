@@ -44,7 +44,6 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -268,29 +267,6 @@
                              TextAlignment="Right"
                              TextChanged="CriwareKeyBox_TextChanged"
                              Loaded="CriwareKeyBox_Loaded"/>
-
-
-                    <TextBlock Grid.Row="21"
-                               Grid.Column="0"
-                               Text="HTTP Request Timeout"
-                               VerticalAlignment="Center"
-                               Margin="0 0 0 10" />
-
-                    <TextBox x:Name="HttpRequestTimeoutBox"
-                             Grid.Row="21"
-                             Grid.Column="2"
-                             Grid.ColumnSpan="5"
-                             Margin="0 5 0 10"
-                             VerticalAlignment="Center"
-                             VerticalContentAlignment="Center"
-                             MaxLength="10"
-                             ToolTip="Maximum time in seconds to wait for HTTP requests to complete before aborting."
-                             TextAlignment="Right"
-                             PreviewTextInput="HttpRequestTimeoutBox_PreviewTextInput"
-                             DataObject.Pasting="HttpRequestTimeoutBox_Pasting"
-                             Loaded="HttpRequestTimeoutBox_Loaded"
-                             TextChanged="HttpRequestTimeoutBox_TextChanged"/>
-
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="CreatorTemplate">
