@@ -583,9 +583,10 @@ public class CUE4ParseViewModel : ViewModel
             {
                 action(entry.Asset);
             }
-            catch
+            catch (Exception ex)
             {
-                // ignore
+                Interlocked.Increment(ref FailedExportCount);
+                Log.Error(ex, "BulkFolder failed to extract '{AssetPath}'", entry.Asset.Path);
             }
         }
 

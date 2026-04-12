@@ -1,0 +1,107 @@
+<adonisControls:AdonisWindow x:Class="FModel.Views.McpBridge"
+                             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                             xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+                             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                             WindowStartupLocation="CenterScreen" ResizeMode="CanResizeWithGrip"
+                             IconVisibility="Collapsed" Width="600" MinWidth="480" MinHeight="500" SizeToContent="Height">
+    <adonisControls:AdonisWindow.Style>
+        <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}">
+            <Setter Property="Title" Value="MCP Bridge" />
+        </Style>
+    </adonisControls:AdonisWindow.Style>
+
+    <StackPanel Margin="20 15">
+        <!-- Header -->
+        <TextBlock Text="CUE4Parse MCP Bridge" FontSize="18" FontWeight="600"
+                   Foreground="#9DA3DD" Margin="0 0 0 5" />
+        <TextBlock Text="Connects Claude (or any MCP client) directly to CUE4Parse for asset extraction."
+                   TextWrapping="Wrap" Foreground="#888" Margin="0 0 0 15" />
+
+        <!-- Status -->
+        <Border Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                CornerRadius="4" Padding="12 8" Margin="0 0 0 12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Ellipse x:Name="StatusDot" Grid.Column="0" Width="10" Height="10"
+                         Fill="#666" Margin="0 0 10 0" VerticalAlignment="Center" />
+                <TextBlock x:Name="StatusText" Grid.Column="1" Text="Stopped"
+                           VerticalAlignment="Center" FontSize="13" />
+            </Grid>
+        </Border>
+
+        <!-- Start / Stop Button -->
+        <Button x:Name="ToggleButton" Content="Start Bridge" Height="36" FontSize="14"
+                Click="OnToggleClick" Margin="0 0 0 15"
+                Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" />
+
+        <!-- Info Section -->
+        <Border Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                CornerRadius="4" Padding="12 10" Margin="0 0 0 12">
+            <StackPanel>
+                <TextBlock Text="Setup Instructions" FontWeight="600" Margin="0 0 0 8" />
+
+                <TextBlock TextWrapping="Wrap" Margin="0 0 0 6" Foreground="#AAA">
+                    <Run Text="1. " FontWeight="600" />
+                    <Run Text="Click " />
+                    <Run Text="Start Bridge" FontWeight="600" Foreground="#9DA3DD" />
+                    <Run Text=" above. The MCP server will launch in the background." />
+                </TextBlock>
+
+                <TextBlock TextWrapping="Wrap" Margin="0 0 0 6" Foreground="#AAA">
+                    <Run Text="2. " FontWeight="600" />
+                    <Run Text="In your MCP client config, register the server:" />
+                </TextBlock>
+
+                <Border Background="#1A1A2E" CornerRadius="3" Padding="10 8" Margin="10 0 0 6">
+                    <TextBlock x:Name="ConfigSnippet" FontFamily="Consolas" FontSize="11"
+                               Foreground="#CCC" TextWrapping="Wrap" />
+                </Border>
+
+                <Button x:Name="CopyConfigButton" Content="Copy Config" Height="28" FontSize="11"
+                        Click="OnCopyConfigClick" HorizontalAlignment="Left" Margin="10 0 0 6"
+                        Padding="12 0" />
+
+                <TextBlock TextWrapping="Wrap" Margin="0 4 0 0" Foreground="#AAA">
+                    <Run Text="3. " FontWeight="600" />
+                    <Run Text="Restart your MCP client. The " />
+                    <Run Text="cue4parse" FontWeight="600" Foreground="#9DA3DD" />
+                    <Run Text=" tools will be available (load_game, get_skeleton, etc.)." />
+                </TextBlock>
+            </StackPanel>
+        </Border>
+
+        <!-- Log output -->
+        <Grid Margin="0 0 0 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Protocol Log" FontWeight="600" VerticalAlignment="Center" />
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <CheckBox x:Name="FilterReq" Content="REQ" IsChecked="True" Margin="0 0 6 0"
+                          Foreground="#6BA3F7" FontSize="11" Checked="OnFilterChanged" Unchecked="OnFilterChanged" />
+                <CheckBox x:Name="FilterResp" Content="RESP" IsChecked="True" Margin="0 0 6 0"
+                          Foreground="#4EC94E" FontSize="11" Checked="OnFilterChanged" Unchecked="OnFilterChanged" />
+                <CheckBox x:Name="FilterTool" Content="TOOL" IsChecked="True" Margin="0 0 6 0"
+                          Foreground="#C89BF7" FontSize="11" Checked="OnFilterChanged" Unchecked="OnFilterChanged" />
+                <CheckBox x:Name="FilterError" Content="ERR" IsChecked="True" Margin="0 0 6 0"
+                          Foreground="#F76B6B" FontSize="11" Checked="OnFilterChanged" Unchecked="OnFilterChanged" />
+                <CheckBox x:Name="FilterServer" Content="SRV" IsChecked="True" Margin="0 0 10 0"
+                          Foreground="#888" FontSize="11" Checked="OnFilterChanged" Unchecked="OnFilterChanged" />
+                <Button Content="Clear" Height="22" FontSize="10" Padding="8 0"
+                        Click="OnClearLogClick" VerticalAlignment="Center" />
+            </StackPanel>
+        </Grid>
+        <Border Background="#0D0D1A" CornerRadius="3" Padding="8" Height="220" Margin="0 4 0 0">
+            <ScrollViewer x:Name="LogScrollViewer" VerticalScrollBarVisibility="Auto">
+                <RichTextBox x:Name="LogOutput" Background="Transparent" BorderThickness="0"
+                             FontFamily="Consolas" FontSize="11" IsReadOnly="True"
+                             Foreground="#888" VerticalScrollBarVisibility="Disabled" />
+            </ScrollViewer>
+        </Border>
+    </StackPanel>
+</adonisControls:AdonisWindow>
