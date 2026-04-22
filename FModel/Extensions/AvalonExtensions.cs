@@ -14,6 +14,7 @@ public static class AvalonExtensions
     private static readonly IHighlightingDefinition _cppHighlighter = LoadHighlighter("Cpp.xshd");
     private static readonly IHighlightingDefinition _changelogHighlighter = LoadHighlighter("Changelog.xshd");
     private static readonly IHighlightingDefinition _verseHighlighter = LoadHighlighter("Verse.xshd");
+    private static readonly IHighlightingDefinition _luaHighlighter = LoadHighlighter("Lua.xshd");
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static IHighlightingDefinition LoadHighlighter(string resourceName)
@@ -29,6 +30,9 @@ public static class AvalonExtensions
     {
         switch (ext)
         {
+            case "lua":
+            case "luac":
+                return _luaHighlighter;
             case "ini":
             case "csv":
                 return _iniHighlighter;

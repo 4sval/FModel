@@ -27,6 +27,7 @@ public enum SettingsOut
 public enum EStatusKind
 {
     Ready, // ready
+    Configuring, // waiting for user input
     Loading, // doing stuff
     Stopping, // trying to stop
     Stopped, // stopped
@@ -107,6 +108,7 @@ public enum EBulkType
     Animations =    1 << 4,
     Audio =         1 << 5,
     Code =          1 << 6,
+    Raw =           1 << 7,
 }
 
 public enum EAssetCategory : uint
@@ -158,4 +160,7 @@ public enum EAssetCategory : uint
     Particle = AssetCategoryExtensions.CategoryBase + (9 << 16),
     GameSpecific = AssetCategoryExtensions.CategoryBase + (10 << 16),
         Borderlands = GameSpecific + 1,
+        Aion2 = GameSpecific + 2,
+        RocoKingdomWorld = GameSpecific + 3,
+        DeltaForce = GameSpecific + 4,
 }

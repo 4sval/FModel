@@ -40,6 +40,12 @@ public static class Constants
 
     public const string _NO_PRESET_TRIGGER = "Hand Made";
 
+    // Common issues
+    public const string MAPPING_ISSUE_LINK = "https://github.com/4sval/FModel/discussions/418";
+    public const string AUDIO_ISSUE_LINK = "https://github.com/4sval/FModel/discussions/658";
+    public const string RADA_ISSUE_LINK = "https://github.com/4sval/FModel/discussions/422";
+    public const string VERSION_ISSUE_LINK = "https://github.com/4sval/FModel/discussions/425";
+
     public static int PALETTE_LENGTH => COLOR_PALETTE.Length;
     public static readonly Vector3[] COLOR_PALETTE =
     {

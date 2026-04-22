@@ -63,7 +63,7 @@
                     </adonisControls:SplitButton.SplitMenu>
                 </adonisControls:SplitButton>
                 <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Right" FontSize="10" Margin="0 2.5 0 0"
-                           Text="{Binding NextUpdateCheck, Source={x:Static local:Settings.UserSettings.Default}, StringFormat=Next Refresh: {0:MMM d, yyyy}}" />
+                           Text="{Binding NextUpdateCheck, Source={x:Static local:Settings.UserSettings.Default}, Converter={x:Static converters:TextToRefreshConverter.Instance}}" />
             </StackPanel>
         </Grid>
 

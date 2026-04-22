@@ -119,6 +119,13 @@ namespace FModel.Settings
             set => SetProperty(ref _audioDirectory, value);
         }
 
+        private string _codeDirectory;
+        public string CodeDirectory
+        {
+            get => _codeDirectory;
+            set => SetProperty(ref _codeDirectory, value);
+        }
+
         private string _modelDirectory;
         public string ModelDirectory
         {
@@ -250,13 +257,6 @@ namespace FModel.Settings
         {
             get => _imageMergerMargin;
             set => SetProperty(ref _imageMergerMargin, value);
-        }
-
-        private bool _canExportRawData;
-        public bool CanExportRawData
-        {
-            get => _canExportRawData;
-            set => SetProperty(ref _canExportRawData, value);
         }
 
         private bool _readScriptData;
@@ -459,13 +459,6 @@ namespace FModel.Settings
         {
             get => _cameraMode;
             set => SetProperty(ref _cameraMode, value);
-        }
-
-        private int _wwiseMaxBnkPrefetch;
-        public int WwiseMaxBnkPrefetch
-        {
-            get => _wwiseMaxBnkPrefetch;
-            set => SetProperty(ref _wwiseMaxBnkPrefetch, value);
         }
 
         private int _previewMaxTextureSize = 1024;

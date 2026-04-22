@@ -39,7 +39,7 @@
     <SolidColorBrush x:Key="FoliageBrush" Color="ForestGreen" />
     <SolidColorBrush x:Key="ParticleBrush" Color="Gold" />
     <SolidColorBrush x:Key="AnimationBrush" Color="Coral" />
-    <SolidColorBrush x:Key="LuaBrush" Color="DarkBlue" />
+    <SolidColorBrush x:Key="LuaBrush" Color="Blue" />
     <SolidColorBrush x:Key="JsonXmlBrush" Color="LightGreen" />
     <SolidColorBrush x:Key="CodeBrush" Color="SandyBrown" />
     <SolidColorBrush x:Key="HtmlBrush" Color="Tomato" />
@@ -51,4 +51,7 @@
 
     <!-- For specific games -->
     <SolidColorBrush x:Key="BorderlandsBrush" Color="Yellow"></SolidColorBrush>
+    <SolidColorBrush x:Key="AionBrush" Color="DeepSkyBlue"></SolidColorBrush>
+    <SolidColorBrush x:Key="RocoKingdomWorldBrush" Color="#fecf4d"></SolidColorBrush>
+    <SolidColorBrush x:Key="DeltaForceBrush" Color="LightGreen"></SolidColorBrush>
 </ResourceDictionary>

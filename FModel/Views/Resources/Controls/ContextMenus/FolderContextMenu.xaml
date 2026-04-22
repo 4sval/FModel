@@ -1,17 +1,15 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-                    xmlns:settings="clr-namespace:FModel.Settings"
                     xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
                     x:Class="FModel.Views.Resources.Controls.ContextMenus.FolderContextMenuDictionary">
     <ContextMenu x:Key="FolderContextMenu" x:Shared="False"
                  Opened="FolderContextMenu_OnOpened">
         <MenuItem Header="Export Folder's Packages Raw Data (.uasset)"
-                  Command="{Binding RightClickMenuCommand}"
-                  Visibility="{Binding CanExportRawData, Source={x:Static settings:UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}">
+                  Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                    <Binding Source="Folders_Export_Data" />
+                    <Binding Source="Save_Data" />
                     <Binding Path="Tag"
                              RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                 </MultiBinding>
@@ -31,7 +29,7 @@
                   Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                    <Binding Source="Folders_Save_Properties" />
+                    <Binding Source="Save_Properties" />
                     <Binding Path="Tag"
                              RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                 </MultiBinding>
@@ -51,7 +49,7 @@
                   Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                    <Binding Source="Folders_Save_Textures" />
+                    <Binding Source="Save_Textures" />
                     <Binding Path="Tag"
                              RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                 </MultiBinding>
@@ -67,11 +65,31 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
+        <MenuItem Header="Save Folder's Decompiled Blueprints"
+                  Command="{Binding RightClickMenuCommand}">
+            <MenuItem.CommandParameter>
+                <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                    <Binding Source="Save_Code" />
+                    <Binding Path="Tag"
+                             RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
+                </MultiBinding>
+            </MenuItem.CommandParameter>
+            <MenuItem.Icon>
+                <Viewbox Width="16"
+                         Height="16">
+                    <Canvas Width="24"
+                            Height="24">
+                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                              Data="{StaticResource CodeIcon}" />
+                    </Canvas>
+                </Viewbox>
+            </MenuItem.Icon>
+        </MenuItem>
         <MenuItem Header="Save Folder's Packages Models"
                   Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                    <Binding Source="Folders_Save_Models" />
+                    <Binding Source="Save_Models" />
                     <Binding Path="Tag"
                              RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                 </MultiBinding>
@@ -91,7 +109,7 @@
                   Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                    <Binding Source="Folders_Save_Animations" />
+                    <Binding Source="Save_Animations" />
                     <Binding Path="Tag"
                              RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                 </MultiBinding>
@@ -111,7 +129,7 @@
                   Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                    <Binding Source="Folders_Save_Audio" />
+                    <Binding Source="Save_Audio" />
                     <Binding Path="Tag"
                              RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                 </MultiBinding>

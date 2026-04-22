@@ -11,6 +11,7 @@ namespace FModel.ViewModels.ApiEndpoints;
 public class DillyApiEndpoint : AbstractApiProvider
 {
     private Backup[] _backups;
+    private ManifestInfoDilly[] _manifests;
 
     public DillyApiEndpoint(RestClient client) : base(client) { }
 
@@ -25,6 +26,19 @@ public class DillyApiEndpoint : AbstractApiProvider
     public Backup[] GetBackups(CancellationToken token)
     {
         return _backups ??= GetBackupsAsync(token).GetAwaiter().GetResult();
+    }
+
+    public async Task<ManifestInfoDilly[]> GetManifestsAsync(CancellationToken token)
+    {
+        var request = new FRestRequest($"https://export-service-new.dillyapis.com/v1/manifests");
+        var response = await _client.ExecuteAsync<ManifestInfoDilly[]>(request, token).ConfigureAwait(false);
+        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
+        return response.Data;
+    }
+
+    public ManifestInfoDilly[] GetManifests(CancellationToken token)
+    {
+        return _manifests ??= GetManifestsAsync(token).GetAwaiter().GetResult();
     }
 
     public async Task<IDictionary<string, IDictionary<string, string>>> GetHotfixesAsync(CancellationToken token, string language = "en")

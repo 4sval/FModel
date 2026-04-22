@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -126,13 +126,40 @@ public class FLogger : ITextFormatter
             {
                 NavigateUri = new Uri(url),
                 OverridesDefaultStyle = true,
-                Style = new Style(typeof(Hyperlink)) { Setters =
+                Style = new Style(typeof(Hyperlink))
                 {
-                    new Setter(FrameworkContentElement.CursorProperty, Cursors.Hand),
-                    new Setter(TextBlock.TextDecorationsProperty, TextDecorations.Underline),
-                    new Setter(TextElement.ForegroundProperty, Brushes.Cornsilk)
-                }}
-            }.Click += (sender, _) => Process.Start("explorer.exe", $"/select, \"{((Hyperlink)sender).NavigateUri.AbsoluteUri}\"");
+                    Setters =
+                    {
+                        new Setter(FrameworkContentElement.CursorProperty, Cursors.Hand),
+                        new Setter(TextElement.ForegroundProperty, Brushes.Goldenrod),
+                        new Setter(TextElement.FontWeightProperty, FontWeights.Bold)
+                    },
+                    Triggers =
+                    {
+                        new Trigger
+                        {
+                            Property = UIElement.IsMouseOverProperty,
+                            Value = true,
+                            Setters =
+                            {
+                                new Setter(TextElement.ForegroundProperty, Brushes.Gold),
+                                new Setter(TextBlock.TextDecorationsProperty, TextDecorations.Underline)
+                            }
+                        }
+                    }
+                }
+            }.Click += (sender, _) =>
+            {
+                var uri = ((Hyperlink) sender).NavigateUri;
+                if (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
+                {
+                    Process.Start(new ProcessStartInfo(uri.AbsoluteUri) { UseShellExecute = true });
+                }
+                else
+                {
+                    Process.Start("explorer.exe", $"/select, \"{uri.AbsoluteUri}\"");
+                }
+            };
         }
         finally
         {
