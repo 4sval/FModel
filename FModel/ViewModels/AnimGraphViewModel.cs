@@ -12,6 +12,7 @@ public class AnimGraphNode
 {
     public string Name { get; set; } = string.Empty;
     public string ExportType { get; set; } = string.Empty;
+    public int ChildPropertyIndex { get; set; } = -1;
     public string NodeComment { get; set; } = string.Empty;
     public int NodePosX { get; set; }
     public int NodePosY { get; set; }
@@ -29,6 +30,7 @@ public class AnimGraphPin
     public bool IsOutput { get; set; }
     public string PinType { get; set; } = string.Empty;
     public string DefaultValue { get; set; } = string.Empty;
+    public int? LinkIndex { get; set; }
     public AnimGraphNode OwnerNode { get; set; } = null!;
 }
 
@@ -112,27 +114,32 @@ public class AnimGraphViewModel
             return vm;
 
         // Collect all anim node struct properties from the class definition
-        var animNodeProps = new List<(string name, string structType)>();
-        foreach (var field in childProps)
+        var animNodeProps = new List<(string name, string structType, int childPropertyIndex)>();
+        for (var childPropertyIndex = 0; childPropertyIndex < childProps.Length; childPropertyIndex++)
         {
+            var field = childProps[childPropertyIndex];
             if (field is not FStructProperty structProp) continue;
 
             var structName = structProp.Struct.ResolvedObject?.Name.Text ?? string.Empty;
-            // Animation node structs typically start with "FAnimNode_" or "AnimNode_"
+            // Animation node structs may be prefixed by plugin/vendor identifiers
+            // (e.g. ACAnimNode_CopyParentPose), but LinkID still targets their original
+            // ChildProperties index. We therefore preserve any field/struct name that
+            // contains the anim node markers instead of only accepting strict prefixes.
             if (!IsAnimNodeStruct(structName) && !IsAnimNodeStruct(field.Name.Text))
                 continue;
 
-            animNodeProps.Add((field.Name.Text, structName));
+            animNodeProps.Add((field.Name.Text, structName, childPropertyIndex));
         }
 
         // Build nodes from the collected properties
         var nodeByName = new Dictionary<string, AnimGraphNode>();
-        foreach (var (propName, structType) in animNodeProps)
+        foreach (var (propName, structType, childPropertyIndex) in animNodeProps)
         {
             var node = new AnimGraphNode
             {
                 Name = propName,
-                ExportType = structType
+                ExportType = structType,
+                ChildPropertyIndex = childPropertyIndex
             };
 
             // Try to extract property values from the CDO
@@ -907,7 +914,7 @@ public class AnimGraphViewModel
     /// state root nodes, and collect state/transition metadata for overview layers.
     /// </summary>
     private static void AssociateStateMachineNames(UClass animBlueprintClass, UObject? cdo,
-        List<(string name, string structType)> animNodeProps,
+        List<(string name, string structType, int childPropertyIndex)> animNodeProps,
         Dictionary<string, AnimGraphNode> nodeByName,
         List<StateMachineMetadata> smMetadata)
     {
@@ -942,7 +949,7 @@ public class AnimGraphViewModel
 
             // Associate FAnimNode_StateMachine nodes that reference this machine index
             var machineIdxStr = machineIdx.ToString();
-            foreach (var (propName, structType) in animNodeProps)
+            foreach (var (propName, structType, _) in animNodeProps)
             {
                 if (!structType.Contains("StateMachine", StringComparison.OrdinalIgnoreCase))
                     continue;
@@ -1117,9 +1124,8 @@ public class AnimGraphViewModel
 
     private static bool IsAnimNodeStruct(string name)
     {
-        return name.StartsWith("FAnimNode_", StringComparison.OrdinalIgnoreCase) ||
-               name.StartsWith("AnimNode_", StringComparison.OrdinalIgnoreCase) ||
-               name.StartsWith("AnimGraphNode_", StringComparison.OrdinalIgnoreCase);
+        return name.Contains("AnimNode_", StringComparison.OrdinalIgnoreCase) ||
+               name.Contains("AnimGraphNode_", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsSaveCachedPoseNode(AnimGraphNode node)
@@ -1145,6 +1151,18 @@ public class AnimGraphViewModel
                 case "NodeComment":
                     node.NodeComment = value;
                     break;
+                case "BoneToModify":
+                    // Store additional properties for display
+                    if (value.Length <= MaxPropertyValueDisplayLength)
+                    {
+                        var a = prop.Tag?.GenericValue?.ToString();
+                        var V = prop.Tag?.GenericValue;
+                        var vv = V as CUE4Parse.UE4.Assets.Objects.FScriptStruct;
+                        var vvv = vv?.StructType as CUE4Parse.UE4.Assets.Objects.FStructFallback;
+                        var vvvv = vvv?.Properties[0].Tag.ToString();
+                        node.AdditionalProperties[name] = vvvv is not null ? vvvv : value;
+                    }
+                    break;
                 default:
                     // Store additional properties for display
                     if (value.Length <= MaxPropertyValueDisplayLength)
@@ -1156,20 +1174,46 @@ public class AnimGraphViewModel
         // Add input pins based on struct properties that reference other poses/nodes
         foreach (var prop in structValue.Properties)
         {
-            var name = prop.Name.Text;
-
-            // Properties referencing other animation poses are connections
-            if (IsPoseProperty(name) || IsLinkedNodeProperty(name))
-            {
-                node.Pins.Add(new AnimGraphPin
-                {
-                    PinName = name,
-                    IsOutput = false,
-                    PinType = "pose",
-                    OwnerNode = node
-                });
-            }
+            AddInputPins(node, prop.Name.Text, prop.Tag);
         }
+    }
+
+    private static void AddInputPins(AnimGraphNode node, string pinName, FPropertyTagType? tag)
+    {
+        if (!IsPoseProperty(pinName) && !IsLinkedNodeProperty(pinName))
+            return;
+
+        if (tag?.GenericValue is UScriptArray array)
+        {
+            for (var i = 0; i < array.Properties.Count; i++)
+            {
+                AddPinIfMissing(node, $"{pinName}[{i}]", i);
+            }
+
+            if (array.Properties.Count == 0)
+            {
+                AddPinIfMissing(node, pinName);
+            }
+
+            return;
+        }
+
+        AddPinIfMissing(node, pinName);
+    }
+
+    private static void AddPinIfMissing(AnimGraphNode node, string pinName, int? linkIndex = null)
+    {
+        if (node.Pins.Any(pin => !pin.IsOutput && pin.PinName.Equals(pinName, StringComparison.OrdinalIgnoreCase)))
+            return;
+
+        node.Pins.Add(new AnimGraphPin
+        {
+            PinName = pinName,
+            IsOutput = false,
+            PinType = "pose",
+            LinkIndex = linkIndex,
+            OwnerNode = node
+        });
     }
 
     private static bool IsPoseProperty(string name)
@@ -1187,7 +1231,7 @@ public class AnimGraphViewModel
                name.Contains("LinkedAnimGraph", StringComparison.OrdinalIgnoreCase);
     }
 
-    private static void ResolveConnections(UObject cdo, List<(string name, string structType)> animNodeProps,
+    private static void ResolveConnections(UObject cdo, List<(string name, string structType, int childPropertyIndex)> animNodeProps,
         Dictionary<string, AnimGraphNode> nodeByName, AnimGraphViewModel vm)
     {
         // Animation node connections in cooked assets are encoded via
@@ -1195,7 +1239,7 @@ public class AnimGraphViewModel
         // These contain a "LinkID" integer that maps to the index of the target node
         // in the class's animation node property list.
 
-        foreach (var (propName, _) in animNodeProps)
+        foreach (var (propName, _, _) in animNodeProps)
         {
             if (!cdo.TryGetValue(out FStructFallback structValue, propName))
                 continue;
@@ -1215,7 +1259,7 @@ public class AnimGraphViewModel
     }
 
     private static void TryResolvePoseLink(FPropertyTagType tag, string pinName,
-        AnimGraphNode sourceNode, List<(string name, string structType)> animNodeProps,
+        AnimGraphNode sourceNode, List<(string name, string structType, int childPropertyIndex)> animNodeProps,
         Dictionary<string, AnimGraphNode> nodeByName, AnimGraphViewModel vm)
     {
         // Handle arrays of pose links (e.g., BlendPose TArray<FPoseLink>)
