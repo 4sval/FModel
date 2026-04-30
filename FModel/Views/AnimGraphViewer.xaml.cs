@@ -66,7 +66,13 @@ public partial class AnimGraphViewer
         NodeCountText.Text = $"Nodes: {_viewModel.Nodes.Count}";
         ConnectionCountText.Text = $"Connections: {_viewModel.Connections.Count}";
 
+        BuildLayerList();
         BuildLayerTabs();
+    }
+
+    private void BuildLayerList()
+    {
+        LayerListBox.ItemsSource = GetSidebarLayers().ToList();
     }
 
     /// <summary>
@@ -78,12 +84,13 @@ public partial class AnimGraphViewer
         LayerTabControl.Items.Clear();
         _layerStates.Clear();
 
-        if (_viewModel.Layers.Count == 0)
+        if (_viewModel.FullGraphLayer == null && _viewModel.Layers.Count == 0)
             return;
 
-        // Show only the AnimGraph layer initially
-        var outputLayer = _viewModel.Layers.FirstOrDefault(l =>
-            l.Name.Equals("AnimGraph", StringComparison.OrdinalIgnoreCase))
+        // Show the combined graph first when available, otherwise fall back to AnimGraph.
+        var outputLayer = _viewModel.FullGraphLayer
+            ?? _viewModel.Layers.FirstOrDefault(l =>
+                l.Name.Equals("AnimGraph", StringComparison.OrdinalIgnoreCase))
             ?? _viewModel.Layers[0];
 
         AddLayerTab(outputLayer, closable: false);
@@ -195,6 +202,16 @@ public partial class AnimGraphViewer
         if (LayerTabControl.SelectedItem is not System.Windows.Controls.TabItem { Tag: AnimGraphLayer layer })
             return;
 
+        if (LayerListBox.Items.Contains(layer))
+        {
+            LayerListBox.SelectedItem = layer;
+            LayerListBox.ScrollIntoView(layer);
+        }
+        else
+        {
+            LayerListBox.SelectedItem = null;
+        }
+
         if (!_layerStates.TryGetValue(layer, out var state))
             return;
 
@@ -211,6 +228,12 @@ public partial class AnimGraphViewer
         }
 
         ZoomText.Text = $"Zoom: {state.ScaleTransform.ScaleX * 100:F0}%";
+    }
+
+    private void OnLayerListDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        if (LayerListBox.SelectedItem is AnimGraphLayer layer)
+            OpenLayerTab(layer);
     }
 
     private void DrawLayerGraph(LayerCanvasState state)
@@ -232,7 +255,7 @@ public partial class AnimGraphViewer
         foreach (var conn in state.Layer.Connections)
         {
             // Skip connections between SaveCachedPose and UseCachedPose nodes
-            if (IsCachedPoseConnection(conn))
+            if (!state.Layer.IsCombinedGraph && IsCachedPoseConnection(conn))
                 continue;
 
             var isTransition = (conn.SourceNode.IsStateMachineState || conn.SourceNode.IsEntryNode) &&
@@ -366,7 +389,7 @@ public partial class AnimGraphViewer
 
         var headerText = new TextBlock
         {
-            Text = GetNodeDisplayName(node),
+            Text = GetNodeHeaderText(node),
             Foreground = Brushes.White,
             FontSize = 11,
             FontWeight = FontWeights.SemiBold,
@@ -518,6 +541,7 @@ public partial class AnimGraphViewer
     private void DrawStateNode(LayerCanvasState state, AnimGraphNode node)
     {
         var pos = state.NodePositions[node];
+        var isConduit = IsConduitNode(node);
 
         // Shadow
         var shadow = new Border
@@ -540,24 +564,58 @@ public partial class AnimGraphViewer
             Width = StateNodeWidth,
             Height = StateNodeHeight,
             CornerRadius = new CornerRadius(StateNodeCornerRadius),
-            Background = new SolidColorBrush(Color.FromArgb(240, 55, 55, 55)),
-            BorderBrush = new SolidColorBrush(Color.FromRgb(120, 120, 120)),
+            Background = new SolidColorBrush(isConduit
+                ? Color.FromArgb(245, 83, 57, 18)
+                : Color.FromArgb(240, 55, 55, 55)),
+            BorderBrush = new SolidColorBrush(isConduit
+                ? Color.FromRgb(242, 170, 76)
+                : Color.FromRgb(120, 120, 120)),
             BorderThickness = new Thickness(2),
-            SnapsToDevicePixels = true
+            SnapsToDevicePixels = true,
+            Cursor = isConduit ? Cursors.Arrow : Cursors.Hand
         };
 
-        var nameText = new TextBlock
+        var contentPanel = new StackPanel
+        {
+            Orientation = Orientation.Vertical,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+
+        if (isConduit)
+        {
+            contentPanel.Children.Add(new Border
+            {
+                Background = new SolidColorBrush(Color.FromArgb(210, 242, 170, 76)),
+                CornerRadius = new CornerRadius(8),
+                Padding = new Thickness(6, 1, 6, 1),
+                Margin = new Thickness(0, 0, 0, 3),
+                Child = new TextBlock
+                {
+                    Text = "CONDUIT",
+                    Foreground = new SolidColorBrush(Color.FromRgb(38, 26, 12)),
+                    FontSize = 9,
+                    FontWeight = FontWeights.Bold,
+                    TextAlignment = TextAlignment.Center,
+                    HorizontalAlignment = HorizontalAlignment.Center
+                }
+            });
+        }
+
+        contentPanel.Children.Add(new TextBlock
         {
             Text = node.Name,
             Foreground = Brushes.White,
-            FontSize = 13,
+            FontSize = isConduit ? 12 : 13,
             FontWeight = FontWeights.SemiBold,
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
             TextTrimming = TextTrimming.CharacterEllipsis,
-            TextAlignment = TextAlignment.Center
-        };
-        border.Child = nameText;
+            TextAlignment = TextAlignment.Center,
+            Margin = new Thickness(10, 0, 10, 0)
+        });
+
+        border.Child = contentPanel;
 
         Canvas.SetLeft(border, pos.X);
         Canvas.SetTop(border, pos.Y);
@@ -572,7 +630,9 @@ public partial class AnimGraphViewer
         state.PinPositions[(node, "Out", true)] = new Point(
             pos.X + StateNodeWidth, pos.Y + StateNodeHeight / 2);
 
-        border.ToolTip = $"State: {node.Name}";
+        border.ToolTip = isConduit
+            ? $"Conduit: {node.Name}\nThis is a transition conduit and does not have a state sub-graph."
+            : $"State: {node.Name}\nDouble-click to open the state sub-graph.";
 
         border.MouseLeftButtonDown += (s, e) =>
         {
@@ -680,45 +740,73 @@ public partial class AnimGraphViewer
     /// </summary>
     private void TryOpenSubGraph(AnimGraphNode node)
     {
+        var canonicalNode = GetCanonicalNode(node);
         string? layerName = null;
 
-        if (NodeMatchesType(node, "UseCachedPose"))
+        if (NodeMatchesType(canonicalNode, "UseCachedPose"))
         {
-            TryNavigateToSaveCachedPose(node);
+            TryNavigateToSaveCachedPose(canonicalNode);
             return;
         }
 
-        if (node.ExportType.Contains("LinkedAnimLayer", StringComparison.OrdinalIgnoreCase))
+        if (canonicalNode.ExportType.Contains("LinkedAnimLayer", StringComparison.OrdinalIgnoreCase))
         {
-            node.AdditionalProperties.TryGetValue("Layer", out layerName);
+            canonicalNode.AdditionalProperties.TryGetValue("Layer", out layerName);
         }
-        else if (node.IsStateMachineState)
+        else if (canonicalNode.IsStateMachineState)
         {
+            if (canonicalNode.AdditionalProperties.TryGetValue("IsConduit", out var isConduit) &&
+                bool.TryParse(isConduit, out var conduit) && conduit)
+                return;
+
+            if (canonicalNode.AdditionalProperties.TryGetValue("StateSubGraphName", out var stateSubGraphName) &&
+                !string.IsNullOrEmpty(stateSubGraphName))
+            {
+                var namedStateLayer = _viewModel.StateSubGraphs.Values.FirstOrDefault(layer =>
+                    layer.Name.Equals(stateSubGraphName, StringComparison.OrdinalIgnoreCase));
+                if (namedStateLayer != null)
+                {
+                    OpenLayerTab(namedStateLayer);
+                    return;
+                }
+            }
+
             // State nodes within an overview: find the per-state sub-graph by StateRootNodeIndex
             // The root node's property name is stored on the overview state node
-            if (node.AdditionalProperties.TryGetValue("StateRootNodeName", out var rootNodeName) &&
+            if (canonicalNode.AdditionalProperties.TryGetValue("StateRootNodeName", out var rootNodeName) &&
                 !string.IsNullOrEmpty(rootNodeName) &&
                 _viewModel.StateSubGraphs.TryGetValue(rootNodeName, out var stateLayer))
             {
-                // If tab already exists, just select it
-                foreach (System.Windows.Controls.TabItem tab in LayerTabControl.Items)
-                {
-                    if (tab.Tag == stateLayer)
-                    {
-                        LayerTabControl.SelectedItem = tab;
-                        return;
-                    }
-                }
-                AddLayerTab(stateLayer);
+                OpenLayerTab(stateLayer);
                 return;
             }
+
+            // Fallback: overview layers are named as "<parent> > <state machine>", while
+            // per-state sub-graphs are named as "<parent> > <state machine> > <state>".
+            // This avoids relying solely on StateRootNodeIndex-based metadata, which can be
+            // absent or mismapped for some cooked assets.
+            var currentOverviewName = _currentLayerState?.Layer.Name;
+            if (!string.IsNullOrEmpty(currentOverviewName))
+            {
+                var expectedStateLayerName = $"{currentOverviewName}{AnimGraphViewModel.SubGraphPathSeparator}{canonicalNode.Name}";
+                var fallbackStateLayer = _viewModel.StateSubGraphs.Values.FirstOrDefault(layer =>
+                    layer.Name.Equals(expectedStateLayerName, StringComparison.OrdinalIgnoreCase));
+
+                if (fallbackStateLayer != null)
+                {
+                    OpenLayerTab(fallbackStateLayer);
+                    return;
+                }
+            }
         }
-        else if (node.ExportType.Contains("StateMachine", StringComparison.OrdinalIgnoreCase))
+        else if (canonicalNode.ExportType.Contains("StateMachine", StringComparison.OrdinalIgnoreCase))
         {
             // State machine internal layers are prefixed with parent path
-            if (node.AdditionalProperties.TryGetValue("StateMachineName", out var smName))
+            if (canonicalNode.AdditionalProperties.TryGetValue("StateMachineName", out var smName))
             {
-                var parentName = _currentLayerState?.Layer.Name ?? "AnimGraph";
+                var parentName = _currentLayerState?.Layer.IsCombinedGraph == true
+                    ? "AnimGraph"
+                    : _currentLayerState?.Layer.Name ?? "AnimGraph";
                 layerName = $"{parentName}{AnimGraphViewModel.SubGraphPathSeparator}{smName}";
             }
         }
@@ -731,6 +819,11 @@ public partial class AnimGraphViewer
         if (targetLayer == null)
             return;
 
+        OpenLayerTab(targetLayer);
+    }
+
+    private void OpenLayerTab(AnimGraphLayer targetLayer)
+    {
         // If tab already exists, just select it
         foreach (System.Windows.Controls.TabItem tab in LayerTabControl.Items)
         {
@@ -744,6 +837,32 @@ public partial class AnimGraphViewer
         AddLayerTab(targetLayer);
     }
 
+    private IEnumerable<AnimGraphLayer> GetSidebarLayers()
+    {
+        if (_viewModel.FullGraphLayer != null)
+        {
+            var visibleLayers = new List<AnimGraphLayer> { _viewModel.FullGraphLayer };
+            var sidebarFunctionLayers = _viewModel.FunctionLayers.ToList();
+            if (sidebarFunctionLayers.Count == 0)
+                sidebarFunctionLayers = [.. _viewModel.Layers];
+
+            visibleLayers.AddRange(sidebarFunctionLayers);
+
+            return visibleLayers
+                .Distinct()
+                .OrderBy(layer => layer.IsCombinedGraph ? 0 : layer.Name.Equals("AnimGraph", StringComparison.OrdinalIgnoreCase) ? 1 : 2)
+                .ThenBy(layer => layer.Name, StringComparer.OrdinalIgnoreCase);
+        }
+
+        var functionLayers = _viewModel.FunctionLayers.ToList();
+        if (functionLayers.Count == 0)
+            functionLayers = [.. _viewModel.Layers];
+
+        return functionLayers
+            .OrderBy(layer => layer.Name.Equals("AnimGraph", StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+            .ThenBy(layer => layer.Name, StringComparer.OrdinalIgnoreCase);
+    }
+
     /// <summary>
     /// Navigates from a UseCachedPose node to its corresponding SaveCachedPose node.
     /// Finds the SaveCachedPose through direct connections in the graph, locates the
@@ -751,6 +870,8 @@ public partial class AnimGraphViewer
     /// </summary>
     private void TryNavigateToSaveCachedPose(AnimGraphNode useCachedPoseNode)
     {
+        useCachedPoseNode = GetCanonicalNode(useCachedPoseNode);
+
         // Find the matching SaveCachedPose node via connections
         AnimGraphNode? savePoseNode = null;
         foreach (var conn in _viewModel.Connections)
@@ -824,6 +945,11 @@ public partial class AnimGraphViewer
         });
     }
 
+    private static AnimGraphNode GetCanonicalNode(AnimGraphNode node)
+    {
+        return node.CanonicalNode ?? node;
+    }
+
     /// <summary>
     /// Fills the properties panel with the selected node's information,
     /// similar to UE's Details panel when a node is selected.
@@ -837,6 +963,10 @@ public partial class AnimGraphViewer
         AddPropertySection("Node Info");
         AddPropertyRow("Name", node.Name);
         AddPropertyRow("Type", node.ExportType);
+        if (node.AnimNodePropertyIndex >= 0)
+            AddPropertyRow("AnimNode Index", node.AnimNodePropertyIndex.ToString());
+        if (node.ChildPropertyIndex >= 0)
+            AddPropertyRow("Child Property Index", node.ChildPropertyIndex.ToString());
         if (!string.IsNullOrEmpty(node.NodeComment))
             AddPropertyRow("Comment", node.NodeComment);
 
@@ -1350,6 +1480,21 @@ public partial class AnimGraphViewer
             return $"{type}: {node.NodeComment}";
 
         return type;
+    }
+
+    private static string GetNodeHeaderText(AnimGraphNode node)
+    {
+        var displayName = GetNodeDisplayName(node);
+        return node.AnimNodePropertyIndex >= 0
+            ? $"[{node.AnimNodePropertyIndex}] {displayName}"
+            : displayName;
+    }
+
+    private static bool IsConduitNode(AnimGraphNode node)
+    {
+        return node.ExportType.Contains("Conduit", StringComparison.OrdinalIgnoreCase) ||
+               (node.AdditionalProperties.TryGetValue("IsConduit", out var isConduit) &&
+                bool.TryParse(isConduit, out var conduit) && conduit);
     }
 
     private static Color GetNodeHeaderColor(string exportType)

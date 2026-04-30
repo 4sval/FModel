@@ -4,14 +4,17 @@ using System.Linq;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets.Objects.Properties;
+using CUE4Parse.UE4.Objects.Engine.Animation;
 using CUE4Parse.UE4.Objects.UObject;
 
 namespace FModel.ViewModels;
 
 public class AnimGraphNode
 {
+    public AnimGraphNode CanonicalNode { get; set; }
     public string Name { get; set; } = string.Empty;
     public string ExportType { get; set; } = string.Empty;
+    public int AnimNodePropertyIndex { get; set; } = -1;
     public int ChildPropertyIndex { get; set; } = -1;
     public string NodeComment { get; set; } = string.Empty;
     public int NodePosX { get; set; }
@@ -54,8 +57,12 @@ public class AnimGraphConnection
 public class AnimGraphLayer
 {
     public string Name { get; set; } = string.Empty;
+    public bool IsFunctionLayer { get; set; }
+    public bool IsCombinedGraph { get; set; }
     public List<AnimGraphNode> Nodes { get; } = [];
     public List<AnimGraphConnection> Connections { get; } = [];
+
+    public override string ToString() => Name;
 }
 
 /// <summary>
@@ -67,6 +74,9 @@ internal class StateMachineMetadata
     public string MachineName { get; init; } = string.Empty;
     public List<string> StateNames { get; } = [];
     public List<string> StateRootPropNames { get; } = [];
+    public List<bool> StateIsConduit { get; } = [];
+    public List<int> StateRootNodeIndices { get; } = [];
+    public List<int> EntryRuleNodeIndices { get; } = [];
     public List<(int PreviousState, int NextState, Dictionary<string, string> Properties)> Transitions { get; } = [];
 }
 
@@ -83,10 +93,12 @@ public class AnimGraphViewModel
     public string PackageName { get; set; } = string.Empty;
     public List<AnimGraphNode> Nodes { get; } = [];
     public List<AnimGraphConnection> Connections { get; } = [];
+    public AnimGraphLayer FullGraphLayer { get; private set; }
     /// <summary>
     /// Animation blueprint graph layers, each defined by a unique AnimGraphNode_Root.
     /// </summary>
     public List<AnimGraphLayer> Layers { get; } = [];
+    public IEnumerable<AnimGraphLayer> FunctionLayers => Layers.Where(static layer => layer.IsFunctionLayer);
     /// <summary>
     /// State machine state sub-graphs, keyed by the _StateResult root node's property name
     /// (derived from StateRootNodeIndex) for unique identification.
@@ -103,6 +115,7 @@ public class AnimGraphViewModel
     public static AnimGraphViewModel ExtractFromClass(UClass animBlueprintClass)
     {
         var vm = new AnimGraphViewModel { PackageName = animBlueprintClass.Owner?.Name ?? animBlueprintClass.Name };
+        var animBlueprintGeneratedClass = animBlueprintClass as UAnimBlueprintGeneratedClass;
 
         // Load the ClassDefaultObject which contains the actual property values
         var cdo = animBlueprintClass.ClassDefaultObject.Load();
@@ -113,34 +126,48 @@ public class AnimGraphViewModel
         if (childProps == null || childProps.Length == 0)
             return vm;
 
+        var cdoProperties = cdo.Properties;
+
         // Collect all anim node struct properties from the class definition
-        var animNodeProps = new List<(string name, string structType, int childPropertyIndex)>();
-        for (var childPropertyIndex = 0; childPropertyIndex < childProps.Length; childPropertyIndex++)
+        var animNodeProps = animBlueprintGeneratedClass is { AnimNodePropertyData.Length: > 0 }
+            ? new List<(string name, string structType, int childPropertyIndex)>(
+                animBlueprintGeneratedClass.AnimNodePropertyData.Select(data =>
+                    (data.Name, data.StructName, data.ChildPropertyIndex)))
+            : new List<(string name, string structType, int childPropertyIndex)>();
+
+        if (animNodeProps.Count == 0)
         {
-            var field = childProps[childPropertyIndex];
-            if (field is not FStructProperty structProp) continue;
+            for (var childPropertyIndex = 0; childPropertyIndex < childProps.Length; childPropertyIndex++)
+            {
+                var field = childProps[childPropertyIndex];
+                if (field is not FStructProperty structProp) continue;
 
-            var structName = structProp.Struct.ResolvedObject?.Name.Text ?? string.Empty;
-            // Animation node structs may be prefixed by plugin/vendor identifiers
-            // (e.g. ACAnimNode_CopyParentPose), but LinkID still targets their original
-            // ChildProperties index. We therefore preserve any field/struct name that
-            // contains the anim node markers instead of only accepting strict prefixes.
-            if (!IsAnimNodeStruct(structName) && !IsAnimNodeStruct(field.Name.Text))
-                continue;
+                var structName = structProp.Struct.ResolvedObject?.Name.Text ?? string.Empty;
+                // Prefer Unreal's real type hierarchy over naming conventions: animation
+                // nodes derive from AnimNode_Base even when plugin/vendor prefixes hide the
+                // usual AnimNode_/AnimGraphNode_ name markers. Keep a name-based fallback
+                // only for assets whose struct metadata cannot be resolved.
+                if (!IsAnimNodeStruct(structProp, field.Name.Text))
+                    continue;
 
-            animNodeProps.Add((field.Name.Text, structName, childPropertyIndex));
+                animNodeProps.Add((field.Name.Text, structName, childPropertyIndex));
+            }
         }
 
         // Build nodes from the collected properties
         var nodeByName = new Dictionary<string, AnimGraphNode>();
-        foreach (var (propName, structType, childPropertyIndex) in animNodeProps)
+        for (var animNodePropertyIndex = 0; animNodePropertyIndex < animNodeProps.Count; animNodePropertyIndex++)
         {
+            var (propName, structType, childPropertyIndex) = animNodeProps[animNodePropertyIndex];
             var node = new AnimGraphNode
             {
+                CanonicalNode = null,
                 Name = propName,
                 ExportType = structType,
+                AnimNodePropertyIndex = animNodePropertyIndex,
                 ChildPropertyIndex = childPropertyIndex
             };
+            node.CanonicalNode = node;
 
             // Try to extract property values from the CDO
             if (cdo != null)
@@ -170,10 +197,10 @@ public class AnimGraphViewModel
         // Associate state machine nodes with their baked machine names
         // and collect state machine metadata for overview layers
         var smMetadata = new List<StateMachineMetadata>();
-        AssociateStateMachineNames(animBlueprintClass, cdo, animNodeProps, nodeByName, smMetadata);
+        AssociateStateMachineNames(animBlueprintClass, cdo, childProps.Length, animNodeProps, nodeByName, smMetadata);
 
         // Group nodes into layers (connected subgraphs)
-        BuildLayers(vm);
+        BuildLayers(animBlueprintClass, cdo, vm, childProps.Length, animNodeProps, nodeByName);
 
         // Prefix state machine internal layers with their parent path to avoid name collisions
         PrefixStateMachineLayerNames(vm);
@@ -181,17 +208,25 @@ public class AnimGraphViewModel
         // Build state machine overview layers (Entry + State nodes + Transitions)
         BuildStateMachineOverviewLayers(vm, smMetadata);
 
+        // Build a single recursively-expanded graph starting from AnimGraph roots.
+        BuildFullGraphLayer(vm);
+
         return vm;
     }
 
     /// <summary>
     /// Groups nodes into layers based on root nodes. In Unreal Engine:
-    /// - Each animation blueprint layer has a unique AnimGraphNode_Root
+    /// - Each animation blueprint layer is surfaced by a UFunction whose first
+    ///   OutParm PoseLink stores the layer root node index
+    /// - The referenced node is typically an AnimGraphNode_Root
     /// - Each state machine state sub-graph has a unique AnimGraphNode_StateResult
     /// These two types are processed in separate passes to keep graph layers
     /// and state machine state sub-graphs independent.
     /// </summary>
-    private static void BuildLayers(AnimGraphViewModel vm)
+    private static void BuildLayers(UClass animBlueprintClass, UObject cdo,
+        AnimGraphViewModel vm, int childPropertyCount,
+        List<(string name, string structType, int childPropertyIndex)> animNodeProps,
+        Dictionary<string, AnimGraphNode> nodeByName)
     {
         if (vm.Nodes.Count == 0) return;
 
@@ -207,18 +242,32 @@ public class AnimGraphViewModel
         var assigned = new HashSet<AnimGraphNode>();
         var layerIndex = 0;
 
-        // Pass 1: Build graph layers from AnimGraphNode_Root nodes.
-        // Each _Root node defines an animation blueprint layer (e.g. "AnimGraph").
-        var graphRoots = vm.Nodes
-            .Where(n => n.ExportType.EndsWith("_Root", StringComparison.OrdinalIgnoreCase))
-            .ToList();
+        // Pass 1: Build graph layers from UFunction OutParm PoseLink roots.
+        // In cooked anim blueprints, each public graph/layer function points at its
+        // root node through the first PoseLink OutParm. Fall back to scanning _Root
+        // nodes only when that metadata cannot be resolved.
+        var resolvedGraphRoots = ResolveGraphLayerRoots(animBlueprintClass, cdo,
+            childPropertyCount, animNodeProps, nodeByName);
+        var hasFunctionBackedRoots = resolvedGraphRoots.Count > 0;
 
-        AnimGraphLayer? primaryGraphLayer = null;
-        foreach (var rootNode in graphRoots)
+        var graphRoots = resolvedGraphRoots;
+        if (graphRoots.Count == 0)
+        {
+            var graphLayerFunctionNames = GetGraphLayerFunctionNames(animBlueprintClass);
+            graphRoots = vm.Nodes
+                .Where(n => n.ExportType.EndsWith("_Root", StringComparison.OrdinalIgnoreCase))
+                .Select(n => (rootNode: n, layerName: InferGraphLayerName(n, upstreamOf, graphLayerFunctionNames)))
+                .OrderBy(static entry => entry.layerName.Equals("AnimGraph", StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+                .ThenBy(static entry => entry.layerName, StringComparer.Ordinal)
+                .ToList();
+        }
+
+        AnimGraphLayer primaryGraphLayer = null;
+        foreach (var (rootNode, layerName) in graphRoots)
         {
             if (!assigned.Add(rootNode)) continue;
             var layerNodes = CollectUpstream(rootNode, upstreamOf, assigned);
-            AddLayer(vm, layerNodes, layerIndex++);
+            AddLayer(vm, layerNodes, layerIndex++, layerName, hasFunctionBackedRoots);
             primaryGraphLayer ??= vm.Layers[^1];
         }
 
@@ -374,6 +423,289 @@ public class AnimGraphViewModel
         if (outermostGraphLayer != null)
         {
             EnforceSaveCachedPoseInRootLayers(vm, outermostGraphLayer);
+        }
+    }
+
+    private static List<(AnimGraphNode rootNode, string layerName)> ResolveGraphLayerRoots(
+        UClass animBlueprintClass, UObject cdo, int childPropertyCount,
+        List<(string name, string structType, int childPropertyIndex)> animNodeProps,
+        Dictionary<string, AnimGraphNode> nodeByName)
+    {
+        if (animBlueprintClass is UAnimBlueprintGeneratedClass animBlueprintGeneratedClass)
+        {
+            var generatedClassRoots = ResolveGraphLayerRoots(animBlueprintGeneratedClass, nodeByName);
+            if (generatedClassRoots.Count > 0)
+                return generatedClassRoots;
+        }
+
+        var roots = new List<(AnimGraphNode rootNode, string layerName)>();
+        var seenNodes = new HashSet<AnimGraphNode>();
+
+        foreach (var (functionName, functionIndex) in animBlueprintClass.FuncMap)
+        {
+            if (!functionIndex.TryLoad(out var export) || export is not UFunction function)
+                continue;
+
+            if (!TryGetFirstOutParmPoseProperty(function, out var outParmName))
+                continue;
+
+            var rootNode = ResolveFunctionRootNode(functionName.Text, outParmName,
+                cdo, childPropertyCount, animNodeProps, nodeByName);
+            if (rootNode == null || !seenNodes.Add(rootNode))
+                continue;
+
+            rootNode.AdditionalProperties["LayerName"] = functionName.Text;
+            roots.Add((rootNode, functionName.Text));
+        }
+
+        return roots;
+    }
+
+    private static List<(AnimGraphNode rootNode, string layerName)> ResolveGraphLayerRoots(
+        UAnimBlueprintGeneratedClass animBlueprintGeneratedClass,
+        Dictionary<string, AnimGraphNode> nodeByName)
+    {
+        var roots = new List<(AnimGraphNode rootNode, string layerName)>();
+        var seenNodes = new HashSet<AnimGraphNode>();
+
+        foreach (var function in animBlueprintGeneratedClass.AnimBlueprintFunctions)
+        {
+            if (!function.HasOutputPose ||
+                !animBlueprintGeneratedClass.TryGetRootNodePropertyForFunction(function.Name, out var rootProperty) ||
+                rootProperty is null ||
+                !nodeByName.TryGetValue(rootProperty.Name, out var rootNode) ||
+                !seenNodes.Add(rootNode))
+            {
+                continue;
+            }
+
+            rootNode.AdditionalProperties["LayerName"] = function.Name;
+            if (function.OutputPoseLinkID >= 0)
+                rootNode.AdditionalProperties["RootLinkID"] = function.OutputPoseLinkID.ToString();
+
+            roots.Add((rootNode, function.Name));
+        }
+
+        return roots;
+    }
+
+    private static HashSet<string> GetGraphLayerFunctionNames(UClass animBlueprintClass)
+    {
+        if (animBlueprintClass is UAnimBlueprintGeneratedClass animBlueprintGeneratedClass)
+        {
+            return animBlueprintGeneratedClass.AnimBlueprintFunctions
+                .Where(function => function.HasOutputPose)
+                .Select(function => function.Name)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        }
+
+        var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var (functionName, functionIndex) in animBlueprintClass.FuncMap)
+        {
+            if (!functionIndex.TryLoad(out var export) || export is not UFunction function)
+                continue;
+
+            if (TryGetFirstOutParmPoseProperty(function, out _))
+                names.Add(functionName.Text);
+        }
+
+        return names;
+    }
+
+    private static string InferGraphLayerName(AnimGraphNode rootNode,
+        Dictionary<AnimGraphNode, List<AnimGraphNode>> upstreamOf,
+        HashSet<string> graphLayerFunctionNames)
+    {
+        var layerNodes = CollectConnectedUpstreamNodes(rootNode, upstreamOf);
+
+        var graphNames = layerNodes
+            .Where(node => node.ExportType.Contains("LinkedInputPose", StringComparison.OrdinalIgnoreCase) &&
+                           node.AdditionalProperties.TryGetValue("Graph", out var graphName) &&
+                           graphLayerFunctionNames.Contains(graphName))
+            .Select(node => node.AdditionalProperties["Graph"])
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (graphNames.Count == 1)
+            return graphNames[0];
+
+        if (rootNode.Name.Equals("AnimGraphNode_Root", StringComparison.OrdinalIgnoreCase) &&
+            graphLayerFunctionNames.Contains("AnimGraph"))
+            return "AnimGraph";
+
+        return rootNode.AdditionalProperties.GetValueOrDefault("LayerName") ?? rootNode.Name;
+    }
+
+    private static List<AnimGraphNode> CollectConnectedUpstreamNodes(AnimGraphNode rootNode,
+        Dictionary<AnimGraphNode, List<AnimGraphNode>> upstreamOf)
+    {
+        var visited = new HashSet<AnimGraphNode> { rootNode };
+        var nodes = new List<AnimGraphNode> { rootNode };
+        var queue = new Queue<AnimGraphNode>();
+        queue.Enqueue(rootNode);
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            foreach (var upstream in upstreamOf[current])
+            {
+                if (!visited.Add(upstream))
+                    continue;
+
+                nodes.Add(upstream);
+                queue.Enqueue(upstream);
+            }
+        }
+
+        return nodes;
+    }
+
+    private static bool TryGetFirstOutParmPoseProperty(UFunction function, out string outParmName)
+    {
+        foreach (var childProperty in function.ChildProperties ?? [])
+        {
+            if (childProperty is not FStructProperty structProp)
+                continue;
+
+            if (!structProp.PropertyFlags.HasFlag(EPropertyFlags.OutParm) ||
+                structProp.PropertyFlags.HasFlag(EPropertyFlags.ReturnParm) ||
+                !IsPoseLinkStruct(structProp))
+                continue;
+
+            outParmName = structProp.Name.Text;
+            return true;
+        }
+
+        outParmName = string.Empty;
+        return false;
+    }
+
+    private static bool IsPoseLinkStruct(FStructProperty structProp)
+    {
+        var structName = structProp.Struct.ResolvedObject?.Name.Text ?? string.Empty;
+        return structName.Equals("PoseLink", StringComparison.OrdinalIgnoreCase) ||
+               structName.Equals("FPoseLink", StringComparison.OrdinalIgnoreCase) ||
+               structName.Equals("ComponentSpacePoseLink", StringComparison.OrdinalIgnoreCase) ||
+               structName.Equals("FComponentSpacePoseLink", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static AnimGraphNode ResolveFunctionRootNode(string functionName, string outParmName,
+        UObject cdo, int childPropertyCount,
+        List<(string name, string structType, int childPropertyIndex)> animNodeProps,
+        Dictionary<string, AnimGraphNode> nodeByName)
+    {
+        if (cdo == null)
+            return null;
+
+        if (TryResolveFunctionRootNodeFromHolder(cdo, functionName, outParmName,
+                childPropertyCount, animNodeProps, nodeByName, out var rootNode))
+            return rootNode;
+
+        if (cdo.SerializedSparseClassData != null &&
+            TryResolveFunctionRootNodeFromHolder(cdo.SerializedSparseClassData, functionName, outParmName,
+                childPropertyCount, animNodeProps, nodeByName, out rootNode))
+            return rootNode;
+
+        return null;
+    }
+
+    private static bool TryResolveFunctionRootNodeFromHolder(IPropertyHolder holder,
+        string functionName, string outParmName, int childPropertyCount,
+        List<(string name, string structType, int childPropertyIndex)> animNodeProps,
+        Dictionary<string, AnimGraphNode> nodeByName,
+        out AnimGraphNode rootNode)
+    {
+        if (holder.TryGetValue(out FStructFallback functionStruct, functionName) &&
+            TryResolveFunctionRootNodeFromStruct(functionStruct, outParmName, childPropertyCount,
+                animNodeProps, nodeByName, out rootNode))
+            return true;
+
+        if (!outParmName.Equals(functionName, StringComparison.OrdinalIgnoreCase) &&
+            holder.TryGetValue(out FStructFallback outParmStruct, outParmName) &&
+            TryResolveRootNodeFromPoseLinkStruct(outParmStruct, childPropertyCount,
+                animNodeProps, nodeByName, out rootNode))
+            return true;
+
+        rootNode = null;
+        return false;
+    }
+
+    private static bool TryResolveFunctionRootNodeFromStruct(FStructFallback functionStruct,
+        string outParmName, int childPropertyCount,
+        List<(string name, string structType, int childPropertyIndex)> animNodeProps,
+        Dictionary<string, AnimGraphNode> nodeByName,
+        out AnimGraphNode rootNode)
+    {
+        if (functionStruct.TryGetValue(out FStructFallback outParmStruct, outParmName) &&
+            TryResolveRootNodeFromPoseLinkStruct(outParmStruct, childPropertyCount,
+                animNodeProps, nodeByName, out rootNode))
+            return true;
+
+        if (TryResolveRootNodeFromPoseLinkStruct(functionStruct, childPropertyCount,
+                animNodeProps, nodeByName, out rootNode))
+            return true;
+
+        rootNode = null;
+        return false;
+    }
+
+    private static bool TryResolveRootNodeFromPoseLinkStruct(FStructFallback poseLinkStruct,
+        int childPropertyCount,
+        List<(string name, string structType, int childPropertyIndex)> animNodeProps,
+        Dictionary<string, AnimGraphNode> nodeByName,
+        out AnimGraphNode rootNode)
+    {
+        rootNode = null;
+        if (!poseLinkStruct.TryGetValue(out int rootNodeIndex, "LinkID"))
+            return false;
+
+        var rootPropName = ResolveGraphRootPropName(rootNodeIndex, childPropertyCount,
+            animNodeProps, nodeByName);
+        if (string.IsNullOrEmpty(rootPropName) || !nodeByName.TryGetValue(rootPropName, out rootNode))
+            return false;
+
+        return rootNode.ExportType.EndsWith("_Root", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string ResolveGraphRootPropName(int rootNodeIndex, int childPropertyCount,
+        List<(string name, string structType, int childPropertyIndex)> animNodeProps,
+        Dictionary<string, AnimGraphNode> nodeByName)
+    {
+        var candidates = new List<string>();
+
+        AddCandidateByAnimNodeIndex(rootNodeIndex);
+        AddCandidateByChildPropertyIndex(rootNodeIndex);
+        AddCandidateByAnimNodeIndex(animNodeProps.Count - 1 - rootNodeIndex);
+        AddCandidateByChildPropertyIndex(childPropertyCount - 1 - rootNodeIndex);
+
+        foreach (var candidate in candidates)
+        {
+            if (nodeByName.TryGetValue(candidate, out var node) &&
+                node.ExportType.EndsWith("_Root", StringComparison.OrdinalIgnoreCase))
+                return candidate;
+        }
+
+        return candidates.FirstOrDefault() ?? string.Empty;
+
+        void AddCandidateByAnimNodeIndex(int animNodeIndex)
+        {
+            if (animNodeIndex < 0 || animNodeIndex >= animNodeProps.Count)
+                return;
+
+            var name = animNodeProps[animNodeIndex].name;
+            if (!string.IsNullOrEmpty(name) && !candidates.Any(existing => string.Equals(existing, name, StringComparison.Ordinal)))
+                candidates.Add(name);
+        }
+
+        void AddCandidateByChildPropertyIndex(int childPropertyIndex)
+        {
+            if (childPropertyIndex < 0)
+                return;
+
+            var match = animNodeProps.FirstOrDefault(prop => prop.childPropertyIndex == childPropertyIndex);
+            if (!string.IsNullOrEmpty(match.name) && !candidates.Any(existing => string.Equals(existing, match.name, StringComparison.Ordinal)))
+                candidates.Add(match.name);
         }
     }
 
@@ -595,10 +927,15 @@ public class AnimGraphViewModel
     /// Creates an <see cref="AnimGraphLayer"/> from a set of nodes, assigns
     /// the relevant connections, lays out the nodes and adds the layer to the VM.
     /// </summary>
-    private static void AddLayer(AnimGraphViewModel vm, List<AnimGraphNode> nodes, int index)
+    private static void AddLayer(AnimGraphViewModel vm, List<AnimGraphNode> nodes, int index,
+        string layerNameOverride = null, bool isFunctionLayer = false)
     {
         var nodeSet = new HashSet<AnimGraphNode>(nodes);
-        var layer = new AnimGraphLayer { Name = GetLayerName(nodes, index) };
+        var layer = new AnimGraphLayer
+        {
+            Name = string.IsNullOrWhiteSpace(layerNameOverride) ? GetLayerName(nodes, index) : layerNameOverride,
+            IsFunctionLayer = isFunctionLayer
+        };
         layer.Nodes.AddRange(nodes);
 
         foreach (var conn in vm.Connections)
@@ -653,8 +990,9 @@ public class AnimGraphViewModel
         // Iteratively rename state sub-graphs and discover nested StateMachine nodes.
         // Each pass renames sub-graphs whose parent SM is already known, then registers
         // any nested SM nodes found in the newly-renamed sub-graphs for the next pass.
+        var remainingPasses = Math.Max(1, vm.StateSubGraphs.Count + smParentLayer.Count);
         bool changed = true;
-        while (changed)
+        while (changed && remainingPasses-- > 0)
         {
             changed = false;
             foreach (var (_, layer) in vm.StateSubGraphs)
@@ -679,7 +1017,12 @@ public class AnimGraphViewModel
                 // Per-state layers: use the _StateResult node's Name additional property for display
                 var stateResultNode = layer.Nodes.FirstOrDefault(n =>
                     n.ExportType.EndsWith("_StateResult", StringComparison.OrdinalIgnoreCase));
-                var stateName = stateResultNode?.AdditionalProperties.GetValueOrDefault("Name") ?? layer.Name;
+                var stateName = stateResultNode?.AdditionalProperties.GetValueOrDefault("Name");
+                if (string.IsNullOrWhiteSpace(stateName))
+                    stateName = stateResultNode?.Name;
+                if (string.IsNullOrWhiteSpace(stateName))
+                    stateName = GetTailSegment(layer.Name);
+
                 var expectedName = $"{parentName}{SubGraphPathSeparator}{smName}{SubGraphPathSeparator}{stateName}";
 
                 if (layer.Name != expectedName)
@@ -699,6 +1042,15 @@ public class AnimGraphViewModel
                 }
             }
         }
+    }
+
+    private static string GetTailSegment(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            return string.Empty;
+
+        var separatorIndex = path.LastIndexOf(SubGraphPathSeparator, StringComparison.Ordinal);
+        return separatorIndex >= 0 ? path[(separatorIndex + SubGraphPathSeparator.Length)..] : path;
     }
 
     /// <summary>
@@ -761,12 +1113,22 @@ public class AnimGraphViewModel
             // Create State nodes
             for (var i = 0; i < sm.StateNames.Count; i++)
             {
+                var stateName = sm.StateNames[i];
                 var stateNode = new AnimGraphNode
                 {
-                    Name = sm.StateNames[i],
-                    ExportType = "State",
+                    Name = stateName,
+                    ExportType = i < sm.StateIsConduit.Count && sm.StateIsConduit[i] ? "Conduit" : "State",
                     IsStateMachineState = true
                 };
+                stateNode.AdditionalProperties["StateMachineName"] = sm.MachineName;
+                stateNode.AdditionalProperties["StateSubGraphName"] =
+                    $"{overviewLayerName}{SubGraphPathSeparator}{stateName}";
+                if (i < sm.StateIsConduit.Count && sm.StateIsConduit[i])
+                    stateNode.AdditionalProperties["IsConduit"] = bool.TrueString;
+                if (i < sm.StateRootNodeIndices.Count)
+                    stateNode.AdditionalProperties["StateRootNodeIndex"] = sm.StateRootNodeIndices[i].ToString();
+                if (i < sm.EntryRuleNodeIndices.Count && sm.EntryRuleNodeIndices[i] >= 0)
+                    stateNode.AdditionalProperties["EntryRuleNodeIndex"] = sm.EntryRuleNodeIndices[i].ToString();
                 // Store root node property name for StateRootNodeIndex-based lookup
                 if (i < sm.StateRootPropNames.Count && !string.IsNullOrEmpty(sm.StateRootPropNames[i]))
                     stateNode.AdditionalProperties["StateRootNodeName"] = sm.StateRootPropNames[i];
@@ -822,6 +1184,242 @@ public class AnimGraphViewModel
             LayoutStateMachineOverview(overviewLayer, entryNode, stateNodes);
 
             vm.Layers.Add(overviewLayer);
+        }
+    }
+
+    /// <summary>
+    /// Builds a single recursively-expanded graph that starts from the AnimGraph root,
+    /// walks upstream through normal pose connections, and additionally expands
+    /// linked animation layers, cached pose links, and state machine state sub-graphs.
+    /// The resulting layer uses cloned nodes so the combined layout does not overwrite
+    /// the per-layer node positions used elsewhere in the viewer.
+    /// </summary>
+    private static void BuildFullGraphLayer(AnimGraphViewModel vm)
+    {
+        var animGraphLayer = vm.Layers.FirstOrDefault(layer =>
+            layer.Name.Equals("AnimGraph", StringComparison.OrdinalIgnoreCase))
+            ?? vm.FunctionLayers.FirstOrDefault();
+        if (animGraphLayer == null)
+            return;
+
+        var rootNodes = animGraphLayer.Nodes
+            .Where(IsAnimationBlueprintRootNode)
+            .ToList();
+        if (rootNodes.Count == 0)
+            rootNodes = [.. animGraphLayer.Nodes.Take(1)];
+        if (rootNodes.Count == 0)
+            return;
+
+        var includedNodes = new HashSet<AnimGraphNode>();
+        var includedConnections = new HashSet<AnimGraphConnection>();
+        var syntheticConnections = new List<AnimGraphConnection>();
+        var queuedNodes = new HashSet<AnimGraphNode>(rootNodes);
+        var expandedStateMachines = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var expandedLinkedLayers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var incomingByTarget = vm.Connections
+            .GroupBy(connection => connection.TargetNode)
+            .ToDictionary(group => group.Key, group => group.ToList());
+
+        var queue = new Queue<AnimGraphNode>(rootNodes);
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            includedNodes.Add(current);
+
+            if (incomingByTarget.TryGetValue(current, out var incoming))
+            {
+                foreach (var connection in incoming)
+                {
+                    includedConnections.Add(connection);
+                    if (queuedNodes.Add(connection.SourceNode))
+                        queue.Enqueue(connection.SourceNode);
+                }
+            }
+
+            ExpandStateMachineNode(current);
+            ExpandLinkedLayerNode(current);
+        }
+
+        var allConnections = includedConnections
+            .Concat(syntheticConnections)
+            .Where(connection => includedNodes.Contains(connection.SourceNode) && includedNodes.Contains(connection.TargetNode))
+            .GroupBy(connection => (connection.SourceNode, connection.SourcePinName, connection.TargetNode, connection.TargetPinName), ReferenceTupleComparer.Instance)
+            .Select(static group => group.First())
+            .ToList();
+
+        vm.FullGraphLayer = CloneLayerGraph("Full Graph", includedNodes, allConnections, isCombinedGraph: true);
+
+        void ExpandStateMachineNode(AnimGraphNode node)
+        {
+            if (!node.ExportType.Contains("StateMachine", StringComparison.OrdinalIgnoreCase) ||
+                !node.AdditionalProperties.TryGetValue("StateMachineName", out var machineName) ||
+                string.IsNullOrEmpty(machineName) ||
+                !expandedStateMachines.Add(machineName))
+            {
+                return;
+            }
+
+            foreach (var stateLayer in vm.StateSubGraphs.Values)
+            {
+                var stateRoot = stateLayer.Nodes.FirstOrDefault(static candidate =>
+                    candidate.ExportType.EndsWith("_StateResult", StringComparison.OrdinalIgnoreCase));
+                if (stateRoot == null)
+                    continue;
+
+                if (!stateRoot.AdditionalProperties.TryGetValue("BelongsToStateMachine", out var ownerMachine) ||
+                    !machineName.Equals(ownerMachine, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                includedNodes.Add(stateRoot);
+                AddSyntheticConnection(stateRoot, node, $"State:{stateRoot.Name}");
+                if (queuedNodes.Add(stateRoot))
+                    queue.Enqueue(stateRoot);
+            }
+        }
+
+        void ExpandLinkedLayerNode(AnimGraphNode node)
+        {
+            if (!node.ExportType.Contains("LinkedAnimLayer", StringComparison.OrdinalIgnoreCase) &&
+                !node.ExportType.Contains("LinkedAnimGraph", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            string linkedLayerName = null;
+            if (!node.AdditionalProperties.TryGetValue("Layer", out linkedLayerName) || string.IsNullOrEmpty(linkedLayerName))
+                node.AdditionalProperties.TryGetValue("Graph", out linkedLayerName);
+            if (string.IsNullOrEmpty(linkedLayerName) || !expandedLinkedLayers.Add(linkedLayerName))
+                return;
+
+            var linkedLayer = vm.Layers.FirstOrDefault(layer =>
+                !layer.IsCombinedGraph &&
+                layer.Name.Equals(linkedLayerName, StringComparison.OrdinalIgnoreCase));
+            var linkedRoot = linkedLayer?.Nodes.FirstOrDefault(IsAnimationBlueprintRootNode);
+            if (linkedRoot == null)
+                return;
+
+            includedNodes.Add(linkedRoot);
+            AddSyntheticConnection(linkedRoot, node, $"Layer:{linkedLayerName}");
+            if (queuedNodes.Add(linkedRoot))
+                queue.Enqueue(linkedRoot);
+        }
+
+        void AddSyntheticConnection(AnimGraphNode sourceNode, AnimGraphNode targetNode, string targetPinName)
+        {
+            syntheticConnections.Add(new AnimGraphConnection
+            {
+                SourceNode = sourceNode,
+                SourcePinName = "Output",
+                TargetNode = targetNode,
+                TargetPinName = targetPinName
+            });
+        }
+    }
+
+    private static AnimGraphLayer CloneLayerGraph(
+        string layerName,
+        IEnumerable<AnimGraphNode> sourceNodes,
+        IEnumerable<AnimGraphConnection> sourceConnections,
+        bool isCombinedGraph)
+    {
+        var cloneMap = new Dictionary<AnimGraphNode, AnimGraphNode>();
+        var orderedNodes = sourceNodes
+            .OrderBy(static node => node.AnimNodePropertyIndex >= 0 ? 0 : 1)
+            .ThenBy(static node => node.AnimNodePropertyIndex)
+            .ThenBy(static node => node.Name, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var layer = new AnimGraphLayer
+        {
+            Name = layerName,
+            IsFunctionLayer = true,
+            IsCombinedGraph = isCombinedGraph
+        };
+
+        foreach (var originalNode in orderedNodes)
+        {
+            var clone = new AnimGraphNode
+            {
+                CanonicalNode = originalNode.CanonicalNode ?? originalNode,
+                Name = originalNode.Name,
+                ExportType = originalNode.ExportType,
+                AnimNodePropertyIndex = originalNode.AnimNodePropertyIndex,
+                ChildPropertyIndex = originalNode.ChildPropertyIndex,
+                NodeComment = originalNode.NodeComment,
+                IsStateMachineState = originalNode.IsStateMachineState,
+                IsEntryNode = originalNode.IsEntryNode
+            };
+
+            foreach (var (key, value) in originalNode.AdditionalProperties)
+                clone.AdditionalProperties[key] = value;
+
+            foreach (var pin in originalNode.Pins)
+            {
+                clone.Pins.Add(new AnimGraphPin
+                {
+                    PinName = pin.PinName,
+                    IsOutput = pin.IsOutput,
+                    PinType = pin.PinType,
+                    DefaultValue = pin.DefaultValue,
+                    LinkIndex = pin.LinkIndex,
+                    OwnerNode = clone
+                });
+            }
+
+            cloneMap[originalNode] = clone;
+            layer.Nodes.Add(clone);
+        }
+
+        foreach (var connection in sourceConnections)
+        {
+            if (!cloneMap.TryGetValue(connection.SourceNode, out var clonedSource) ||
+                !cloneMap.TryGetValue(connection.TargetNode, out var clonedTarget))
+            {
+                continue;
+            }
+
+            var clonedConnection = new AnimGraphConnection
+            {
+                SourceNode = clonedSource,
+                SourcePinName = connection.SourcePinName,
+                TargetNode = clonedTarget,
+                TargetPinName = connection.TargetPinName
+            };
+
+            foreach (var (key, value) in connection.TransitionProperties)
+                clonedConnection.TransitionProperties[key] = value;
+
+            layer.Connections.Add(clonedConnection);
+        }
+
+        LayoutLayerNodes(layer);
+        return layer;
+    }
+
+    private static bool IsAnimationBlueprintRootNode(AnimGraphNode node)
+    {
+        return node.ExportType.EndsWith("_Root", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private sealed class ReferenceTupleComparer : IEqualityComparer<(AnimGraphNode SourceNode, string SourcePinName, AnimGraphNode TargetNode, string TargetPinName)>
+    {
+        public static ReferenceTupleComparer Instance { get; } = new();
+
+        public bool Equals(
+            (AnimGraphNode SourceNode, string SourcePinName, AnimGraphNode TargetNode, string TargetPinName) x,
+            (AnimGraphNode SourceNode, string SourcePinName, AnimGraphNode TargetNode, string TargetPinName) y)
+        {
+            return ReferenceEquals(x.SourceNode, y.SourceNode) &&
+                   string.Equals(x.SourcePinName, y.SourcePinName, StringComparison.Ordinal) &&
+                   ReferenceEquals(x.TargetNode, y.TargetNode) &&
+                   string.Equals(x.TargetPinName, y.TargetPinName, StringComparison.Ordinal);
+        }
+
+        public int GetHashCode((AnimGraphNode SourceNode, string SourcePinName, AnimGraphNode TargetNode, string TargetPinName) obj)
+        {
+            return HashCode.Combine(obj.SourceNode, obj.SourcePinName, obj.TargetNode, obj.TargetPinName);
         }
     }
 
@@ -908,12 +1506,56 @@ public class AnimGraphViewModel
         return exportType;
     }
 
+    private static string ResolveStateRootPropName(
+        int stateRootIndex,
+        int childPropertyCount,
+        List<(string name, string structType, int childPropertyIndex)> animNodeProps,
+        Dictionary<string, AnimGraphNode> nodeByName)
+    {
+        var candidates = new List<string>();
+
+        AddCandidateByChildPropertyIndex(childPropertyCount - 1 - stateRootIndex);
+        AddCandidateByAnimNodeIndex(animNodeProps.Count - 1 - stateRootIndex);
+        AddCandidateByChildPropertyIndex(stateRootIndex);
+        AddCandidateByAnimNodeIndex(stateRootIndex);
+
+        foreach (var candidate in candidates)
+        {
+            if (nodeByName.TryGetValue(candidate, out var node) &&
+                node.ExportType.EndsWith("_StateResult", StringComparison.OrdinalIgnoreCase))
+                return candidate;
+        }
+
+        return candidates.FirstOrDefault() ?? string.Empty;
+
+        void AddCandidateByChildPropertyIndex(int childPropertyIndex)
+        {
+            if (childPropertyIndex < 0)
+                return;
+
+            var match = animNodeProps.FirstOrDefault(prop => prop.childPropertyIndex == childPropertyIndex);
+            if (!string.IsNullOrEmpty(match.name) && !candidates.Any(existing => string.Equals(existing, match.name, StringComparison.Ordinal)))
+                candidates.Add(match.name);
+        }
+
+        void AddCandidateByAnimNodeIndex(int animNodeIndex)
+        {
+            if (animNodeIndex < 0 || animNodeIndex >= animNodeProps.Count)
+                return;
+
+            var name = animNodeProps[animNodeIndex].name;
+            if (!string.IsNullOrEmpty(name) && !candidates.Any(existing => string.Equals(existing, name, StringComparison.Ordinal)))
+                candidates.Add(name);
+        }
+    }
+
     /// <summary>
     /// Reads BakedStateMachines from the animation blueprint class to associate
     /// FAnimNode_StateMachine nodes with their machine names, mark internal
     /// state root nodes, and collect state/transition metadata for overview layers.
     /// </summary>
     private static void AssociateStateMachineNames(UClass animBlueprintClass, UObject? cdo,
+        int childPropertyCount,
         List<(string name, string structType, int childPropertyIndex)> animNodeProps,
         Dictionary<string, AnimGraphNode> nodeByName,
         List<StateMachineMetadata> smMetadata)
@@ -975,6 +1617,9 @@ public class AnimGraphViewModel
                     {
                         metadata.StateNames.Add($"State_{stateIdx}");
                         metadata.StateRootPropNames.Add(string.Empty);
+                        metadata.StateIsConduit.Add(false);
+                        metadata.StateRootNodeIndices.Add(-1);
+                        metadata.EntryRuleNodeIndices.Add(-1);
                         continue;
                     }
 
@@ -984,22 +1629,35 @@ public class AnimGraphViewModel
                         stateName = stateNameProp.Text;
 
                     metadata.StateNames.Add(stateName);
+                    metadata.StateIsConduit.Add(stateStruct.TryGetValue(out bool isConduit, "bIsAConduit") && isConduit);
+                    metadata.EntryRuleNodeIndices.Add(
+                        stateStruct.TryGetValue(out int entryRuleNodeIndex, "EntryRuleNodeIndex") ? entryRuleNodeIndex : -1);
 
-                    // Mark root node via StateRootNodeIndex
-                    // UE stores node indices in reverse order relative to ChildProperties,
-                    // so the actual index into animNodeProps is (Count - 1 - stateRootIndex).
-                    if (!stateStruct.TryGetValue(out int stateRootIndex, "StateRootNodeIndex") ||
-                        stateRootIndex < 0 || stateRootIndex >= animNodeProps.Count)
+                    // Mark root node via StateRootNodeIndex.
+                    // Cooked assets do not always expose this index relative to the same base,
+                    // so resolve against several candidate index spaces and prefer a StateResult node.
+                    if (!stateStruct.TryGetValue(out int stateRootIndex, "StateRootNodeIndex") || stateRootIndex < 0)
+                    {
+                        metadata.StateRootNodeIndices.Add(-1);
+                        metadata.StateRootPropNames.Add(string.Empty);
+                        continue;
+                    }
+
+                    metadata.StateRootNodeIndices.Add(stateRootIndex);
+
+                    var rootPropName = ResolveStateRootPropName(stateRootIndex, childPropertyCount, animNodeProps, nodeByName);
+                    if (string.IsNullOrEmpty(rootPropName))
                     {
                         metadata.StateRootPropNames.Add(string.Empty);
                         continue;
                     }
 
-                    var mappedIndex = animNodeProps.Count - 1 - stateRootIndex;
-                    var rootPropName = animNodeProps[mappedIndex].name;
                     metadata.StateRootPropNames.Add(rootPropName);
                     if (nodeByName.TryGetValue(rootPropName, out var rootNode))
+                    {
                         rootNode.AdditionalProperties["BelongsToStateMachine"] = machineName;
+                        rootNode.AdditionalProperties["Name"] = stateName;
+                    }
                 }
                 break;
             }
@@ -1044,14 +1702,20 @@ public class AnimGraphViewModel
     }
 
     /// <summary>
-    /// Arranges nodes within a layer in a left-to-right flow layout
-    /// based on connection topology (sinks on the left, sources on the right).
+    /// Arranges nodes within a layer as a compact left-to-right layered graph.
+    /// The layout first assigns nodes to the left-most feasible column, then
+    /// iteratively reorders each column to reduce edge crossings while keeping
+    /// roots/results visually stable.
     /// </summary>
     private static void LayoutLayerNodes(AnimGraphLayer layer)
     {
         if (layer.Nodes.Count == 0) return;
 
-        // Build directed adjacency: target -> sources (who feeds into target)
+        var originalOrder = layer.Nodes
+            .Select((node, index) => (node, index))
+            .ToDictionary(static pair => pair.node, static pair => pair.index);
+
+        // Build directed adjacency for the layer-local graph.
         var incomingEdges = new Dictionary<AnimGraphNode, List<AnimGraphNode>>();
         var outgoingEdges = new Dictionary<AnimGraphNode, List<AnimGraphNode>>();
         foreach (var node in layer.Nodes)
@@ -1067,14 +1731,21 @@ public class AnimGraphViewModel
             incomingEdges[conn.TargetNode].Add(conn.SourceNode);
         }
 
-        // Topological sort to assign depth levels (longest path from leaves)
+        // Assign initial depths from sinks so result/root nodes stay on the left.
         var depth = new Dictionary<AnimGraphNode, int>();
-        var layerSet = new HashSet<AnimGraphNode>(layer.Nodes);
 
-        // Find sink nodes (nodes with no outgoing edges within this layer)
+        // Find sink nodes (nodes with no outgoing edges within this layer).
+        // Cyclic graphs may not have any, so fall back to root-like nodes and then all nodes.
         var sinkNodes = layer.Nodes.Where(n => outgoingEdges[n].Count == 0).ToList();
+        if (sinkNodes.Count == 0)
+        {
+            sinkNodes = layer.Nodes
+                .Where(node => IsTerminalGraphNode(node) || incomingEdges[node].Count == 0)
+                .ToList();
+        }
+        if (sinkNodes.Count == 0)
+            sinkNodes = layer.Nodes.ToList();
 
-        // BFS from sinks to assign depth
         foreach (var node in layer.Nodes)
             depth[node] = 0;
 
@@ -1098,7 +1769,34 @@ public class AnimGraphViewModel
             }
         }
 
-        // Group by depth level and assign positions
+        // Left-bias columns where possible: if a node has slack between its
+        // downstream constraints and upstream constraints, push it toward the
+        // left-most feasible column to shorten long-span edges and reduce crossings.
+        var depthAdjusted = true;
+        while (depthAdjusted)
+        {
+            depthAdjusted = false;
+
+            foreach (var node in layer.Nodes.OrderByDescending(node => depth[node]).ThenBy(node => originalOrder[node]))
+            {
+                if (incomingEdges[node].Count == 0)
+                    continue;
+
+                var minimumDepth = outgoingEdges[node].Count == 0
+                    ? depth[node]
+                    : outgoingEdges[node].Max(target => depth[target]) + 1;
+                var maximumDepth = incomingEdges[node].Min(source => depth[source]) - 1;
+                var leftBiasedDepth = Math.Max(minimumDepth, maximumDepth);
+
+                if (leftBiasedDepth > depth[node])
+                {
+                    depth[node] = leftBiasedDepth;
+                    depthAdjusted = true;
+                }
+            }
+        }
+
+        // Group the compacted depths into display columns.
         var maxDepth = depth.Values.DefaultIfEmpty(0).Max();
         var nodesAtDepth = new Dictionary<int, List<AnimGraphNode>>();
         foreach (var (node, d) in depth)
@@ -1108,24 +1806,423 @@ public class AnimGraphViewModel
             list.Add(node);
         }
 
-        // Position: sources (high depth) on the right, sinks (depth 0) on the left
+        var orderedColumns = new Dictionary<int, List<AnimGraphNode>>();
         for (var d = 0; d <= maxDepth; d++)
         {
-            if (!nodesAtDepth.TryGetValue(d, out var nodesInColumn)) continue;
+            if (!nodesAtDepth.TryGetValue(d, out var nodesInColumn))
+                continue;
+
+            orderedColumns[d] = nodesInColumn
+                .OrderBy(GetNodePriority)
+                .ThenBy(node => originalOrder[node])
+                .ToList();
+        }
+
+        var connectionList = layer.Connections
+            .Where(conn => depth.ContainsKey(conn.SourceNode) && depth.ContainsKey(conn.TargetNode))
+            .ToList();
+        var incidentConnections = BuildIncidentConnections(layer.Nodes, connectionList);
+
+        // Iterative sweeps: first align nodes to neighboring columns, then
+        // locally swap adjacent nodes when doing so reduces measured crossings.
+        for (var iteration = 0; iteration < 6; iteration++)
+        {
+            var beforeSignature = GetColumnSignature(orderedColumns);
+            var orderMap = BuildOrderMap(orderedColumns);
+
+            for (var d = 1; d <= maxDepth; d++)
+            {
+                SortColumnByAnchor(d, orderedColumns, outgoingEdges, incomingEdges, orderMap, originalOrder, preferOutgoing: true);
+                orderMap = BuildOrderMap(orderedColumns);
+            }
+
+            for (var d = maxDepth - 1; d >= 0; d--)
+            {
+                SortColumnByAnchor(d, orderedColumns, outgoingEdges, incomingEdges, orderMap, originalOrder, preferOutgoing: false);
+                orderMap = BuildOrderMap(orderedColumns);
+            }
+
+            var reducedCrossings = false;
+            for (var d = 0; d <= maxDepth; d++)
+                reducedCrossings |= ReduceCrossingsInColumn(
+                    d,
+                    orderedColumns,
+                    depth,
+                    connectionList,
+                    incidentConnections,
+                    outgoingEdges,
+                    incomingEdges,
+                    originalOrder);
+
+            var afterSignature = GetColumnSignature(orderedColumns);
+            if (!reducedCrossings && string.Equals(beforeSignature, afterSignature, StringComparison.Ordinal))
+                break;
+        }
+
+        var columnCenter = new Dictionary<int, double>();
+        for (var d = 0; d <= maxDepth; d++)
+        {
+            if (!orderedColumns.TryGetValue(d, out var nodesInColumn)) continue;
 
             var x = (maxDepth - d) * NodeHorizontalSpacing;
+            var desiredPositions = nodesInColumn
+                .Select(node => GetDesiredY(node, outgoingEdges[node], incomingEdges[node], columnCenter))
+                .ToList();
+            var actualPositions = SpreadNodes(desiredPositions, NodeVerticalSpacing);
+
             for (var i = 0; i < nodesInColumn.Count; i++)
             {
                 nodesInColumn[i].NodePosX = x;
-                nodesInColumn[i].NodePosY = i * NodeVerticalSpacing;
+                nodesInColumn[i].NodePosY = (int)Math.Round(actualPositions[i]);
             }
+
+            columnCenter[d] = actualPositions.Count == 0 ? 0 : actualPositions.Average();
+        }
+
+        var minY = layer.Nodes.Min(static node => node.NodePosY);
+        if (minY < 0)
+        {
+            foreach (var node in layer.Nodes)
+                node.NodePosY -= minY;
+        }
+
+        static bool IsTerminalGraphNode(AnimGraphNode node)
+        {
+            return node.ExportType.EndsWith("_Root", StringComparison.OrdinalIgnoreCase) ||
+                   node.ExportType.EndsWith("_StateResult", StringComparison.OrdinalIgnoreCase) ||
+                   node.IsEntryNode;
+        }
+
+        static int GetNodePriority(AnimGraphNode node)
+        {
+            if (node.ExportType.EndsWith("_Root", StringComparison.OrdinalIgnoreCase))
+                return 0;
+            if (node.ExportType.EndsWith("_StateResult", StringComparison.OrdinalIgnoreCase))
+                return 1;
+            if (node.IsEntryNode)
+                return 2;
+            if (node.IsStateMachineState)
+                return 3;
+            return 10;
+        }
+
+        static Dictionary<AnimGraphNode, int> BuildOrderMap(Dictionary<int, List<AnimGraphNode>> orderedColumns)
+        {
+            var orderMap = new Dictionary<AnimGraphNode, int>();
+            foreach (var column in orderedColumns.Values)
+            {
+                for (var index = 0; index < column.Count; index++)
+                    orderMap[column[index]] = index;
+            }
+
+            return orderMap;
+        }
+
+        static void SortColumnByAnchor(
+            int columnDepth,
+            Dictionary<int, List<AnimGraphNode>> orderedColumns,
+            Dictionary<AnimGraphNode, List<AnimGraphNode>> outgoingEdges,
+            Dictionary<AnimGraphNode, List<AnimGraphNode>> incomingEdges,
+            Dictionary<AnimGraphNode, int> orderMap,
+            Dictionary<AnimGraphNode, int> originalOrder,
+            bool preferOutgoing)
+        {
+            if (!orderedColumns.TryGetValue(columnDepth, out var column) || column.Count <= 1)
+                return;
+
+            orderedColumns[columnDepth] = column
+                .OrderBy(node => GetNeighborAnchor(node, outgoingEdges[node], incomingEdges[node], orderMap, originalOrder, preferOutgoing))
+                .ThenBy(GetNodePriority)
+                .ThenBy(node => originalOrder[node])
+                .ToList();
+        }
+
+        static double GetNeighborAnchor(
+            AnimGraphNode node,
+            List<AnimGraphNode> outgoing,
+            List<AnimGraphNode> incoming,
+            Dictionary<AnimGraphNode, int> orderMap,
+            Dictionary<AnimGraphNode, int> originalOrder,
+            bool preferOutgoing)
+        {
+            var primary = preferOutgoing ? outgoing : incoming;
+            var secondary = preferOutgoing ? incoming : outgoing;
+
+            var positions = primary.Where(orderMap.ContainsKey).Select(neighbor => (double) orderMap[neighbor]).ToList();
+            if (positions.Count == 0)
+                positions = secondary.Where(orderMap.ContainsKey).Select(neighbor => (double) orderMap[neighbor]).ToList();
+
+            return positions.Count > 0 ? positions.Average() : originalOrder[node];
+        }
+
+        static bool ReduceCrossingsInColumn(
+            int columnDepth,
+            Dictionary<int, List<AnimGraphNode>> orderedColumns,
+            Dictionary<AnimGraphNode, int> depth,
+            List<AnimGraphConnection> connections,
+            Dictionary<AnimGraphNode, List<AnimGraphConnection>> incidentConnections,
+            Dictionary<AnimGraphNode, List<AnimGraphNode>> outgoingEdges,
+            Dictionary<AnimGraphNode, List<AnimGraphNode>> incomingEdges,
+            Dictionary<AnimGraphNode, int> originalOrder)
+        {
+            if (!orderedColumns.TryGetValue(columnDepth, out var column) || column.Count <= 1)
+                return false;
+
+            var improvedAny = false;
+            for (var pass = 0; pass < column.Count * 2; pass++)
+            {
+                var improvedThisPass = false;
+                for (var i = 0; i < column.Count - 1; i++)
+                {
+                    var firstNode = column[i];
+                    var secondNode = column[i + 1];
+                    var impactedConnections = GetImpactedConnections(firstNode, secondNode, incidentConnections);
+                    var currentCrossings = CountCrossingsForConnections(orderedColumns, depth, connections, impactedConnections);
+                    var currentPenalty = GetLocalAnchorPenalty(firstNode, secondNode, orderedColumns, outgoingEdges, incomingEdges, originalOrder);
+
+                    (column[i], column[i + 1]) = (column[i + 1], column[i]);
+
+                    var swappedCrossings = CountCrossingsForConnections(orderedColumns, depth, connections, impactedConnections);
+                    var swappedPenalty = GetLocalAnchorPenalty(firstNode, secondNode, orderedColumns, outgoingEdges, incomingEdges, originalOrder);
+
+                    if (swappedCrossings < currentCrossings ||
+                        (swappedCrossings == currentCrossings && swappedPenalty < currentPenalty))
+                    {
+                        improvedThisPass = true;
+                        improvedAny = true;
+                    }
+                    else
+                    {
+                        (column[i], column[i + 1]) = (column[i + 1], column[i]);
+                    }
+                }
+
+                if (!improvedThisPass)
+                    break;
+            }
+
+            return improvedAny;
+        }
+
+        static double GetLocalAnchorPenalty(
+            AnimGraphNode firstNode,
+            AnimGraphNode secondNode,
+            Dictionary<int, List<AnimGraphNode>> orderedColumns,
+            Dictionary<AnimGraphNode, List<AnimGraphNode>> outgoingEdges,
+            Dictionary<AnimGraphNode, List<AnimGraphNode>> incomingEdges,
+            Dictionary<AnimGraphNode, int> originalOrder)
+        {
+            var orderMap = BuildOrderMap(orderedColumns);
+            return GetAnchorPenalty(firstNode, orderMap, outgoingEdges, incomingEdges, originalOrder) +
+                   GetAnchorPenalty(secondNode, orderMap, outgoingEdges, incomingEdges, originalOrder);
+        }
+
+        static double GetAnchorPenalty(
+            AnimGraphNode node,
+            Dictionary<AnimGraphNode, int> orderMap,
+            Dictionary<AnimGraphNode, List<AnimGraphNode>> outgoingEdges,
+            Dictionary<AnimGraphNode, List<AnimGraphNode>> incomingEdges,
+            Dictionary<AnimGraphNode, int> originalOrder)
+        {
+            var anchor = GetNeighborAnchor(node, outgoingEdges[node], incomingEdges[node], orderMap, originalOrder, preferOutgoing: true);
+            return Math.Abs(orderMap[node] - anchor);
+        }
+
+        static Dictionary<AnimGraphNode, List<AnimGraphConnection>> BuildIncidentConnections(
+            IEnumerable<AnimGraphNode> nodes,
+            IEnumerable<AnimGraphConnection> connections)
+        {
+            var incident = nodes.ToDictionary(static node => node, static _ => new List<AnimGraphConnection>());
+            foreach (var connection in connections)
+            {
+                incident[connection.SourceNode].Add(connection);
+                incident[connection.TargetNode].Add(connection);
+            }
+
+            return incident;
+        }
+
+        static List<AnimGraphConnection> GetImpactedConnections(
+            AnimGraphNode firstNode,
+            AnimGraphNode secondNode,
+            Dictionary<AnimGraphNode, List<AnimGraphConnection>> incidentConnections)
+        {
+            var impacted = new HashSet<AnimGraphConnection>();
+            foreach (var connection in incidentConnections[firstNode])
+                impacted.Add(connection);
+            foreach (var connection in incidentConnections[secondNode])
+                impacted.Add(connection);
+            return impacted.ToList();
+        }
+
+        static int CountCrossingsForConnections(
+            Dictionary<int, List<AnimGraphNode>> orderedColumns,
+            Dictionary<AnimGraphNode, int> depth,
+            List<AnimGraphConnection> allConnections,
+            List<AnimGraphConnection> subjectConnections)
+        {
+            if (subjectConnections.Count == 0 || allConnections.Count < 2)
+                return 0;
+
+            var positions = BuildVirtualPositions(orderedColumns, depth);
+            var crossings = 0;
+            foreach (var first in subjectConnections)
+            {
+                if (!TryGetVirtualSegment(first, positions, out var a1, out var a2))
+                    continue;
+
+                foreach (var second in allConnections)
+                {
+                    if (ReferenceEquals(first, second))
+                        continue;
+                    if (ReferenceEquals(first.SourceNode, second.SourceNode) ||
+                        ReferenceEquals(first.SourceNode, second.TargetNode) ||
+                        ReferenceEquals(first.TargetNode, second.SourceNode) ||
+                        ReferenceEquals(first.TargetNode, second.TargetNode))
+                        continue;
+
+                    if (!TryGetVirtualSegment(second, positions, out var b1, out var b2))
+                        continue;
+
+                    if (SegmentsIntersectStrict(a1, a2, b1, b2))
+                        crossings++;
+                }
+            }
+
+            return crossings / 2;
+        }
+
+        static Dictionary<AnimGraphNode, (double X, double Y)> BuildVirtualPositions(
+            Dictionary<int, List<AnimGraphNode>> orderedColumns,
+            Dictionary<AnimGraphNode, int> depth)
+        {
+            var positions = new Dictionary<AnimGraphNode, (double X, double Y)>();
+            var maxDepth = depth.Values.DefaultIfEmpty(0).Max();
+            foreach (var (columnDepth, column) in orderedColumns)
+            {
+                var x = maxDepth - columnDepth;
+                for (var i = 0; i < column.Count; i++)
+                    positions[column[i]] = (x, i);
+            }
+
+            return positions;
+        }
+
+        static bool TryGetVirtualSegment(
+            AnimGraphConnection connection,
+            Dictionary<AnimGraphNode, (double X, double Y)> positions,
+            out (double X, double Y) start,
+            out (double X, double Y) end)
+        {
+            start = default;
+            end = default;
+            if (!positions.TryGetValue(connection.SourceNode, out start) ||
+                !positions.TryGetValue(connection.TargetNode, out end))
+                return false;
+
+            if (Math.Abs(start.X - end.X) < double.Epsilon)
+                return false;
+
+            return true;
+        }
+
+        static bool SegmentsIntersectStrict(
+            (double X, double Y) a1,
+            (double X, double Y) a2,
+            (double X, double Y) b1,
+            (double X, double Y) b2)
+        {
+            var o1 = Cross(a1, a2, b1);
+            var o2 = Cross(a1, a2, b2);
+            var o3 = Cross(b1, b2, a1);
+            var o4 = Cross(b1, b2, a2);
+
+            return Math.Sign(o1) != Math.Sign(o2) && Math.Sign(o3) != Math.Sign(o4);
+        }
+
+        static double Cross((double X, double Y) a, (double X, double Y) b, (double X, double Y) c)
+        {
+            return (b.X - a.X) * (c.Y - a.Y) - (b.Y - a.Y) * (c.X - a.X);
+        }
+
+        static string GetColumnSignature(Dictionary<int, List<AnimGraphNode>> orderedColumns)
+        {
+            return string.Join("|", orderedColumns
+                .OrderBy(static pair => pair.Key)
+                .Select(static pair => string.Join(",", pair.Value.Select(node => node.Name))));
+        }
+
+        static double GetDesiredY(
+            AnimGraphNode node,
+            List<AnimGraphNode> outgoing,
+            List<AnimGraphNode> incoming,
+            Dictionary<int, double> columnCenter)
+        {
+            var targetYs = outgoing.Select(static neighbor => (double)neighbor.NodePosY).ToList();
+            if (targetYs.Count > 0)
+                return targetYs.Average();
+
+            var sourceYs = incoming.Select(static neighbor => (double)neighbor.NodePosY).ToList();
+            if (sourceYs.Count > 0)
+                return sourceYs.Average();
+
+            return columnCenter.Count == 0 ? 0 : columnCenter.Values.Average();
+        }
+
+        static List<double> SpreadNodes(List<double> desiredPositions, int spacing)
+        {
+            if (desiredPositions.Count == 0)
+                return [];
+
+            var positions = desiredPositions.ToArray();
+            for (var i = 1; i < positions.Length; i++)
+            {
+                var minAllowed = positions[i - 1] + spacing;
+                if (positions[i] < minAllowed)
+                    positions[i] = minAllowed;
+            }
+
+            var desiredCenter = desiredPositions.Average();
+            var actualCenter = positions.Average();
+            var shift = desiredCenter - actualCenter;
+            for (var i = 0; i < positions.Length; i++)
+                positions[i] += shift;
+
+            return positions.ToList();
         }
     }
 
-    private static bool IsAnimNodeStruct(string name)
+    private static bool IsAnimNodeStruct(FStructProperty structProp, string fieldName)
     {
-        return name.Contains("AnimNode_", StringComparison.OrdinalIgnoreCase) ||
-               name.Contains("AnimGraphNode_", StringComparison.OrdinalIgnoreCase);
+        var structType = structProp.Struct.Load<UStruct>();
+        if (structType != null && InheritsFromAnimNodeBase(structType))
+            return true;
+
+        var structName = structProp.Struct.ResolvedObject?.Name.Text ?? string.Empty;
+        return IsAnimNodeStructName(structName) || IsAnimNodeStructName(fieldName);
+    }
+
+    private static bool InheritsFromAnimNodeBase(UStruct structType)
+    {
+        var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        for (var current = structType; current != null; current = current.SuperStruct?.Load<UStruct>())
+        {
+            var currentName = current.Name;
+            if (string.IsNullOrEmpty(currentName) || !visited.Add(currentName))
+                break;
+
+            if (currentName.Equals("AnimNode_Base", StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+
+        return false;
+    }
+
+    private static bool IsAnimNodeStructName(string name)
+    {
+        return name.Contains("AnimNode", StringComparison.OrdinalIgnoreCase) ||
+               name.Contains("AnimGraphNode", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsSaveCachedPoseNode(AnimGraphNode node)

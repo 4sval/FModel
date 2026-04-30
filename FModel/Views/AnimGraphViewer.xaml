@@ -36,13 +36,50 @@
         <!-- Main content: Graph + Properties panel -->
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="240" MinWidth="180"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*" MinWidth="200"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="280" MinWidth="200"/>
             </Grid.ColumnDefinitions>
 
+            <!-- Layer list -->
+            <Border Grid.Column="0"
+                    Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                    adonisExtensions:LayerExtension.IncreaseLayer="True">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" Padding="8 6"
+                            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}">
+                        <TextBlock Text="Layers" FontWeight="SemiBold" FontSize="13"/>
+                    </Border>
+
+                    <ListBox x:Name="LayerListBox"
+                             Grid.Row="1"
+                             Margin="8 6"
+                             BorderThickness="0"
+                             Background="Transparent"
+                         MouseDoubleClick="OnLayerListDoubleClick">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"
+                                           TextTrimming="CharacterEllipsis"
+                                           ToolTip="{Binding Name}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </Border>
+
+            <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                          Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}"/>
+
             <!-- Layer tabs with graph canvas (single-line, scrollable tab strip) -->
-            <TabControl x:Name="LayerTabControl" Grid.Column="0" SelectionChanged="OnLayerTabChanged"
+            <TabControl x:Name="LayerTabControl" Grid.Column="2" SelectionChanged="OnLayerTabChanged"
                         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}">
                 <TabControl.Template>
                     <ControlTemplate TargetType="TabControl">
@@ -60,11 +97,11 @@
                 </TabControl.Template>
             </TabControl>
 
-            <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch"
+            <GridSplitter Grid.Column="3" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch"
                           Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}"/>
 
             <!-- Node properties panel -->
-            <Border Grid.Column="2"
+            <Border Grid.Column="4"
                     Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
                     adonisExtensions:LayerExtension.IncreaseLayer="True">
                 <Grid>
