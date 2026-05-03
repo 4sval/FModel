@@ -45,6 +45,15 @@ public class CustomDirectory : ViewModel
                     new("Data Tables", "DeadByDaylight/Content/Data/"),
                     new("Localization", "DeadByDaylight/Content/Localization/")
                 };
+            case "Neverness to Everness":
+                return new List<CustomDirectory>
+                {
+                    new("Blueprints", "HT/Content/Blueprints/"),
+                    new("Characters", "HT/Content/Characters"),
+                    new("DataTables", "HT/Content/DataTable/"),
+                    new("Icons", "HT/Content/UI/"),
+                    new("Localization", "HT/Content/Localization/")
+                };
             default:
                 return new List<CustomDirectory>();
         }

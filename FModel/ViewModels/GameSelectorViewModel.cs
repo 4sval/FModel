@@ -202,6 +202,7 @@ public class GameSelectorViewModel : ViewModel
         yield return GetRockstarGamesGame("GTA San Andreas - Definitive Edition", "\\Gameface\\Content\\Paks", EGame.GAME_GTATheTrilogyDefinitiveEdition);
         yield return GetRockstarGamesGame("GTA Vice City - Definitive Edition", "\\Gameface\\Content\\Paks", EGame.GAME_GTATheTrilogyDefinitiveEdition);
         yield return GetLevelInfiniteGame("tof_launcher", "\\Hotta\\Content\\Paks", EGame.GAME_TowerOfFantasy);
+        yield return GetNTEGame("Neverness to Everness", "\\Client\\WindowsNoEditor\\HT\\Content\\Paks", EGame.GAME_NevernessToEverness, aesKey: "0x390B40DA3E0805AE7397DFA707E7227DBA06C35E95262E7FFF8F8E60CBC7A69C");
     }
 
     private LauncherInstalled _launcherInstalled;
@@ -298,6 +299,26 @@ public class GameSelectorViewModel : ViewModel
         {
             Log.Debug("Found {GameName} in the registry", key);
             return DirectorySettings.Default(displayName, gameDir, ue: ueVersion);
+        }
+
+        return null;
+    }
+
+    private DirectorySettings GetNTEGame(string key, string pakDirectory, EGame ueVersion, string  aesKey = "")
+    {
+        foreach (var drive in DriveInfo.GetDrives())
+        {
+            var rootDir = Path.Combine(drive.Name, "Program Files");
+            if (!Directory.Exists(rootDir)) continue;
+
+            foreach (var dir in Directory.GetDirectories(rootDir))
+            {
+                var gameDir = $"{dir}{pakDirectory}";
+                if (!Directory.Exists(gameDir)) continue;
+
+                Log.Debug("Found {GameName} in the registry", key);
+                return DirectorySettings.Default(key, gameDir, ue: ueVersion, aes: aesKey);
+            }
         }
 
         return null;
