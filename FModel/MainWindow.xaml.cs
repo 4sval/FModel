@@ -124,7 +124,8 @@ public partial class MainWindow
             {
                 if (UserSettings.Default.DiscordRpc == EDiscordRpc.Always)
                     _discordHandler.Initialize(_applicationView.GameDisplayName);
-            })
+            }),
+            UserSettings.Default.DecompileLua ? ApplicationViewModel.InitUnluac() : Task.CompletedTask
         ).ConfigureAwait(false);
 
 #if DEBUG

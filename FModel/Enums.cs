@@ -164,3 +164,9 @@ public enum EAssetCategory : uint
         RocoKingdomWorld = GameSpecific + 3,
         DeltaForce = GameSpecific + 4,
 }
+
+public enum EUnluacMode
+{
+    Decompile,
+    Disassemble,
+}
