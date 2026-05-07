@@ -9,6 +9,7 @@ using System.Windows;
 using CUE4Parse_Conversion.Textures.BC;
 using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
+using CUE4Parse.UE4.Lua.unluac;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.VirtualFileSystem;
 using FModel.Extensions;
@@ -339,5 +340,13 @@ public class ApplicationViewModel : ViewModel
         }
 
         DetexHelper.Initialize(detexPath);
+    }
+
+    public static async Task InitUnluac()
+    {
+        var unluacPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", UnluacHelper.DllName);
+        await UnluacHelper.InitializeAsync(unluacPath).ConfigureAwait(false);
+        if (UnluacHelper.Instance is null)
+            FLogger.Append(ELog.Error, () => FLogger.Text("Failed to download unluac", Constants.WHITE, true));
     }
 }

@@ -512,7 +512,7 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
         if (Spectrum != null && PlayedFile.PlaybackState == PlaybackState.Playing)
         {
-            FftData = new float[4096];
+            FftData = new float[4096+4];
             Spectrum.GetFftData(FftData);
             RaiseSourcePropertyChangedEvent(ESourceProperty.FftData, FftData);
         }

@@ -44,6 +44,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -237,26 +238,32 @@
                               IsChecked="{Binding ShowDecompileOption, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
 
-                    <TextBlock Grid.Row="19"
+                    <TextBlock Grid.Row="19" Grid.Column="0" Text="Decompile Lua" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Decompile/Disassemble compiled lua files with an unluac." />
+                    <CheckBox Grid.Row="19" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                              IsChecked="{Binding DecompileLua, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"
+                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
+                              Checked="OnDecompileLuaChanged" />
+
+                    <TextBlock Grid.Row="20"
                                Grid.Column="0"
                                Text="Convert Audio During Export (.wav)"
                                VerticalAlignment="Center"
                                Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="19"
+                    <CheckBox Grid.Row="20"
                               Grid.Column="2"
                               Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding ConvertAudioOnBulkExport, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
                               Margin="0 5 0 10"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
 
-                    <TextBlock Grid.Row="20"
+                    <TextBlock Grid.Row="21"
                                Grid.Column="0"
                                Text="CRIWARE Decryption Key"
                                VerticalAlignment="Center"
                                Margin="0 0 0 10" />
 
                     <TextBox x:Name="CriwareKeyBox"
-                             Grid.Row="20"
+                             Grid.Row="21"
                              Grid.Column="2"
                              Grid.ColumnSpan="5"
                              Margin="0 5 0 10"
@@ -604,6 +611,98 @@
                                             HotKey="{Binding NextAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
                 </Grid>
             </DataTemplate>
+            <DataTemplate x:Key="unluacTemplate">
+                <Grid adonisExtensions:LayerExtension.Layer="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="5" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="5" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="5" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Mode" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <ComboBox Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="10"
+                              SelectedValuePath="Tag"
+                              SelectedValue="{Binding UnluacMode, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                              Margin="0 0 0 5">
+                        <ComboBoxItem Content="Decompile" Tag="{x:Static local:EUnluacMode.Decompile}" />
+                        <ComboBoxItem Content="Disassemble" Tag="{x:Static local:EUnluacMode.Disassemble}" />
+                    </ComboBox>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Raw string" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <CheckBox Tag="RawString"
+                        Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3"
+                        Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                        Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"
+                        IsChecked="{Binding UnluacFlags, Source={x:Static local:Settings.UserSettings.Default},
+                            Converter={x:Static converters:EnumFlagToBoolConverter.Instance}, ConverterParameter=RawString, Mode=OneWay}"
+                        Checked="OnUnluacFlagChanged"
+                        Unchecked="OnUnluacFlagChanged"
+                        ToolTip="Copy string bytes directly to output">
+                    </CheckBox>
+
+                    <TextBlock Grid.Row="1" Grid.Column="4" Text="No debug" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <CheckBox Tag="NoDebug"
+                        Grid.Row="1" Grid.Column="6" Grid.ColumnSpan="3"
+                        Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                        Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"
+                        IsChecked="{Binding UnluacFlags, Source={x:Static local:Settings.UserSettings.Default},
+                            Converter={x:Static converters:EnumFlagToBoolConverter.Instance}, ConverterParameter=NoDebug, Mode=OneWay}"
+                        Checked="OnUnluacFlagChanged"
+                        Unchecked="OnUnluacFlagChanged"
+                        ToolTip="Ignore debugging information in input file">
+                    </CheckBox>
+
+                    <TextBlock Grid.Row="1" Grid.Column="8" Text="Luaj" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <CheckBox Tag="Luaj"
+                        Grid.Row="1" Grid.Column="10" Grid.ColumnSpan="3"
+                        Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                        Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"
+                        IsChecked="{Binding UnluacFlags, Source={x:Static local:Settings.UserSettings.Default},
+                            Converter={x:Static converters:EnumFlagToBoolConverter.Instance}, ConverterParameter=Luaj, Mode=OneWay}"
+                        Checked="OnUnluacFlagChanged"
+                        Unchecked="OnUnluacFlagChanged"
+                        ToolTip="Emulate Luaj's permissive parser">
+                    </CheckBox>
+
+                    <Separator Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="11" Style="{StaticResource CustomSeparator}" />
+
+                    <TextBlock Grid.Row="3"
+                       Grid.Column="0"
+                       Text="OpcodeMap"
+                       VerticalAlignment="Top"
+                       Margin="0 0 0 5"/>
+                    <TextBox Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="10"
+                         Margin="0 0 0 5" Height="300"
+                         FontSize="14" Padding="8"
+                         HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                         VerticalContentAlignment="Top" TextAlignment="Left"
+                         DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                         Text="{Binding SettingsView.UnluacOpcodeMap, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         AcceptsReturn="True"
+                         AcceptsTab="True"
+                         TextWrapping="NoWrap"
+                         VerticalScrollBarVisibility="Auto"
+                         HorizontalScrollBarVisibility="Auto"
+                         ToolTip="Paste a custom opcode map." />
+                </Grid>
+            </DataTemplate>
         </ResourceDictionary>
     </adonisControls:AdonisWindow.Resources>
     <Grid>
@@ -680,6 +779,28 @@
                         <TextBlock Text="Keybindings" HorizontalAlignment="Left" VerticalAlignment="Center" />
                     </StackPanel>
                 </TreeViewItem.Header>
+            </TreeViewItem>
+            <TreeViewItem Tag="unluacTemplate">
+                <TreeViewItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center" Margin="-20 4 7.5 4">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource LuaIcon}" />
+                            </Canvas>
+                        </Viewbox>
+                        <TextBlock Text="unluac" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                    </StackPanel>
+                </TreeViewItem.Header>
+                <TreeViewItem.Style>
+                    <Style TargetType="TreeViewItem" BasedOn="{StaticResource TreeViewItemStyle}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding DecompileLua, Source={x:Static local:Settings.UserSettings.Default}}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TreeViewItem.Style>
             </TreeViewItem>
         </TreeView>
 

@@ -25,7 +25,8 @@ public class DirectorySettings : ViewModel, ICloneable
             Directories = old?.Directories ?? CustomDirectory.Default(gameName),
             AesKeys = old?.AesKeys ?? new AesResponse { MainKey = aes, DynamicKeys = null },
             LastAesReload = old?.LastAesReload ?? DateTime.Today.AddDays(-1),
-            CriwareDecryptionKey = old?.CriwareDecryptionKey ?? 0
+            CriwareDecryptionKey = old?.CriwareDecryptionKey ?? 0,
+            UnluacOpCodeMap = old?.UnluacOpCodeMap ?? ""
         };
     }
 
@@ -104,6 +105,13 @@ public class DirectorySettings : ViewModel, ICloneable
     {
         get => _criwareDecryptionKey;
         set => SetProperty(ref _criwareDecryptionKey, value);
+    }
+
+    private string _unluacOpCodeMap;
+    public string UnluacOpCodeMap
+    {
+        get => _unluacOpCodeMap;
+        set => SetProperty(ref _unluacOpCodeMap, value);
     }
 
     private bool Equals(DirectorySettings other)

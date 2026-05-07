@@ -11,6 +11,7 @@ using CUE4Parse_Conversion.Animations;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
 using CUE4Parse_Conversion.UEFormat.Enums;
+using CUE4Parse.UE4.Lua.unluac;
 using FModel.Framework;
 using FModel.ViewModels;
 using FModel.ViewModels.ApiEndpoints.Models;
@@ -278,6 +279,36 @@ namespace FModel.Settings
         {
             get => _convertAudioOnBulkExport;
             set => SetProperty(ref _convertAudioOnBulkExport, value);
+        }
+
+        private bool _decompileLua;
+        public bool DecompileLua
+        {
+            get => _decompileLua;
+            set => SetProperty(ref _decompileLua, value);
+        }
+
+        [JsonIgnore]
+        public EUnluacMode UnluacMode
+        {
+            get => UnluacFlags.HasFlag(EUnluacFlags.Disassemble) ? EUnluacMode.Disassemble : EUnluacMode.Decompile;
+            set
+            {
+                var withoutMode = UnluacFlags & ~(EUnluacFlags.Decompile | EUnluacFlags.Disassemble);
+                var modeFlag = value == EUnluacMode.Disassemble ? EUnluacFlags.Disassemble : EUnluacFlags.Decompile;
+                UnluacFlags = withoutMode | modeFlag;
+            }
+        }
+
+        private EUnluacFlags _unluacFlags;
+        public EUnluacFlags UnluacFlags
+        {
+            get => _unluacFlags;
+            set
+            {
+                if (!SetProperty(ref _unluacFlags, value)) return;
+                RaisePropertyChanged(nameof(UnluacMode));
+            }
         }
 
         private IDictionary<string, DirectorySettings> _perDirectory = new Dictionary<string, DirectorySettings>();
