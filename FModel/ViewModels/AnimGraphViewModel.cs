@@ -14,6 +14,7 @@ public class AnimGraphNode
     public AnimGraphNode CanonicalNode { get; set; }
     public string Name { get; set; } = string.Empty;
     public string ExportType { get; set; } = string.Empty;
+    public FAnimNodePropertyCollection ResolvedProperties { get; set; } = null!;
     public int AnimNodePropertyIndex { get; set; } = -1;
     public int ChildPropertyIndex { get; set; } = -1;
     public string NodeComment { get; set; } = string.Empty;
@@ -173,6 +174,12 @@ public class AnimGraphViewModel
             if (cdo != null)
             {
                 ExtractNodeProperties(cdo, propName, node);
+            }
+
+            if (animBlueprintGeneratedClass != null &&
+                animBlueprintGeneratedClass.TryGetAnimNodeProperties(animNodePropertyIndex, out var resolvedProperties))
+            {
+                node.ResolvedProperties = resolvedProperties;
             }
 
             // Add a default output pin for each node
@@ -1345,6 +1352,7 @@ public class AnimGraphViewModel
                 CanonicalNode = originalNode.CanonicalNode ?? originalNode,
                 Name = originalNode.Name,
                 ExportType = originalNode.ExportType,
+                ResolvedProperties = originalNode.ResolvedProperties,
                 AnimNodePropertyIndex = originalNode.AnimNodePropertyIndex,
                 ChildPropertyIndex = originalNode.ChildPropertyIndex,
                 NodeComment = originalNode.NodeComment,

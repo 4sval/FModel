@@ -1,12 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Windows.Shapes;
+using CUE4Parse.UE4.Assets.Objects;
+using CUE4Parse.UE4.Objects.Core.i18N;
+using CUE4Parse.UE4.Objects.Core.Misc;
+using CUE4Parse.UE4.Objects.Engine.Animation;
+using CUE4Parse.UE4.Objects.UObject;
 using FModel.ViewModels;
 
 namespace FModel.Views;
@@ -959,6 +965,9 @@ public partial class AnimGraphViewer
         PropertiesPanel.Children.Clear();
         PropertiesTitleText.Text = $"Properties - {GetNodeDisplayName(node)}";
 
+        var canonicalNode = GetCanonicalNode(node);
+        var resolvedProperties = node.ResolvedProperties ?? canonicalNode.ResolvedProperties;
+
         // Node header section
         AddPropertySection("Node Info");
         AddPropertyRow("Name", node.Name);
@@ -990,6 +999,55 @@ public partial class AnimGraphViewer
             foreach (var pin in outputPins)
             {
                 AddPropertyRow(pin.PinName, pin.PinType);
+            }
+        }
+
+        if (resolvedProperties?.Properties.Count > 0)
+        {
+            AddPropertySection("AnimNode Properties");
+            foreach (var property in resolvedProperties.Properties)
+            {
+                var preferredValue = property.Values.Count > 0 ? GetPreferredPropertyValue(property) : null;
+                var formattedValue = preferredValue != null
+                    ? FormatPropertyValue(preferredValue)
+                    : string.Empty;
+
+                if (!string.IsNullOrEmpty(property.DeclaredType))
+                    formattedValue = string.IsNullOrEmpty(formattedValue)
+                        ? $"<{property.DeclaredType}>"
+                        : $"{formattedValue} [{property.DeclaredType}]";
+
+                if (preferredValue != null)
+                    formattedValue = string.IsNullOrEmpty(formattedValue)
+                        ? GetPropertySourceDisplayName(preferredValue.Source)
+                        : $"{formattedValue} ({GetPropertySourceDisplayName(preferredValue.Source)})";
+                else if (string.IsNullOrEmpty(formattedValue))
+                    formattedValue = "<No resolved value>";
+
+                AddPropertyRow(property.Name, formattedValue);
+            }
+
+            var detailedValues = resolvedProperties.Properties
+                .Where(static property => property.Values.Count > 1)
+                .ToList();
+
+            if (detailedValues.Count > 0)
+            {
+                AddPropertySection("Property Sources");
+                foreach (var property in detailedValues)
+                {
+                    foreach (var value in property.Values.OrderBy(static candidate => GetPropertySourcePriority(candidate.Source)))
+                    {
+                        var detailLabel = $"{property.Name} [{GetPropertySourceDisplayName(value.Source)}]";
+                        var detailValue = FormatPropertyValue(value);
+                        if (!string.IsNullOrEmpty(property.DeclaredType))
+                            detailValue = string.IsNullOrEmpty(detailValue)
+                                ? $"<{property.DeclaredType}>"
+                                : $"{detailValue} [{property.DeclaredType}]";
+
+                        AddPropertyRow(detailLabel, detailValue);
+                    }
+                }
             }
         }
 
@@ -1053,6 +1111,126 @@ public partial class AnimGraphViewer
         rowGrid.Children.Add(valueText);
 
         PropertiesPanel.Children.Add(rowGrid);
+    }
+
+    private static FAnimNodePropertyValue GetPreferredPropertyValue(FAnimNodeResolvedProperty property)
+    {
+        return property.Values
+            .OrderBy(static candidate => GetPropertySourcePriority(candidate.Source))
+            .ThenBy(static candidate => candidate.ArrayIndex)
+            .First();
+    }
+
+    private static int GetPropertySourcePriority(EAnimNodePropertySource source)
+    {
+        return source switch
+        {
+            EAnimNodePropertySource.MutableDataEntry => 0,
+            EAnimNodePropertySource.ConstantDataEntry => 1,
+            EAnimNodePropertySource.MutableData => 2,
+            EAnimNodePropertySource.ConstantData => 3,
+            EAnimNodePropertySource.NodeData => 4,
+            EAnimNodePropertySource.DefaultObject => 5,
+            _ => 99
+        };
+    }
+
+    private static string GetPropertySourceDisplayName(EAnimNodePropertySource source)
+    {
+        return source switch
+        {
+            EAnimNodePropertySource.DefaultObject => "CDO",
+            EAnimNodePropertySource.NodeData => "NodeData",
+            EAnimNodePropertySource.ConstantData => "ConstantData",
+            EAnimNodePropertySource.MutableData => "MutableData",
+            EAnimNodePropertySource.ConstantDataEntry => "AnimNodeData Constant Entry",
+            EAnimNodePropertySource.MutableDataEntry => "AnimNodeData Mutable Entry",
+            _ => source.ToString()
+        };
+    }
+
+    private static string FormatPropertyValue(FAnimNodePropertyValue value)
+    {
+         return FormatPropertyObject(value.ResolvedValue)
+             ?? FormatPropertyObject(value.PropertyTag.Tag?.GenericValue)
+               ?? value.PropertyTag.Tag?.ToString()
+               ?? string.Empty;
+    }
+
+    private static string FormatPropertyObject(object value)
+    {
+        switch (value)
+        {
+            case null:
+                return string.Empty;
+            case string text:
+                return text;
+            case FName name:
+                return name.Text;
+            case FText textValue:
+                return textValue.Text;
+            case bool boolValue:
+                return boolValue ? "True" : "False";
+            case Enum enumValue:
+                return enumValue.ToString();
+            case FGuid guid:
+                return guid.ToString();
+            case FPackageIndex packageIndex:
+                return packageIndex.ToString();
+            case FStructFallback structValue:
+                return FormatStructFallback(structValue);
+            case UScriptArray arrayValue:
+                return $"Array[{arrayValue.Properties.Count}]";
+            case Array array:
+                return FormatArray(array);
+            default:
+                return value.ToString() ?? string.Empty;
+        }
+    }
+
+    private static string FormatStructFallback(FStructFallback structValue)
+    {
+        if (structValue.Properties.Count == 0)
+            return "Struct {}";
+
+        var parts = new List<string>();
+        foreach (var property in structValue.Properties.Take(3))
+        {
+            var formattedValue = FormatPropertyObject(property.Tag?.GenericValue);
+            if (string.IsNullOrEmpty(formattedValue))
+                continue;
+
+            parts.Add($"{property.Name.Text}={formattedValue}");
+        }
+
+        var summary = parts.Count > 0 ? string.Join(", ", parts) : $"{structValue.Properties.Count} fields";
+        if (structValue.Properties.Count > 3)
+            summary += ", …";
+
+        return $"Struct {{{summary}}}";
+    }
+
+    private static string FormatArray(Array array)
+    {
+        if (array.Length == 0)
+            return "[]";
+
+        var builder = new StringBuilder();
+        builder.Append('[');
+        var count = Math.Min(array.Length, 4);
+        for (var index = 0; index < count; index++)
+        {
+            if (index > 0)
+                builder.Append(", ");
+
+            builder.Append(FormatPropertyObject(array.GetValue(index)));
+        }
+
+        if (array.Length > count)
+            builder.Append(", …");
+
+        builder.Append(']');
+        return builder.ToString();
     }
 
     private void DrawConnectionLine(LayerCanvasState state, AnimGraphConnection conn,
