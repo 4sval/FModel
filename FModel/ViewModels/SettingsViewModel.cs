@@ -220,6 +220,7 @@ public class SettingsViewModel : ViewModel
     private ENaniteMeshFormat _naniteMeshExportFormatSnapshot;
     private EMaterialFormat _materialExportFormatSnapshot;
     private ETextureFormat _textureExportFormatSnapshot;
+    private int _textureQualitySnapshot;
 
     private bool _mappingsUpdate = false;
 
@@ -264,6 +265,7 @@ public class SettingsViewModel : ViewModel
         _naniteMeshExportFormatSnapshot = UserSettings.Default.NaniteMeshExportFormat;
         _materialExportFormatSnapshot = UserSettings.Default.MaterialExportFormat;
         _textureExportFormatSnapshot = UserSettings.Default.TextureExportFormat;
+        _textureQualitySnapshot = UserSettings.Default.TextureQuality;
 
         SelectedUePlatform = _uePlatformSnapshot;
         SelectedUeGame = _ueGameSnapshot;
@@ -337,6 +339,8 @@ public class SettingsViewModel : ViewModel
         UserSettings.Default.TextureExportFormat = SelectedTextureExportFormat;
         UserSettings.Default.AesReload = SelectedAesReload;
         UserSettings.Default.DiscordRpc = SelectedDiscordRpc;
+        if (_textureQualitySnapshot != UserSettings.Default.TextureQuality)
+            restart = false;
 
         if (SelectedDiscordRpc == EDiscordRpc.Never)
             _discordHandler.Shutdown();

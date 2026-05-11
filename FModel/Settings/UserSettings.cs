@@ -75,7 +75,8 @@ namespace FModel.Settings
             Platform = Default.CurrentDir.TexturePlatform,
             ExportMorphTargets = Default.SaveMorphTargets,
             ExportMaterials = Default.SaveEmbeddedMaterials,
-            ExportHdrTexturesAsHdr = Default.SaveHdrTexturesAsHdr
+            ExportHdrTexturesAsHdr = Default.SaveHdrTexturesAsHdr,
+            TextureQuality = Default.TextureQuality
         };
 
         private bool _showChangelog = true;
@@ -560,6 +561,13 @@ namespace FModel.Settings
         {
             get => _saveHdrTexturesAsHdr;
             set => SetProperty(ref _saveHdrTexturesAsHdr, value);
+        }
+
+        private int _textureQuality = 100;
+        public int TextureQuality
+        {
+            get => _textureQuality;
+            set => SetProperty(ref _textureQuality, value);
         }
 
         private bool _featurePreviewNewAssetExplorer = true;
