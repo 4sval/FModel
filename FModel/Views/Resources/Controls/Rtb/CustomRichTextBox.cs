@@ -155,6 +155,12 @@ public class FLogger : ITextFormatter
     {
         new TextRange(document.ContentStart, document.ContentEnd).Text = text;
     }
+
+    public static void ClearLogs()
+    {
+        Logger.Document.Blocks.Clear();
+        _previous = 0;
+    }
 }
 
 public class CustomRichTextBox : RichTextBox

@@ -242,7 +242,8 @@ public class BaseQuest : BaseIcon
         {
             _informationPaint.TextSize = 25;
             _informationPaint.Typeface = Utils.Typefaces.Bundle;
-            Utils.DrawMultilineText(c, DisplayName, Width - padding, 0, SKTextAlign.Left,
+
+            Utils.DrawMultilineText(c, Utils.RemoveHtmlTags(DisplayName).Replace("  ", " "), Width - padding, 0, SKTextAlign.Left,
                 new SKRect(x, y + padding, maxX, Height - padding * 1.5f), _informationPaint, out _);
         }
 

@@ -24,6 +24,8 @@ using CUE4Parse.GameTypes.AoC.Objects;
 using CUE4Parse.GameTypes.AshEchoes.FileProvider;
 using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
+using CUE4Parse.GameTypes.Borderlands4.Assets.Exports;
+using CUE4Parse.GameTypes.Borderlands4.Wwise;
 using CUE4Parse.MappingsProvider;
 using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets;
@@ -527,7 +529,7 @@ public class CUE4ParseViewModel : ViewModel
         if (!Provider.ProjectName.Equals("fortnitegame", StringComparison.OrdinalIgnoreCase) || HotfixedResourcesDone) return Task.CompletedTask;
         return Task.Run(() =>
         {
-            var hotfixes = ApplicationService.ApiEndpointView.CentralApi.GetHotfixes(CancellationToken.None, Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
+            var hotfixes = ApplicationService.ApiEndpointView.DillyApi.GetHotfixes(CancellationToken.None, Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
             if (hotfixes == null) return;
 
             Provider.Internationalization.Override(hotfixes);
@@ -778,7 +780,7 @@ public class CUE4ParseViewModel : ViewModel
             case "bank":
             {
                 var archive = entry.CreateReader();
-                if (!FModProvider.TryLoadBank(archive, entry.NameWithoutExtension, out var fmodReader))
+                if (!FmodProvider.TryLoadBank(archive, entry.NameWithoutExtension, out var fmodReader))
                 {
                     Log.Error($"Failed to load FMOD bank {entry.Path}");
                     break;
@@ -790,7 +792,7 @@ public class CUE4ParseViewModel : ViewModel
                 var directory = Path.GetDirectoryName(entry.Path) ?? "/FMOD/Desktop/";
                 foreach (var sound in extractedSounds)
                 {
-                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
+                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio, updateUi);
                 }
 
                 break;
@@ -805,7 +807,7 @@ public class CUE4ParseViewModel : ViewModel
                 var medias = WwiseProvider.ExtractBankSounds(wwise);
                 foreach (var media in medias)
                 {
-                    SaveAndPlaySound(media.OutputPath, media.Extension, media.Data, saveAudio);
+                    SaveAndPlaySound(media.OutputPath, media.Extension, media.Data, saveAudio, updateUi);
                 }
 
                 break;
@@ -821,7 +823,7 @@ public class CUE4ParseViewModel : ViewModel
                 var extractedSounds = CriWareProvider.ExtractCriWareSounds(awbReader, archive.Name);
                 foreach (var sound in extractedSounds)
                 {
-                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
+                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio, updateUi);
                 }
 
                 break;
@@ -837,7 +839,7 @@ public class CUE4ParseViewModel : ViewModel
                 var extractedSounds = CriWareProvider.ExtractCriWareSounds(acbReader, archive.Name);
                 foreach (var sound in extractedSounds)
                 {
-                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
+                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio, updateUi);
                 }
 
                 break;
@@ -852,7 +854,7 @@ public class CUE4ParseViewModel : ViewModel
                 // todo: CSCore.MediaFoundation.MediaFoundationException The byte stream type of the given URL is unsupported. case "aif":
             {
                 var data = Provider.SaveAsset(entry);
-                SaveAndPlaySound(entry.PathWithoutExtension, entry.Extension, data, saveAudio);
+                SaveAndPlaySound(entry.PathWithoutExtension, entry.Extension, data, saveAudio, updateUi);
 
                 break;
             }
@@ -1108,11 +1110,11 @@ public class CUE4ParseViewModel : ViewModel
                 TabControl.SelectedTab.AddImage(sourceFile.SubstringAfterLast('/'), false, bitmap, false, updateUi);
                 return false;
             }
-            // The Dark Pictures Anthology
+            // Supermassive Games (for example - The Dark Pictures Anthology: House of Ashes etc.)
             case UExternalSource when (isNone || saveAudio) && pointer.Object.Value is UExternalSource externalSource:
             {
                 var audioName = Path.GetFileNameWithoutExtension(externalSource.ExternalSourcePath);
-                SaveAndPlaySound(audioName, "wem", externalSource.Data?.WemFile ?? [], saveAudio);
+                SaveAndPlaySound(audioName, "wem", externalSource.Data?.WemFile ?? [], saveAudio, updateUi);
                 return false;
             }
             case UAkAudioEvent when (isNone || saveAudio) && pointer.Object.Value is UAkAudioEvent audioEvent:
@@ -1120,7 +1122,7 @@ public class CUE4ParseViewModel : ViewModel
                 var extractedSounds = WwiseProvider.ExtractAudioEventSounds(audioEvent);
                 foreach (var sound in extractedSounds)
                 {
-                    SaveAndPlaySound(sound.OutputPath, sound.Extension, sound.Data, saveAudio);
+                    SaveAndPlaySound(sound.OutputPath, sound.Extension, sound.Data, saveAudio, updateUi);
                 }
                 return false;
             }
@@ -1130,7 +1132,7 @@ public class CUE4ParseViewModel : ViewModel
                 var directory = Path.GetDirectoryName(fmodEvent.Owner?.Name) ?? "/FMOD/Desktop/";
                 foreach (var sound in extractedSounds)
                 {
-                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
+                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio, updateUi);
                 }
                 return false;
             }
@@ -1140,7 +1142,7 @@ public class CUE4ParseViewModel : ViewModel
                 var directory = Path.GetDirectoryName(fmodBank.Owner?.Name) ?? "/FMOD/Desktop/";
                 foreach (var sound in extractedSounds)
                 {
-                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
+                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio, updateUi);
                 }
                 return false;
             }
@@ -1159,13 +1161,17 @@ public class CUE4ParseViewModel : ViewModel
                 directory = Path.GetDirectoryName(atomObject.Owner.Provider.FixPath(directory));
                 foreach (var sound in extractedSounds)
                 {
-                    SaveAndPlaySound(Path.Combine(directory, sound.Name).Replace("\\", "/"), sound.Extension, sound.Data, saveAudio);
+                    SaveAndPlaySound(Path.Combine(directory, sound.Name).Replace("\\", "/"), sound.Extension, sound.Data, saveAudio, updateUi);
                 }
                 return false;
             }
             case UAkMediaAssetData when isNone || saveAudio:
             case USoundWave when isNone || saveAudio:
             {
+                // If UAkMediaAsset exists in the same package it should be used to handle the audio instead (because it contains actual audio name)
+                if (pointer.Object.Value is UAkMediaAssetData dataObj && dataObj.Outer is UAkMediaAsset)
+                    return false;
+
                 var shouldDecompress = UserSettings.Default.CompressedAudioMode == ECompressedAudio.PlayDecompressed;
                 pointer.Object.Value.Decode(shouldDecompress, out var audioFormat, out var data);
                 var hasAf = !string.IsNullOrEmpty(audioFormat);
@@ -1175,7 +1181,68 @@ public class CUE4ParseViewModel : ViewModel
                     return false;
                 }
 
-                SaveAndPlaySound(TabControl.SelectedTab.Entry.PathWithoutExtension.Replace('\\', '/'), audioFormat, data, saveAudio);
+                SaveAndPlaySound(TabControl.SelectedTab.Entry.PathWithoutExtension.Replace('\\', '/'), audioFormat, data, saveAudio, updateUi);
+                return false;
+            }
+            case UAkMediaAsset when (isNone || saveAudio) && pointer.Object.Value is UAkMediaAsset akMediaAsset:
+            {
+                var audioName = akMediaAsset.MediaName;
+                if (akMediaAsset.CurrentMediaAssetData?.TryLoad<UAkMediaAssetData>(out var akMediaAssetData) is true)
+                {
+                    var shouldDecompress = UserSettings.Default.CompressedAudioMode is ECompressedAudio.PlayDecompressed;
+                    akMediaAssetData.Decode(shouldDecompress, out var audioFormat, out var data);
+
+                    SaveAndPlaySound(audioName, audioFormat, data, saveAudio, updateUi);
+                }
+                return false;
+            }
+            case UAkAudioEventData when (isNone || saveAudio) && pointer.Object.Value is UAkAudioEventData akAudioEventData:
+            {
+                var shouldDecompress = UserSettings.Default.CompressedAudioMode is ECompressedAudio.PlayDecompressed;
+                foreach (var mediaIndex in akAudioEventData.MediaList)
+                {
+                    if (mediaIndex.TryLoad<UAkMediaAsset>(out var akMediaAsset))
+                    {
+                        if (akMediaAsset.CurrentMediaAssetData?.TryLoad<UAkMediaAssetData>(out var akMediaAssetData) is true)
+                        {
+                            var audioName = akMediaAsset.MediaName ?? $"{akAudioEventData.Outer.Name} ({akMediaAsset.ID})";
+                            akMediaAssetData.Decode(shouldDecompress, out var audioFormat, out var data);
+
+                            SaveAndPlaySound(audioName, audioFormat, data, saveAudio, updateUi);
+                        }
+                    }
+                }
+                return false;
+            }
+            // Borderlands 4
+            case UFaceFXAnimSet when (isNone || saveAudio) && pointer.Object.Value is UFaceFXAnimSet faceFXAnimSet:
+            {
+                if (Provider.Versions.Game is not EGame.GAME_Borderlands4)
+                    return false;
+
+                foreach (var faceFXAnimData in faceFXAnimSet.FaceFXAnimDataList)
+                {
+                    var extractedSounds = WwiseProvider.ExtractAudioEventBorderlands4(faceFXAnimData.ID.Name, false);
+                    foreach (var sound in extractedSounds)
+                    {
+                        SaveAndPlaySound(sound.OutputPath, sound.Extension, sound.Data, saveAudio, updateUi);
+                    }
+                }
+
+                return false;
+            }
+            // Borderlands 4
+            case UGbxGraphAsset when (isNone || saveAudio) && pointer.Object.Value is UGbxGraphAsset gbxGraphAsset:
+            {
+                foreach (var (eventName, useSoundTag) in GbxAudioUtil.GetAndClearEvents())
+                {
+                    var extractedSounds = WwiseProvider.ExtractAudioEventBorderlands4(eventName, useSoundTag);
+                    foreach (var sound in extractedSounds)
+                    {
+                        SaveAndPlaySound(sound.OutputPath, sound.Extension, sound.Data, saveAudio, updateUi);
+                    }
+                }
+
                 return false;
             }
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:
@@ -1312,7 +1379,7 @@ public class CUE4ParseViewModel : ViewModel
         TabControl.SelectedTab.SetDocumentText(cpp, false, false);
     }
 
-    private void SaveAndPlaySound(string fullPath, string ext, byte[] data, bool isBulk)
+    private void SaveAndPlaySound(string fullPath, string ext, byte[] data, bool isBulk, bool updateUi)
     {
         if (fullPath.StartsWith('/')) fullPath = fullPath[1..];
         var savedAudioPath = Path.Combine(UserSettings.Default.AudioDirectory,
@@ -1322,9 +1389,28 @@ public class CUE4ParseViewModel : ViewModel
         {
             Directory.CreateDirectory(savedAudioPath.SubstringBeforeLast('/'));
             using var stream = new FileStream(savedAudioPath, FileMode.Create, FileAccess.Write);
-            using var writer = new BinaryWriter(stream);
-            writer.Write(data);
-            writer.Flush();
+            using (var writer = new BinaryWriter(stream))
+            {
+                writer.Write(data);
+                writer.Flush();
+            }
+
+            if (UserSettings.Default.ConvertAudioOnBulkExport)
+            {
+                AudioPlayerViewModel.TryConvert(savedAudioPath, data, out string wavFilePath);
+                savedAudioPath = wavFilePath;
+            }
+
+            Log.Information("Successfully saved {FilePath}", savedAudioPath);
+            if (updateUi)
+            {
+                FLogger.Append(ELog.Information, () =>
+                {
+                    FLogger.Text("Successfully saved ", Constants.WHITE);
+                    FLogger.Link(Path.GetFileName(savedAudioPath), savedAudioPath, true);
+                });
+            }
+
             return;
         }
 

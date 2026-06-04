@@ -617,6 +617,16 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
                 _ => throw new NotSupportedException()
             };
 
+            if (wavData.Length is 0)
+            {
+                if (TryConvert(out var wavFilePathFallback))
+                {
+                    var newAudioFallback = new AudioFile(SelectedAudioFile.Id, new FileInfo(wavFilePathFallback));
+                    Replace(newAudioFallback);
+                    return true;
+                }
+            }
+
             string wavFilePath = Path.Combine(
                 UserSettings.Default.AudioDirectory,
                 SelectedAudioFile.FilePath.TrimStart('/'));
@@ -645,7 +655,7 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
     }
 
     private bool TryConvert(out string wavFilePath) => TryConvert(SelectedAudioFile.FilePath, SelectedAudioFile.Data, out wavFilePath);
-    private bool TryConvert(string inputFilePath, byte[] inputFileData, out string wavFilePath)
+    public static bool TryConvert(string inputFilePath, byte[] inputFileData, out string wavFilePath)
     {
         wavFilePath = string.Empty;
         var vgmFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "test.exe");
