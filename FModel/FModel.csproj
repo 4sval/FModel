@@ -166,13 +166,12 @@
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
     <PackageReference Include="OpenTK" Version="4.9.4" />
     <PackageReference Include="RestSharp" Version="113.1.0" />
-    <PackageReference Include="Serilog" Version="4.3.0" />
+    <PackageReference Include="Serilog" Version="4.3.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
     <PackageReference Include="SkiaSharp.HarfBuzz" Version="[2.88.9]" />
-    <PackageReference Include="Svg.Skia" Version="3.4.1" />
+    <PackageReference Include="Svg.Skia" Version="[4.8.0]" /> <!--because of skia 3.0 in newer versions-->
     <PackageReference Include="Twizzle.ImGui-Bundle.NET" Version="1.91.5.2" />
-    <PackageReference Include="VirtualizingWrapPanel" Version="2.3.2" />
+    <PackageReference Include="VirtualizingWrapPanel" Version="2.5.1" />
   </ItemGroup>
 
   <ItemGroup>
