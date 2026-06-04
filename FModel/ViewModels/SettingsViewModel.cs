@@ -172,6 +172,13 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _criwareDecryptionKey, value);
     }
 
+    private string _unluacOpcodeMap;
+    public string UnluacOpcodeMap
+    {
+        get => _unluacOpcodeMap;
+        set => SetProperty(ref _unluacOpcodeMap, value);
+    }
+
     public bool SocketSettingsEnabled => SelectedMeshExportFormat == EMeshFormat.ActorX;
     public bool CompressionSettingsEnabled => SelectedMeshExportFormat == EMeshFormat.UEFormat;
 
@@ -195,6 +202,7 @@ public class SettingsViewModel : ViewModel
     private string _propertiesSnapshot;
     private string _textureSnapshot;
     private string _audioSnapshot;
+    private string _codeSnapshot;
     private string _modelSnapshot;
     private string _gameSnapshot;
     private ETexturePlatform _uePlatformSnapshot;
@@ -227,6 +235,7 @@ public class SettingsViewModel : ViewModel
         _propertiesSnapshot = UserSettings.Default.PropertiesDirectory;
         _textureSnapshot = UserSettings.Default.TextureDirectory;
         _audioSnapshot = UserSettings.Default.AudioDirectory;
+        _codeSnapshot = UserSettings.Default.CodeDirectory;
         _modelSnapshot = UserSettings.Default.ModelDirectory;
         _gameSnapshot = UserSettings.Default.GameDirectory;
         _uePlatformSnapshot = UserSettings.Default.CurrentDir.TexturePlatform;
@@ -235,6 +244,7 @@ public class SettingsViewModel : ViewModel
         _optionsSnapshot = UserSettings.Default.CurrentDir.Versioning.Options;
         _mapStructTypesSnapshot = UserSettings.Default.CurrentDir.Versioning.MapStructTypes;
         _criwareDecryptionKey = UserSettings.Default.CurrentDir.CriwareDecryptionKey;
+        _unluacOpcodeMap = UserSettings.Default.CurrentDir.UnluacOpCodeMap;
 
         AesEndpoint = UserSettings.Default.CurrentDir.Endpoints[0];
         MappingEndpoint = UserSettings.Default.CurrentDir.Endpoints[1];
@@ -271,6 +281,7 @@ public class SettingsViewModel : ViewModel
         SelectedMaterialExportFormat = _materialExportFormatSnapshot;
         SelectedTextureExportFormat = _textureExportFormatSnapshot;
         CriwareDecryptionKey = _criwareDecryptionKey;
+        UnluacOpcodeMap = _unluacOpcodeMap;
         SelectedAesReload = UserSettings.Default.AesReload;
         SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
 
@@ -303,12 +314,6 @@ public class SettingsViewModel : ViewModel
         if (_ueGameSnapshot != SelectedUeGame || _customVersionsSnapshot != SelectedCustomVersions ||
             _uePlatformSnapshot != SelectedUePlatform || _optionsSnapshot != SelectedOptions || // combobox
             _mapStructTypesSnapshot != SelectedMapStructTypes ||
-            _outputSnapshot != UserSettings.Default.OutputDirectory || // textbox
-            _rawDataSnapshot != UserSettings.Default.RawDataDirectory || // textbox
-            _propertiesSnapshot != UserSettings.Default.PropertiesDirectory || // textbox
-            _textureSnapshot != UserSettings.Default.TextureDirectory || // textbox
-            _audioSnapshot != UserSettings.Default.AudioDirectory || // textbox
-            _modelSnapshot != UserSettings.Default.ModelDirectory || // textbox
             _gameSnapshot != UserSettings.Default.GameDirectory) // textbox
             restart = true;
 
@@ -318,6 +323,7 @@ public class SettingsViewModel : ViewModel
         UserSettings.Default.CurrentDir.Versioning.Options = SelectedOptions;
         UserSettings.Default.CurrentDir.Versioning.MapStructTypes = SelectedMapStructTypes;
         UserSettings.Default.CurrentDir.CriwareDecryptionKey = CriwareDecryptionKey;
+        UserSettings.Default.CurrentDir.UnluacOpCodeMap = UnluacOpcodeMap;
 
         UserSettings.Default.AssetLanguage = SelectedAssetLanguage;
         UserSettings.Default.CompressedAudioMode = SelectedCompressedAudio;

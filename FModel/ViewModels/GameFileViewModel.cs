@@ -7,10 +7,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 using CUE4Parse.FileProvider.Objects;
+using CUE4Parse.GameTypes.Borderlands3.Assets.Exports;
 using CUE4Parse.GameTypes.Borderlands4.Assets.Exports;
 using CUE4Parse.GameTypes.FN.Assets.Exports.DataAssets;
+using CUE4Parse.GameTypes.LegoBatman.Assets;
 using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
 using CUE4Parse.GameTypes.SMG.UE4.Assets.Objects;
+using CUE4Parse.GameTypes.SquareEnix.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
@@ -66,6 +69,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
     private const int MaxPreviewSize = 128;
 
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
+    private EGame? GameVersion => _applicationView.CUE4Parse?.Provider.Versions.Game;
 
     public EResolveCompute Resolved { get; private set; } = EResolveCompute.None;
     public GameFile Asset { get; } = asset;
@@ -195,7 +199,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             if (pointer?.Object is null)
                 return;
 
-            var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class?.Object?.Value as UStruct, pkg);
+            var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class, pkg);
             ResolvedAssetType = dummy.ExportType;
 
             (AssetCategory, AssetActions) = dummy switch
@@ -243,9 +247,9 @@ public class GameFileViewModel(GameFile asset) : ViewModel
 
                 UFMODBankLookup => (EAssetCategory.Data, EBulkType.None),
 
-                UFMODBus or UFMODSnapshot or UFMODSnapshotReverb or UFMODVCA => (EAssetCategory.Audio, EBulkType.None),
+                UFMODBus or UFMODSnapshot or UFMODSnapshotReverb or UFMODVCA or USQEXSEADSoundAttenuation => (EAssetCategory.Audio, EBulkType.None),
 
-                UFMODBank or UAkAudioBank or UAtomWaveBank or UAkInitBank => (EAssetCategory.SoundBank, EBulkType.Audio),
+                UFMODBank or UAkAudioBank or UAtomWaveBank or UAkInitBank or USQEXSEADSoundBank => (EAssetCategory.SoundBank, EBulkType.Audio),
 
                 UWwiseAssetLibrary or USoundBase or UAkMediaAssetData or UAtomCueSheet
                     or USoundAtomCueSheet or UAkAudioType or UExternalSource or UExternalSourceBank
@@ -257,8 +261,10 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 UNiagaraSystem or UNiagaraScriptBase or UParticleSystem => (EAssetCategory.Particle, EBulkType.None),
 
                 // Game specific assets below
-                UGbxGraphAsset => (EAssetCategory.Borderlands4, EBulkType.Audio), // Borderlands 4
-                UFaceFXAnimSet when _applicationView.CUE4Parse?.Provider.Versions.Game is EGame.GAME_Borderlands4 => (EAssetCategory.Borderlands4, EBulkType.Audio), // Borderlands 4
+                UBorderlandsDialogObject when GameVersion is EGame.GAME_Borderlands3 => (EAssetCategory.Borderlands, EBulkType.None), // Borderlands 3;
+                UGbxGraphAsset or UDialogScriptData or UDialogPerformanceData when GameVersion is EGame.GAME_Borderlands4 or EGame.GAME_Borderlands3 => (EAssetCategory.Borderlands, EBulkType.Audio), // Borderlands 4; Borderlands 3;
+                UFaceFXAnimSet when GameVersion is EGame.GAME_Borderlands4 => (EAssetCategory.Borderlands, EBulkType.Audio), // Borderlands 4;
+                UWubAudioEvent or UWubDialogueEvent when GameVersion is EGame.GAME_LEGOBatmanLegacyoftheDarkKnight => (EAssetCategory.LegoBatman, EBulkType.Audio), // Lego Batman: Legacy of the Dark Knight;
 
                 _ => (EAssetCategory.All, EBulkType.None),
             };
@@ -346,14 +352,20 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             case "pem":
             case "xml":
             case "gitignore":
+            case "gitattributes":
             case "html":
             case "css":
             case "js":
             case "data":
             case "csv":
+            case "sql":
+            case "py":
+            case "cs":
                 AssetCategory = EAssetCategory.Data;
                 break;
+            case "stinfo":
             case "ushaderbytecode":
+            case "upipelinecache":
                 AssetCategory = EAssetCategory.ByteCode;
                 break;
             case "wav":
@@ -427,6 +439,22 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                     bitmap.Dispose();
                 });
             }
+            // Game specific extensions below
+            case "ace" when GameVersion is EGame.GAME_Borderlands3:
+            case "ncs" when GameVersion is EGame.GAME_Borderlands4:
+                AssetCategory = EAssetCategory.Borderlands;
+                break;
+            case "dat" when GameVersion is EGame.GAME_Aion2:
+                AssetCategory = EAssetCategory.Aion2;
+                break;
+            case "bytes" when GameVersion is EGame.GAME_RocoKingdomWorld:
+            case "non" when GameVersion is EGame.GAME_RocoKingdomWorld:
+            case "cam" when GameVersion is EGame.GAME_RocoKingdomWorld:
+                AssetCategory = EAssetCategory.RocoKingdomWorld;
+                break;
+            case "ustbin" when GameVersion is EGame.GAME_DeltaForce:
+                AssetCategory = EAssetCategory.DeltaForce;
+                break;
             default:
                 AssetCategory = EAssetCategory.All; // just so it sets resolved
                 break;

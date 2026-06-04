@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -298,13 +299,23 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
                 Save(a, true);
             }
 
-            FLogger.Append(ELog.Information, () =>
-            {
-                FLogger.Text("Successfully saved audio from ", Constants.WHITE);
-                FLogger.Link(_audioFiles.First().FileName, _audioFiles.First().FilePath, true);
-            });
             if (_audioFiles.Count > 1)
-                FLogger.Append(ELog.Information, () => FLogger.Text($"Successfully saved {_audioFiles.Count} audio files", Constants.WHITE, true));
+            {
+                var dir = new DirectoryInfo(Path.GetDirectoryName(_audioFiles.First().FilePath));
+                FLogger.Append(ELog.Information, () =>
+                {
+                    FLogger.Text($"Successfully saved {_audioFiles.Count} audio files to ", Constants.WHITE);
+                    FLogger.Link(dir.Name, dir.FullName, true);
+                });
+            }
+            else
+            {
+                FLogger.Append(ELog.Information, () =>
+                {
+                    FLogger.Text("Successfully saved ", Constants.WHITE);
+                    FLogger.Link(_audioFiles.First().FileName, _audioFiles.First().FilePath, true);
+                });
+            }
         });
     }
 
@@ -330,12 +341,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
             Directory.CreateDirectory(path.SubstringBeforeLast('/'));
         }
 
-        using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
-        using (var writer = new BinaryWriter(stream))
-        {
-            writer.Write(fileToSave.Data);
-            writer.Flush();
-        }
+        using var stream = new FileStream(path, FileMode.Create, FileAccess.Write);
+        stream.Write(fileToSave.Data);
 
         if (File.Exists(path))
         {
@@ -505,7 +512,7 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
         if (Spectrum != null && PlayedFile.PlaybackState == PlaybackState.Playing)
         {
-            FftData = new float[4096];
+            FftData = new float[4096+4];
             Spectrum.GetFftData(FftData);
             RaiseSourcePropertyChangedEvent(ESourceProperty.FftData, FftData);
         }
@@ -563,148 +570,226 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
     {
         if (SelectedAudioFile?.Data == null)
             return false;
+        if (SelectedAudioFile.Extension == "wav")
+            return true;
 
-        switch (SelectedAudioFile.Extension)
-        {
-            case "binka":
-            case "adpcm":
-            case "xvag":
-            case "opus":
-            case "wem":
-            case "at9":
-            case "raw":
-            {
-                if (TryConvert(out var wavFilePath))
-                {
-                    var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(wavFilePath));
-                    Replace(newAudio);
-                    return true;
-                }
+        if (!TryConvert(SelectedAudioFile.FilePath, SelectedAudioFile.Data, SelectedAudioFile.Extension, out var convertedFilePath, true))
+            return false;
 
-                return false;
-            }
-            case "adx":
-            case "hca":
-                return TryConvertCriware();
-            case "rada":
-            {
-                if (TryDecode(SelectedAudioFile.Extension, out var rawFilePath))
-                {
-                    var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(rawFilePath));
-                    Replace(newAudio);
-                    return true;
-                }
-
-                return false;
-            }
-        }
+        var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(convertedFilePath));
+        Replace(newAudio);
 
         return true;
     }
 
-    private bool TryConvertCriware()
+    public static bool TryConvert(string inputFilePath, byte[] inputFileData, string extension, out string wavFilePath, bool updateUi = false)
     {
+        wavFilePath = string.Empty;
+
+        switch (extension.ToLowerInvariant())
+        {
+            case "hca":
+            case "adx":
+                return TryConvertCriware(inputFilePath, inputFileData, extension, out wavFilePath);
+            case "rada":
+                return TryConvertRada(inputFilePath, inputFileData, extension, out wavFilePath, updateUi);
+            default:
+            {
+                var vgmStreamPath = TryGetVgmstreamPath();
+                if (string.IsNullOrEmpty(vgmStreamPath))
+                    return false;
+
+                var success = TryConvertToWav(inputFilePath, inputFileData, vgmStreamPath, true, out wavFilePath);
+
+                if (!success)
+                {
+                    Log.Error("Failed to convert {InputFilePath} to .wav format", Path.GetFileName(inputFilePath));
+
+                    if (updateUi)
+                    {
+                        FLogger.Append(ELog.Error, () =>
+                        {
+                            FLogger.Text("Failed to convert audio to .wav format. See: ", Constants.WHITE);
+                            FLogger.Link("→ link ←", Constants.AUDIO_ISSUE_LINK, true);
+                        });
+                    }
+                }
+
+                return success;
+            }
+        }
+    }
+
+    private static bool TryConvertCriware(string inputFilePath, byte[] inputFileData, string extension, out string wavFilePath)
+    {
+        wavFilePath = string.Empty;
+
         try
         {
-            byte[] wavData = SelectedAudioFile.Extension switch
+            byte[] wavData = extension switch
             {
-                "hca" => HcaWaveStream.ConvertHcaToWav(
-                    SelectedAudioFile.Data,
-                    UserSettings.Default.CurrentDir.CriwareDecryptionKey),
-                "adx" => AdxDecoder.ConvertAdxToWav(
-                    SelectedAudioFile.Data,
-                    UserSettings.Default.CurrentDir.CriwareDecryptionKey),
+                "hca" => HcaWaveStream.ConvertHcaToWav(inputFileData, UserSettings.Default.CurrentDir.CriwareDecryptionKey),
+                "adx" => AdxDecoder.ConvertAdxToWav(inputFileData, UserSettings.Default.CurrentDir.CriwareDecryptionKey),
                 _ => throw new NotSupportedException()
             };
 
-            if (wavData.Length is 0)
+            // Fallback for ADX
+            if (wavData.Length == 0)
             {
-                if (TryConvert(out var wavFilePathFallback))
-                {
-                    var newAudioFallback = new AudioFile(SelectedAudioFile.Id, new FileInfo(wavFilePathFallback));
-                    Replace(newAudioFallback);
-                    return true;
-                }
+                var vgmStreamPath = TryGetVgmstreamPath();
+                if (string.IsNullOrEmpty(vgmStreamPath))
+                    return false;
+
+                return TryConvertToWav(inputFilePath, inputFileData, vgmStreamPath, true, out wavFilePath);
             }
 
-            string wavFilePath = Path.Combine(
-                UserSettings.Default.AudioDirectory,
-                SelectedAudioFile.FilePath.TrimStart('/'));
-            wavFilePath = Path.ChangeExtension(wavFilePath, ".wav");
+            wavFilePath = Path.ChangeExtension(inputFilePath, ".wav");
 
-            Directory.CreateDirectory(Path.GetDirectoryName(wavFilePath)!);
+            var directory = Path.GetDirectoryName(wavFilePath);
+            if (!string.IsNullOrEmpty(directory))
+                Directory.CreateDirectory(directory);
+
             File.WriteAllBytes(wavFilePath, wavData);
-
-            var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(wavFilePath));
-            Replace(newAudio);
 
             return true;
         }
         catch (CriwareDecryptionException ex)
         {
-            FLogger.Append(ELog.Error, () => FLogger.Text($"Encrypted {SelectedAudioFile.Extension.ToUpper()}: {ex.Message}", Constants.WHITE, true));
-            Log.Error($"Encrypted {SelectedAudioFile.Extension.ToUpper()}: {ex.Message}");
+            FLogger.Append(ELog.Error, () => FLogger.Text($"Encrypted {extension.ToUpper()}: {ex.Message}", Constants.WHITE, true));
+            Log.Error($"Encrypted {extension.ToUpper()}: {ex.Message}");
+
             return false;
         }
         catch (Exception ex)
         {
-            FLogger.Append(ELog.Error, () => FLogger.Text($"Failed to convert {SelectedAudioFile.Extension.ToUpper()}: {ex.Message}", Constants.WHITE, true));
-            Log.Error($"Failed to convert {SelectedAudioFile.Extension.ToUpper()}: {ex.Message}");
+            FLogger.Append(ELog.Error, () => FLogger.Text($"Failed to convert {extension.ToUpper()}: {ex.Message}", Constants.WHITE, true));
+            Log.Error($"Failed to convert {extension.ToUpper()}: {ex.Message}");
+
             return false;
         }
     }
 
-    private bool TryConvert(out string wavFilePath) => TryConvert(SelectedAudioFile.FilePath, SelectedAudioFile.Data, out wavFilePath);
-    public static bool TryConvert(string inputFilePath, byte[] inputFileData, out string wavFilePath)
-    {
-        wavFilePath = string.Empty;
-        var vgmFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "test.exe");
-        if (!File.Exists(vgmFilePath))
-        {
-            vgmFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "vgmstream-cli.exe");
-            if (!File.Exists(vgmFilePath)) return false;
-        }
-
-        Directory.CreateDirectory(inputFilePath.SubstringBeforeLast("/"));
-        File.WriteAllBytes(inputFilePath, inputFileData);
-
-        wavFilePath = Path.ChangeExtension(inputFilePath, ".wav");
-        var vgmProcess = Process.Start(new ProcessStartInfo
-        {
-            FileName = vgmFilePath,
-            Arguments = $"-o \"{wavFilePath}\" \"{inputFilePath}\"",
-            UseShellExecute = false,
-            CreateNoWindow = true
-        });
-        vgmProcess?.WaitForExit(5000);
-
-        File.Delete(inputFilePath);
-        return vgmProcess?.ExitCode == 0 && File.Exists(wavFilePath);
-    }
-
-    private bool TryDecode(string extension, out string rawFilePath)
+    private static bool TryConvertRada(string inputFilePath, byte[] inputFileData, string extension, out string rawFilePath, bool updateUi = false)
     {
         rawFilePath = string.Empty;
         var decoderPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", $"{extension}dec.exe");
         if (!File.Exists(decoderPath))
         {
+            Log.Error("Failed to convert {FilePath}, {Extension} decoder is missing", inputFilePath, extension);
+
+            if (updateUi)
+            {
+                FLogger.Append(ELog.Error, () =>
+                {
+                    FLogger.Text($"Failed to convert audio because {extension} decoder is missing. See: ", Constants.WHITE);
+                    FLogger.Link("→ link ←", Constants.RADA_ISSUE_LINK, true);
+                });
+            }
+
             return false;
         }
 
-        Directory.CreateDirectory(SelectedAudioFile.FilePath.SubstringBeforeLast("/"));
-        File.WriteAllBytes(SelectedAudioFile.FilePath, SelectedAudioFile.Data);
+        return TryConvertToWav(inputFilePath, inputFileData, decoderPath, false, out rawFilePath);
+    }
 
-        rawFilePath = Path.ChangeExtension(SelectedAudioFile.FilePath, ".wav");
-        var decoderProcess = Process.Start(new ProcessStartInfo
+    private static bool TryConvertToWav(string inputFilePath, byte[] inputFileData, string converterPath, bool usevgmstream, out string wavFilePath)
+    {
+        wavFilePath = Path.ChangeExtension(inputFilePath, ".wav");
+        var directory = Path.GetDirectoryName(inputFilePath);
+        Directory.CreateDirectory(directory);
+
+        var tempfile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + Path.GetExtension(inputFilePath));
+        File.WriteAllBytes(tempfile, inputFileData);
+
+        var tempWavFilePath = Path.ChangeExtension(tempfile, ".wav");
+
+        var process = Process.Start(new ProcessStartInfo
         {
-            FileName = decoderPath,
-            Arguments = $"-i \"{SelectedAudioFile.FilePath}\" -o \"{rawFilePath}\"",
+            FileName = converterPath,
+            Arguments = usevgmstream ? $"-o \"{tempWavFilePath}\" \"{tempfile}\"" : $"-i \"{tempfile}\" -o \"{tempWavFilePath}\"",
             UseShellExecute = false,
             CreateNoWindow = true
         });
-        decoderProcess?.WaitForExit(5000);
+        process?.WaitForExit(5000);
 
-        File.Delete(SelectedAudioFile.FilePath);
-        return decoderProcess?.ExitCode == 0 && File.Exists(rawFilePath);
+        File.Delete(tempfile);
+
+        var success = process?.ExitCode == 0 && File.Exists(tempWavFilePath);
+        if (success)
+        {
+            File.Move(tempWavFilePath, wavFilePath, true);
+        }
+
+        return success;
+    }
+
+    private static string TryGetVgmstreamPath()
+    {
+        var vgmFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "test.exe");
+        if (!File.Exists(vgmFilePath))
+        {
+            vgmFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "vgmstream-cli.exe");
+            if (!File.Exists(vgmFilePath))
+            {
+                Log.Error("Failed to convert audio, vgmstream is missing");
+                FLogger.Append(ELog.Error, () =>
+                {
+                    FLogger.Text("Failed to convert audio because vgmstream is missing. See: ", Constants.WHITE);
+                    FLogger.Link("→ link ←", Constants.AUDIO_ISSUE_LINK, true);
+                });
+
+                return string.Empty;
+            }
+        }
+
+        return vgmFilePath;
+    }
+
+    // Since Square Enix soundbanks are pretty niche, let's just use vgmstream to extract them
+    public static List<string> ExtractSquareEnixAudio(string sabPath, byte[] sqexData)
+    {
+        var vgmStreamPath = TryGetVgmstreamPath();
+        if (string.IsNullOrEmpty(vgmStreamPath))
+            return [];
+        if (sqexData.Length == 0)
+            return [];
+
+        var extractionDir = Path.GetDirectoryName(sabPath);
+        Directory.CreateDirectory(extractionDir);
+
+        // There's no clean way to know what was extracted with vgmstream (it's a soundbank, might contain multiple sounds) so we're monitoring extraction directory
+        var capturedFiles = new ConcurrentBag<string>();
+        using var watcher = new FileSystemWatcher(extractionDir)
+        {
+            Filter = "*.wav",
+            NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.CreationTime
+        };
+
+        void handler(object s, FileSystemEventArgs e) => capturedFiles.Add(e.FullPath);
+
+        watcher.Created += handler;
+        watcher.Changed += handler;
+        watcher.EnableRaisingEvents = true;
+
+        var tempSab = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".sab");
+        File.WriteAllBytes(tempSab, sqexData);
+
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = vgmStreamPath,
+            Arguments = $"-S 0 -o \"{extractionDir}\\?n_?s.wav\" \"{tempSab}\"",
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        using (var process = Process.Start(startInfo))
+        {
+            process?.WaitForExit(15000);
+        }
+
+        File.Delete(tempSab);
+        watcher.EnableRaisingEvents = false;
+
+        return [.. capturedFiles.Distinct()];
     }
 }

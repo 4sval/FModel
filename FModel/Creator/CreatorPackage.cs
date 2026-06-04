@@ -100,12 +100,14 @@ public class CreatorPackage : IDisposable
             case "FortCodeTokenItemDefinition":
             case "FortSchematicItemDefinition":
             case "FortAlterableItemDefinition":
+            case "SproutHousingItemDefinition":
             case "SparksKeyboardItemDefinition":
             case "FortWorldMultiItemDefinition":
             case "FortAlterationItemDefinition":
             case "FortExpeditionItemDefinition":
             case "FortIngredientItemDefinition":
             case "FortConsumableItemDefinition":
+            case "SproutBuildingItemDefinition":
             case "StWFortAccoladeItemDefinition":
             case "FortAccountBuffItemDefinition":
             case "FortFOBCoreDecoItemDefinition":
@@ -162,6 +164,9 @@ public class CreatorPackage : IDisposable
             case "JunoAthenaCharacterItemOverrideDefinition":
             case "JunoAthenaDanceItemOverrideDefinition":
                 creator = new BaseJuno(_object.Value, _style);
+                return true;
+            case "AssembledMeshSchema":
+                creator = new BaseAssembledMesh(_object.Value, _style);
                 return true;
             case "FortTandemCharacterData":
                 creator = new BaseTandem(_object.Value, _style);

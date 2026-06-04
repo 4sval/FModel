@@ -25,7 +25,7 @@
     
     <SolidColorBrush x:Key="AudioBrush" Color="MediumSeaGreen" />
     <SolidColorBrush x:Key="SoundBankBrush" Color="DarkSeaGreen" />
-    <SolidColorBrush x:Key="AudioEventBrush" Color="DarkTurquoise" />
+    <SolidColorBrush x:Key="AudioEventBrush" Color="LightSeaGreen" />
 
     <SolidColorBrush x:Key="VideoBrush" Color="IndianRed" />
     <SolidColorBrush x:Key="DataTableBrush" Color="SteelBlue" />
@@ -39,7 +39,7 @@
     <SolidColorBrush x:Key="FoliageBrush" Color="ForestGreen" />
     <SolidColorBrush x:Key="ParticleBrush" Color="Gold" />
     <SolidColorBrush x:Key="AnimationBrush" Color="Coral" />
-    <SolidColorBrush x:Key="LuaBrush" Color="DarkBlue" />
+    <SolidColorBrush x:Key="LuaBrush" Color="Blue" />
     <SolidColorBrush x:Key="JsonXmlBrush" Color="LightGreen" />
     <SolidColorBrush x:Key="CodeBrush" Color="SandyBrown" />
     <SolidColorBrush x:Key="HtmlBrush" Color="Tomato" />
@@ -47,7 +47,15 @@
     <SolidColorBrush x:Key="CssBrush" Color="MediumPurple" />
     <SolidColorBrush x:Key="GitBrush" Color="Coral" />
     <SolidColorBrush x:Key="CsvBrush" Color="ForestGreen" />
+    <SolidColorBrush x:Key="AIBrush" Color="LightGray" />
+    <SolidColorBrush x:Key="SQLBrush" Color="#00758f" />
+    <SolidColorBrush x:Key="PythonBrush" Color="#3d77a8" />
+    <SolidColorBrush x:Key="CSharpBrush" Color="#9e559a" />
 
     <!-- For specific games -->
     <SolidColorBrush x:Key="BorderlandsBrush" Color="Yellow"></SolidColorBrush>
+    <SolidColorBrush x:Key="AionBrush" Color="DeepSkyBlue"></SolidColorBrush>
+    <SolidColorBrush x:Key="RocoKingdomWorldBrush" Color="#fecf4d"></SolidColorBrush>
+    <SolidColorBrush x:Key="DeltaForceBrush" Color="LightGreen"></SolidColorBrush>
+    <SolidColorBrush x:Key="BatmanBrush" Color="Gold"></SolidColorBrush>
 </ResourceDictionary>

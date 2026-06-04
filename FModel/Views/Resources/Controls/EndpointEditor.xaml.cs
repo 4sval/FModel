@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using FModel.Extensions;
 using FModel.Services;
 using FModel.Settings;
@@ -23,8 +24,9 @@ public partial class EndpointEditor
         InitializeComponent();
 
         Title = title;
-        TargetResponse.SyntaxHighlighting =
-            EndpointResponse.SyntaxHighlighting = AvalonExtensions.HighlighterSelector("json");
+        TargetResponse.SyntaxHighlighting = EndpointResponse.SyntaxHighlighting = AvalonExtensions.HighlighterSelector("json");
+        TargetResponse.TextArea.TextView.LinkTextForegroundBrush = Brushes.DodgerBlue;
+        EndpointResponse.TextArea.TextView.LinkTextForegroundBrush = Brushes.DodgerBlue;
 
         InstructionBox.Text = type switch
         {
@@ -91,7 +93,7 @@ public partial class EndpointEditor
 
     private void OnEvaluator(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo { FileName = "https://jsonpath.herokuapp.com/", UseShellExecute = true });
+        Process.Start(new ProcessStartInfo { FileName = "https://jsonpath.com/", UseShellExecute = true });
     }
 }
 

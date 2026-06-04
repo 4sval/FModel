@@ -101,10 +101,10 @@ public class SkeletalModel : UModel
         foreach (var morph in export.MorphTargets)
         {
             if (!morph.TryLoad(out UMorphTarget morphTarget) || morphTarget.MorphLODModels.Length < 1 ||
-                morphTarget.MorphLODModels[0].Vertices.Length < 1)
+                morphTarget.MorphLODModels[skeletalMesh.LODs[LodLevel].LODIndex].Vertices.Length < 1)
                 continue;
 
-            Morphs.Add(new Morph(cachedVertices, vertexLookup, morphTarget));
+            Morphs.Add(new Morph(cachedVertices, vertexLookup, morphTarget, skeletalMesh.LODs[LodLevel].LODIndex));
         }
     }
 

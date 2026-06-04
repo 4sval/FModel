@@ -1,0 +1,248 @@
+<SyntaxDefinition name="Lua" extensions=".lua;.luac" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+    <Color name="Keyword1" foreground="#d8a0df" fontWeight="bold" />
+    <Color name="Keyword2" foreground="#569cd6" fontWeight="bold" />
+    <Color name="Self" foreground="#569cd6" fontStyle="italic" />
+    <Color name="Function" foreground="#dcdcaa" />
+    <Color name="ObjectName" foreground="#4ec9b0" />
+    <Color name="Property" foreground="#abd4a2" />
+    <Color name="String" foreground="#f4ab6b" />
+    <Color name="Number" foreground="#ff9e64" />
+    <Color name="Comment" foreground="#565f89" fontStyle="italic" />
+    <Color name="Punctuation" foreground="#89ddff" />
+    <Color name="Constant" foreground="#e0af68" />
+    <Color name="Metamethod" foreground="#bb9af7" fontStyle="italic" />
+    <Color name="GotoLabel" foreground="#7dcfff" />
+    <Color name="Discard" foreground="#3b4261" />
+
+    <RuleSet>
+        <Rule color="Comment">--\[\[(.|\n)*?\]\]</Rule>
+        <Rule color="Comment">--.*$</Rule>
+
+        <Rule color="String">\[\[(.|\n)*?\]\]</Rule>
+        <Rule color="String">&quot;([^&quot;\\]|\\.)*&quot;</Rule>
+        <Rule color="String">&apos;([^&apos;\\]|\\.)*&apos;</Rule>
+
+        <Rule color="Number">\b0[xX][0-9A-Fa-f]+\b</Rule>
+        <Rule color="Number">\b\d+\.\d+([eE][+-]?\d+)?\b</Rule>
+        <Rule color="Number">\b\d+[eE][+-]?\d+\b</Rule>
+        <Rule color="Number">\b\d+\b</Rule>
+
+        <Keywords color="Keyword1">
+            <Word>and</Word>
+            <Word>break</Word>
+            <Word>do</Word>
+            <Word>else</Word>
+            <Word>elseif</Word>
+            <Word>end</Word>
+            <Word>for</Word>
+            <Word>function</Word>
+            <Word>goto</Word>
+            <Word>if</Word>
+            <Word>in</Word>
+            <Word>or</Word>
+            <Word>repeat</Word>
+            <Word>return</Word>
+            <Word>then</Word>
+            <Word>until</Word>
+            <Word>while</Word>
+        </Keywords>
+
+        <Keywords color="Keyword2">
+            <Word>false</Word>
+            <Word>local</Word>
+            <Word>nil</Word>
+            <Word>not</Word>
+            <Word>true</Word>
+        </Keywords>
+
+        <Keywords color="Self">
+            <Word>self</Word>
+            <Word>_G</Word>
+            <Word>_ENV</Word>
+        </Keywords>
+
+        <Keywords color="Function">
+            <Word>assert</Word>
+            <Word>collectgarbage</Word>
+            <Word>dofile</Word>
+            <Word>error</Word>
+            <Word>getmetatable</Word>
+            <Word>ipairs</Word>
+            <Word>load</Word>
+            <Word>loadfile</Word>
+            <Word>module</Word>
+            <Word>next</Word>
+            <Word>pairs</Word>
+            <Word>pcall</Word>
+            <Word>print</Word>
+            <Word>rawequal</Word>
+            <Word>rawget</Word>
+            <Word>rawlen</Word>
+            <Word>rawset</Word>
+            <Word>require</Word>
+            <Word>select</Word>
+            <Word>setmetatable</Word>
+            <Word>tonumber</Word>
+            <Word>tostring</Word>
+            <Word>type</Word>
+            <Word>unpack</Word>
+            <Word>xpcall</Word>
+            <Word>bit32</Word>
+            <Word>coroutine</Word>
+            <Word>debug</Word>
+            <Word>io</Word>
+            <Word>math</Word>
+            <Word>os</Word>
+            <Word>package</Word>
+            <Word>string</Word>
+            <Word>table</Word>
+            <Word>utf8</Word>
+            <Word>abs</Word>
+            <Word>acos</Word>
+            <Word>asin</Word>
+            <Word>atan</Word>
+            <Word>atan2</Word>
+            <Word>ceil</Word>
+            <Word>cos</Word>
+            <Word>cosh</Word>
+            <Word>deg</Word>
+            <Word>exp</Word>
+            <Word>floor</Word>
+            <Word>fmod</Word>
+            <Word>frexp</Word>
+            <Word>huge</Word>
+            <Word>ldexp</Word>
+            <Word>log</Word>
+            <Word>log10</Word>
+            <Word>max</Word>
+            <Word>maxinteger</Word>
+            <Word>min</Word>
+            <Word>mininteger</Word>
+            <Word>modf</Word>
+            <Word>pi</Word>
+            <Word>pow</Word>
+            <Word>rad</Word>
+            <Word>random</Word>
+            <Word>randomseed</Word>
+            <Word>sin</Word>
+            <Word>sinh</Word>
+            <Word>sqrt</Word>
+            <Word>tan</Word>
+            <Word>tanh</Word>
+            <Word>tointeger</Word>
+            <Word>ult</Word>
+            <Word>byte</Word>
+            <Word>char</Word>
+            <Word>dump</Word>
+            <Word>find</Word>
+            <Word>format</Word>
+            <Word>gmatch</Word>
+            <Word>gsub</Word>
+            <Word>len</Word>
+            <Word>lower</Word>
+            <Word>match</Word>
+            <Word>pack</Word>
+            <Word>packsize</Word>
+            <Word>rep</Word>
+            <Word>reverse</Word>
+            <Word>sub</Word>
+            <Word>upper</Word>
+            <Word>concat</Word>
+            <Word>insert</Word>
+            <Word>maxn</Word>
+            <Word>move</Word>
+            <Word>remove</Word>
+            <Word>sort</Word>
+            <Word>close</Word>
+            <Word>flush</Word>
+            <Word>input</Word>
+            <Word>lines</Word>
+            <Word>open</Word>
+            <Word>output</Word>
+            <Word>popen</Word>
+            <Word>read</Word>
+            <Word>seek</Word>
+            <Word>setvbuf</Word>
+            <Word>tmpfile</Word>
+            <Word>write</Word>
+            <Word>clock</Word>
+            <Word>date</Word>
+            <Word>difftime</Word>
+            <Word>execute</Word>
+            <Word>exit</Word>
+            <Word>getenv</Word>
+            <Word>rename</Word>
+            <Word>setlocale</Word>
+            <Word>time</Word>
+            <Word>create</Word>
+            <Word>isyieldable</Word>
+            <Word>resume</Word>
+            <Word>running</Word>
+            <Word>status</Word>
+            <Word>wrap</Word>
+            <Word>yield</Word>
+            <Word>arshift</Word>
+            <Word>band</Word>
+            <Word>bnot</Word>
+            <Word>bor</Word>
+            <Word>btest</Word>
+            <Word>bxor</Word>
+            <Word>extract</Word>
+            <Word>lrotate</Word>
+            <Word>lshift</Word>
+            <Word>replace</Word>
+            <Word>rrotate</Word>
+            <Word>rshift</Word>
+            <Word>charpattern</Word>
+            <Word>codepoint</Word>
+            <Word>codes</Word>
+            <Word>offset</Word>
+            <Word>gethook</Word>
+            <Word>getinfo</Word>
+            <Word>getlocal</Word>
+            <Word>getregistry</Word>
+            <Word>getupvalue</Word>
+            <Word>getuservalue</Word>
+            <Word>sethook</Word>
+            <Word>setlocal</Word>
+            <Word>setupvalue</Word>
+            <Word>setuservalue</Word>
+            <Word>traceback</Word>
+            <Word>upvalueid</Word>
+            <Word>upvaluejoin</Word>
+            <Word>cpath</Word>
+            <Word>loaded</Word>
+            <Word>loadlib</Word>
+            <Word>path</Word>
+            <Word>preload</Word>
+            <Word>searchers</Word>
+            <Word>searchpath</Word>
+            <Word>seeall</Word>
+        </Keywords>
+
+        <Rule color="Punctuation">(\|)|(&lt;&lt;)|(&gt;&gt;)|(\/\/)|(==)|(~=)|(&lt;=)|(&gt;=)|(&lt;)|(&gt;)|(=)|(\()|(\))|(\{)|(\})|(\[)|(\])|(::)|(:)|(;)|(,)|(\.\.\.)|(\.\.)|(\.)|[+\-*%\^#&amp;~]</Rule>
+
+        <Rule color="Metamethod">__[A-Za-z_][A-Za-z0-9_]*__</Rule>
+
+        <Rule color="GotoLabel">(?&lt;=::)[A-Za-z_][A-Za-z0-9_]*(?=::)</Rule>
+
+        <Rule color="Discard">(?&lt;![A-Za-z0-9_])_(?![A-Za-z0-9_])</Rule>
+
+        <Rule color="ObjectName">(?&lt;=function\s)[A-Za-z_][A-Za-z0-9_]*(?=\.)</Rule>
+        <Rule color="ObjectName">(?&lt;=function\s)[A-Za-z_][A-Za-z0-9_]*(?=:)</Rule>
+
+        <Rule color="Function">(?&lt;=function\s)[A-Za-z_][A-Za-z0-9_]*(?=\s*\()</Rule>
+
+        <Rule color="ObjectName">[A-Za-z_][A-Za-z0-9_]*(?=\.)</Rule>
+        <Rule color="ObjectName">[A-Za-z_][A-Za-z0-9_]*(?=:)</Rule>
+
+        <Rule color="Function">(?&lt;=:)[A-Za-z_][A-Za-z0-9_]*(?=\s*\()</Rule>
+        <Rule color="Function">(?&lt;=\.)[A-Za-z_][A-Za-z0-9_]*(?=\s*\()</Rule>
+        <Rule color="Function">\b[A-Za-z_][A-Za-z0-9_]*(?=\s*\()</Rule>
+
+        <Rule color="Property">(?&lt;=\.)[A-Za-z_][A-Za-z0-9_]*</Rule>
+
+        <Rule color="Constant">\b[A-Z][A-Z0-9]*_[A-Z0-9_]*\b</Rule>
+        <Rule color="Constant">\b[A-Z]{2}[A-Z0-9_]*\b</Rule>
+    </RuleSet>
+</SyntaxDefinition>

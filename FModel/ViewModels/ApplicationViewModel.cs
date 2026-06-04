@@ -9,6 +9,7 @@ using System.Windows;
 using CUE4Parse_Conversion.Textures.BC;
 using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
+using CUE4Parse.UE4.Lua.unluac;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.VirtualFileSystem;
 using FModel.Extensions;
@@ -104,7 +105,7 @@ public class ApplicationViewModel : ViewModel
         if (UserSettings.Default.CurrentDir is null)
         {
             //If no game is selected, many things will break before a shutdown request is processed in the normal way.
-            //A hard exit is preferable to an unhandled expection in this case
+            //A hard exit is preferable to an unhandled exception in this case
             Environment.Exit(0);
         }
 
@@ -126,7 +127,6 @@ public class ApplicationViewModel : ViewModel
             if (sender is not IAesVfsReader reader) return;
             CUE4Parse.GameDirectory.Disable(reader);
         };
-
         CustomDirectories = new CustomDirectoriesViewModel();
         SettingsView = new SettingsViewModel();
         AesManager = new AesManagerViewModel(CUE4Parse);
@@ -141,8 +141,10 @@ public class ApplicationViewModel : ViewModel
         if (!bAlreadyLaunched && UserSettings.Default.PerDirectory.TryGetValue(gameDirectory, out var currentDir))
             return currentDir;
 
+        Status.SetStatus(EStatusKind.Configuring);
         var gameLauncherViewModel = new GameSelectorViewModel(gameDirectory);
         var result = new DirectorySelector(gameLauncherViewModel).ShowDialog();
+        Status.SetStatus(EStatusKind.Ready);
         if (!result.HasValue || !result.Value) return null;
 
         UserSettings.Default.GameDirectory = gameLauncherViewModel.SelectedDirectory.GameDirectory;
@@ -153,6 +155,35 @@ public class ApplicationViewModel : ViewModel
         UserSettings.Default.CurrentDir = gameLauncherViewModel.SelectedDirectory;
         RestartWithWarning();
         return null;
+    }
+
+    public DirectorySettings AddGameDirectory(string directory)
+    {
+        if (Status.Kind is EStatusKind.Configuring)
+        {
+            var directorySelector = Helper.GetWindow<DirectorySelector>("Directory Selector", null);
+            directorySelector.AddManualGame(directory);
+            return null;
+        }
+        else
+        {
+            Status.SetStatus(EStatusKind.Configuring);
+            var gameLauncherViewModel = new GameSelectorViewModel(UserSettings.Default.GameDirectory);
+            var directorySelector = new DirectorySelector(gameLauncherViewModel);
+            directorySelector.AddManualGame(directory);
+            var result = directorySelector.ShowDialog();
+            Status.SetStatus(EStatusKind.Ready);
+            if (!result.HasValue || !result.Value)
+                return null;
+
+            UserSettings.Default.GameDirectory = gameLauncherViewModel.SelectedDirectory.GameDirectory;
+            if (UserSettings.Default.CurrentDir.Equals(gameLauncherViewModel.SelectedDirectory))
+                return gameLauncherViewModel.SelectedDirectory;
+
+            UserSettings.Default.CurrentDir = gameLauncherViewModel.SelectedDirectory;
+            RestartWithWarning();
+            return null;
+        }
     }
 
     public void RestartWithWarning()
@@ -246,7 +277,7 @@ public class ApplicationViewModel : ViewModel
             }
             else
             {
-                FLogger.Append(ELog.Error, () => FLogger.Text("Could not download VgmStream", Constants.WHITE, true));
+                FLogger.Append(ELog.Error, () => FLogger.Text("Could not download vgmstream", Constants.WHITE, true));
             }
         }
     }
@@ -309,5 +340,13 @@ public class ApplicationViewModel : ViewModel
         }
 
         DetexHelper.Initialize(detexPath);
+    }
+
+    public static async Task InitUnluac()
+    {
+        var unluacPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", UnluacHelper.DllName);
+        await UnluacHelper.InitializeAsync(unluacPath).ConfigureAwait(false);
+        if (UnluacHelper.Instance is null)
+            FLogger.Append(ELog.Error, () => FLogger.Text("Failed to download unluac", Constants.WHITE, true));
     }
 }

@@ -81,6 +81,7 @@
     <None Remove="Resources\Xml.xshd" />
     <None Remove="Resources\Cpp.xshd" />
     <None Remove="Resources\Changelog.xshd" />
+    <None Remove="Resources\Lua.xshd" />
     <None Remove="Resources\unix.png" />
     <None Remove="Resources\linux.png" />
     <None Remove="Resources\stateofdecay2.png" />
@@ -129,6 +130,7 @@
     <EmbeddedResource Include="Resources\Verse.xshd" />
     <EmbeddedResource Include="Resources\Xml.xshd" />
     <EmbeddedResource Include="Resources\Cpp.xshd" />
+    <EmbeddedResource Include="Resources\Lua.xshd" />
     <EmbeddedResource Include="Resources\Changelog.xshd" />
     <EmbeddedResource Include="Resources\default.frag" />
     <EmbeddedResource Include="Resources\default.vert" />

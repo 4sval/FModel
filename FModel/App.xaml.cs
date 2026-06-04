@@ -51,7 +51,7 @@ public partial class App
         var createMe = false;
         if (!Directory.Exists(UserSettings.Default.OutputDirectory))
         {
-            var currentDir = Directory.GetCurrentDirectory();
+            var currentDir = AppContext.BaseDirectory;
             try
             {
                 var outputDir = Directory.CreateDirectory(Path.Combine(currentDir, "Output"));
@@ -90,6 +90,12 @@ public partial class App
         {
             createMe = true;
             UserSettings.Default.AudioDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports");
+        }
+
+        if (!Directory.Exists(UserSettings.Default.CodeDirectory))
+        {
+            createMe = true;
+            UserSettings.Default.CodeDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports");
         }
 
         if (!Directory.Exists(UserSettings.Default.ModelDirectory))

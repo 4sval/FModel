@@ -11,6 +11,7 @@ using CUE4Parse_Conversion.Animations;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
 using CUE4Parse_Conversion.UEFormat.Enums;
+using CUE4Parse.UE4.Lua.unluac;
 using FModel.Framework;
 using FModel.ViewModels;
 using FModel.ViewModels.ApiEndpoints.Models;
@@ -117,6 +118,13 @@ namespace FModel.Settings
         {
             get => _audioDirectory;
             set => SetProperty(ref _audioDirectory, value);
+        }
+
+        private string _codeDirectory;
+        public string CodeDirectory
+        {
+            get => _codeDirectory;
+            set => SetProperty(ref _codeDirectory, value);
         }
 
         private string _modelDirectory;
@@ -271,6 +279,36 @@ namespace FModel.Settings
         {
             get => _convertAudioOnBulkExport;
             set => SetProperty(ref _convertAudioOnBulkExport, value);
+        }
+
+        private bool _decompileLua;
+        public bool DecompileLua
+        {
+            get => _decompileLua;
+            set => SetProperty(ref _decompileLua, value);
+        }
+
+        [JsonIgnore]
+        public EUnluacMode UnluacMode
+        {
+            get => UnluacFlags.HasFlag(EUnluacFlags.Disassemble) ? EUnluacMode.Disassemble : EUnluacMode.Decompile;
+            set
+            {
+                var withoutMode = UnluacFlags & ~(EUnluacFlags.Decompile | EUnluacFlags.Disassemble);
+                var modeFlag = value == EUnluacMode.Disassemble ? EUnluacFlags.Disassemble : EUnluacFlags.Decompile;
+                UnluacFlags = withoutMode | modeFlag;
+            }
+        }
+
+        private EUnluacFlags _unluacFlags = EUnluacFlags.Decompile;
+        public EUnluacFlags UnluacFlags
+        {
+            get => _unluacFlags;
+            set
+            {
+                if (!SetProperty(ref _unluacFlags, value)) return;
+                RaisePropertyChanged(nameof(UnluacMode));
+            }
         }
 
         private IDictionary<string, DirectorySettings> _perDirectory = new Dictionary<string, DirectorySettings>();
@@ -452,13 +490,6 @@ namespace FModel.Settings
         {
             get => _cameraMode;
             set => SetProperty(ref _cameraMode, value);
-        }
-
-        private int _wwiseMaxBnkPrefetch;
-        public int WwiseMaxBnkPrefetch
-        {
-            get => _wwiseMaxBnkPrefetch;
-            set => SetProperty(ref _wwiseMaxBnkPrefetch, value);
         }
 
         private int _previewMaxTextureSize = 1024;

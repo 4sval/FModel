@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -123,7 +124,8 @@ public partial class MainWindow
             {
                 if (UserSettings.Default.DiscordRpc == EDiscordRpc.Always)
                     _discordHandler.Initialize(_applicationView.GameDisplayName);
-            })
+            }),
+            UserSettings.Default.DecompileLua ? ApplicationViewModel.InitUnluac() : Task.CompletedTask
         ).ConfigureAwait(false);
 
 #if DEBUG

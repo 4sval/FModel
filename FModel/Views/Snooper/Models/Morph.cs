@@ -61,13 +61,13 @@ public class Morph : IDisposable
         }
     }
 
-    public Morph(float[] vertices, Dictionary<uint, int> dict, UMorphTarget morphTarget)
+    public Morph(float[] vertices, Dictionary<uint, int> dict, UMorphTarget morphTarget, int index = 0)
     {
         Name = morphTarget.Name;
         Vertices = new float[vertices.Length];
         Array.Copy(vertices, Vertices, vertices.Length);
 
-        foreach (var vert in morphTarget.MorphLODModels[0].Vertices)
+        foreach (var vert in morphTarget.MorphLODModels[index].Vertices)
         {
             var count = 0;
             if (dict.TryGetValue(vert.SourceIdx, out var baseIndex))

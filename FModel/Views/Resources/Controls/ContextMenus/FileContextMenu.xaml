@@ -120,7 +120,7 @@
             </MenuItem.Header>
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                    <Binding Source="Assets_Export_Data" />
+                    <Binding Source="Save_Data" />
                     <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                 </MultiBinding>
             </MenuItem.CommandParameter>
@@ -135,7 +135,7 @@
         <MenuItem Header="Save Properties (.json)" Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                    <Binding Source="Assets_Save_Properties" />
+                    <Binding Source="Save_Properties" />
                     <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                 </MultiBinding>
             </MenuItem.CommandParameter>
@@ -150,7 +150,7 @@
         <MenuItem Header="Save Texture" Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                    <Binding Source="Assets_Save_Textures" />
+                    <Binding Source="Save_Textures" />
                     <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                 </MultiBinding>
             </MenuItem.CommandParameter>
@@ -176,7 +176,7 @@
         <MenuItem Header="Save Model" Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                    <Binding Source="Assets_Save_Models" />
+                    <Binding Source="Save_Models" />
                     <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                 </MultiBinding>
             </MenuItem.CommandParameter>
@@ -202,7 +202,7 @@
         <MenuItem Header="Save Animation" Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                    <Binding Source="Assets_Save_Animations" />
+                    <Binding Source="Save_Animations" />
                     <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                 </MultiBinding>
             </MenuItem.CommandParameter>
@@ -228,7 +228,7 @@
         <MenuItem Header="Save Audio" Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                    <Binding Source="Assets_Save_Audio" />
+                    <Binding Source="Save_Audio" />
                     <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
                 </MultiBinding>
             </MenuItem.CommandParameter>
