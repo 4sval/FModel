@@ -6,13 +6,13 @@ using System.Threading;
 using System.Windows;
 using CUE4Parse_Conversion.Animations;
 using CUE4Parse_Conversion.Meshes;
+using CUE4Parse_Conversion.Options;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Component.SplineMesh;
 using CUE4Parse.UE4.Assets.Exports.Component.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
 using CUE4Parse.UE4.Assets.Exports.Material;
-using CUE4Parse.UE4.Assets.Exports.Nanite;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
@@ -29,7 +29,6 @@ using FModel.Views.Snooper.Lights;
 using FModel.Views.Snooper.Models;
 using FModel.Views.Snooper.Shading;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using UModel = FModel.Views.Snooper.Models.UModel;
 
 namespace FModel.Views.Snooper;
 
@@ -175,7 +174,7 @@ public class Renderer : IDisposable
                 t.Scale = offset.Scale3D;
             }
 
-            UModel addedModel = null;
+            IRenderableModel addedModel = null;
             switch (export)
             {
                 case UStaticMesh st:
@@ -344,7 +343,7 @@ public class Renderer : IDisposable
             wnd.WindowShouldClose(true, true);
     }
 
-    private void LoadStaticMesh(UStaticMesh original, ENaniteMeshFormat naniteFormat = ENaniteMeshFormat.OnlyNormalLODs)
+    private void LoadStaticMesh(UStaticMesh original, ENaniteMeshFormat naniteFormat = ENaniteMeshFormat.NoNanite)
     {
         var guid = original.LightingGuid;
         if (Options.TryGetModel(guid, out var model))
@@ -713,7 +712,7 @@ public class Renderer : IDisposable
                     continue;
 
                 var parameters = new CMaterialParams2();
-                unrealMaterial.GetParams(parameters, EMaterialFormat.FirstLayer);
+                unrealMaterial.GetParams(parameters, EMaterialDepth.TopLayerOnly);
 
                 if (!parameters.TryGetLinearColor(out var color, "Color"))
                     color = FLinearColor.Gray;
@@ -726,7 +725,7 @@ public class Renderer : IDisposable
             if (!material.TryLoad(out UMaterialInterface unrealMaterial)) continue;
 
             var parameters = new CMaterialParams2();
-            unrealMaterial.GetParams(parameters, EMaterialFormat.FirstLayer);
+            unrealMaterial.GetParams(parameters, EMaterialDepth.TopLayerOnly);
 
             if (!byte.TryParse(material.Name.SubstringAfterLast("_"), out var indexAsByte))
                 indexAsByte = byte.MaxValue;

@@ -1,11 +1,8 @@
 using System.Collections.Generic;
-using System.Numerics;
 using System.Runtime.InteropServices;
-using CUE4Parse_Conversion.Meshes.PSK;
+using CUE4Parse_Conversion.Dto;
 using CUE4Parse.UE4.Assets.Exports.Component.SplineMesh;
-using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
-using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
 using FModel.Views.Snooper.Buffers;
 using FModel.Views.Snooper.Shading;
@@ -74,7 +71,7 @@ public class SplineModel : StaticModel
     private readonly List<GpuParams> _splineParams;
     private BufferObject<GpuParams> _ssbo;
 
-    public SplineModel(UStaticMesh export, CStaticMesh staticMesh, USplineMeshComponent splineMesh, Transform transform = null) : base(export, staticMesh, transform)
+    public SplineModel(UStaticMesh export, StaticMeshDto staticMesh, USplineMeshComponent splineMesh, Transform transform = null) : base(export, staticMesh, transform)
     {
         _splineParams = [new GpuParams(splineMesh)];
 

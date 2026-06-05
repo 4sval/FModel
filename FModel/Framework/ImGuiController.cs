@@ -66,18 +66,69 @@ public class ImGuiController : IDisposable
             var iniFileNamePtr = Marshal.StringToCoTaskMemUTF8(Path.Combine(UserSettings.Default.OutputDirectory, ".data", "imgui.ini"));
             io.NativePtr->IniFilename = (byte*)iniFileNamePtr;
         }
-        
-        // If not found, Fallback to default ImGui Font
-        var normalPath   = @"C:\Windows\Fonts\segoeui.ttf";
-        var boldPath     = @"C:\Windows\Fonts\segoeuib.ttf";
-        var semiBoldPath = @"C:\Windows\Fonts\seguisb.ttf";
 
-        if (File.Exists(normalPath))
-            FontNormal = io.Fonts.AddFontFromFileTTF(normalPath, 16 * DpiScale);
-        if (File.Exists(boldPath))
-            FontBold = io.Fonts.AddFontFromFileTTF(boldPath, 16 * DpiScale);
-        if (File.Exists(semiBoldPath))
-            FontSemiBold = io.Fonts.AddFontFromFileTTF(semiBoldPath, 16 * DpiScale);
+        var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+        var assemblyName = assembly.GetName().Name;
+        byte[] LoadFont(string name)
+        {
+            using var stream = assembly.GetManifestResourceStream($"{assemblyName}.Resources.{name}")
+                ?? throw new FileNotFoundException($"Embedded font '{name}' not found.");
+            using var ms = new MemoryStream();
+            stream.CopyTo(ms);
+            return ms.ToArray();
+        }
+
+        var faSolid   = LoadFont("fa-solid-900.otf");
+        var faRegular = LoadFont("fa-regular-400.otf");
+        var faBrands  = LoadFont("fa-brands-400.otf");
+
+        unsafe
+        {
+            // FA5 icons live in E000–F8FF (brands/regular/solid)
+            var iconRanges = stackalloc ushort[] { 0xe000, 0xf8ff, 0 };
+
+            var cfg = ImGuiNative.ImFontConfig_ImFontConfig();
+            cfg->MergeMode = 1;
+            cfg->PixelSnapH = 1;
+            cfg->GlyphMinAdvanceX = 16f;
+            // FontDataOwnedByAtlas = 0 because we manage the GCHandle lifetime ourselves
+            cfg->FontDataOwnedByAtlas = 0;
+
+            void MergeFontAwesome(byte[] solid, byte[] regular, byte[] brands)
+            {
+                fixed (byte* pSolid   = solid)
+                fixed (byte* pRegular = regular)
+                fixed (byte* pBrands  = brands)
+                {
+                    io.Fonts.AddFontFromMemoryTTF((IntPtr)pSolid,   solid.Length,   14, (IntPtr)cfg, (IntPtr)iconRanges);
+                    io.Fonts.AddFontFromMemoryTTF((IntPtr)pRegular, regular.Length, 14, (IntPtr)cfg, (IntPtr)iconRanges);
+                    io.Fonts.AddFontFromMemoryTTF((IntPtr)pBrands,  brands.Length,  14, (IntPtr)cfg, (IntPtr)iconRanges);
+                }
+            }
+
+            // If not found, Fallback to default ImGui Font
+            var normalPath   = @"C:\Windows\Fonts\segoeui.ttf";
+            var boldPath     = @"C:\Windows\Fonts\segoeuib.ttf";
+            var semiBoldPath = @"C:\Windows\Fonts\seguisb.ttf";
+
+            if (File.Exists(normalPath))
+            {
+                FontNormal = io.Fonts.AddFontFromFileTTF(normalPath, 16 * DpiScale);
+                MergeFontAwesome(faSolid, faRegular, faBrands);
+            }
+            if (File.Exists(boldPath))
+            {
+                FontBold = io.Fonts.AddFontFromFileTTF(boldPath, 16 * DpiScale);
+                MergeFontAwesome(faSolid, faRegular, faBrands);
+            }
+            if (File.Exists(semiBoldPath))
+            {
+                FontSemiBold = io.Fonts.AddFontFromFileTTF(semiBoldPath, 16 * DpiScale);
+                MergeFontAwesome(faSolid, faRegular, faBrands);
+            }
+
+            ImGuiNative.ImFontConfig_destroy(cfg);
+        }
 
         io.Fonts.AddFontDefault();
         io.Fonts.Build();          // Build font atlas

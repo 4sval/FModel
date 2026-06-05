@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using CUE4Parse_Conversion.Textures;
 using CUE4Parse.UE4.Assets.Exports.Texture;
@@ -20,7 +21,7 @@ public class Options
     public int SelectedMorph { get; private set; }
     public int SelectedAnimation{ get; private set; }
 
-    public readonly Dictionary<FGuid, UModel> Models;
+    public readonly Dictionary<FGuid, IRenderableModel> Models;
     public readonly Dictionary<FGuid, Texture> Textures;
     public readonly List<Light> Lights;
 
@@ -33,7 +34,7 @@ public class Options
 
     public Options()
     {
-        Models = new Dictionary<FGuid, UModel>();
+        Models = new Dictionary<FGuid, IRenderableModel>();
         Textures = new Dictionary<FGuid, Texture>();
         Lights = new List<Light>();
 
@@ -110,30 +111,30 @@ public class Options
 
     public void RemoveModel(FGuid guid)
     {
-        if (!TryGetModel(guid, out var m) || m is not UModel model)
+        if (!TryGetModel(guid, out var m) || m is null)
             return;
 
-        DetachAndRemoveModels(model, true);
-        model.Dispose();
+        DetachAndRemoveModels(m, true);
+        m.Dispose();
         Models.Remove(guid);
     }
 
-    private void DetachAndRemoveModels(UModel model, bool detach)
+    private void DetachAndRemoveModels(IRenderableModel model, bool detach)
     {
         foreach (var socket in model.Sockets.ToList())
         {
             foreach (var info in socket.AttachedModels)
             {
-                if (!TryGetModel(info.Guid, out var m) || m is not UModel attachedModel)
+                if (!TryGetModel(info.Guid, out var m) || m is null)
                     continue;
 
-                var t = attachedModel.GetTransform();
-                if (attachedModel.IsProp)
+                var t = m.GetTransform();
+                if (m.IsProp)
                 {
-                    attachedModel.Attachments.SafeDetach(model, t);
+                    m.Attachments.SafeDetach(model, t);
                     RemoveModel(info.Guid);
                 }
-                else if (detach) attachedModel.Attachments.SafeDetach(model, t);
+                else if (detach) m.Attachments.SafeDetach(model, t);
             }
 
             if (socket.IsVirtual)
@@ -209,8 +210,8 @@ public class Options
         return texture != null;
     }
 
-    public bool TryGetModel(out UModel model) => Models.TryGetValue(SelectedModel, out model);
-    public bool TryGetModel(FGuid guid, out UModel model) => Models.TryGetValue(guid, out model);
+    public bool TryGetModel([MaybeNullWhen(false)] out IRenderableModel model) => Models.TryGetValue(SelectedModel, out model);
+    public bool TryGetModel(FGuid guid, [MaybeNullWhen(false)] out IRenderableModel model) => Models.TryGetValue(guid, out model);
 
     public bool TryGetSection(out Section section) => TryGetSection(SelectedModel, out section);
     public bool TryGetSection(FGuid guid, out Section section)
@@ -223,7 +224,7 @@ public class Options
         section = null;
         return false;
     }
-    public bool TryGetSection(UModel model, out Section section)
+    public bool TryGetSection(IRenderableModel model, out Section section)
     {
         if (SelectedSection >= 0 && SelectedSection < model.Sections.Length)
             section = model.Sections[SelectedSection]; else section = null;

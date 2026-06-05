@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Numerics;
-using CUE4Parse_Conversion.Meshes.PSK;
+using CUE4Parse_Conversion.Dto;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Objects.Core.Math;
@@ -14,7 +13,7 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace FModel.Views.Snooper.Models;
 
-public class SkeletalModel : UModel
+public class SkeletalModel : UModel<SkinnedMeshVertex>
 {
     private BufferObject<float> _morphVbo;
 
@@ -25,10 +24,10 @@ public class SkeletalModel : UModel
 
     public float MorphTime;
 
-    public SkeletalModel(USkeletalMesh export, CSkeletalMesh skeletalMesh, Transform transform = null)
-        : base(export, skeletalMesh.LODs[LodLevel], export.Materials, skeletalMesh.LODs[LodLevel].Verts, skeletalMesh.LODs.Count, transform)
+    public SkeletalModel(USkeletalMesh export, SkeletalMeshDto skeletalMesh, Transform transform = null)
+        : base(export, skeletalMesh.LODs[LodLevel], export.Materials, skeletalMesh.LODs[LodLevel].Vertices, skeletalMesh.LODs.Count, transform)
     {
-        Box = skeletalMesh.BoundingBox * Constants.SCALE_DOWN_RATIO;
+        Box = skeletalMesh.Bounds * Constants.SCALE_DOWN_RATIO;
         Skeleton = new Skeleton(export.ReferenceSkeleton);
 
         var sockets = new List<FPackageIndex>();
@@ -101,10 +100,10 @@ public class SkeletalModel : UModel
         foreach (var morph in export.MorphTargets)
         {
             if (!morph.TryLoad(out UMorphTarget morphTarget) || morphTarget.MorphLODModels.Length < 1 ||
-                morphTarget.MorphLODModels[skeletalMesh.LODs[LodLevel].LODIndex].Vertices.Length < 1)
+                morphTarget.MorphLODModels[skeletalMesh.LODs[LodLevel].SourceLodIndex].Vertices.Length < 1)
                 continue;
 
-            Morphs.Add(new Morph(cachedVertices, vertexLookup, morphTarget, skeletalMesh.LODs[LodLevel].LODIndex));
+            Morphs.Add(new Morph(cachedVertices, vertexLookup, morphTarget, skeletalMesh.LODs[LodLevel].SourceLodIndex));
         }
     }
 

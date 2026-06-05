@@ -61,7 +61,7 @@ public class Morph : IDisposable
         }
     }
 
-    public Morph(float[] vertices, Dictionary<uint, int> dict, UMorphTarget morphTarget, int index = 0)
+    public Morph(float[] vertices, Dictionary<uint, int> dict, UMorphTarget morphTarget, uint index = 0)
     {
         Name = morphTarget.Name;
         Vertices = new float[vertices.Length];

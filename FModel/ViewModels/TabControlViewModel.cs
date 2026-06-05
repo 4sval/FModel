@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using CUE4Parse_Conversion.Options;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.Utils;

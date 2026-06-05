@@ -1,16 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Numerics;
 using CUE4Parse_Conversion;
-using CUE4Parse_Conversion.Meshes.PSK;
-using CUE4Parse.UE4.Assets;
+using CUE4Parse_Conversion.Dto;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Objects.Core.Math;
-using CUE4Parse.Utils;
-using FModel.Settings;
+using CUE4Parse.UE4.Objects.UObject;
 using FModel.Views.Snooper.Buffers;
 using FModel.Views.Snooper.Shading;
 using OpenTK.Graphics.OpenGL4;
@@ -24,7 +21,7 @@ public class VertexAttribute
     public bool Enabled;
 }
 
-public abstract class UModel : IRenderableModel
+public abstract class UModel<TVertex> : IRenderableModel where TVertex : struct, IMeshVertex
 {
     protected const int LodLevel = 0;
 
@@ -58,12 +55,12 @@ public abstract class UModel : IRenderableModel
     public List<Transform> Transforms { get; }
     public Attachment Attachments { get; }
 
-    public FBox Box;
-    public readonly List<Socket> Sockets;
-    public readonly List<Collision> Collisions;
-    public Material[] Materials;
-    public bool IsTwoSided;
-    public bool IsProp;
+    public FBox Box { get; init; }
+    public List<Socket> Sockets { get; }
+    public List<Collision> Collisions { get; }
+    public Material[] Materials { get; init; }
+    public bool IsTwoSided { get; set; }
+    public bool IsProp { get; set; }
 
     public int VertexSize => _vertexAttributes.Where(x => x.Enabled).Sum(x => x.Size);
     public bool HasVertexColors => _vertexAttributes[(int) EAttribute.Colors].Enabled;
@@ -76,7 +73,7 @@ public abstract class UModel : IRenderableModel
     public bool IsSelected { get; set; }
     public bool ShowWireframe { get; set; }
     public bool ShowCollisions { get; set; }
-    public int SelectedInstance;
+    public int SelectedInstance { get; set; }
 
     protected UModel()
     {
@@ -110,16 +107,16 @@ public abstract class UModel : IRenderableModel
                         _vertexAttributes[(int) EAttribute.Layer].Enabled = true;
     }
 
-    protected UModel(UObject export, CBaseMeshLod lod, IReadOnlyList<ResolvedObject> materials, IReadOnlyList<CMeshVertex> vertices, int numLods, Transform transform = null) : this(export)
+    protected UModel(UObject export, MeshLodDto<TVertex> lod, IReadOnlyList<FPackageIndex> materials, IReadOnlyList<TVertex> vertices, int numLods, Transform transform = null) : this(export)
     {
-        var hasCustomUvs = lod.ExtraUV.IsValueCreated;
-        UvCount = hasCustomUvs ? Math.Max(lod.NumTexCoords, numLods) : lod.NumTexCoords;
+        var hasCustomUvs = lod.ExtraUvs.Length > 0;
+        UvCount = hasCustomUvs ? Math.Max(lod.ExtraUvs.Length, numLods) : lod.ExtraUvs.Length + 1;
         IsTwoSided = lod.IsTwoSided;
 
-        Indices = new uint[lod.Indices.Value.Length];
+        Indices = new uint[lod.Indices.Length];
         for (int i = 0; i < Indices.Length; i++)
         {
-            Indices[i] = (uint) lod.Indices.Value[i];
+            Indices[i] = lod.Indices[i];
         }
 
         Materials = new Material[materials.Count];
@@ -129,11 +126,11 @@ public abstract class UModel : IRenderableModel
                 Materials[m] = new Material(unrealMaterial); else Materials[m] = new Material();
         }
 
-        _vertexAttributes[(int) EAttribute.Colors].Enabled = lod.VertexColors is { Length: > 0};
+        _vertexAttributes[(int) EAttribute.Colors].Enabled = lod.VertexColors is { Length: > 0 };
         _vertexAttributes[(int) EAttribute.BonesId].Enabled =
-            _vertexAttributes[(int) EAttribute.BonesWeight].Enabled = vertices is CSkelMeshVertex[];
+            _vertexAttributes[(int) EAttribute.BonesWeight].Enabled = vertices is SkinnedMeshVertex[];
 
-        Vertices = new float[lod.NumVerts * VertexSize];
+        Vertices = new float[vertices.Count * VertexSize];
         for (int i = 0; i < vertices.Count; i++)
         {
             var count = 0;
@@ -149,18 +146,18 @@ public abstract class UModel : IRenderableModel
             Vertices[baseIndex + count++] = vert.Tangent.X;
             Vertices[baseIndex + count++] = vert.Tangent.Z;
             Vertices[baseIndex + count++] = vert.Tangent.Y;
-            Vertices[baseIndex + count++] = vert.UV.U;
-            Vertices[baseIndex + count++] = vert.UV.V;
-            Vertices[baseIndex + count++] = hasCustomUvs ? lod.ExtraUV.Value[0][i].U - 1 : .5f;
+            Vertices[baseIndex + count++] = vert.Uv.U;
+            Vertices[baseIndex + count++] = vert.Uv.V;
+            Vertices[baseIndex + count++] = hasCustomUvs ? lod.ExtraUvs[0][i].U - 1 : .5f;
 
             if (HasVertexColors)
             {
-                Vertices[baseIndex + count++] = lod.VertexColors[i].ToPackedARGB();
+                Vertices[baseIndex + count++] = lod.VertexColors![0].Colors[i].ToPackedARGB();
             }
 
-            if (vert is CSkelMeshVertex skelVert)
+            if (vert is SkinnedMeshVertex skelVert)
             {
-                int max = skelVert.Influences.Count;
+                int max = skelVert.Influences.Length;
                 for (int j = 0; j < 8; j++)
                 {
                     var boneID = j < max ? skelVert.Influences[j].Bone : (ushort) 0;
@@ -172,10 +169,10 @@ public abstract class UModel : IRenderableModel
             }
         }
 
-        Sections = new Section[lod.Sections.Value.Length];
+        Sections = new Section[lod.Sections.Length];
         for (var s = 0; s < Sections.Length; s++)
         {
-            var section = lod.Sections.Value[s];
+            var section = lod.Sections[s];
             Sections[s] = new Section(section.MaterialIndex, section.NumFaces * 3, section.FirstIndex);
             if (section.IsValid) Sections[s].SetupMaterial(Materials[section.MaterialIndex]);
         }
@@ -392,10 +389,9 @@ public abstract class UModel : IRenderableModel
         return socket.Transform.LocalMatrix * socketRelation;
     }
 
-    public bool Save(out string label, out string savedFilePath)
+    public void AddToExportSession(ExportSession session)
     {
-        var toSave = new Exporter(_export, UserSettings.Default.ExportOptions);
-        return toSave.TryWriteToDir(new DirectoryInfo(UserSettings.Default.ModelDirectory), out label, out savedFilePath);
+        session.Add(_export);
     }
 
     public virtual void Dispose()

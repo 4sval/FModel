@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using FModel.Framework;
 using ImGuiNET;
@@ -38,30 +37,10 @@ public class Swap
     }
 }
 
-public class Save
-{
-    public bool Value;
-    public string Label;
-    public string Path;
-
-    public Save()
-    {
-        Reset();
-    }
-
-    public void Reset()
-    {
-        Value = false;
-        Label = string.Empty;
-        Path = string.Empty;
-    }
-}
-
 public class SnimGui
 {
     public readonly ImGuiController Controller;
     private readonly Swap _swapper = new ();
-    private readonly Save _saver = new ();
     private readonly string _renderer;
     private readonly string _version;
     private readonly float _tableWidth;
@@ -96,7 +75,7 @@ public class SnimGui
 
         SectionWindow("Material Inspector", s.Renderer, DrawMaterialInspector, false);
         AnimationWindow("Timeline", s.Renderer, (icons, tracker, animations) =>
-            tracker.ImGuiTimeline(s, _saver, icons, animations, _outlinerSize, Controller.FontSemiBold));
+            tracker.ImGuiTimeline(s, icons, animations, _outlinerSize, Controller.FontSemiBold));
 
         Window("World", () => DrawWorld(s), false);
 
@@ -144,36 +123,13 @@ public class SnimGui
             }
         });
 
-        Modal("Saved", _saver.Value, () =>
-        {
-            ImGui.TextWrapped($"Successfully saved {_saver.Label}");
-            ImGui.Separator();
-
-            var size = new Vector2(120, 0);
-            if (ImGui.Button("OK", size))
-            {
-                _saver.Reset();
-                ImGui.CloseCurrentPopup();
-            }
-
-            ImGui.SetItemDefaultFocus();
-            ImGui.SameLine();
-
-            if (ImGui.Button("Show In Explorer", size))
-            {
-                Process.Start("explorer.exe", $"/select, \"{_saver.Path.Replace('/', '\\')}\"");
-
-                _saver.Reset();
-                ImGui.CloseCurrentPopup();
-            }
-        });
+        ExportModal.Instance.Draw();
     }
 
     private void DrawWorld(Snooper s)
     {
         if (ImGui.BeginTable("world_details", 2, ImGuiTableFlags.SizingStretchProp))
         {
-            var b = false;
             var length = s.Renderer.Options.Models.Count;
 
             NoFramePaddingOnY(() =>
@@ -184,31 +140,7 @@ public class SnimGui
 
                 if (ImGui.SmallButton("Save All"))
                 {
-                    foreach (var model in s.Renderer.Options.Models.Values)
-                    {
-                        b |= model.Save(out _, out _);
-                    }
-                }
-            });
-
-            Modal("Saved", b, () =>
-            {
-                ImGui.TextWrapped($"Successfully saved {length} models");
-                ImGui.Separator();
-
-                var size = new Vector2(120, 0);
-                if (ImGui.Button("OK", size))
-                {
-                    ImGui.CloseCurrentPopup();
-                }
-
-                ImGui.SetItemDefaultFocus();
-                ImGui.SameLine();
-
-                if (ImGui.Button("Show In Explorer", size))
-                {
-                    Process.Start("explorer.exe", $"/select, \"{UserSettings.Default.ModelDirectory.Replace('/', '\\')}\"");
-                    ImGui.CloseCurrentPopup();
+                    ExportModal.Instance.Export(s.Renderer.Options.Models.Values, UserSettings.Default.ModelDirectory, UserSettings.GetExportOptions());
                 }
             });
 
@@ -412,7 +344,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                         if (ImGui.MenuItem("Save"))
                         {
                             s.WindowShouldFreeze(true);
-                            _saver.Value = model.Save(out _saver.Label, out _saver.Path);
+                            ExportModal.Instance.Export([model], UserSettings.Default.ModelDirectory, UserSettings.GetExportOptions());
                             s.WindowShouldFreeze(false);
                         }
                         if (ImGui.MenuItem("Animate", model is SkeletalModel))
@@ -591,7 +523,11 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                 {
                     ImGui.PushID(0); ImGui.BeginDisabled(model.TransformsCount < 2);
                     ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
-                    ImGui.SliderInt("", ref model.SelectedInstance, 0, model.TransformsCount - 1, "Instance %i", ImGuiSliderFlags.AlwaysClamp);
+                    var instance = model.SelectedInstance;
+                    if (ImGui.SliderInt("", ref instance, 0, model.TransformsCount - 1, "Instance %i", ImGuiSliderFlags.AlwaysClamp))
+                    {
+                        model.SelectedInstance = instance;
+                    }
                     ImGui.EndDisabled(); ImGui.PopID();
 
                     if (ImGui.BeginTable("guizmo_controls", 2, ImGuiTableFlags.SizingStretchProp))
@@ -669,7 +605,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         ImGui.PopStyleVar();
     }
 
-    private void DrawMaterialInspector(Dictionary<string, Texture> icons, UModel model, Section section)
+    private void DrawMaterialInspector(Dictionary<string, Texture> icons, IRenderableModel model, Section section)
     {
         var material = model.Materials[section.MaterialIndex];
 
@@ -906,7 +842,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         ImGui.End();
     }
 
-    private void MeshWindow(string name, Renderer renderer, Action<Dictionary<string, Texture>, UModel> content, bool styled = true)
+    private void MeshWindow(string name, Renderer renderer, Action<Dictionary<string, Texture>, IRenderableModel> content, bool styled = true)
     {
         Window(name, () =>
         {
@@ -915,7 +851,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         }, styled);
     }
 
-    private void SectionWindow(string name, Renderer renderer, Action<Dictionary<string, Texture>, UModel, Section> content, bool styled = true)
+    private void SectionWindow(string name, Renderer renderer, Action<Dictionary<string, Texture>, IRenderableModel, Section> content, bool styled = true)
     {
         MeshWindow(name, renderer, (icons, model) =>
         {

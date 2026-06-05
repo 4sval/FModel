@@ -54,7 +54,7 @@ public class PickingTexture : IDisposable
         Bind(0);
     }
 
-    public void Render(Matrix4x4 viewMatrix, Matrix4x4 projMatrix, IDictionary<FGuid, UModel> models)
+    public void Render(Matrix4x4 viewMatrix, Matrix4x4 projMatrix, IDictionary<FGuid, IRenderableModel> models)
     {
         Bind();
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);

@@ -4,13 +4,9 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using CUE4Parse.UE4.Assets.Exports.Material;
-using CUE4Parse.UE4.Assets.Exports.Nanite;
 using CUE4Parse.UE4.Versions;
-using CUE4Parse_Conversion;
-using CUE4Parse_Conversion.Animations;
-using CUE4Parse_Conversion.Meshes;
-using CUE4Parse_Conversion.Textures;
-using CUE4Parse_Conversion.UEFormat.Enums;
+using CUE4Parse_Conversion.Options;
+using CUE4Parse_Conversion.Writers.UEFormat.Enums;
 using CUE4Parse.UE4.Lua.unluac;
 using FModel.Framework;
 using FModel.ViewModels;
@@ -57,26 +53,23 @@ namespace FModel.Settings
             return endpoint.Overwrite || endpoint.IsValid;
         }
 
-        [JsonIgnore]
-        public ExporterOptions ExportOptions => new()
+        public static ExportOptions GetExportOptions()
         {
-            LodFormat = Default.LodExportFormat,
-            MeshFormat = Default.MeshExportFormat,
-            NaniteMeshFormat = Default.NaniteMeshExportFormat,
-            AnimFormat = Default.MeshExportFormat switch
-            {
-                EMeshFormat.UEFormat => EAnimFormat.UEFormat,
-                _ => EAnimFormat.ActorX
-            },
-            MaterialFormat = Default.MaterialExportFormat,
-            TextureFormat = Default.TextureExportFormat,
-            SocketFormat = Default.SocketExportFormat,
-            CompressionFormat = Default.CompressionFormat,
-            Platform = Default.CurrentDir.TexturePlatform,
-            ExportMorphTargets = Default.SaveMorphTargets,
-            ExportMaterials = Default.SaveEmbeddedMaterials,
-            ExportHdrTexturesAsHdr = Default.SaveHdrTexturesAsHdr
-        };
+            return new ExportOptions(
+                Default.MeshExportFormat,
+                Default.NaniteMeshExportFormat,
+                Default.MeshQuality,
+                Default.CurrentDir.TexturePlatform,
+                Default.TextureExportFormat,
+                100,
+                Default.SaveHdrTexturesAsHdr,
+                Default.MaterialExportFormat,
+                Default.SaveEmbeddedMaterials,
+                Default.SaveMorphTargets,
+                Default.SocketExportFormat,
+                Default.CompressionFormat
+            );
+        }
 
         private bool _showChangelog = true;
         public bool ShowChangelog
@@ -422,15 +415,22 @@ namespace FModel.Settings
             set => SetProperty(ref _meshExportFormat, value);
         }
 
-        private ENaniteMeshFormat _naniteMeshExportFormat = ENaniteMeshFormat.OnlyNaniteLOD;
+        private ENaniteMeshFormat _naniteMeshExportFormat = ENaniteMeshFormat.NaniteOnly;
         public ENaniteMeshFormat NaniteMeshExportFormat
         {
             get => _naniteMeshExportFormat;
             set => SetProperty(ref _naniteMeshExportFormat, value);
         }
 
-        private EMaterialFormat _materialExportFormat = EMaterialFormat.FirstLayer;
-        public EMaterialFormat MaterialExportFormat
+        private EMeshQuality _meshQuality = EMeshQuality.Highest;
+        public EMeshQuality MeshQuality
+        {
+            get => _meshQuality;
+            set => SetProperty(ref _meshQuality, value);
+        }
+
+        private EMaterialDepth _materialExportFormat = EMaterialDepth.TopLayerOnly;
+        public EMaterialDepth MaterialExportFormat
         {
             get => _materialExportFormat;
             set => SetProperty(ref _materialExportFormat, value);
@@ -455,13 +455,6 @@ namespace FModel.Settings
         {
             get => _compressionFormat;
             set => SetProperty(ref _compressionFormat, value);
-        }
-
-        private ELodFormat _lodExportFormat = ELodFormat.FirstLod;
-        public ELodFormat LodExportFormat
-        {
-            get => _lodExportFormat;
-            set => SetProperty(ref _lodExportFormat, value);
         }
 
         private bool _showSkybox = true;

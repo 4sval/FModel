@@ -11,7 +11,9 @@ using CUE4Parse;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
+using FModel.Views.Snooper;
 using Newtonsoft.Json;
+using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
@@ -118,10 +120,12 @@ public partial class App
             .WriteTo.Console(outputTemplate: template, theme: AnsiConsoleTheme.Literate)
             .WriteTo.File(outputTemplate: template,
                 path: Path.Combine(UserSettings.Default.OutputDirectory, "Logs", $"FModel-Debug-Log-{DateTime.Now:yyyy-MM-dd}.log"))
+            .MinimumLevel.Override("CUE4Parse_Conversion", LogEventLevel.Verbose).WriteTo.Sink(ImGuiSink.Instance)
 #else
             .Enrich.With<CallerEnricher>()
             .WriteTo.File(outputTemplate: template,
                 path: Path.Combine(UserSettings.Default.OutputDirectory, "Logs", $"FModel-Log-{DateTime.Now:yyyy-MM-dd}.log"))
+            .MinimumLevel.Override("CUE4Parse_Conversion", LogEventLevel.Verbose).WriteTo.Sink(ImGuiSink.Instance)
 #endif
             .CreateLogger();
 

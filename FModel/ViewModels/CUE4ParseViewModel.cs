@@ -1678,32 +1678,34 @@ public class CUE4ParseViewModel : ViewModel
 
     private void SaveExport(UObject export, bool updateUi = true)
     {
-        var toSave = new Exporter(export, UserSettings.Default.ExportOptions);
-        var toSaveDirectory = new DirectoryInfo(UserSettings.Default.ModelDirectory);
-        if (toSave.TryWriteToDir(toSaveDirectory, out var label, out var savedFilePath))
-        {
-            Interlocked.Increment(ref ExportedCount);
-            Log.Information("Successfully saved {FilePath}", savedFilePath);
-            if (updateUi)
-            {
-                FLogger.Append(ELog.Information, () =>
-                {
-                    FLogger.Text("Successfully saved ", Constants.WHITE);
-                    FLogger.Link(label, savedFilePath, true);
-                });
-            }
-        }
-        else
-        {
-            Interlocked.Increment(ref FailedExportCount);
-            Log.Error("{FileName} could not be saved", export.Name);
-            FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{export.Name}'", Constants.WHITE, true));
-        }
+        // TODO: export session
+        // var toSave = new Exporter(export, UserSettings.Default.ExportOptions);
+        // var toSaveDirectory = new DirectoryInfo(UserSettings.Default.ModelDirectory);
+        // if (toSave.TryWriteToDir(toSaveDirectory, out var label, out var savedFilePath))
+        // {
+        //     Interlocked.Increment(ref ExportedCount);
+        //     Log.Information("Successfully saved {FilePath}", savedFilePath);
+        //     if (updateUi)
+        //     {
+        //         FLogger.Append(ELog.Information, () =>
+        //         {
+        //             FLogger.Text("Successfully saved ", Constants.WHITE);
+        //             FLogger.Link(label, savedFilePath, true);
+        //         });
+        //     }
+        // }
+        // else
+        // {
+        //     Interlocked.Increment(ref FailedExportCount);
+        //     Log.Error("{FileName} could not be saved", export.Name);
+        //     FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{export.Name}'", Constants.WHITE, true));
+        // }
     }
 
     private readonly object _rawData = new ();
     public void ExportData(GameFile entry, bool updateUi = true)
     {
+        // TODO: export session
         if (Provider.TrySavePackage(entry, out var assets))
         {
             string path = UserSettings.Default.RawDataDirectory;

@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Numerics;
 using CUE4Parse_Conversion;
-using CUE4Parse_Conversion.Animations.PSA;
+using CUE4Parse_Conversion.Writers.ActorX.Structs.Animations;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using FModel.Settings;
@@ -12,7 +11,7 @@ using ImGuiNET;
 
 namespace FModel.Views.Snooper.Animations;
 
-public class Animation : IDisposable
+public class Animation : IExportableThing, IDisposable
 {
     private readonly UObject _export;
 
@@ -82,7 +81,7 @@ public class Animation : IDisposable
         AttachedModels.Clear();
     }
 
-    public void ImGuiAnimation(Snooper s, Save saver, ImDrawListPtr drawList, ImFontPtr fontPtr, Vector2 timelineP0, Vector2 treeP0, Vector2 timeStep, Vector2 timeRatio, float y, float t, int i)
+    public void ImGuiAnimation(Snooper s, ImDrawListPtr drawList, ImFontPtr fontPtr, Vector2 timelineP0, Vector2 treeP0, Vector2 timeStep, Vector2 timeRatio, float y, float t, int i)
     {
         var name = $"{Name}##{i}";
         var p1 = new Vector2(timelineP0.X + StartTime * timeRatio.X + t, y + t);
@@ -96,7 +95,7 @@ public class Animation : IDisposable
         {
             s.Renderer.Options.SelectAnimation(i);
         }
-        Popup(s, saver, i);
+        Popup(s, i);
 
         drawList.AddRectFilled(p1, p2, IsSelected ? 0xFF48B048 : 0xFF175F17, 5.0f, ImDrawFlags.RoundCornersTop);
         for (int j = 0; j < Sequences.Length; j++)
@@ -109,10 +108,10 @@ public class Animation : IDisposable
         {
             s.Renderer.Options.SelectAnimation(i);
         }
-        Popup(s, saver, i);
+        Popup(s, i);
     }
 
-    private void Popup(Snooper s, Save saver, int i)
+    private void Popup(Snooper s, int i)
     {
         SnimGui.Popup(() =>
         {
@@ -134,11 +133,16 @@ public class Animation : IDisposable
             if (ImGui.MenuItem("Save"))
             {
                 s.WindowShouldFreeze(true);
-                saver.Value = new Exporter(_export, UserSettings.Default.ExportOptions).TryWriteToDir(new DirectoryInfo(UserSettings.Default.ModelDirectory), out saver.Label, out saver.Path);
+                ExportModal.Instance.Export([this], UserSettings.Default.ModelDirectory, UserSettings.GetExportOptions());
                 s.WindowShouldFreeze(false);
             }
             ImGui.Separator();
             if (ImGui.MenuItem("Copy Path to Clipboard")) ImGui.SetClipboardText(Path);
         });
+    }
+
+    public void AddToExportSession(ExportSession session)
+    {
+        session.Add(_export);
     }
 }

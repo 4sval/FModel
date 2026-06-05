@@ -1,6 +1,6 @@
 using System;
 using System.Numerics;
-using CUE4Parse_Conversion.Meshes.PSK;
+using CUE4Parse_Conversion.Dto;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
@@ -11,24 +11,24 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace FModel.Views.Snooper.Models;
 
-public class StaticModel : UModel
+public class StaticModel : UModel<MeshVertex>
 {
-    public StaticModel(UMaterialInterface unrealMaterial, CStaticMesh staticMesh) : base(unrealMaterial)
+    public StaticModel(UMaterialInterface unrealMaterial, StaticMeshDto staticMesh) : base(unrealMaterial)
     {
         var lod = staticMesh.LODs[LodLevel];
 
-        Indices = new uint[lod.Indices.Value.Length];
+        Indices = new uint[lod.Indices.Length];
         for (int i = 0; i < Indices.Length; i++)
         {
-            Indices[i] = (uint) lod.Indices.Value[i];
+            Indices[i] = lod.Indices[i];
         }
 
-        Vertices = new float[lod.NumVerts * VertexSize];
-        for (int i = 0; i < lod.Verts.Length; i++)
+        Vertices = new float[lod.Vertices.Length * VertexSize];
+        for (int i = 0; i < lod.Vertices.Length; i++)
         {
             var count = 0;
             var baseIndex = i * VertexSize;
-            var vert = lod.Verts[i];
+            var vert = lod.Vertices[i];
             Vertices[baseIndex + count++] = i;
             Vertices[baseIndex + count++] = vert.Position.X * Constants.SCALE_DOWN_RATIO;
             Vertices[baseIndex + count++] = vert.Position.Z * Constants.SCALE_DOWN_RATIO;
@@ -39,8 +39,8 @@ public class StaticModel : UModel
             Vertices[baseIndex + count++] = vert.Tangent.X;
             Vertices[baseIndex + count++] = vert.Tangent.Z;
             Vertices[baseIndex + count++] = vert.Tangent.Y;
-            Vertices[baseIndex + count++] = vert.UV.U;
-            Vertices[baseIndex + count++] = vert.UV.V;
+            Vertices[baseIndex + count++] = vert.Uv.U;
+            Vertices[baseIndex + count++] = vert.Uv.V;
             Vertices[baseIndex + count++] = .5f;
         }
 
@@ -52,7 +52,7 @@ public class StaticModel : UModel
 
         AddInstance(Transform.Identity);
 
-        Box = staticMesh.BoundingBox * 1.5f * Constants.SCALE_DOWN_RATIO;
+        Box = staticMesh.Bounds * 1.5f * Constants.SCALE_DOWN_RATIO;
     }
 
     public StaticModel(UPaperSprite paperSprite, UTexture2D texture) : base(paperSprite)
@@ -108,8 +108,8 @@ public class StaticModel : UModel
         Box = new FBox(-backward, backward) * Constants.SCALE_DOWN_RATIO;
     }
 
-    public StaticModel(UStaticMesh export, CStaticMesh staticMesh, Transform transform = null)
-        : base(export, staticMesh.LODs[LodLevel], export.Materials, staticMesh.LODs[LodLevel].Verts, staticMesh.LODs.Count, transform)
+    public StaticModel(UStaticMesh export, StaticMeshDto staticMesh, Transform transform = null)
+        : base(export, staticMesh.LODs[LodLevel], export.Materials, staticMesh.LODs[LodLevel].Vertices, staticMesh.LODs.Count, transform)
     {
         if (export.BodySetup.TryLoad(out UBodySetup bodySetup) && bodySetup.AggGeom != null)
         {
@@ -135,7 +135,7 @@ public class StaticModel : UModel
             }
         }
 
-        Box = staticMesh.BoundingBox * Constants.SCALE_DOWN_RATIO;
+        Box = staticMesh.Bounds * Constants.SCALE_DOWN_RATIO;
         for (int i = 0; i < export.Sockets.Length; i++)
         {
             if (export.Sockets[i].Load<UStaticMeshSocket>() is not { } socket) continue;

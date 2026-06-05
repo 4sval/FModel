@@ -61,7 +61,7 @@ public class TimeTracker : IDisposable
     }
 
     private readonly string[] _icons = { "tl_forward", "tl_pause", "tl_rewind" };
-    public void ImGuiTimeline(Snooper s, Save saver, Dictionary<string, Texture> icons, List<Animation> animations, Vector2 outliner, ImFontPtr fontPtr)
+    public void ImGuiTimeline(Snooper s, Dictionary<string, Texture> icons, List<Animation> animations, Vector2 outliner, ImFontPtr fontPtr)
     {
         var dpiScale = ImGui.GetWindowDpiScale();
         var thickness = 2.0f * dpiScale;
@@ -151,7 +151,7 @@ public class TimeTracker : IDisposable
         for (int i = 0; i < animations.Count; i++)
         {
             var y = timelineP0.Y + timeBarHeight + timeStep.Y * i;
-            animations[i].ImGuiAnimation(s, saver, drawList, fontPtr, timelineP0, treeP0, timeStep, timeRatio, y, thickness, i);
+            animations[i].ImGuiAnimation(s, drawList, fontPtr, timelineP0, treeP0, timeStep, timeRatio, y, thickness, i);
             DrawSeparator(drawList, timelineP0, y + timeStep.Y, animations[i].EndTime * timeRatio.X, timeHeight, timeBarHeight, ETrackerType.End);
         }
         ImGui.PopStyleVar();

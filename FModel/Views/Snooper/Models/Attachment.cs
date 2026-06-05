@@ -24,7 +24,7 @@ public class Attachment
         _attachedFor = new List<string>();
     }
 
-    public void Attach(UModel attachedTo, Transform transform, Socket socket, SocketAttachementInfo info)
+    public void Attach(IRenderableModel attachedTo, Transform transform, Socket socket, SocketAttachementInfo info)
     {
         socket.AttachedModels.Add(info);
 
@@ -38,13 +38,13 @@ public class Attachment
         transform.Scale = FVector.OneVector;
     }
 
-    public void Detach(UModel attachedTo, Transform transform, Socket socket, SocketAttachementInfo info)
+    public void Detach(IRenderableModel attachedTo, Transform transform, Socket socket, SocketAttachementInfo info)
     {
         socket.AttachedModels.Remove(info);
         SafeDetach(attachedTo, transform);
     }
 
-    public void SafeDetach(UModel attachedTo, Transform transform)
+    public void SafeDetach(IRenderableModel attachedTo, Transform transform)
     {
         _attachedTo = string.Empty;
         attachedTo.Attachments.RemoveAttachment(_modelName);

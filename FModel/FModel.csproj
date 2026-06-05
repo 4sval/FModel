@@ -121,6 +121,9 @@
     <None Remove="Resources\bone.frag" />
     <None Remove="Resources\bone.vert" />
     <None Remove="Resources\collision.vert" />
+    <None Remove="Resources\fa-brands-400.otf" />
+    <None Remove="Resources\fa-solid-900.otf" />
+    <None Remove="Resources\fa-regular-400.otf" />
   </ItemGroup>
 
   <ItemGroup>
@@ -149,6 +152,9 @@
     <EmbeddedResource Include="Resources\bone.frag" />
     <EmbeddedResource Include="Resources\bone.vert" />
     <EmbeddedResource Include="Resources\collision.vert" />
+    <EmbeddedResource Include="Resources\fa-brands-400.otf" />
+    <EmbeddedResource Include="Resources\fa-solid-900.otf" />
+    <EmbeddedResource Include="Resources\fa-regular-400.otf" />
   </ItemGroup>
 
   <ItemGroup>
