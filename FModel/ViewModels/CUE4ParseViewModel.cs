@@ -67,7 +67,6 @@ using CUE4Parse_Conversion.Exporters;
 using CUE4Parse_Conversion.Sounds;
 using EpicManifestParser;
 using EpicManifestParser.UE;
-using EpicManifestParser.ZlibngDotNetDecompressor;
 using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;
@@ -95,6 +94,8 @@ public class CUE4ParseViewModel : ViewModel
     private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
     private readonly Regex _fnLiveRegex = new(@"^FortniteGame[/\\]Content[/\\]Paks[/\\]",
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+    private static readonly HttpClient _chunkClient = ManifestParseOptions.CreateDefaultClient();
 
     private bool _modelIsOverwritingMaterial;
     public bool ModelIsOverwritingMaterial
@@ -226,9 +227,9 @@ public class CUE4ParseViewModel : ViewModel
         {
             Provider.OnDemandOptions = new IoStoreOnDemandOptions
             {
-                ChunkHostUri = new Uri("https://download.epicgames.com/", UriKind.Absolute),
+                ChunkHostUri = new Uri("https://egdownload.fastly-edge.com/", UriKind.Absolute),
                 ChunkCacheDirectory = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data")),
-                Timeout = TimeSpan.FromSeconds(30)
+                DownloaderClient = _chunkClient
             };
 
             switch (Provider)
@@ -249,9 +250,9 @@ public class CUE4ParseViewModel : ViewModel
                             {
                                 ChunkCacheDirectory = cacheDir,
                                 ManifestCacheDirectory = cacheDir,
-                                ChunkBaseUrl = "http://download.epicgames.com/Builds/Fortnite/CloudDir/",
-                                Decompressor = ManifestZlibngDotNetDecompressor.Decompress,
-                                DecompressorState = ZlibHelper.Instance,
+                                ChunkBaseUrl = "https://egdownload.fastly-edge.com/Builds/Fortnite/CloudDir/",
+                                Decompressor = Compression.Decompressor,
+                                Client = _chunkClient,
                                 CacheChunksAsIs = false
                             };
 
@@ -262,7 +263,7 @@ public class CUE4ParseViewModel : ViewModel
                             {
                                 (manifest, _) = manifestInfo.DownloadAndParseAsync(manifestOptions,
                                     cancellationToken: cancellationToken,
-                                    elementManifestPredicate: static x => x.Uri.Host == "download.epicgames.com" || x.Uri.Host == "epicgames-download1.akamaized.net"
+                                    elementDownloadPredicate: static x => x.Uri.Host is "egdownload.fastly-edge.com" or "epicgames-download1.akamaized.net" or "download.epicgames.com"
                                 ).GetAwaiter().GetResult();
                             }
                             catch (HttpRequestException ex)
