@@ -134,8 +134,8 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
 
             Action<GameFile, EBulkType, bool> fileAction = bulktype switch
             {
-                EBulkType.Raw => (entry, _, update) => contextViewModel.CUE4Parse.ExportData(entry, !update),
-                _ => (entry, bulk, update) => contextViewModel.CUE4Parse.Extract(cancellationToken, entry, false, bulk),
+                EBulkType.Raw => (entry, _, _) => contextViewModel.CUE4Parse.ExportData(entry),
+                _ => (entry, bulk, _) => contextViewModel.CUE4Parse.Extract(cancellationToken, entry, false, bulk),
             };
 
             foreach (var group in assetsGroups)

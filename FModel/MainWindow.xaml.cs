@@ -376,4 +376,15 @@ public partial class MainWindow
         childFolder.IsExpanded = true;
         childFolder.IsSelected = true;
     }
+
+    private CustomPopupPlacement[] OnQueueToastCustomPopupPlacement(Size popupSize, Size targetSize, Point offset)
+    {
+        return
+        [
+            new CustomPopupPlacement(
+                new Point((targetSize.Width - popupSize.Width) / 2, -popupSize.Height - 10),
+                PopupPrimaryAxis.Horizontal
+            )
+        ];
+    }
 }

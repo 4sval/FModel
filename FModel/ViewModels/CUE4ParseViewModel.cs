@@ -63,6 +63,7 @@ using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
 using CUE4Parse.Utils;
 using CUE4Parse_Conversion;
+using CUE4Parse_Conversion.Exporters;
 using CUE4Parse_Conversion.Sounds;
 using EpicManifestParser;
 using EpicManifestParser.UE;
@@ -613,7 +614,7 @@ public class CUE4ParseViewModel : ViewModel
         Parallel.ForEach(folder.AssetsList.Assets, entry =>
         {
             cancellationToken.ThrowIfCancellationRequested();
-            ExportData(entry.Asset, false);
+            ExportData(entry.Asset);
         });
 
         foreach (var f in folder.Folders) ExportFolder(cancellationToken, f);
@@ -1516,10 +1517,11 @@ public class CUE4ParseViewModel : ViewModel
             case UStaticMesh when HasFlag(bulk, EBulkType.Meshes):
             case USkeletalMesh when HasFlag(bulk, EBulkType.Meshes):
             case USkeleton when UserSettings.Default.SaveSkeletonAsMesh && HasFlag(bulk, EBulkType.Meshes):
-            // case UMaterialInstance when HasFlag(bulk, EBulkType.Materials): // read the fucking json
-            case UAnimSequenceBase when HasFlag(bulk, EBulkType.Animations):
+            // case UMaterialInterface when HasFlag(bulk, EBulkType.Materials): // read the fucking json
+            case UAnimationAsset when HasFlag(bulk, EBulkType.Animations):
+            // case UWorld when HasFlag(bulk, EBulkType.Worlds):
             {
-                SaveExport(pointer.Object.Value, updateUi);
+                SaveExport(pointer.Object.Value);
                 return true;
             }
             default:
@@ -1676,66 +1678,27 @@ public class CUE4ParseViewModel : ViewModel
         });
     }
 
-    private void SaveExport(UObject export, bool updateUi = true)
+    private void SaveExport(UObject export)
     {
-        // TODO: export session
-        // var toSave = new Exporter(export, UserSettings.Default.ExportOptions);
-        // var toSaveDirectory = new DirectoryInfo(UserSettings.Default.ModelDirectory);
-        // if (toSave.TryWriteToDir(toSaveDirectory, out var label, out var savedFilePath))
-        // {
-        //     Interlocked.Increment(ref ExportedCount);
-        //     Log.Information("Successfully saved {FilePath}", savedFilePath);
-        //     if (updateUi)
-        //     {
-        //         FLogger.Append(ELog.Information, () =>
-        //         {
-        //             FLogger.Text("Successfully saved ", Constants.WHITE);
-        //             FLogger.Link(label, savedFilePath, true);
-        //         });
-        //     }
-        // }
-        // else
-        // {
-        //     Interlocked.Increment(ref FailedExportCount);
-        //     Log.Error("{FileName} could not be saved", export.Name);
-        //     FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{export.Name}'", Constants.WHITE, true));
-        // }
+        try
+        {
+            ExportSessionViewModel.Instance.Session.Add(export);
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "Could not add to export session");
+        }
     }
 
-    private readonly object _rawData = new ();
-    public void ExportData(GameFile entry, bool updateUi = true)
+    public void ExportData(GameFile entry)
     {
-        // TODO: export session
-        if (Provider.TrySavePackage(entry, out var assets))
+        try
         {
-            string path = UserSettings.Default.RawDataDirectory;
-            Parallel.ForEach(assets, kvp =>
-            {
-                lock (_rawData)
-                {
-                    path = Path.Combine(UserSettings.Default.RawDataDirectory, UserSettings.Default.KeepDirectoryStructure ? kvp.Key : kvp.Key.SubstringAfterLast('/')).Replace('\\', '/');
-                    Directory.CreateDirectory(path.SubstringBeforeLast('/'));
-                    File.WriteAllBytes(path, kvp.Value);
-                }
-            });
-
-            Interlocked.Increment(ref ExportedCount);
-            Log.Information("{FileName} successfully exported", entry.Name);
-            if (updateUi)
-            {
-                FLogger.Append(ELog.Information, () =>
-                {
-                    FLogger.Text("Successfully exported ", Constants.WHITE);
-                    FLogger.Link(entry.Name, path, true);
-                });
-            }
+            ExportSessionViewModel.Instance.Session.Add(new RawDataExporter(entry, Provider));
         }
-        else
+        catch (Exception e)
         {
-            Interlocked.Increment(ref FailedExportCount);
-            Log.Error("{FileName} could not be exported", entry.Name);
-            if (updateUi)
-                FLogger.Append(ELog.Error, () => FLogger.Text($"Could not export '{entry.Name}'", Constants.WHITE, true));
+            Log.Error(e, "Could not add to export session");
         }
     }
 

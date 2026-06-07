@@ -2,6 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:FModel"
+        xmlns:viewModels="clr-namespace:FModel.ViewModels"
         xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
         xmlns:inputs="clr-namespace:FModel.Views.Resources.Controls.Inputs"
         xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
@@ -24,6 +25,28 @@
             </TaskbarItemInfo.ProgressState>
         </TaskbarItemInfo>
     </Window.TaskbarItemInfo>
+    <Window.Resources>
+        <Canvas x:Key="ExportSessionIcon" x:Shared="False" Width="24" Height="24">
+            <Path Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}"
+                  StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                  Data="M12 21l-8 -4.5v-9l8 -4.5l8 4.5v4.5" />
+            <Path Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}"
+                  StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                  Data="M12 12l8 -4.5" />
+            <Path Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}"
+                  StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                  Data="M12 12v9" />
+            <Path Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}"
+                  StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                  Data="M12 12l-8 -4.5" />
+            <Path Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}"
+                  StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                  Data="M15 18h7" />
+            <Path Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}"
+                  StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                  Data="M19 15l3 3l-3 3" />
+        </Canvas>
+    </Window.Resources>
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
             <Setter Property="Title" Value="{Binding DataContext.InitialWindowTitle, RelativeSource={RelativeSource Self}}" />
@@ -152,6 +175,13 @@
                             </Viewbox>
                         </MenuItem.Icon>
                     </MenuItem>
+                    <MenuItem Header="Export Session">
+                        <MenuItem.Icon>
+                            <Viewbox Width="16" Height="16">
+                                <StaticResource ResourceKey="ExportSessionIcon" />
+                            </Viewbox>
+                        </MenuItem.Icon>
+                    </MenuItem>
                 </MenuItem>
                 <MenuItem Header="Settings" Command="{Binding MenuCommand}" CommandParameter="Settings" />
                 <MenuItem Header="Help" >
@@ -211,7 +241,7 @@
 
                 <TextBlock Grid.Column="0" Text="Preview New Explorer System" VerticalAlignment="Center" />
                 <CheckBox Grid.Column="1" Margin="5 2 5 0" Unchecked="FeaturePreviewOnUnchecked" KeyboardNavigation.TabNavigation="None" KeyboardNavigation.ControlTabNavigation="None"
-                          IsChecked="{Binding FeaturePreviewNewAssetExplorer, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                          IsChecked="{Binding FeaturePreviewNewAssetExplorer, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                           Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"/>
             </Grid>
         </Grid>
@@ -698,23 +728,81 @@
                 </TextBlock>
             </StatusBarItem>
 
-            <StatusBarItem Margin="0 0 5 0" HorizontalAlignment="Right">
+            <StatusBarItem Margin="0 0 5 0" Padding="0"
+                           HorizontalAlignment="Right" VerticalAlignment="Stretch"
+                           HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
                 <StackPanel Orientation="Horizontal">
-                    <StatusBarItem Margin="0 0 10 0" HorizontalContentAlignment="Stretch">
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource StatusBarIcon}" />
-                            </Canvas>
-                        </Viewbox>
+                    <StatusBarItem Margin="0 0 10 0" Padding="0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                        <Button x:Name="ExportSessionButton"
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Center"
+                                ToolTip="There are items waiting in the export queue, click to open the export session and process them!"
+                                Background="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}"
+                                Style="{StaticResource StatusBarButton}"
+                                Visibility="{Binding Session.TotalQueued, Source={x:Static viewModels:ExportSessionViewModel.Instance}, Converter={x:Static converters:IntGreaterThanZeroToVisibilityConverter.Instance}}">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Viewbox Width="16" Height="16">
+                                    <StaticResource ResourceKey="ExportSessionIcon" />
+                                </Viewbox>
+                                <TextBlock Margin="10 0 0 0" Text="{Binding Session.TotalQueued, Source={x:Static viewModels:ExportSessionViewModel.Instance}, Mode=OneWay, StringFormat=Queued Items: {0}}" />
+                            </StackPanel>
+                        </Button>
                     </StatusBarItem>
 
-                    <StatusBarItem Margin="10 0 0 0">
-                        <TextBlock Text="{Binding LastUpdateCheck, Source={x:Static local:Settings.UserSettings.Default}, Converter={x:Static converters:RelativeDateTimeConverter.Instance}, StringFormat=Last Refresh: {0}}" />
+                    <StatusBarItem Margin="0">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Viewbox Width="16" Height="16">
+                                <Canvas Width="24" Height="24">
+                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource StatusBarIcon}" />
+                                </Canvas>
+                            </Viewbox>
+                            <TextBlock Margin="10 0 0 0" Text="{Binding LastUpdateCheck, Source={x:Static settings:UserSettings.Default}, Converter={x:Static converters:RelativeDateTimeConverter.Instance}, StringFormat=Last Refresh: {0}}" />
+                        </StackPanel>
                     </StatusBarItem>
                 </StackPanel>
             </StatusBarItem>
         </StatusBar>
-        <controls:DropOverlay Grid.RowSpan="99"
-                              Panel.ZIndex="1000" />
+
+        <controls:DropOverlay Grid.Row="0" Grid.RowSpan="99" Panel.ZIndex="1000" />
+
+        <Popup Grid.Row="0" Grid.RowSpan="99" Panel.ZIndex="999"
+               PlacementTarget="{Binding ElementName=ExportSessionButton}" Placement="Custom"
+               CustomPopupPlacementCallback="OnQueueToastCustomPopupPlacement"
+               IsOpen="{Binding ShowQueueToast, Source={x:Static viewModels:ExportSessionViewModel.Instance}}"
+               AllowsTransparency="True" IsHitTestVisible="False">
+            <Border CornerRadius="5" Padding="10"
+                    Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                    BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}"
+                    BorderThickness="1">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Viewbox Width="28" Height="28" VerticalAlignment="Center" Margin="0 0 10 0">
+                        <Canvas Width="24" Height="24">
+                            <Path Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"
+                                  StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                  Data="M8 9h8" />
+                            <Path Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"
+                                  StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                  Data="M8 13h6" />
+                            <Path Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"
+                                  StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                  Data="M15 18h-2l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v5.5" />
+                            <Path Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"
+                                  StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                  Data="M19 16v3" />
+                            <Path Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"
+                                  StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                  Data="M19 22v.01" />
+                        </Canvas>
+                    </Viewbox>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Export Session" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                        <TextBlock Text="{Binding ToolTip, ElementName=ExportSessionButton}"
+                                   MaxWidth="250" TextWrapping="Wrap" FontSize="11"
+                                   Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Popup>
     </Grid>
 </adonisControls:AdonisWindow>

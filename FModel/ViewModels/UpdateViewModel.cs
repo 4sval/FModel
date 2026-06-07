@@ -63,7 +63,7 @@ public partial class UpdateViewModel : ViewModel
             var coAuthorMap = new Dictionary<GitHubCommit, HashSet<string>>();
             foreach (var commit in Commits)
             {
-                if (!commit.Commit.Message.Contains("Co-authored-by"))
+                if (!commit.Commit.Message.Contains("Co-authored-by", StringComparison.OrdinalIgnoreCase))
                     continue;
 
                 var regex = GetCoAuthorRegex();

@@ -1356,7 +1356,7 @@
                                           HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                                           VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
                                           IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                          Style="{StaticResource CustomExpanderDownHeaderStyle}"/>
+                                          Style="{DynamicResource CustomExpanderDownHeaderStyle}"/>
 
                             <Border x:Name="ExpandSiteContainerWrapper"
                                     DockPanel.Dock="Bottom"
@@ -1815,6 +1815,20 @@
                 <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer4BorderBrush}}"/>
                 <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer4BackgroundBrush}}"/>
             </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="StatusBarButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=StatusBar}}"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        <Setter Property="BorderThickness" Value="0"/>
+
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="adonisExtensions:CursorSpotlightExtension.BackgroundBrush" Value="#33FFFFFF"/>
+            </Trigger>
+
         </Style.Triggers>
     </Style>
 
