@@ -247,7 +247,7 @@ public class Options
     {
         return _game switch
         {
-            "LIESOFP" or "CODEVEIN2" or "HIGHONLIFE2" => true,
+            "LIESOFP" or "CODEVEIN2" or "HIGHONLIFE2" or "MORTALSHELL2" => true,
             _ => false,
         };
     }

@@ -48,10 +48,14 @@
     <SolidColorBrush x:Key="GitBrush" Color="Coral" />
     <SolidColorBrush x:Key="CsvBrush" Color="ForestGreen" />
     <SolidColorBrush x:Key="AIBrush" Color="LightGray" />
+    <SolidColorBrush x:Key="SQLBrush" Color="#00758f" />
+    <SolidColorBrush x:Key="PythonBrush" Color="#3d77a8" />
+    <SolidColorBrush x:Key="CSharpBrush" Color="#9e559a" />
 
     <!-- For specific games -->
     <SolidColorBrush x:Key="BorderlandsBrush" Color="Yellow"></SolidColorBrush>
     <SolidColorBrush x:Key="AionBrush" Color="DeepSkyBlue"></SolidColorBrush>
     <SolidColorBrush x:Key="RocoKingdomWorldBrush" Color="#fecf4d"></SolidColorBrush>
     <SolidColorBrush x:Key="DeltaForceBrush" Color="LightGreen"></SolidColorBrush>
+    <SolidColorBrush x:Key="BatmanBrush" Color="Gold"></SolidColorBrush>
 </ResourceDictionary>

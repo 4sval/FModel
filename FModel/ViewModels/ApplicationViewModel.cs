@@ -265,15 +265,8 @@ public class ApplicationViewModel : ViewModel
             {
                 var zipDir = Path.GetDirectoryName(vgmZipFilePath)!;
                 await using var zipFs = File.OpenRead(vgmZipFilePath);
-                using var zip = new ZipArchive(zipFs, ZipArchiveMode.Read);
-
-                foreach (var entry in zip.Entries)
-                {
-                    var entryPath = Path.Combine(zipDir, entry.FullName);
-                    await using var entryFs = File.Create(entryPath);
-                    await using var entryStream = entry.Open();
-                    await entryStream.CopyToAsync(entryFs);
-                }
+                await using var zip = await ZipArchive.CreateAsync(zipFs, ZipArchiveMode.Read, true, null);
+                await zip.ExtractToDirectoryAsync(zipDir, true);
             }
             else
             {
@@ -305,9 +298,7 @@ public class ApplicationViewModel : ViewModel
             oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_NAME_CURRENT);
         }
 
-        OodleHelper.Initialize(oodlePath);
-        if (OodleHelper.Instance is null)
-            FLogger.Append(ELog.Error, () => FLogger.Text("Failed to download Oodle", Constants.WHITE, true));
+        await OodleHelper.InitializeAsync(oodlePath);
     }
 
     public static async Task InitZlib()
@@ -319,12 +310,12 @@ public class ApplicationViewModel : ViewModel
         {
             if (!await ZlibHelper.DownloadDllAsync(zlibPath))
             {
-                FLogger.Append(ELog.Error, () => FLogger.Text("Failed to download Zlib-ng", Constants.WHITE, true));
+                zlibFileInfo.Refresh();
                 if (!zlibFileInfo.Exists) return;
             }
         }
 
-        ZlibHelper.Initialize(zlibPath);
+        await ZlibHelper.InitializeAsync(zlibPath);
     }
 
     public static async Task InitDetex()

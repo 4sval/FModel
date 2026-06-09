@@ -21,10 +21,10 @@ jobs:
       - name: Fetch Submodules Recursively
         run: git submodule update --init --recursive
 
-      - name: .NET 8 Setup
+      - name: .NET 10 Setup
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '10.0.x'
 
       - name: .NET Restore
         run: dotnet restore FModel

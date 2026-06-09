@@ -45,6 +45,7 @@ public class CreatorPackage : IDisposable
             case "AthenaMusicPackItemDefinition":
             case "AthenaBattleBusItemDefinition":
             case "AthenaCharacterItemDefinition":
+            case "ExtractableItemDefinition":
             case "AthenaMapMarkerItemDefinition":
             case "AthenaBackpackItemDefinition":
             case "CosmeticShoesItemDefinition":

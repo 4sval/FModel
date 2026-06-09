@@ -68,7 +68,7 @@ public partial class DropOverlay : UserControl
             }
             else if (_dragStatus is DragStatus.File)
             {
-                TitleText.Text = "Drop .usmap to import";
+                TitleText.Text = "Drop usmap/jmap to import";
                 DescriptionText.Text = "Mapping file will be applied immediately";
             }
         }
@@ -125,7 +125,6 @@ public partial class DropOverlay : UserControl
         if (!_applicationView.Status.IsReady || !e.Data.GetDataPresent(DataFormats.FileDrop) || e.Data.GetData(DataFormats.FileDrop) is not string[] files)
             return;
 
-
         bool directorySelectorIsVisible = _applicationView.Status.Kind is EStatusKind.Configuring;
         if (!directorySelectorIsVisible && (Helper.IsWindowOpen<DictionaryEditor>() || Helper.IsWindowOpen<EndpointEditor>()))
         {
@@ -145,7 +144,9 @@ public partial class DropOverlay : UserControl
                         _dragStatus = DragStatus.Folder;
                         return;
                     }
-                    else if (File.Exists(path) && Path.GetExtension(path).Equals(".usmap", StringComparison.OrdinalIgnoreCase))
+                    else if (File.Exists(path) && path.EndsWith(".usmap", StringComparison.OrdinalIgnoreCase) ||
+                             path.EndsWith(".jmap", StringComparison.OrdinalIgnoreCase) ||
+                             path.EndsWith(".jmap.gz", StringComparison.OrdinalIgnoreCase))
                     {
                         _path = path;
                         _dragStatus = DragStatus.File;

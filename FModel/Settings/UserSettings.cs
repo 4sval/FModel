@@ -300,7 +300,7 @@ namespace FModel.Settings
             }
         }
 
-        private EUnluacFlags _unluacFlags;
+        private EUnluacFlags _unluacFlags = EUnluacFlags.Decompile;
         public EUnluacFlags UnluacFlags
         {
             get => _unluacFlags;

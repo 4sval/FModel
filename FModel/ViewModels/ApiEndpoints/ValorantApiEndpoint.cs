@@ -53,7 +53,7 @@ public class VManifest
             Header = new VHeader(Ar);
             var compressedBuffer = Ar.ReadBytes((int) Header.CompressedSize);
             var uncompressedBuffer = new byte[(int)Header.UncompressedSize];
-            ZlibHelper.Decompress(compressedBuffer, 0, compressedBuffer.Length, uncompressedBuffer, 0, uncompressedBuffer.Length);
+            Compression.Decompress(compressedBuffer, 0, compressedBuffer.Length, uncompressedBuffer, 0, uncompressedBuffer.Length, CompressionMethod.Zlib, Ar);
 
             var manifestAr = new FByteArchive("UncompressedValorantManifest", uncompressedBuffer);
             Chunks = manifestAr.ReadArray<VChunk>((int) Header.ChunkCount);

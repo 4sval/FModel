@@ -570,139 +570,126 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
     {
         if (SelectedAudioFile?.Data == null)
             return false;
+        if (SelectedAudioFile.Extension == "wav")
+            return true;
 
-        switch (SelectedAudioFile.Extension)
-        {
-            case "binka":
-            case "adpcm":
-            case "xvag":
-            case "opus":
-            case "wem":
-            case "at9":
-            case "raw":
-            {
-                if (TryConvert(out var wavFilePath))
-                {
-                    var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(wavFilePath));
-                    Replace(newAudio);
-                    return true;
-                }
+        if (!TryConvert(SelectedAudioFile.FilePath, SelectedAudioFile.Data, SelectedAudioFile.Extension, out var convertedFilePath, true))
+            return false;
 
-                return false;
-            }
-            case "adx":
-            case "hca":
-                return TryConvertCriware();
-            case "rada":
-            {
-                if (TryDecode(SelectedAudioFile.Extension, out var rawFilePath))
-                {
-                    var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(rawFilePath));
-                    Replace(newAudio);
-                    return true;
-                }
-
-                return false;
-            }
-        }
+        var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(convertedFilePath));
+        Replace(newAudio);
 
         return true;
     }
 
-    private bool TryConvertCriware()
+    public static bool TryConvert(string inputFilePath, byte[] inputFileData, string extension, out string wavFilePath, bool updateUi = false)
     {
+        wavFilePath = string.Empty;
+
+        switch (extension.ToLowerInvariant())
+        {
+            case "hca":
+            case "adx":
+                return TryConvertCriware(inputFilePath, inputFileData, extension, out wavFilePath);
+            case "rada":
+                return TryConvertRada(inputFilePath, inputFileData, extension, out wavFilePath, updateUi);
+            default:
+            {
+                var vgmStreamPath = TryGetVgmstreamPath();
+                if (string.IsNullOrEmpty(vgmStreamPath))
+                    return false;
+
+                var success = TryConvertToWav(inputFilePath, inputFileData, vgmStreamPath, true, out wavFilePath);
+
+                if (!success)
+                {
+                    Log.Error("Failed to convert {InputFilePath} to .wav format", Path.GetFileName(inputFilePath));
+
+                    if (updateUi)
+                    {
+                        FLogger.Append(ELog.Error, () =>
+                        {
+                            FLogger.Text("Failed to convert audio to .wav format. See: ", Constants.WHITE);
+                            FLogger.Link("→ link ←", Constants.AUDIO_ISSUE_LINK, true);
+                        });
+                    }
+                }
+
+                return success;
+            }
+        }
+    }
+
+    private static bool TryConvertCriware(string inputFilePath, byte[] inputFileData, string extension, out string wavFilePath)
+    {
+        wavFilePath = string.Empty;
+
         try
         {
-            byte[] wavData = SelectedAudioFile.Extension switch
+            byte[] wavData = extension switch
             {
-                "hca" => HcaWaveStream.ConvertHcaToWav(
-                    SelectedAudioFile.Data,
-                    UserSettings.Default.CurrentDir.CriwareDecryptionKey),
-                "adx" => AdxDecoder.ConvertAdxToWav(
-                    SelectedAudioFile.Data,
-                    UserSettings.Default.CurrentDir.CriwareDecryptionKey),
+                "hca" => HcaWaveStream.ConvertHcaToWav(inputFileData, UserSettings.Default.CurrentDir.CriwareDecryptionKey),
+                "adx" => AdxDecoder.ConvertAdxToWav(inputFileData, UserSettings.Default.CurrentDir.CriwareDecryptionKey),
                 _ => throw new NotSupportedException()
             };
 
-            if (wavData.Length is 0)
+            // Fallback for ADX
+            if (wavData.Length == 0)
             {
-                if (TryConvert(out var wavFilePathFallback))
-                {
-                    var newAudioFallback = new AudioFile(SelectedAudioFile.Id, new FileInfo(wavFilePathFallback));
-                    Replace(newAudioFallback);
-                    return true;
-                }
+                var vgmStreamPath = TryGetVgmstreamPath();
+                if (string.IsNullOrEmpty(vgmStreamPath))
+                    return false;
+
+                return TryConvertToWav(inputFilePath, inputFileData, vgmStreamPath, true, out wavFilePath);
             }
 
-            string wavFilePath = Path.Combine(
-                UserSettings.Default.AudioDirectory,
-                SelectedAudioFile.FilePath.TrimStart('/'));
-            wavFilePath = Path.ChangeExtension(wavFilePath, ".wav");
+            wavFilePath = Path.ChangeExtension(inputFilePath, ".wav");
 
-            Directory.CreateDirectory(Path.GetDirectoryName(wavFilePath)!);
+            var directory = Path.GetDirectoryName(wavFilePath);
+            if (!string.IsNullOrEmpty(directory))
+                Directory.CreateDirectory(directory);
+
             File.WriteAllBytes(wavFilePath, wavData);
-
-            var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(wavFilePath));
-            Replace(newAudio);
 
             return true;
         }
         catch (CriwareDecryptionException ex)
         {
-            FLogger.Append(ELog.Error, () => FLogger.Text($"Encrypted {SelectedAudioFile.Extension.ToUpper()}: {ex.Message}", Constants.WHITE, true));
-            Log.Error($"Encrypted {SelectedAudioFile.Extension.ToUpper()}: {ex.Message}");
+            FLogger.Append(ELog.Error, () => FLogger.Text($"Encrypted {extension.ToUpper()}: {ex.Message}", Constants.WHITE, true));
+            Log.Error($"Encrypted {extension.ToUpper()}: {ex.Message}");
+
             return false;
         }
         catch (Exception ex)
         {
-            FLogger.Append(ELog.Error, () => FLogger.Text($"Failed to convert {SelectedAudioFile.Extension.ToUpper()}: {ex.Message}", Constants.WHITE, true));
-            Log.Error($"Failed to convert {SelectedAudioFile.Extension.ToUpper()}: {ex.Message}");
+            FLogger.Append(ELog.Error, () => FLogger.Text($"Failed to convert {extension.ToUpper()}: {ex.Message}", Constants.WHITE, true));
+            Log.Error($"Failed to convert {extension.ToUpper()}: {ex.Message}");
+
             return false;
         }
     }
 
-    private bool TryConvert(out string wavFilePath) => TryConvert(SelectedAudioFile.FilePath, SelectedAudioFile.Data, out wavFilePath, true);
-    public static bool TryConvert(string inputFilePath, byte[] inputFileData, out string wavFilePath, bool updateUi = false)
-    {
-        wavFilePath = string.Empty;
-        var vgmStreamPath = TryGetVgmstreamPath();
-        if (string.IsNullOrEmpty(vgmStreamPath))
-            return false;
-
-        var success = TryConvertToWav(inputFilePath, inputFileData, vgmStreamPath, true, out wavFilePath);
-
-        if (!success)
-        {
-            Log.Error("Failed to convert {InputFilePath} to .wav format", Path.GetFileName(inputFilePath));
-            if (updateUi)
-            {
-                FLogger.Append(ELog.Error, () =>
-                {
-                    FLogger.Text("Failed to convert audio to .wav format. See: ", Constants.WHITE);
-                    FLogger.Link("→ link ←", Constants.AUDIO_ISSUE_LINK, true);
-                });
-            }
-        }
-
-        return success;
-    }
-
-    private bool TryDecode(string extension, out string rawFilePath)
+    private static bool TryConvertRada(string inputFilePath, byte[] inputFileData, string extension, out string rawFilePath, bool updateUi = false)
     {
         rawFilePath = string.Empty;
         var decoderPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", $"{extension}dec.exe");
         if (!File.Exists(decoderPath))
         {
-            Log.Error("Failed to convert {FilePath}, rada decoder is missing", SelectedAudioFile.FilePath);
-            FLogger.Append(ELog.Error, () =>
+            Log.Error("Failed to convert {FilePath}, {Extension} decoder is missing", inputFilePath, extension);
+
+            if (updateUi)
             {
-                FLogger.Text("Failed to convert audio because rada decoder is missing. See: ", Constants.WHITE);
-                FLogger.Link("→ link ←", Constants.RADA_ISSUE_LINK, true);
-            });
+                FLogger.Append(ELog.Error, () =>
+                {
+                    FLogger.Text($"Failed to convert audio because {extension} decoder is missing. See: ", Constants.WHITE);
+                    FLogger.Link("→ link ←", Constants.RADA_ISSUE_LINK, true);
+                });
+            }
+
             return false;
         }
 
-        return TryConvertToWav(SelectedAudioFile.FilePath, SelectedAudioFile.Data, decoderPath, false, out rawFilePath);
+        return TryConvertToWav(inputFilePath, inputFileData, decoderPath, false, out rawFilePath);
     }
 
     private static bool TryConvertToWav(string inputFilePath, byte[] inputFileData, string converterPath, bool usevgmstream, out string wavFilePath)

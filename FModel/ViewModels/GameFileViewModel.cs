@@ -10,6 +10,7 @@ using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.GameTypes.Borderlands3.Assets.Exports;
 using CUE4Parse.GameTypes.Borderlands4.Assets.Exports;
 using CUE4Parse.GameTypes.FN.Assets.Exports.DataAssets;
+using CUE4Parse.GameTypes.LegoBatman.Assets;
 using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
 using CUE4Parse.GameTypes.SMG.UE4.Assets.Objects;
 using CUE4Parse.GameTypes.SquareEnix.UE4.Assets.Exports;
@@ -263,6 +264,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 UBorderlandsDialogObject when GameVersion is EGame.GAME_Borderlands3 => (EAssetCategory.Borderlands, EBulkType.None), // Borderlands 3;
                 UGbxGraphAsset or UDialogScriptData or UDialogPerformanceData when GameVersion is EGame.GAME_Borderlands4 or EGame.GAME_Borderlands3 => (EAssetCategory.Borderlands, EBulkType.Audio), // Borderlands 4; Borderlands 3;
                 UFaceFXAnimSet when GameVersion is EGame.GAME_Borderlands4 => (EAssetCategory.Borderlands, EBulkType.Audio), // Borderlands 4;
+                UWubAudioEvent or UWubDialogueEvent when GameVersion is EGame.GAME_LEGOBatmanLegacyoftheDarkKnight => (EAssetCategory.LegoBatman, EBulkType.Audio), // Lego Batman: Legacy of the Dark Knight;
 
                 _ => (EAssetCategory.All, EBulkType.None),
             };
@@ -350,11 +352,15 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             case "pem":
             case "xml":
             case "gitignore":
+            case "gitattributes":
             case "html":
             case "css":
             case "js":
             case "data":
             case "csv":
+            case "sql":
+            case "py":
+            case "cs":
                 AssetCategory = EAssetCategory.Data;
                 break;
             case "stinfo":

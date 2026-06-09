@@ -49,6 +49,7 @@ public static class AvalonExtensions
             case "bat":
             case "txt":
             case "pem":
+            case "js":
             case "po":
                 return null;
             default:
