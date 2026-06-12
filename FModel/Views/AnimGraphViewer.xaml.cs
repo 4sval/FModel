@@ -1127,10 +1127,7 @@ public partial class AnimGraphViewer
         {
             EAnimNodePropertySource.MutableDataEntry => 0,
             EAnimNodePropertySource.ConstantDataEntry => 1,
-            EAnimNodePropertySource.MutableData => 2,
-            EAnimNodePropertySource.ConstantData => 3,
-            EAnimNodePropertySource.NodeData => 4,
-            EAnimNodePropertySource.DefaultObject => 5,
+            EAnimNodePropertySource.DefaultObject => 2,
             _ => 99
         };
     }
@@ -1140,9 +1137,6 @@ public partial class AnimGraphViewer
         return source switch
         {
             EAnimNodePropertySource.DefaultObject => "CDO",
-            EAnimNodePropertySource.NodeData => "NodeData",
-            EAnimNodePropertySource.ConstantData => "ConstantData",
-            EAnimNodePropertySource.MutableData => "MutableData",
             EAnimNodePropertySource.ConstantDataEntry => "AnimNodeData Constant Entry",
             EAnimNodePropertySource.MutableDataEntry => "AnimNodeData Mutable Entry",
             _ => source.ToString()
