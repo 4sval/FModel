@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using CUE4Parse_Conversion;
+using CUE4Parse_Conversion.Options;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Settings;
@@ -56,7 +57,7 @@ public class ExportSessionViewModel : ViewModel
         get
         {
             if (_session != null) return _session;
-            _session = new ExportSession(UserSettings.Default.ModelDirectory, UserSettings.GetExportOptions());
+            _session = new ExportSession();
             _session.PropertyChanged += OnSessionPropertyChanged;
             return _session;
         }
@@ -178,8 +179,18 @@ public class ExportSessionViewModel : ViewModel
         _cts = new CancellationTokenSource();
         StartUiTimer();
 
-        // TODO: when Options.OverrideOptions is true, propagate Options.BuildOptions() into Session before running.
-        // For now we run with whatever options the session was created with.
+        string exportDirectory;
+        ExportOptions exportOptions;
+        if (Options.OverrideOptions)
+        {
+            exportDirectory = Options.OutputDirectory;
+            exportOptions = Options.BuildOptions();
+        }
+        else
+        {
+            exportDirectory = UserSettings.Default.ModelDirectory;
+            exportOptions = UserSettings.GetExportOptions();
+        }
 
         var progress = new Progress<ExportProgress>(p =>
         {
@@ -198,7 +209,7 @@ public class ExportSessionViewModel : ViewModel
 
         try
         {
-            await Session.RunAsync(progress, _cts.Token).ConfigureAwait(false);
+            await Session.RunAsync(exportDirectory, exportOptions, progress, _cts.Token).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
@@ -335,6 +346,12 @@ public class ClassGroupViewModel(string name) : ViewModel
     public string Name { get; } = name;
     public ObservableCollection<ObjectGroupViewModel> Objects { get; } = [];
 
+    public bool IsExpanded
+    {
+        get;
+        set => SetProperty(ref field, value);
+    }
+
     public int ErrorCount
     {
         get;
@@ -351,6 +368,12 @@ public class ObjectGroupViewModel(string name) : ViewModel
 {
     public string Name { get; } = name;
     public ObservableCollection<LogEntryViewModel> Entries { get; } = [];
+
+    public bool IsExpanded
+    {
+        get;
+        set => SetProperty(ref field, value);
+    }
 
     public int ErrorCount
     {

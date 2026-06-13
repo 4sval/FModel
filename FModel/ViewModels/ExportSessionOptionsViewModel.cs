@@ -11,12 +11,20 @@ namespace FModel.ViewModels;
 
 public class ExportSessionOptionsViewModel : ViewModel
 {
-    // --- Override toggle ---
     public bool OverrideOptions { get; set => SetProperty(ref field, value); }
 
-    // --- Mesh ---
+    public string OutputDirectory { get; set => SetProperty(ref field, value); }
+
     public IEnumerable<EMeshFormat> MeshFormats { get; } = Enum.GetValues<EMeshFormat>();
-    public EMeshFormat SelectedMeshFormat { get; set => SetProperty(ref field, value); }
+    public EMeshFormat SelectedMeshFormat
+    {
+        get;
+        set
+        {
+            if (!SetProperty(ref field, value)) return;
+            RaisePropertyChanged(nameof(CompressionSettingsEnabled));
+        }
+    }
 
     public IEnumerable<ENaniteMeshFormat> NaniteMeshFormats { get; } = Enum.GetValues<ENaniteMeshFormat>();
     public ENaniteMeshFormat SelectedNaniteMeshFormat { get; set => SetProperty(ref field, value); }
@@ -24,19 +32,18 @@ public class ExportSessionOptionsViewModel : ViewModel
     public IEnumerable<EMeshQuality> MeshQualities { get; } = Enum.GetValues<EMeshQuality>();
     public EMeshQuality SelectedMeshQuality { get; set => SetProperty(ref field, value); }
 
-    // --- Socket / Compression ---
     public IEnumerable<ESocketFormat> SocketFormats { get; } = Enum.GetValues<ESocketFormat>();
     public ESocketFormat SelectedSocketFormat { get; set => SetProperty(ref field, value); }
 
     public IEnumerable<EFileCompressionFormat> CompressionFormats { get; } = Enum.GetValues<EFileCompressionFormat>();
     public EFileCompressionFormat SelectedCompressionFormat { get; set => SetProperty(ref field, value); }
 
-    // --- Material ---
+    public bool CompressionSettingsEnabled => SelectedMeshFormat == EMeshFormat.UEFormat;
+
     public IEnumerable<EMaterialDepth> MaterialDepths { get; } = Enum.GetValues<EMaterialDepth>();
     public EMaterialDepth SelectedMaterialDepth { get; set => SetProperty(ref field, value); }
     public bool ExportMaterials { get; set => SetProperty(ref field, value); }
 
-    // --- Texture ---
     public IEnumerable<ETexturePlatform> TexturePlatforms { get; } = Enum.GetValues<ETexturePlatform>();
     public ETexturePlatform SelectedTexturePlatform { get; set => SetProperty(ref field, value); }
 
@@ -45,7 +52,8 @@ public class ExportSessionOptionsViewModel : ViewModel
 
     public bool ExportHdrTexturesAsHdr { get; set => SetProperty(ref field, value); }
 
-    // --- Morph ---
+    public int TextureQuality { get; set => SetProperty(ref field, value); }
+
     public bool ExportMorphTargets { get; set => SetProperty(ref field, value); }
 
     public ExportSessionOptionsViewModel()
@@ -55,6 +63,7 @@ public class ExportSessionOptionsViewModel : ViewModel
 
     public void ResetToUserDefaults()
     {
+        OutputDirectory = UserSettings.Default.ModelDirectory;
         SelectedMeshFormat = UserSettings.Default.MeshExportFormat;
         SelectedNaniteMeshFormat = UserSettings.Default.NaniteMeshExportFormat;
         SelectedMeshQuality = UserSettings.Default.MeshQuality;
@@ -66,6 +75,7 @@ public class ExportSessionOptionsViewModel : ViewModel
         SelectedTextureFormat = UserSettings.Default.TextureExportFormat;
         ExportHdrTexturesAsHdr = UserSettings.Default.SaveHdrTexturesAsHdr;
         ExportMorphTargets = UserSettings.Default.SaveMorphTargets;
+        TextureQuality = 100;
     }
 
     public ExportOptions BuildOptions() => new(
@@ -74,7 +84,7 @@ public class ExportSessionOptionsViewModel : ViewModel
         SelectedMeshQuality,
         SelectedTexturePlatform,
         SelectedTextureFormat,
-        100,
+        TextureQuality,
         ExportHdrTexturesAsHdr,
         SelectedMaterialDepth,
         ExportMaterials,

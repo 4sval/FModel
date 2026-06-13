@@ -80,9 +80,9 @@ public sealed class ExportModal
         {
             try
             {
-                var session = new ExportSession(exportDirectory, options);
+                var session = new ExportSession();
                 foreach (var node in nodes) node.AddToExportSession(session);
-                _exportResults = await session.RunAsync(_progress, token);
+                _exportResults = await session.RunAsync(exportDirectory, options, _progress, token);
             }
             catch (OperationCanceledException)
             {
