@@ -19,12 +19,12 @@ public class ViewModel : INotifyPropertyChanged, INotifyDataErrorInfo, IDataErro
             if (string.IsNullOrEmpty(propertyName))
                 return Error;
 
-            return _validationErrors.ContainsKey(propertyName) ? string.Join(Environment.NewLine, _validationErrors[propertyName]) : string.Empty;
+            return _validationErrors.TryGetValue(propertyName, out IList<string> validationError) ? string.Join(Environment.NewLine, validationError) : string.Empty;
         }
     }
 
     [JsonIgnore] public string Error => string.Join(Environment.NewLine, GetAllErrors());
-    [JsonIgnore] public bool HasErrors => _validationErrors.Any();
+    [JsonIgnore] public virtual bool HasErrors => _validationErrors.Count != 0;
 
     public IEnumerable GetErrors(string propertyName)
     {
@@ -49,8 +49,7 @@ public class ViewModel : INotifyPropertyChanged, INotifyDataErrorInfo, IDataErro
 
     public void ClearValidationErrors(string propertyName)
     {
-        if (_validationErrors.ContainsKey(propertyName))
-            _validationErrors.Remove(propertyName);
+        _validationErrors.Remove(propertyName);
     }
 
     public event PropertyChangedEventHandler PropertyChanged;

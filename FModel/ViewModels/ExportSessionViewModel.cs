@@ -1,10 +1,19 @@
 using System;
+using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using CUE4Parse_Conversion;
+using FModel.Extensions;
 using FModel.Framework;
 using FModel.Settings;
+using FModel.Views.Snooper;
+using Serilog.Events;
 
 namespace FModel.ViewModels;
 
@@ -12,12 +21,33 @@ public class ExportSessionViewModel : ViewModel
 {
     public static ExportSessionViewModel Instance { get; } = new();
 
-    private int _previousCount;
     private DispatcherTimer? _toastTimer;
     public bool ShowQueueToast
     {
         get;
-        set => SetProperty(ref field, value);
+        set
+        {
+            if (!SetProperty(ref field, value)) return;
+            if (!value)
+            {
+                _toastTimer?.Stop();
+                return;
+            }
+
+            if (_toastTimer == null)
+            {
+                _toastTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(5) };
+                _toastTimer.Tick += (_, _) =>
+                {
+                    field = false;
+                    RaisePropertyChanged(nameof(ShowQueueToast));
+                    _toastTimer.Stop();
+                };
+            }
+
+            _toastTimer.Stop();
+            _toastTimer.Start();
+        }
     }
 
     private ExportSession? _session;
@@ -26,17 +56,90 @@ public class ExportSessionViewModel : ViewModel
         get
         {
             if (_session != null) return _session;
-            _session = new ExportSession(UserSettings.Default.OutputDirectory, UserSettings.GetExportOptions());
+            _session = new ExportSession(UserSettings.Default.ModelDirectory, UserSettings.GetExportOptions());
             _session.PropertyChanged += OnSessionPropertyChanged;
             return _session;
         }
     }
 
-    private ExportSessionViewModel()
-    {
+    public ExportSessionOptionsViewModel Options { get; } = new();
 
+    public bool IsRunning
+    {
+        get;
+        private set
+        {
+            if (!SetProperty(ref field, value)) return;
+            RaisePropertyChanged(nameof(CanExport));
+        }
+    }
+    public bool IsFinished
+    {
+        get;
+        private set => SetProperty(ref field, value);
+    }
+    public bool CanExport => !IsRunning && Session.TotalQueued > 0;
+
+    public int CompletedCount
+    {
+        get;
+        private set => SetProperty(ref field, value);
+    }
+    public int SucceededCount
+    {
+        get;
+        private set => SetProperty(ref field, value);
+    }
+    public int FailedCount
+    {
+        get;
+        private set => SetProperty(ref field, value);
+    }
+    public string? CurrentItemName
+    {
+        get;
+        private set => SetProperty(ref field, value);
+    }
+    public TimeSpan ElapsedTime
+    {
+        get;
+        private set => SetProperty(ref field, value);
+    }
+    public TimeSpan? EtaTime
+    {
+        get;
+        private set => SetProperty(ref field, value);
+    }
+    public bool IsCanceled
+    {
+        get;
+        private set => SetProperty(ref field, value);
+    }
+    public double ProgressValue
+    {
+        get;
+        private set => SetProperty(ref field, value);
     }
 
+    public ObservableCollection<ClassGroupViewModel> ClassGroups { get; } = [];
+
+    private CancellationTokenSource? _cts;
+    private readonly Stopwatch _stopwatch = new();
+    private readonly ConcurrentQueue<LogEvent> _pendingLogs = new();
+    private DispatcherTimer? _uiTimer;
+
+    private ExportSessionViewModel()
+    {
+        ImGuiSink.Instance.OnExporterLogEvent += OnLogEvent;
+    }
+
+    private void OnLogEvent(LogEvent log)
+    {
+        _pendingLogs.Enqueue(log);
+        Application.Current?.Dispatcher.InvokeAsync(DrainLogs);
+    }
+
+    private int _previousCount;
     private void OnSessionPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName != nameof(ExportSession.TotalQueued)) return;
@@ -44,42 +147,237 @@ public class ExportSessionViewModel : ViewModel
         var count = _session?.TotalQueued ?? 0;
         Application.Current?.Dispatcher.InvokeAsync(() =>
         {
-            switch (count)
+            if (count > 0 && _previousCount == 0)
             {
-                case 1 when _previousCount == 0:
-                    ShowToast();
-                    break;
-                case 0:
-                    HideToast();
-                    break;
+                ClearExportHistory();
             }
 
+            ShowQueueToast = count switch
+            {
+                > 0 when _previousCount == 0 => true,
+                0 => false,
+                _ => ShowQueueToast
+            };
             _previousCount = count;
+            RaisePropertyChanged(nameof(CanExport));
         });
     }
 
-    private void ShowToast()
+    public async Task ExportAsync()
     {
-        ShowQueueToast = true;
-        if (_toastTimer == null)
+        if (IsRunning || Session.TotalQueued == 0) return;
+
+        IsRunning = true;
+        IsFinished = false;
+        IsCanceled = false;
+        CompletedCount = 0;
+        SucceededCount = 0;
+        FailedCount = 0;
+        _stopwatch.Restart();
+
+        _cts = new CancellationTokenSource();
+        StartUiTimer();
+
+        // TODO: when Options.OverrideOptions is true, propagate Options.BuildOptions() into Session before running.
+        // For now we run with whatever options the session was created with.
+
+        var progress = new Progress<ExportProgress>(p =>
         {
-            _toastTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(7.5) };
-            _toastTimer.Tick += (_, _) => HideToast();
+            Application.Current?.Dispatcher.InvokeAsync(() =>
+            {
+                CompletedCount = p.Completed;
+                CurrentItemName = p.LastResult?.ObjectPath;
+                if (p.LastResult != null)
+                {
+                    if (p.LastResult.Success) SucceededCount++;
+                    else FailedCount++;
+                }
+                ProgressValue = p.Total > 0 ? (double)p.Completed / p.Total : 0;
+            });
+        });
+
+        try
+        {
+            await Session.RunAsync(progress, _cts.Token).ConfigureAwait(false);
         }
-        _toastTimer.Stop();
-        _toastTimer.Start();
+        catch (OperationCanceledException)
+        {
+            Application.Current?.Dispatcher.InvokeAsync(() => IsCanceled = true);
+        }
+        finally
+        {
+            _stopwatch.Stop();
+            Application.Current?.Dispatcher.InvokeAsync(() =>
+            {
+                StopUiTimer();
+                IsRunning = false;
+                IsFinished = !IsCanceled;
+                UpdateElapsedAndEta();
+            });
+        }
     }
 
-    private void HideToast()
+    public void CancelExport()
     {
-        ShowQueueToast = false;
-        _toastTimer?.Stop();
+        _cts?.Cancel();
+    }
+
+    public void ClearQueue()
+    {
+        _session?.Clear();
+        ClearExportHistory();
+    }
+
+    private void StartUiTimer()
+    {
+        _uiTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
+        _uiTimer.Tick += (_, _) => UpdateElapsedAndEta();
+        _uiTimer.Start();
+    }
+
+    private void StopUiTimer()
+    {
+        _uiTimer?.Stop();
+        _uiTimer = null;
+    }
+
+    private void UpdateElapsedAndEta()
+    {
+        ElapsedTime = _stopwatch.Elapsed;
+
+        var remaining = Session.TotalQueued;
+        if (IsRunning && remaining > 0 && CompletedCount > 1 && ElapsedTime.TotalSeconds > 0)
+        {
+            var rate = CompletedCount / ElapsedTime.TotalSeconds;
+            if (rate > 0)
+            {
+                EtaTime = TimeSpan.FromSeconds(remaining / rate);
+                return;
+            }
+        }
+        EtaTime = null;
+    }
+
+    private void ClearExportHistory()
+    {
+        CompletedCount = 0;
+        SucceededCount = 0;
+        FailedCount = 0;
+        ProgressValue = 0;
+        ElapsedTime = TimeSpan.Zero;
+        EtaTime = null;
+        CurrentItemName = null;
+        IsFinished = false;
+        IsCanceled = false;
+        ClassGroups.Clear();
+    }
+
+    private void DrainLogs()
+    {
+        while (_pendingLogs.TryDequeue(out var log))
+        {
+            var className = log.GetContext("ClassName");
+            var objectName = log.GetContext("ObjectName");
+            var filePath = log.GetContext("FilePath");
+
+            var cg = FindOrCreateClass(className);
+            var og = FindOrCreateObject(cg, objectName);
+            if (log.Level >= LogEventLevel.Error)
+            {
+                og.ErrorCount++;
+                cg.ErrorCount++;
+            }
+            if (og.FirstFilePath == null && !string.IsNullOrEmpty(filePath))
+                og.FirstFilePath = filePath;
+            og.Entries.Add(new LogEntryViewModel(log));
+        }
+    }
+
+    private ClassGroupViewModel FindOrCreateClass(string name)
+    {
+        var cg = ClassGroups.FirstOrDefault(c => c.Name == name);
+        if (cg != null) return cg;
+        cg = new ClassGroupViewModel(name);
+        ClassGroups.Add(cg);
+        return cg;
+    }
+
+    private static ObjectGroupViewModel FindOrCreateObject(ClassGroupViewModel cg, string name)
+    {
+        var og = cg.Objects.FirstOrDefault(o => o.Name == name);
+        if (og != null) return og;
+        og = new ObjectGroupViewModel(name);
+        cg.Objects.Add(og);
+        return og;
+    }
+
+    private void ResetState()
+    {
+        _cts?.Cancel();
+        _cts = null;
+        _stopwatch.Reset();
+        IsRunning = false;
+        StopUiTimer();
+        ClearExportHistory();
     }
 
     public void Invalidate()
     {
+        ResetState();
+        _toastTimer?.Stop();
         _session?.PropertyChanged -= OnSessionPropertyChanged;
         _session = null;
-        Application.Current?.Dispatcher.InvokeAsync(HideToast);
     }
+}
+
+public class ClassGroupViewModel(string name) : ViewModel
+{
+    public string Name { get; } = name;
+    public ObservableCollection<ObjectGroupViewModel> Objects { get; } = [];
+
+    public int ErrorCount
+    {
+        get;
+        set
+        {
+            SetProperty(ref field, value);
+            RaisePropertyChanged(nameof(HasErrors));
+        }
+    }
+    public override bool HasErrors => ErrorCount > 0;
+}
+
+public class ObjectGroupViewModel(string name) : ViewModel
+{
+    public string Name { get; } = name;
+    public ObservableCollection<LogEntryViewModel> Entries { get; } = [];
+
+    public int ErrorCount
+    {
+        get;
+        set
+        {
+            SetProperty(ref field, value);
+            RaisePropertyChanged(nameof(HasErrors));
+        }
+    }
+    public override bool HasErrors => ErrorCount > 0;
+
+    public string? FirstFilePath
+    {
+        get;
+        set
+        {
+            SetProperty(ref field, value);
+            RaisePropertyChanged(nameof(HasFilePath));
+        }
+    }
+    public bool HasFilePath => FirstFilePath != null;
+}
+
+public class LogEntryViewModel(LogEvent log)
+{
+    public LogEventLevel Level { get; } = log.Level;
+    public string Message { get; } = $"[{log.Timestamp:HH:mm:ss.fff}] {log.RenderMessage()}";
+    public Exception? Exception { get; } = log.Exception;
 }

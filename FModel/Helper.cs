@@ -39,7 +39,7 @@ public static class Helper
         else
         {
             var w = GetOpenedWindow<T>(windowName);
-            if (windowName == "Search For Packages") w.WindowState = WindowState.Normal;
+            if (w.WindowState == WindowState.Minimized) w.WindowState = WindowState.Normal;
             w.Focus();
         }
     }
