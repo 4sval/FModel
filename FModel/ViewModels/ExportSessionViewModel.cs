@@ -331,14 +331,6 @@ public class ExportSessionViewModel : ViewModel
         StopUiTimer();
         ClearExportHistory();
     }
-
-    public void Invalidate()
-    {
-        ResetState();
-        _toastTimer?.Stop();
-        _session?.PropertyChanged -= OnSessionPropertyChanged;
-        _session = null;
-    }
 }
 
 public class ClassGroupViewModel(string name) : ViewModel
@@ -401,6 +393,7 @@ public class ObjectGroupViewModel(string name) : ViewModel
 public class LogEntryViewModel(LogEvent log)
 {
     public LogEventLevel Level { get; } = log.Level;
-    public string Message { get; } = $"[{log.Timestamp:HH:mm:ss.fff}] {log.RenderMessage()}";
+    public DateTimeOffset Timestamp { get; } = log.Timestamp;
+    public string Message { get; } = log.RenderMessage();
     public Exception? Exception { get; } = log.Exception;
 }

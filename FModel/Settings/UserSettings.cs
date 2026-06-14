@@ -36,7 +36,6 @@ namespace FModel.Settings
             if (!_bSave || Default == null) return;
             Default.PerDirectory[Default.CurrentDir.GameDirectory] = Default.CurrentDir;
             File.WriteAllText(FilePath, JsonConvert.SerializeObject(Default, Formatting.Indented));
-            ExportSessionViewModel.Instance.Invalidate();
         }
 
         public static void Delete()

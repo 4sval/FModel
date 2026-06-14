@@ -44,6 +44,11 @@ public partial class ExportSessionWindow
             ExportSessionViewModel.Instance.Options.OutputDirectory = folderBrowser.SelectedPath;
     }
 
+    private void OnMakeDefaultOptions(object sender, RoutedEventArgs e)
+    {
+        ExportSessionViewModel.Instance.Options.SaveAsUserDefaults();
+    }
+
     private void OnResetOptions(object sender, RoutedEventArgs e)
     {
         ExportSessionViewModel.Instance.Options.ResetToUserDefaults();

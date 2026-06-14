@@ -67,6 +67,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
             "Save_Properties" => (EAction.Export, EShowAssetType.None, EBulkType.Properties),
             "Save_Textures" => (EAction.Export, EShowAssetType.None, EBulkType.Textures),
             "Save_Models" => (EAction.Export, EShowAssetType.None, EBulkType.Meshes),
+            "Save_Worlds" => (EAction.Export, EShowAssetType.None, EBulkType.Worlds),
             "Save_Animations" => (EAction.Export, EShowAssetType.None, EBulkType.Animations),
             "Save_Audio" => (EAction.Export, EShowAssetType.None, EBulkType.Audio),
             "Save_Code" => (EAction.Export, EShowAssetType.None, EBulkType.Code),
@@ -108,6 +109,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                 EBulkType.Properties => (UserSettings.Default.PropertiesDirectory, "json files"),
                 EBulkType.Textures => (UserSettings.Default.TextureDirectory, "textures"),
                 EBulkType.Meshes => (UserSettings.Default.ModelDirectory, "models"),
+                EBulkType.Worlds => (UserSettings.Default.ModelDirectory, "worlds"),
                 EBulkType.Animations => (UserSettings.Default.ModelDirectory, "animations"),
                 EBulkType.Audio => (UserSettings.Default.AudioDirectory, "audio files"),
                 EBulkType.Code => (UserSettings.Default.CodeDirectory, "code files"),
@@ -126,10 +128,11 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
             foreach (var folder in folders)
             {
                 cancellationToken.ThrowIfCancellationRequested();
+                var queuedBefore = ExportSessionViewModel.Instance.Session.TotalQueued;
                 folderAction(folder);
 
                 var path = Path.Combine(dirType, UserSettings.Default.KeepDirectoryStructure ? folder.PathAtThisPoint : folder.PathAtThisPoint.SubstringAfterLast('/')).Replace('\\', '/');
-                LogExport(contextViewModel, folder.PathAtThisPoint, path, dirType, filetype);
+                LogExport(contextViewModel, folder.PathAtThisPoint, path, dirType, filetype, queuedBefore);
             }
 
             Action<GameFile, EBulkType, bool> fileAction = bulktype switch
@@ -144,6 +147,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                 var list = group.ToArray();
                 var update = list.Length > 1;
                 var bulk = bulktype | (update ? EBulkType.Auto : EBulkType.None);
+                var queuedBefore = ExportSessionViewModel.Instance.Session.TotalQueued;
                 foreach (var entry in list)
                 {
                     Thread.Yield();
@@ -154,20 +158,28 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                 if (update)
                 {
                     var path = Path.Combine(dirType, UserSettings.Default.KeepDirectoryStructure ? directory : directory.SubstringAfterLast('/')).Replace('\\', '/');
-                    LogExport(contextViewModel, directory, path, dirType, filetype);
+                    LogExport(contextViewModel, directory, path, dirType, filetype, queuedBefore);
                 }
             }
         });
     }
 
-    private void LogExport(ApplicationViewModel contextViewModel, string directory, string path, string basePath, string fileType)
+    private void LogExport(ApplicationViewModel contextViewModel, string directory, string path, string basePath, string fileType, int queuedBefore = 0)
     {
+        var queuedDelta = ExportSessionViewModel.Instance.Session.TotalQueued - queuedBefore;
         if (contextViewModel.CUE4Parse.ExportedCount > 0)
         {
             FLogger.Append(ELog.Information, () =>
             {
                 FLogger.Text($"Successfully exported {contextViewModel.CUE4Parse.ExportedCount} {fileType} from ", Constants.WHITE);
                 FLogger.Link(directory, Path.Exists(path) ? path : basePath, true);
+            });
+        }
+        else if (queuedDelta > 0)
+        {
+            FLogger.Append(ELog.Information, () =>
+            {
+                FLogger.Text($"Queued {queuedDelta} {fileType} for export from {directory}", Constants.WHITE, true);
             });
         }
         else if (contextViewModel.CUE4Parse.FailedExportCount == 0)

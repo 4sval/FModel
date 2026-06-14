@@ -135,6 +135,7 @@
             <Grid Margin="0 1" ToolTip="{Binding Exception}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
@@ -145,10 +146,14 @@
                               Data="{StaticResource BugIcon}" />
                     </Canvas>
                 </Viewbox>
-                <TextBlock Grid.Column="1" x:Name="LevelText"
+                <TextBlock Grid.Column="1" Text="{Binding Timestamp, StringFormat='[{0:HH:mm:ss.fff}]'}"
+                           FontSize="11" FontFamily="Consolas" Margin="0 0 5 0"
+                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"
+                           VerticalAlignment="Center" />
+                <TextBlock Grid.Column="2"
                            Text="{Binding Message}"
                            FontSize="11" FontFamily="Consolas"
-                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"
+                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                            VerticalAlignment="Center" />
             </Grid>
             <DataTemplate.Triggers>
@@ -162,22 +167,18 @@
                 <DataTrigger Binding="{Binding Level}" Value="{x:Static serilog:LogEventLevel.Information}">
                     <Setter TargetName="LevelIcon" Property="Fill" Value="#42A5F5" />
                     <Setter TargetName="LevelIcon" Property="Data" Value="{StaticResource InfoIcon}" />
-                    <Setter TargetName="LevelText" Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Level}" Value="{x:Static serilog:LogEventLevel.Warning}">
                     <Setter TargetName="LevelIcon" Property="Fill" Value="#FFA726" />
                     <Setter TargetName="LevelIcon" Property="Data" Value="{StaticResource WarningIcon}" />
-                    <Setter TargetName="LevelText" Property="Foreground" Value="#FFA726" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Level}" Value="{x:Static serilog:LogEventLevel.Error}">
                     <Setter TargetName="LevelIcon" Property="Fill" Value="#EF5350" />
                     <Setter TargetName="LevelIcon" Property="Data" Value="{StaticResource CloseIcon}" />
-                    <Setter TargetName="LevelText" Property="Foreground" Value="#EF5350" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Level}" Value="{x:Static serilog:LogEventLevel.Fatal}">
                     <Setter TargetName="LevelIcon" Property="Fill" Value="#EF5350" />
                     <Setter TargetName="LevelIcon" Property="Data" Value="{StaticResource CloseIcon}" />
-                    <Setter TargetName="LevelText" Property="Foreground" Value="#EF5350" />
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
@@ -436,21 +437,37 @@
                         <Grid Grid.Row="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="5" />
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="5" />
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <CheckBox Grid.Column="0" VerticalAlignment="Center"
+                            <CheckBox Grid.Column="0"
                                       IsChecked="{Binding Options.OverrideOptions, Mode=TwoWay}"
                                       Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
                                       Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}" />
-                            <TextBlock Grid.Column="2" VerticalAlignment="Center"
+                            <TextBlock Grid.Column="1" VerticalAlignment="Center" FontSize="11" Margin="5 2 0 0"
                                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"
-                                       Text="Override default export options for this session" />
-                            <Button Grid.Column="4" Click="OnResetOptions" ToolTip="Reset all options to default settings" Padding="4"
-                                    IsEnabled="{Binding Options.OverrideOptions}" Focusable="False" BorderThickness="1"
+                                       Text="Override default export options for this session"
+                                       Visibility="{Binding Options.HasFeedback, Converter={x:Static converters:InvertBoolToVisibilityConverter.Instance}}" />
+                            <TextBlock Grid.Column="1" VerticalAlignment="Center" FontSize="11" Margin="5 2 0 0"
+                                       Foreground="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"
+                                       FontWeight="SemiBold" Text="{Binding Options.FeedbackMessage}"
+                                       Visibility="{Binding Options.HasFeedback, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                            <Button Grid.Column="2" Click="OnMakeDefaultOptions" ToolTip="Save current options as your default settings"
+                                    Padding="4" BorderThickness="1" Margin="5 0 0 0"
+                                    IsEnabled="{Binding Options.OverrideOptions}" Focusable="False"
+                                    Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}">
+                                <Viewbox Width="16" Height="16">
+                                    <Canvas Width="24" Height="24">
+                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SaveIcon}" />
+                                    </Canvas>
+                                </Viewbox>
+                            </Button>
+                            <Button Grid.Column="3" Click="OnResetOptions" ToolTip="Reset all options to default settings"
+                                    Padding="4" BorderThickness="1" Margin="5 0 0 0"
+                                    IsEnabled="{Binding Options.OverrideOptions}" Focusable="False"
                                     Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}">
                                 <Viewbox Width="16" Height="16">
                                     <Canvas Width="24" Height="24">
@@ -463,6 +480,7 @@
 
                         <Grid Grid.Row="2" IsEnabled="{Binding Options.OverrideOptions}">
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
@@ -569,7 +587,7 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
 
-                            <TextBlock Grid.Row="7" Grid.Column="0" Text="Compression Format (UEFormat)" VerticalAlignment="Center" Margin="0 0 0 5"
+                            <TextBlock Grid.Row="7" Grid.Column="0" Text="Compression Format" VerticalAlignment="Center" Margin="0 0 0 5"
                                        IsEnabled="{Binding Options.CompressionSettingsEnabled}" />
                             <ComboBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
                                       ItemsSource="{Binding Options.CompressionFormats}"
@@ -582,8 +600,8 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
 
-                            <TextBlock Grid.Row="8" Grid.Column="0" Text="Nanite Format" VerticalAlignment="Center" />
-                            <ComboBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="3"
+                            <TextBlock Grid.Row="8" Grid.Column="0" Text="Nanite Format" VerticalAlignment="Center" Margin="0 0 0 5" />
+                            <ComboBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
                                       ItemsSource="{Binding Options.NaniteMeshFormats}"
                                       SelectedItem="{Binding Options.SelectedNaniteMeshFormat, Mode=TwoWay}">
                                 <ComboBox.ItemTemplate>
@@ -593,10 +611,40 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
 
-                            <Separator Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" Tag="TEXTURE" Margin="0 10 0 10" />
+                            <Border Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="5" Margin="0 0 0 5" CornerRadius="1"
+                                    Background="#1AFFA726" BorderBrush="#FFA726" BorderThickness="1" Padding="10"
+                                    Visibility="{Binding Options.ShowNaniteWarning, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Row="10" Grid.Column="0" Text="Texture Format" VerticalAlignment="Center" Margin="0 0 0 5" />
-                            <ComboBox Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
+                                    <Viewbox Grid.Column="0" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Border}}"
+                                             Margin="0 0 10 0" VerticalAlignment="Center">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="#FFA726" Data="{StaticResource WarningIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                    <TextBlock Grid.Column="1" TextWrapping="Wrap" Foreground="#FFA726">
+                                        <Run FontWeight="Bold" Text="Nanite meshes are slower to export" />
+                                        <LineBreak />
+                                        <Run Text="It is not recommended for world exports, as this stacks up for every mesh in the level." />
+                                    </TextBlock>
+                                    <Viewbox Grid.Column="2" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Border}}"
+                                             Margin="10 0 0 0" VerticalAlignment="Center">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="#FFA726" Data="{StaticResource WarningIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </Grid>
+                            </Border>
+
+                            <Separator Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" Tag="TEXTURE" Margin="0 10 0 10" />
+
+                            <TextBlock Grid.Row="11" Grid.Column="0" Text="Texture Format" VerticalAlignment="Center" Margin="0 0 0 5" />
+                            <ComboBox Grid.Row="11" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
                                       ItemsSource="{Binding Options.TextureFormats}"
                                       SelectedItem="{Binding Options.SelectedTextureFormat, Mode=TwoWay}">
                                 <ComboBox.ItemTemplate>
@@ -606,8 +654,8 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
 
-                            <TextBlock Grid.Row="11" Grid.Column="0" Text="Texture Platform" VerticalAlignment="Center" Margin="0 0 0 10" />
-                            <ComboBox Grid.Row="11" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 10"
+                            <TextBlock Grid.Row="12" Grid.Column="0" Text="Texture Platform" VerticalAlignment="Center" Margin="0 0 0 10" />
+                            <ComboBox Grid.Row="12" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 10"
                                       ItemsSource="{Binding Options.TexturePlatforms}"
                                       SelectedItem="{Binding Options.SelectedTexturePlatform, Mode=TwoWay}">
                                 <ComboBox.ItemTemplate>
@@ -617,21 +665,21 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
 
-                            <TextBlock Grid.Row="12" Grid.Column="0" Text="Texture Quality" VerticalAlignment="Center" Margin="0 0 0 12" />
-                            <Slider Grid.Row="12" Grid.Column="2" Grid.ColumnSpan="3" Minimum="1" Maximum="100" TickPlacement="None"
+                            <TextBlock Grid.Row="13" Grid.Column="0" Text="Texture Quality" VerticalAlignment="Center" Margin="0 0 0 12" />
+                            <Slider Grid.Row="13" Grid.Column="2" Grid.ColumnSpan="3" Minimum="1" Maximum="100" TickPlacement="None"
                                     AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" Margin="0 0 0 12"
                                     Value="{Binding Options.TextureQuality, Mode=TwoWay}" />
 
-                            <TextBlock Grid.Row="13" Grid.Column="0" Text="Save HDR as .hdr" VerticalAlignment="Center" />
-                            <CheckBox Grid.Row="13" Grid.Column="2" Grid.ColumnSpan="3"
+                            <TextBlock Grid.Row="14" Grid.Column="0" Text="Save HDR as .hdr" VerticalAlignment="Center" />
+                            <CheckBox Grid.Row="14" Grid.Column="2" Grid.ColumnSpan="3"
                                       IsChecked="{Binding Options.ExportHdrTexturesAsHdr, Mode=TwoWay}"
                                       Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                                       Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
 
-                            <Separator Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" Tag="MATERIAL &amp; MORPH" Margin="0 10 0 10" />
+                            <Separator Grid.Row="15" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" Tag="MATERIAL &amp; MORPH" Margin="0 10 0 10" />
 
-                            <TextBlock Grid.Row="15" Grid.Column="0" Text="Material Depth" VerticalAlignment="Center" Margin="0 0 0 12" />
-                            <ComboBox Grid.Row="15" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 12"
+                            <TextBlock Grid.Row="16" Grid.Column="0" Text="Material Depth" VerticalAlignment="Center" Margin="0 0 0 12" />
+                            <ComboBox Grid.Row="16" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 12"
                                       ItemsSource="{Binding Options.MaterialDepths}"
                                       SelectedItem="{Binding Options.SelectedMaterialDepth, Mode=TwoWay}">
                                 <ComboBox.ItemTemplate>
@@ -641,15 +689,25 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
 
-                            <TextBlock Grid.Row="16" Grid.Column="0" Text="Auto-export Attached Materials" VerticalAlignment="Center" Margin="0 0 0 12"
-                                       ToolTip="When exporting a mesh, also find and export its attached materials. For geometry-only exports, it can be significantly faster to disable this option." />
-                            <CheckBox Grid.Row="16" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 12"
-                                      IsChecked="{Binding Options.ExportMaterials, Mode=TwoWay}"
-                                      Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                                      Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
+                            <TextBlock Grid.Row="17" Grid.Column="0" Text="Auto-Export Attached Materials" VerticalAlignment="Center" Margin="0 0 0 15"
+                                       ToolTip="When exporting a mesh, also find and export its attached materials." />
+                            <Grid Grid.Row="17" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 15">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Row="17" Grid.Column="0" Text="Export Morph Targets" VerticalAlignment="Center" />
-                            <CheckBox Grid.Row="17" Grid.Column="2" Grid.ColumnSpan="3"
+                                <CheckBox Grid.Column="0"
+                                          IsChecked="{Binding Options.ExportMaterials, Mode=TwoWay}"
+                                          Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                                          Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
+                                <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="5 0 0 0" FontSize="11"
+                                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"
+                                           Text="For geometry-only exports, it can be significantly faster to disable this option." />
+                            </Grid>
+
+                            <TextBlock Grid.Row="18" Grid.Column="0" Text="Export Morph Targets" VerticalAlignment="Center" Margin="0 0 0 15" />
+                            <CheckBox Grid.Row="18" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 15"
                                       IsChecked="{Binding Options.ExportMorphTargets, Mode=TwoWay}"
                                       Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                                       Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />

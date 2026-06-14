@@ -170,7 +170,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
         if (Asset.Extension is "umap")
         {
             AssetCategory = EAssetCategory.World;
-            AssetActions = EBulkType.Meshes | EBulkType.Textures | EBulkType.Audio | EBulkType.Code;
+            AssetActions = EBulkType.Worlds | EBulkType.Textures | EBulkType.Audio | EBulkType.Code;
             ResolvedAssetType = "World";
             Resolved |= EResolveCompute.Preview;
             return Task.CompletedTask;

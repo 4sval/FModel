@@ -624,27 +624,6 @@ public class CUE4ParseViewModel : ViewModel
     public void ExtractFolder(CancellationToken cancellationToken, TreeItem folder, EBulkType bulk)
         => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, bulk));
 
-    public void ExtractFolder(CancellationToken cancellationToken, TreeItem folder)
-        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs));
-
-    public void SaveFolder(CancellationToken cancellationToken, TreeItem folder)
-        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, EBulkType.Properties | EBulkType.Auto));
-
-    public void TextureFolder(CancellationToken cancellationToken, TreeItem folder)
-        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, EBulkType.Textures | EBulkType.Auto));
-
-    public void ModelFolder(CancellationToken cancellationToken, TreeItem folder)
-        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, EBulkType.Meshes | EBulkType.Auto));
-
-    public void AnimationFolder(CancellationToken cancellationToken, TreeItem folder)
-        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, EBulkType.Animations | EBulkType.Auto));
-
-    public void AudioFolder(CancellationToken cancellationToken, TreeItem folder)
-        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, EBulkType.Audio | EBulkType.Auto));
-
-    public void CodeFolder(CancellationToken cancellationToken, TreeItem folder)
-        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, EBulkType.Code | EBulkType.Auto));
-
     public void Extract(CancellationToken cancellationToken, GameFile entry, bool addNewTab = false, EBulkType bulk = EBulkType.None)
     {
         ApplicationService.ApplicationView.IsAssetsExplorerVisible = false;
@@ -1518,9 +1497,9 @@ public class CUE4ParseViewModel : ViewModel
             case UStaticMesh when HasFlag(bulk, EBulkType.Meshes):
             case USkeletalMesh when HasFlag(bulk, EBulkType.Meshes):
             case USkeleton when UserSettings.Default.SaveSkeletonAsMesh && HasFlag(bulk, EBulkType.Meshes):
-            // case UMaterialInterface when HasFlag(bulk, EBulkType.Materials): // read the fucking json
+            // case UMaterialInterface when HasFlag(bulk, EBulkType.Materials):
             case UAnimationAsset when HasFlag(bulk, EBulkType.Animations):
-            // case UWorld when HasFlag(bulk, EBulkType.Worlds):
+            case UWorld when HasFlag(bulk, EBulkType.Worlds):
             {
                 SaveExport(pointer.Object.Value);
                 return true;
