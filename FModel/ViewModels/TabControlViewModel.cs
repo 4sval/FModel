@@ -427,7 +427,7 @@ public class TabItem : ViewModel
         {
             Interlocked.Increment(ref ApplicationService.ApplicationView.CUE4Parse.ExportedCount);
             Log.Information("{FileName} successfully saved", fileName);
-            if (updateUi && ApplicationService.ApplicationView.CUE4Parse.ExportedCount < 50)
+            if (updateUi)
             {
                 FLogger.Append(ELog.Information, () =>
                 {

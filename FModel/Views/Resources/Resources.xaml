@@ -1067,16 +1067,11 @@
                                             </Canvas>
                                         </Viewbox>
                                     </MenuItem.Icon>
-                                    <MenuItem Header="Package Path" Command="{Binding TabCommand}" CommandParameter="File_Path">
-                                    </MenuItem>
-                                    <MenuItem Header="Package Name" Command="{Binding TabCommand}" CommandParameter="File_Name">
-                                    </MenuItem>
-                                    <MenuItem Header="Directory Path" Command="{Binding TabCommand}" CommandParameter="Directory_Path">
-                                    </MenuItem>
-                                    <MenuItem Header="Package Path w/o Extension" Command="{Binding TabCommand}" CommandParameter="File_Path_No_Extension">
-                                    </MenuItem>
-                                    <MenuItem Header="Package Name w/o Extension" Command="{Binding TabCommand}" CommandParameter="File_Name_No_Extension">
-                                    </MenuItem>
+                                    <MenuItem Header="Package Path" Command="{Binding TabCommand}" CommandParameter="File_Path" />
+                                    <MenuItem Header="Package Name" Command="{Binding TabCommand}" CommandParameter="File_Name" />
+                                    <MenuItem Header="Directory Path" Command="{Binding TabCommand}" CommandParameter="Directory_Path" />
+                                    <MenuItem Header="Package Path w/o Extension" Command="{Binding TabCommand}" CommandParameter="File_Path_No_Extension" />
+                                    <MenuItem Header="Package Name w/o Extension" Command="{Binding TabCommand}" CommandParameter="File_Name_No_Extension" />
                                 </MenuItem>
                             </ContextMenu>
                         </Setter.Value>

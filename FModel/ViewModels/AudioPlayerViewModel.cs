@@ -303,7 +303,7 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
                 return;
             }
 
-            SelectedAudioFile = _audioFiles[SelectedAudioFile.Id];
+            SelectedAudioFile = SelectedAudioFile.Id >= _audioFiles.Count ? _audioFiles.Last() : _audioFiles[SelectedAudioFile.Id];
 
             if (!removedPlaying) return;
             Load();

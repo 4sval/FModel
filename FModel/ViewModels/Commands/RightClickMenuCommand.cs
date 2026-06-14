@@ -43,7 +43,6 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         if (param.Length == 0) return;
 
         var folders = param.OfType<TreeItem>().ToArray();
-        var searchMenu = param[0] is GameFile;
         var assets = param
             .Select(static item => item switch
             {
@@ -136,25 +135,11 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                 LogExport(contextViewModel, folder.PathAtThisPoint, path, dirType, filetype, queuedBefore);
             }
 
-            Action<GameFile, EBulkType, bool> fileAction = bulktype switch
+            Action<GameFile, EBulkType> fileAction = bulktype switch
             {
-                EBulkType.Raw => (entry, _, _) => contextViewModel.CUE4Parse.ExportData(entry),
-                _ => (entry, bulk, _) => contextViewModel.CUE4Parse.Extract(cancellationToken, entry, false, bulk),
+                EBulkType.Raw => (entry, _) => contextViewModel.CUE4Parse.ExportData(entry),
+                _ => (entry, bulk) => contextViewModel.CUE4Parse.Extract(cancellationToken, entry, false, bulk),
             };
-
-            if (searchMenu)
-            {
-                var update = assets.Length > 1;
-                foreach (var entry in assets)
-                {
-                    Thread.Yield();
-                    cancellationToken.ThrowIfCancellationRequested();
-                    fileAction(entry, bulktype, update);
-                }
-
-                if (assets.Length > 50) LogExport(contextViewModel, filetype);
-                return;
-            }
 
             foreach (var group in assetsGroups)
             {
@@ -167,7 +152,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                 {
                     Thread.Yield();
                     cancellationToken.ThrowIfCancellationRequested();
-                    fileAction(entry, bulk, update);
+                    fileAction(entry, bulk);
                 }
 
                 if (update)
@@ -211,20 +196,6 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
             FLogger.Append(ELog.Error, () =>
             {
                 FLogger.Text($"Failed to export {contextViewModel.CUE4Parse.FailedExportCount} {fileType} from {directory}", Constants.WHITE, true);
-            });
-        }
-
-        Interlocked.Exchange(ref contextViewModel.CUE4Parse.ExportedCount, 0);
-        Interlocked.Exchange(ref contextViewModel.CUE4Parse.FailedExportCount, 0);
-    }
-
-    private void LogExport(ApplicationViewModel contextViewModel, string fileType)
-    {
-        if (contextViewModel.CUE4Parse.ExportedCount > 0)
-        {
-            FLogger.Append(ELog.Information, () =>
-            {
-                FLogger.Text($"Successfully exported {contextViewModel.CUE4Parse.ExportedCount} {fileType}, Failed to export {contextViewModel.CUE4Parse.FailedExportCount} {fileType} in other folders.", Constants.WHITE, true);
             });
         }
 

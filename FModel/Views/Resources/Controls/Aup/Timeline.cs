@@ -100,7 +100,7 @@ public sealed class Timeline : UserControl
 
     private void OnSourceEvent(object sender, SourceEventArgs e)
     {
-        if (Source == null) return;
+        if (e.Event != ESourceEventType.Loading || Source == null) return;
         Dispatcher.BeginInvoke((Action) UpdateTimeline);
     }
 

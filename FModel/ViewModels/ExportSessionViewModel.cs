@@ -321,16 +321,6 @@ public class ExportSessionViewModel : ViewModel
         cg.Objects.Add(og);
         return og;
     }
-
-    private void ResetState()
-    {
-        _cts?.Cancel();
-        _cts = null;
-        _stopwatch.Reset();
-        IsRunning = false;
-        StopUiTimer();
-        ClearExportHistory();
-    }
 }
 
 public class ClassGroupViewModel(string name) : ViewModel
