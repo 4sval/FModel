@@ -232,11 +232,11 @@
                 <MenuItem.Icon>
                     <Viewbox Width="16" Height="16">
                         <Canvas Width="24" Height="24">
-                            <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
-                            <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M3.6 9h16.8" />
-                            <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M3.6 15h16.8" />
-                            <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M11.5 3a17 17 0 0 0 0 18" />
-                            <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M12.5 3a17 17 0 0 1 0 18" />
+                            <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource World1}" />
+                            <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource World2}" />
+                            <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource World3}" />
+                            <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource World4}" />
+                            <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource World5}" />
                         </Canvas>
                     </Viewbox>
                 </MenuItem.Icon>
