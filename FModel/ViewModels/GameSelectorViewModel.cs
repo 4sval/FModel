@@ -134,11 +134,27 @@ public class GameSelectorViewModel : ViewModel
             }
         }
 
-        var crashReportClientExe = Path.Combine(projectDir, "..", "Engine", "Binaries", "Win64", "CrashReportClient.exe");
-        if (File.Exists(crashReportClientExe) && TryGetUeVersionFromExe(crashReportClientExe, out ueVersion))
+        var projectEngineBinariesDir = Path.Combine(projectDir, "..", "Engine", "Binaries", "Win64");
+
+        if (Directory.Exists(projectEngineBinariesDir))
         {
-            Log.Information("Detected UE version {UeVersion} from \"{Exe}\"", ueVersion, crashReportClientExe);
-            return true;
+            var crashReportClientExe = Path.Combine(projectEngineBinariesDir, "CrashReportClient.exe");
+            if (File.Exists(crashReportClientExe) && TryGetUeVersionFromExe(crashReportClientExe, out ueVersion))
+            {
+                Log.Information("Detected UE version {UeVersion} from \"{Exe}\"", ueVersion, crashReportClientExe);
+                return true;
+            }
+            if (Directory.GetFiles(projectEngineBinariesDir, "*-Win64-Shipping.exe") is { Length: > 0 } shipping)
+            {
+                foreach (var exe in shipping)
+                {
+                    if (TryGetUeVersionFromExe(exe, out ueVersion))
+                    {
+                        Log.Information("Detected UE version {UeVersion} from \"{Exe}\"", ueVersion, exe);
+                        return true;
+                    }
+                }
+            }
         }
 
         ueVersion = EGame.GAME_UE4_LATEST;

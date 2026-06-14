@@ -910,6 +910,26 @@
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <Separator />
+                                <MenuItem Header="Show Metadata" Command="{Binding TabCommand}"  CommandParameter="Assets_Show_Metadata">
+                                    <MenuItem.Icon>
+                                        <Viewbox Width="16" Height="16">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </MenuItem.Icon>
+                                    <MenuItem.IsEnabled>
+                                        <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
+                                            <Binding.Converter>
+                                                <converters:AnyItemMeetsConditionConverter>
+                                                    <converters:AnyItemMeetsConditionConverter.Conditions>
+                                                        <converters:ItemIsUePackageCondition />
+                                                    </converters:AnyItemMeetsConditionConverter.Conditions>
+                                                </converters:AnyItemMeetsConditionConverter>
+                                            </Binding.Converter>
+                                        </Binding>
+                                    </MenuItem.IsEnabled>
+                                </MenuItem>
                                 <MenuItem Header="Find References" Command="{Binding TabCommand}"  CommandParameter="Find_References">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
@@ -927,6 +947,35 @@
                                                         <converters:GameFileIsIoStoreCondition />
                                                     </converters:GameFileMeetsConditionConverter.Conditions>
                                                 </converters:GameFileMeetsConditionConverter>
+                                            </Binding.Converter>
+                                        </Binding>
+                                    </MenuItem.IsEnabled>
+                                </MenuItem>
+                                <MenuItem Header="Decompile Blueprint" Command="{Binding TabCommand}"  CommandParameter="Assets_Decompile">
+                                    <MenuItem.Icon>
+                                        <Viewbox Width="16" Height="16">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource CppIcon}" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </MenuItem.Icon>
+                                    <MenuItem.Style>
+                                        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ShowDecompileOption, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </MenuItem.Style>
+                                    <MenuItem.IsEnabled>
+                                        <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}">
+                                            <Binding.Converter>
+                                                <converters:AnyItemMeetsConditionConverter>
+                                                    <converters:AnyItemMeetsConditionConverter.Conditions>
+                                                        <converters:ItemActionCondition Action="Code" />
+                                                    </converters:AnyItemMeetsConditionConverter.Conditions>
+                                                </converters:AnyItemMeetsConditionConverter>
                                             </Binding.Converter>
                                         </Binding>
                                     </MenuItem.IsEnabled>
@@ -1010,7 +1059,7 @@
                                         </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Copy Package Path" Command="{Binding TabCommand}" CommandParameter="Copy_Asset_Path">
+                                <MenuItem Header="Copy">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
                                             <Canvas Width="24" Height="24">
@@ -1018,6 +1067,16 @@
                                             </Canvas>
                                         </Viewbox>
                                     </MenuItem.Icon>
+                                    <MenuItem Header="Package Path" Command="{Binding TabCommand}" CommandParameter="File_Path">
+                                    </MenuItem>
+                                    <MenuItem Header="Package Name" Command="{Binding TabCommand}" CommandParameter="File_Name">
+                                    </MenuItem>
+                                    <MenuItem Header="Directory Path" Command="{Binding TabCommand}" CommandParameter="Directory_Path">
+                                    </MenuItem>
+                                    <MenuItem Header="Package Path w/o Extension" Command="{Binding TabCommand}" CommandParameter="File_Path_No_Extension">
+                                    </MenuItem>
+                                    <MenuItem Header="Package Name w/o Extension" Command="{Binding TabCommand}" CommandParameter="File_Name_No_Extension">
+                                    </MenuItem>
                                 </MenuItem>
                             </ContextMenu>
                         </Setter.Value>

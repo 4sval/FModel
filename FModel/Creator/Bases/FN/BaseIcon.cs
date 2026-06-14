@@ -56,8 +56,13 @@ public class BaseIcon : UCreator
                 Preview = Utils.GetBitmap(otherPreview);
             else if (Object.TryGetValue(out UMaterialInstanceConstant materialInstancePreview, "EventCalloutImage"))
                 Preview = Utils.GetBitmap(materialInstancePreview);
-            else if (Object.TryGetValue(out FStructFallback brush, "IconBrush") && brush.TryGetValue(out UTexture2D res, "ResourceObject"))
+            else if (Object.TryGetValue(out FStructFallback brush, "IconBrush", "BuildingSymbolNormal") && brush.TryGetValue(out UTexture2D res, "ResourceObject"))
                 Preview = Utils.GetBitmap(res);
+            else if (Object.TryGetValue(out FStructFallback mission, "MissionIcons", "PopupWidgetData"))
+            {
+                if (mission.TryGetValue(out FStructFallback brushsize, "Brush_XL", "Brush_L", "Brush_M", "Brush_S", "Brush_XS", "Brush_XXS", "AvailableIcon", "UnavailableIcon") && brushsize.TryGetValue(out UTexture2D res2, "ResourceObject"))
+                    Preview = Utils.GetBitmap(res2);
+            }
         }
 
         // text

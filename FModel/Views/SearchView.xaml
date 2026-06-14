@@ -161,6 +161,21 @@
                                             </Viewbox>
                                         </MenuItem.Icon>
                                     </MenuItem>
+                                    <MenuItem Header="Show Metadata" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
+                                        <MenuItem.CommandParameter>
+                                            <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                <Binding Source="Assets_Show_Metadata" />
+                                                <Binding Path="SelectedItems" />
+                                            </MultiBinding>
+                                        </MenuItem.CommandParameter>
+                                        <MenuItem.Icon>
+                                            <Viewbox Width="16" Height="16">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
                                     <MenuItem Header="Find References" Click="OnFindRefs">
                                         <MenuItem.Icon>
                                             <Viewbox Width="16" Height="16">
@@ -525,6 +540,21 @@
                                             <Viewbox Width="16" Height="16">
                                                 <Canvas Width="24" Height="24">
                                                     <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExtractIcon}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Show Metadata" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
+                                        <MenuItem.CommandParameter>
+                                            <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                <Binding Source="Assets_Show_Metadata" />
+                                                <Binding Path="SelectedItems" />
+                                            </MultiBinding>
+                                        </MenuItem.CommandParameter>
+                                        <MenuItem.Icon>
+                                            <Viewbox Width="16" Height="16">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
                                                 </Canvas>
                                             </Viewbox>
                                         </MenuItem.Icon>
