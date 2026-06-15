@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Threading;
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Options;
+using CUE4Parse.Utils;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Settings;
@@ -288,11 +289,11 @@ public class ExportSessionViewModel : ViewModel
         while (_pendingLogs.TryDequeue(out var log))
         {
             var className = log.GetContext("ClassName");
-            var objectName = log.GetContext("ObjectName");
+            var objectPath = log.GetContext("ObjectPath");
             var filePath = log.GetContext("FilePath");
 
             var cg = FindOrCreateClass(className);
-            var og = FindOrCreateObject(cg, objectName);
+            var og = FindOrCreateObject(cg, objectPath);
             if (log.Level >= LogEventLevel.Error)
             {
                 og.ErrorCount++;
@@ -313,11 +314,11 @@ public class ExportSessionViewModel : ViewModel
         return cg;
     }
 
-    private static ObjectGroupViewModel FindOrCreateObject(ClassGroupViewModel cg, string name)
+    private static ObjectGroupViewModel FindOrCreateObject(ClassGroupViewModel cg, string path)
     {
-        var og = cg.Objects.FirstOrDefault(o => o.Name == name);
+        var og = cg.Objects.FirstOrDefault(o => o.Path == path);
         if (og != null) return og;
-        og = new ObjectGroupViewModel(name);
+        og = new ObjectGroupViewModel(path);
         cg.Objects.Add(og);
         return og;
     }
@@ -346,9 +347,10 @@ public class ClassGroupViewModel(string name) : ViewModel
     public override bool HasErrors => ErrorCount > 0;
 }
 
-public class ObjectGroupViewModel(string name) : ViewModel
+public class ObjectGroupViewModel(string path) : ViewModel
 {
-    public string Name { get; } = name;
+    public string Path { get; } = path;
+    public string Name { get; } = path.SubstringAfterLast('.');
     public ObservableCollection<LogEntryViewModel> Entries { get; } = [];
 
     public bool IsExpanded

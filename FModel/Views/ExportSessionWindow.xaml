@@ -200,7 +200,8 @@
                 </Viewbox>
 
                 <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center"
-                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                           ToolTip="{Binding Path}" />
 
                 <Button Grid.Column="3" ToolTip="Open in Explorer" Click="OnOpenInExplorerClick"
                         Tag="{Binding FirstFilePath}"
@@ -277,21 +278,8 @@
                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
                 <TextBlock Grid.Row="1" Grid.Column="1" FontSize="10" HorizontalAlignment="Right">
                     <Run Text="ETA " Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
-                    <Run Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}">
-                        <Run.Style>
-                            <Style TargetType="Run">
-                                <Setter Property="Text" Value="{Binding EtaTime, Mode=OneWay, Converter={x:Static converters:TimeSpanConverter.Instance}, FallbackValue=--:--}" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsFinished}" Value="True">
-                                        <Setter Property="Text" Value="Done" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsCanceled}" Value="True">
-                                        <Setter Property="Text" Value="--:--" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Run.Style>
-                    </Run>
+                    <Run Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                         Text="{Binding EtaTime, Mode=OneWay, Converter={x:Static converters:TimeSpanConverter.Instance}, FallbackValue=--:--}" />
                 </TextBlock>
                 <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
                            FontSize="10" HorizontalAlignment="Right"
@@ -304,6 +292,10 @@
                                 <DataTrigger Binding="{Binding IsCanceled}" Value="True">
                                     <Setter Property="Text" Value="Export canceled" />
                                     <Setter Property="Foreground" Value="#EF5350" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsFinished}" Value="True">
+                                    <Setter Property="Text" Value="Export finished" />
+                                    <Setter Property="Foreground" Value="#66BB6A" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
