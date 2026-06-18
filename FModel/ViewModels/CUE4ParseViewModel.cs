@@ -1095,6 +1095,11 @@ public class CUE4ParseViewModel : ViewModel
                 var l10nData = new FAion2L10NFile(entry, Provider);
                 TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(l10nData, Formatting.Indented), saveProperties, updateUi);
             }
+            else if (entry.NameWithoutExtension.Equals("key_manifest"))
+            {
+                var records = Aion2TextLocalizationResource.ReadKeyManifest(entry.Read());
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(new { Version = 2, RecordCount = records.Count, Records = records }, Formatting.Indented), saveProperties, updateUi);
+            }
             else
             {
                 FAion2DataFile datfile = entry.NameWithoutExtension switch
