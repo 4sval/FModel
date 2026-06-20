@@ -108,10 +108,6 @@
                 <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                     <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
-                    <Setter Property="Margin" Value="0 1" />
-                    <Setter Property="Padding" Value="7 5" />
-                    <Setter Property="BorderBrush" Value="Transparent" />
-                    <Setter Property="BorderThickness" Value="1" />
                 </Style>
             </Setter.Value>
         </Setter>
@@ -122,26 +118,24 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="95" />
-                            <ColumnDefinition Width="85" />
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="FileCountCol" />
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="LengthCol" />
                         </Grid.ColumnDefinitions>
 
                         <Image x:Name="ListImage" Source="/FModel;component/Resources/archive.png"
                                Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 4 0"
-                               VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality" />
-                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Name}" TextTrimming="CharacterEllipsis"
-                                   VerticalAlignment="Center" />
+                               RenderOptions.BitmapScalingMode="HighQuality" />
+                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
                         <TextBlock Grid.Column="2"
-                                   Margin="12 0 8 0"
-                                   VerticalAlignment="Center"
+                                   Margin="10 0 0 0"
                                    HorizontalAlignment="Right"
-                                   Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                   Opacity="0.75"
+                                   VerticalAlignment="Bottom"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"
                                    Text="{Binding FileCount, StringFormat={}{0:N0} files}" />
                         <TextBlock x:Name="LengthText"
                                    Grid.Column="3" HorizontalAlignment="Right" Text="{Binding Length, Converter={x:Static converters:SizeToStringConverter.Instance}}"
-                                   Margin="8 0 0 0"
-                                   VerticalAlignment="Center" />
+                                   Margin="10 0 0 0" />
                     </Grid>
                     <DataTemplate.Triggers>
                         <DataTrigger Binding="{Binding IsEnabled}" Value="True">
