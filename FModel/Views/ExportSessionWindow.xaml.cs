@@ -16,13 +16,15 @@ public partial class ExportSessionWindow
         DataContext = ExportSessionViewModel.Instance;
     }
 
-    private async void OnExportOrOkClick(object sender, RoutedEventArgs e)
+    private async void OnExportClick(object sender, RoutedEventArgs e)
     {
-        if (sender is not Button { DataContext: ExportSessionViewModel viewModel })
-            return;
+        if (sender is Button { DataContext: ExportSessionViewModel { CanExport: true } viewModel })
+            await viewModel.ExportAsync();
+    }
 
-        if (viewModel.IsFinished) Close();
-        else if (viewModel.CanExport) await viewModel.ExportAsync();
+    private void OnOkClick(object sender, RoutedEventArgs e)
+    {
+        Close();
     }
 
     private void OnCancelClick(object sender, RoutedEventArgs e)
@@ -46,12 +48,14 @@ public partial class ExportSessionWindow
 
     private void OnMakeDefaultOptions(object sender, RoutedEventArgs e)
     {
-        ExportSessionViewModel.Instance.Options.SaveAsUserDefaults();
+        if (sender is Button { DataContext: ExportSessionViewModel viewModel })
+            viewModel.Options.SaveAsUserDefaults();
     }
 
     private void OnResetOptions(object sender, RoutedEventArgs e)
     {
-        ExportSessionViewModel.Instance.Options.ResetToUserDefaults();
+        if (sender is Button { DataContext: ExportSessionViewModel viewModel })
+            viewModel.Options.ResetToUserDefaults();
     }
 
     private void OnHyperlinkClick(object sender, RoutedEventArgs e)

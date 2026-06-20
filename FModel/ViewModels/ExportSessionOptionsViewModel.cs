@@ -54,6 +54,7 @@ public class ExportSessionOptionsViewModel : ViewModel
         set
         {
             if (!SetProperty(ref field, value)) return;
+            RaisePropertyChanged(nameof(SocketSettingsEnabled));
             RaisePropertyChanged(nameof(CompressionSettingsEnabled));
         }
     }
@@ -84,6 +85,8 @@ public class ExportSessionOptionsViewModel : ViewModel
         get;
         set => SetProperty(ref field, value);
     }
+
+    public bool SocketSettingsEnabled => SelectedMeshFormat == EMeshFormat.ActorX;
 
     public IEnumerable<EFileCompressionFormat> CompressionFormats { get; } = Enum.GetValues<EFileCompressionFormat>();
     public EFileCompressionFormat SelectedCompressionFormat

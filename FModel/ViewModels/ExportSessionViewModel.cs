@@ -386,6 +386,10 @@ public class LogEntryViewModel(LogEvent log)
 {
     public LogEventLevel Level { get; } = log.Level;
     public DateTimeOffset Timestamp { get; } = log.Timestamp;
-    public string Message { get; } = log.RenderMessage();
+    public string Message { get; } = log.Exception switch
+    {
+        NullReferenceException or ArgumentException => log.RenderMessage(),
+        _ => log.Exception?.Message ?? log.RenderMessage()
+    };
     public Exception? Exception { get; } = log.Exception;
 }

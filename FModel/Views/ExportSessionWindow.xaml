@@ -147,19 +147,15 @@
                     </Canvas>
                 </Viewbox>
                 <TextBlock Grid.Column="1" Text="{Binding Timestamp, StringFormat='[{0:HH:mm:ss.fff}]'}"
-                           FontSize="11" FontFamily="Consolas" Margin="0 0 5 0"
-                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"
-                           VerticalAlignment="Center" />
+                           FontSize="11" Margin="0 0 5 0" VerticalAlignment="Center"
+                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
                 <TextBlock Grid.Column="2"
-                           Text="{Binding Message}"
-                           FontSize="11" FontFamily="Consolas"
-                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                           VerticalAlignment="Center" />
+                           Text="{Binding Message}" FontSize="11" VerticalAlignment="Center"
+                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
             </Grid>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding Level}" Value="{x:Static serilog:LogEventLevel.Verbose}">
                     <Setter TargetName="LevelIcon" Property="Data" Value="{StaticResource NoteIcon}" />
-                    <Setter TargetName="LevelIcon" Property="Fill" Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Level}" Value="{x:Static serilog:LogEventLevel.Debug}">
                     <Setter TargetName="LevelIcon" Property="Data" Value="{StaticResource BugIcon}" />
@@ -568,10 +564,12 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
 
-                            <TextBlock Grid.Row="6" Grid.Column="0" Text="Socket Format" VerticalAlignment="Center" Margin="0 0 0 5" />
+                            <TextBlock Grid.Row="6" Grid.Column="0" Text="Socket Format" VerticalAlignment="Center" Margin="0 0 0 5"
+                                       IsEnabled="{Binding Options.SocketSettingsEnabled}" />
                             <ComboBox Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
                                       ItemsSource="{Binding Options.SocketFormats}"
-                                      SelectedItem="{Binding Options.SelectedSocketFormat, Mode=TwoWay}">
+                                      SelectedItem="{Binding Options.SelectedSocketFormat, Mode=TwoWay}"
+                                      IsEnabled="{Binding Options.SocketSettingsEnabled}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
@@ -752,24 +750,15 @@
                 </Button>
 
                 <Button Grid.Column="3" MinWidth="78" Margin="0 0 12 0" IsDefault="False" IsCancel="False"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="OnExportOrOkClick">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                            <Setter Property="Content" Value="Export" />
-                            <Setter Property="IsEnabled" Value="{Binding CanExport}" />
-                            <Setter Property="Visibility" Value="Visible" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsRunning}" Value="True">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding IsFinished}" Value="True">
-                                    <Setter Property="Content" Value="OK" />
-                                    <Setter Property="IsEnabled" Value="True" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Export"
+                        IsEnabled="{Binding CanExport}"
+                        Visibility="{Binding IsFinished, Converter={x:Static converters:InvertBoolToVisibilityConverter.Instance}}"
+                        Click="OnExportClick" />
+
+                <Button Grid.Column="3" MinWidth="78" Margin="0 0 12 0" IsDefault="False" IsCancel="False"
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK"
+                        Visibility="{Binding IsFinished, Converter={StaticResource BoolToVisibilityConverter}}"
+                        Click="OnOkClick" />
             </Grid>
         </Border>
     </Grid>
