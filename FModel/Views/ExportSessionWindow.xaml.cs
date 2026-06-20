@@ -2,9 +2,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using FModel.ViewModels;
-using Ookii.Dialogs.Wpf;
 
 namespace FModel.Views;
 
@@ -13,7 +11,6 @@ public partial class ExportSessionWindow
     public ExportSessionWindow()
     {
         InitializeComponent();
-        DataContext = ExportSessionViewModel.Instance;
     }
 
     private async void OnExportClick(object sender, RoutedEventArgs e)
@@ -39,13 +36,6 @@ public partial class ExportSessionWindow
             viewModel.ClearQueue();
     }
 
-    private void OnBrowseOutputDirectory(object sender, RoutedEventArgs e)
-    {
-        var folderBrowser = new VistaFolderBrowserDialog { ShowNewFolderButton = false };
-        if (folderBrowser.ShowDialog() == true)
-            ExportSessionViewModel.Instance.Options.OutputDirectory = folderBrowser.SelectedPath;
-    }
-
     private void OnMakeDefaultOptions(object sender, RoutedEventArgs e)
     {
         if (sender is Button { DataContext: ExportSessionViewModel viewModel })
@@ -56,12 +46,6 @@ public partial class ExportSessionWindow
     {
         if (sender is Button { DataContext: ExportSessionViewModel viewModel })
             viewModel.Options.ResetToUserDefaults();
-    }
-
-    private void OnHyperlinkClick(object sender, RoutedEventArgs e)
-    {
-        if (e.OriginalSource is Hyperlink hyperlink)
-            Process.Start(new ProcessStartInfo(hyperlink.NavigateUri.AbsoluteUri) { UseShellExecute = true });
     }
 
     private void OnOpenInExplorerClick(object sender, RoutedEventArgs e)

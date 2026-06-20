@@ -64,7 +64,7 @@ public class ExportSessionViewModel : ViewModel
         }
     }
 
-    public ExportSessionOptionsViewModel Options { get; } = new();
+    public ExportOptionsViewModel Options { get; } = new();
 
     public bool IsRunning
     {

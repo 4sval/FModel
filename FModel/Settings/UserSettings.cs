@@ -61,7 +61,7 @@ namespace FModel.Settings
                 Default.MeshQuality,
                 Default.CurrentDir.TexturePlatform,
                 Default.TextureExportFormat,
-                100,
+                Default.TextureQuality,
                 Default.SaveHdrTexturesAsHdr,
                 Default.MaterialExportFormat,
                 Default.SaveEmbeddedMaterials,
@@ -448,6 +448,13 @@ namespace FModel.Settings
         {
             get => _textureExportFormat;
             set => SetProperty(ref _textureExportFormat, value);
+        }
+
+        private int _textureQuality = 100;
+        public int TextureQuality
+        {
+            get => _textureQuality;
+            set => SetProperty(ref _textureQuality, value);
         }
 
         private ESocketFormat _socketExportFormat = ESocketFormat.Bone;

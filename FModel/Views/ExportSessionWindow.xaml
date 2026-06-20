@@ -12,10 +12,11 @@
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
                              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
-                             xmlns:viewModels="clr-namespace:FModel.ViewModels"
+                             xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
                              xmlns:serilog="clr-namespace:Serilog.Events;assembly=Serilog"
                              xmlns:c4pMeshes="clr-namespace:CUE4Parse_Conversion.Options;assembly=CUE4Parse-Conversion"
 
+                             DataContext="{x:Static vm:ExportSessionViewModel.Instance}"
                              WindowStartupLocation="CenterScreen" ResizeMode="NoResize" IconVisibility="Collapsed"
                              Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.75'}"
                              Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.40'}">
@@ -131,7 +132,7 @@
             </Setter>
         </Style>
 
-        <DataTemplate x:Key="LogEntryTemplate" DataType="{x:Type viewModels:LogEntryViewModel}">
+        <DataTemplate x:Key="LogEntryTemplate" DataType="{x:Type vm:LogEntryViewModel}">
             <Grid Margin="0 1" ToolTip="{Binding Exception}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -179,7 +180,7 @@
             </DataTemplate.Triggers>
         </DataTemplate>
 
-        <DataTemplate x:Key="ObjectGroupHeaderTemplate" DataType="{x:Type viewModels:ObjectGroupViewModel}">
+        <DataTemplate x:Key="ObjectGroupHeaderTemplate" DataType="{x:Type vm:ObjectGroupViewModel}">
             <Grid VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -215,7 +216,7 @@
             </Grid>
         </DataTemplate>
 
-        <DataTemplate x:Key="ClassGroupHeaderTemplate" DataType="{x:Type viewModels:ClassGroupViewModel}">
+        <DataTemplate x:Key="ClassGroupHeaderTemplate" DataType="{x:Type vm:ClassGroupViewModel}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -387,21 +388,21 @@
                             </Style>
                         </TreeView.ItemContainerStyle>
                         <TreeView.ItemTemplate>
-                            <HierarchicalDataTemplate DataType="{x:Type viewModels:ClassGroupViewModel}" ItemsSource="{Binding Objects}"
+                            <HierarchicalDataTemplate DataType="{x:Type vm:ClassGroupViewModel}" ItemsSource="{Binding Objects}"
                                                       ItemContainerStyle="{StaticResource StretchTreeViewItemStyle}">
                                 <ContentPresenter Content="{Binding}"
                                                   ContentTemplate="{StaticResource ClassGroupHeaderTemplate}"
                                                   HorizontalAlignment="Stretch" />
 
                                 <HierarchicalDataTemplate.ItemTemplate>
-                                    <HierarchicalDataTemplate DataType="{x:Type viewModels:ObjectGroupViewModel}" ItemsSource="{Binding Entries}"
+                                    <HierarchicalDataTemplate DataType="{x:Type vm:ObjectGroupViewModel}" ItemsSource="{Binding Entries}"
                                                               ItemContainerStyle="{StaticResource StretchTreeViewItemStyle}">
                                         <ContentPresenter Content="{Binding}"
                                                           ContentTemplate="{StaticResource ObjectGroupHeaderTemplate}"
                                                           HorizontalAlignment="Stretch" />
 
                                         <HierarchicalDataTemplate.ItemTemplate>
-                                            <DataTemplate DataType="{x:Type viewModels:LogEntryViewModel}">
+                                            <DataTemplate DataType="{x:Type vm:LogEntryViewModel}">
                                                 <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource LogEntryTemplate}" />
                                             </DataTemplate>
                                         </HierarchicalDataTemplate.ItemTemplate>
@@ -418,7 +419,7 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="5" />
+                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
@@ -466,242 +467,11 @@
                             </Button>
                         </Grid>
 
-                        <Grid Grid.Row="2" IsEnabled="{Binding Options.OverrideOptions}">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="10" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="5" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
+                        <Separator Grid.Row="1" Style="{StaticResource CustomSeparator}" Margin="0 5 0 10" />
 
-                            <Separator Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" Tag="OUTPUT" Margin="0 5 0 10" />
-
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Output Directory" VerticalAlignment="Center" />
-                            <TextBox Grid.Row="1" Grid.Column="2" IsReadOnly="True"
-                                     Text="{Binding Options.OutputDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            <Button Grid.Row="1" Grid.Column="4" Content="..." MinWidth="28" Click="OnBrowseOutputDirectory" />
-
-                            <Separator Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" Tag="MESH" Margin="0 10 0 10" />
-
-                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Mesh Format" VerticalAlignment="Center" Margin="0 0 0 5" />
-                            <ComboBox Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
-                                      ItemsSource="{Binding Options.MeshFormats}"
-                                      SelectedItem="{Binding Options.SelectedMeshFormat, Mode=TwoWay}">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
-
-                            <ContentControl Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" FontSize="10" Margin="0 0 0 5">
-                                <ContentControl.Style>
-                                    <Style TargetType="{x:Type ContentControl}">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                        <EventSetter Event="Hyperlink.Click" Handler="OnHyperlinkClick" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Options.SelectedMeshFormat}" Value="{x:Static c4pMeshes:EMeshFormat.UEFormat}">
-                                                <Setter Property="ContentTemplate">
-                                                    <Setter.Value>
-                                                        <DataTemplate>
-                                                            <TextBlock>
-                                                                <Run Text="Importer (Blender/UE): " />
-                                                                <Hyperlink NavigateUri="https://github.com/h4lfheart/UEFormat">github.com/h4lfheart/UEFormat</Hyperlink>
-                                                            </TextBlock>
-                                                        </DataTemplate>
-                                                    </Setter.Value>
-                                                </Setter>
-                                                <Setter Property="Visibility" Value="Visible" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding Options.SelectedMeshFormat}" Value="{x:Static c4pMeshes:EMeshFormat.ActorX}">
-                                                <Setter Property="ContentTemplate">
-                                                    <Setter.Value>
-                                                        <DataTemplate>
-                                                            <TextBlock>
-                                                                <Run Text="Importers (Blender): " />
-                                                                <Hyperlink NavigateUri="https://github.com/DarklightGames/io_scene_psk_psa">github.com/DarklightGames/io_scene_psk_psa</Hyperlink>
-                                                            </TextBlock>
-                                                        </DataTemplate>
-                                                    </Setter.Value>
-                                                </Setter>
-                                                <Setter Property="Visibility" Value="Visible" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ContentControl.Style>
-                            </ContentControl>
-
-                            <TextBlock Grid.Row="5" Grid.Column="0" Text="Mesh Quality" VerticalAlignment="Center" Margin="0 0 0 5" />
-                            <ComboBox Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
-                                      ItemsSource="{Binding Options.MeshQualities}"
-                                      SelectedItem="{Binding Options.SelectedMeshQuality, Mode=TwoWay}">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
-
-                            <TextBlock Grid.Row="6" Grid.Column="0" Text="Socket Format" VerticalAlignment="Center" Margin="0 0 0 5"
-                                       IsEnabled="{Binding Options.SocketSettingsEnabled}" />
-                            <ComboBox Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
-                                      ItemsSource="{Binding Options.SocketFormats}"
-                                      SelectedItem="{Binding Options.SelectedSocketFormat, Mode=TwoWay}"
-                                      IsEnabled="{Binding Options.SocketSettingsEnabled}">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
-
-                            <TextBlock Grid.Row="7" Grid.Column="0" Text="Compression Format" VerticalAlignment="Center" Margin="0 0 0 5"
-                                       IsEnabled="{Binding Options.CompressionSettingsEnabled}" />
-                            <ComboBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
-                                      ItemsSource="{Binding Options.CompressionFormats}"
-                                      SelectedItem="{Binding Options.SelectedCompressionFormat, Mode=TwoWay}"
-                                      IsEnabled="{Binding Options.CompressionSettingsEnabled}">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
-
-                            <TextBlock Grid.Row="8" Grid.Column="0" Text="Nanite Format" VerticalAlignment="Center" Margin="0 0 0 5" />
-                            <ComboBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
-                                      ItemsSource="{Binding Options.NaniteMeshFormats}"
-                                      SelectedItem="{Binding Options.SelectedNaniteMeshFormat, Mode=TwoWay}">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
-
-                            <Border Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="5" Margin="0 0 0 5" CornerRadius="1"
-                                    Background="#1AFFA726" BorderBrush="#FFA726" BorderThickness="1" Padding="10"
-                                    Visibility="{Binding Options.ShowNaniteWarning, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <Viewbox Grid.Column="0" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Border}}"
-                                             Margin="0 0 10 0" VerticalAlignment="Center">
-                                        <Canvas Width="24" Height="24">
-                                            <Path Fill="#FFA726" Data="{StaticResource WarningIcon}" />
-                                        </Canvas>
-                                    </Viewbox>
-                                    <TextBlock Grid.Column="1" TextWrapping="Wrap" Foreground="#FFA726">
-                                        <Run FontWeight="Bold" Text="Nanite meshes are slower to export" />
-                                        <LineBreak />
-                                        <Run Text="It is not recommended for world exports, as this stacks up for every mesh in the level." />
-                                    </TextBlock>
-                                    <Viewbox Grid.Column="2" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Border}}"
-                                             Margin="10 0 0 0" VerticalAlignment="Center">
-                                        <Canvas Width="24" Height="24">
-                                            <Path Fill="#FFA726" Data="{StaticResource WarningIcon}" />
-                                        </Canvas>
-                                    </Viewbox>
-                                </Grid>
-                            </Border>
-
-                            <Separator Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" Tag="TEXTURE" Margin="0 10 0 10" />
-
-                            <TextBlock Grid.Row="11" Grid.Column="0" Text="Texture Format" VerticalAlignment="Center" Margin="0 0 0 5" />
-                            <ComboBox Grid.Row="11" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
-                                      ItemsSource="{Binding Options.TextureFormats}"
-                                      SelectedItem="{Binding Options.SelectedTextureFormat, Mode=TwoWay}">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
-
-                            <TextBlock Grid.Row="12" Grid.Column="0" Text="Texture Platform" VerticalAlignment="Center" Margin="0 0 0 10" />
-                            <ComboBox Grid.Row="12" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 10"
-                                      ItemsSource="{Binding Options.TexturePlatforms}"
-                                      SelectedItem="{Binding Options.SelectedTexturePlatform, Mode=TwoWay}">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
-
-                            <TextBlock Grid.Row="13" Grid.Column="0" Text="Texture Quality" VerticalAlignment="Center" Margin="0 0 0 12" />
-                            <Slider Grid.Row="13" Grid.Column="2" Grid.ColumnSpan="3" Minimum="1" Maximum="100" TickPlacement="None"
-                                    AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" Margin="0 0 0 12"
-                                    Value="{Binding Options.TextureQuality, Mode=TwoWay}" />
-
-                            <TextBlock Grid.Row="14" Grid.Column="0" Text="Save HDR as .hdr" VerticalAlignment="Center" />
-                            <CheckBox Grid.Row="14" Grid.Column="2" Grid.ColumnSpan="3"
-                                      IsChecked="{Binding Options.ExportHdrTexturesAsHdr, Mode=TwoWay}"
-                                      Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                                      Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-
-                            <Separator Grid.Row="15" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" Tag="MATERIAL &amp; MORPH" Margin="0 10 0 10" />
-
-                            <TextBlock Grid.Row="16" Grid.Column="0" Text="Material Depth" VerticalAlignment="Center" Margin="0 0 0 12" />
-                            <ComboBox Grid.Row="16" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 12"
-                                      ItemsSource="{Binding Options.MaterialDepths}"
-                                      SelectedItem="{Binding Options.SelectedMaterialDepth, Mode=TwoWay}">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
-
-                            <TextBlock Grid.Row="17" Grid.Column="0" Text="Auto-Export Attached Materials" VerticalAlignment="Center" Margin="0 0 0 15"
-                                       ToolTip="When exporting a mesh, also find and export its attached materials." />
-                            <Grid Grid.Row="17" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 15">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-
-                                <CheckBox Grid.Column="0"
-                                          IsChecked="{Binding Options.ExportMaterials, Mode=TwoWay}"
-                                          Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                                          Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-                                <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="5 0 0 0" FontSize="11"
-                                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"
-                                           Text="For geometry-only exports, it can be significantly faster to disable this option." />
-                            </Grid>
-
-                            <TextBlock Grid.Row="18" Grid.Column="0" Text="Export Morph Targets" VerticalAlignment="Center" Margin="0 0 0 15" />
-                            <CheckBox Grid.Row="18" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 15"
-                                      IsChecked="{Binding Options.ExportMorphTargets, Mode=TwoWay}"
-                                      Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                                      Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-                        </Grid>
+                        <controls:ExportOptionsControl Grid.Row="2"
+                                                       DataContext="{Binding Options}"
+                                                       IsEnabled="{Binding OverrideOptions}" />
                     </Grid>
                 </ScrollViewer>
             </TabItem>

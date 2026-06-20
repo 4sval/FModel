@@ -10,7 +10,7 @@ using FModel.Settings;
 
 namespace FModel.ViewModels;
 
-public class ExportSessionOptionsViewModel : ViewModel
+public class ExportOptionsViewModel : ViewModel
 {
     public bool OverrideOptions
     {
@@ -139,7 +139,7 @@ public class ExportSessionOptionsViewModel : ViewModel
         set => SetProperty(ref field, value);
     }
 
-    public ExportSessionOptionsViewModel()
+    public ExportOptionsViewModel()
     {
         ResetToUserDefaults();
     }
@@ -158,8 +158,9 @@ public class ExportSessionOptionsViewModel : ViewModel
         SelectedTextureFormat = UserSettings.Default.TextureExportFormat;
         ExportHdrTexturesAsHdr = UserSettings.Default.SaveHdrTexturesAsHdr;
         ExportMorphTargets = UserSettings.Default.SaveMorphTargets;
-        TextureQuality = 100;
+        TextureQuality = UserSettings.Default.TextureQuality;
 
+        OverrideOptions = false;
         FeedbackMessage = "Reset to defaults";
     }
 
@@ -177,6 +178,7 @@ public class ExportSessionOptionsViewModel : ViewModel
         UserSettings.Default.TextureExportFormat = SelectedTextureFormat;
         UserSettings.Default.SaveHdrTexturesAsHdr = ExportHdrTexturesAsHdr;
         UserSettings.Default.SaveMorphTargets = ExportMorphTargets;
+        UserSettings.Default.TextureQuality = TextureQuality;
         UserSettings.Save();
 
         OverrideOptions = false;
