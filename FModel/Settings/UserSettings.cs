@@ -8,6 +8,7 @@ using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Options;
 using CUE4Parse_Conversion.Writers.UEFormat.Enums;
 using CUE4Parse.UE4.Lua.unluac;
+using FModel.Extensions.Themes;
 using FModel.Framework;
 using FModel.ViewModels;
 using FModel.ViewModels.ApiEndpoints.Models;
@@ -302,6 +303,13 @@ namespace FModel.Settings
                 if (!SetProperty(ref _unluacFlags, value)) return;
                 RaisePropertyChanged(nameof(UnluacMode));
             }
+        }
+
+        private EJsonHighlightTheme _jsonHighlightTheme;
+        public EJsonHighlightTheme JsonHighlightTheme
+        {
+            get => _jsonHighlightTheme;
+            set => SetProperty(ref _jsonHighlightTheme, value);
         }
 
         private IDictionary<string, DirectorySettings> _perDirectory = new Dictionary<string, DirectorySettings>();

@@ -8,6 +8,7 @@ using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Options;
 using CUE4Parse_Conversion.Writers.UEFormat.Enums;
 using CUE4Parse.UE4.Assets.Exports.Material;
+using FModel.Extensions.Themes;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -102,6 +103,13 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedCosmeticStyle, value);
     }
 
+    private EJsonHighlightTheme _selectedJsonHighlightTheme;
+    public EJsonHighlightTheme SelectedJsonHighlightTheme
+    {
+        get => _selectedJsonHighlightTheme;
+        set => SetProperty(ref _selectedJsonHighlightTheme, value);
+    }
+
     private ulong _criwareDecryptionKey;
     public ulong CriwareDecryptionKey
     {
@@ -124,6 +132,7 @@ public class SettingsViewModel : ViewModel
     public ReadOnlyObservableCollection<EDiscordRpc> DiscordRpcs { get; private set; }
     public ReadOnlyObservableCollection<ECompressedAudio> CompressedAudios { get; private set; }
     public ReadOnlyObservableCollection<EIconStyle> CosmeticStyles { get; private set; }
+    public ReadOnlyObservableCollection<EJsonHighlightTheme> JsonHighlightThemes { get; private set; }
 
     private string _outputSnapshot;
     private string _rawDataSnapshot;
@@ -140,6 +149,7 @@ public class SettingsViewModel : ViewModel
     private ELanguage _assetLanguageSnapshot;
     private ECompressedAudio _compressedAudioSnapshot;
     private EIconStyle _cosmeticStyleSnapshot;
+    private EJsonHighlightTheme _jsonHighlightThemeSnapshot;
 
     private bool _mappingsUpdate = false;
 
@@ -176,6 +186,7 @@ public class SettingsViewModel : ViewModel
         _assetLanguageSnapshot = UserSettings.Default.AssetLanguage;
         _compressedAudioSnapshot = UserSettings.Default.CompressedAudioMode;
         _cosmeticStyleSnapshot = UserSettings.Default.CosmeticStyle;
+        _jsonHighlightThemeSnapshot = UserSettings.Default.JsonHighlightTheme;
 
         SelectedUeGame = _ueGameSnapshot;
         SelectedCustomVersions = _customVersionsSnapshot;
@@ -186,6 +197,7 @@ public class SettingsViewModel : ViewModel
         SelectedCosmeticStyle = _cosmeticStyleSnapshot;
         CriwareDecryptionKey = _criwareDecryptionKey;
         UnluacOpcodeMap = _unluacOpcodeMap;
+        SelectedJsonHighlightTheme = _jsonHighlightThemeSnapshot;
         SelectedAesReload = UserSettings.Default.AesReload;
         SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
 
@@ -195,6 +207,7 @@ public class SettingsViewModel : ViewModel
         DiscordRpcs = new ReadOnlyObservableCollection<EDiscordRpc>(new ObservableCollection<EDiscordRpc>(EnumerateDiscordRpcs()));
         CompressedAudios = new ReadOnlyObservableCollection<ECompressedAudio>(new ObservableCollection<ECompressedAudio>(EnumerateCompressedAudios()));
         CosmeticStyles = new ReadOnlyObservableCollection<EIconStyle>(new ObservableCollection<EIconStyle>(EnumerateCosmeticStyles()));
+        JsonHighlightThemes = new ReadOnlyObservableCollection<EJsonHighlightTheme>(new ObservableCollection<EJsonHighlightTheme>(EnumerateJsonHighlightThemes()));
     }
 
     public bool Save(out List<SettingsOut> whatShouldIDo)
@@ -225,6 +238,7 @@ public class SettingsViewModel : ViewModel
         UserSettings.Default.CosmeticStyle = SelectedCosmeticStyle;
         UserSettings.Default.AesReload = SelectedAesReload;
         UserSettings.Default.DiscordRpc = SelectedDiscordRpc;
+        UserSettings.Default.JsonHighlightTheme = SelectedJsonHighlightTheme;
 
         Options.SaveAsUserDefaults();
 
@@ -244,4 +258,5 @@ public class SettingsViewModel : ViewModel
     private IEnumerable<EDiscordRpc> EnumerateDiscordRpcs() => Enum.GetValues<EDiscordRpc>();
     private IEnumerable<ECompressedAudio> EnumerateCompressedAudios() => Enum.GetValues<ECompressedAudio>();
     private IEnumerable<EIconStyle> EnumerateCosmeticStyles() => Enum.GetValues<EIconStyle>();
+    private IEnumerable<EJsonHighlightTheme> EnumerateJsonHighlightThemes() => Enum.GetValues<EJsonHighlightTheme>();
 }

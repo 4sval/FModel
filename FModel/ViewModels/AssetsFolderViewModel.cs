@@ -218,6 +218,17 @@ public class AssetsFolderViewModel
             var treeItems = new RangeObservableCollection<TreeItem>();
             treeItems.SetSuppressionState(true);
 
+            static TreeItem FindByHeaderOrNull(IReadOnlyList<TreeItem> list, string header)
+            {
+                for (var i = 0; i < list.Count; i++)
+                {
+                    if (list[i].Header == header)
+                        return list[i];
+                }
+
+                return null;
+            }
+
             foreach (var entry in entries)
             {
                 TreeItem lastNode = null;
@@ -226,22 +237,30 @@ public class AssetsFolderViewModel
                 var builder = new StringBuilder(64);
                 var parentNode = treeItems;
 
+                if (folders.Length <= 1)
+                {
+                    var rootNode = FindByHeaderOrNull(treeItems, "Content");
+                    if (rootNode == null)
+                    {
+                        rootNode = new TreeItem("Content", entry, "Content")
+                        {
+                            Parent = null
+                        };
+
+                        rootNode.Folders.SetSuppressionState(true);
+                        rootNode.AssetsList.Assets.SetSuppressionState(true);
+                        treeItems.Add(rootNode);
+                    }
+
+                    rootNode.AssetsList.Add(entry);
+                    continue;
+                }
+
                 for (var i = 0; i < folders.Length - 1; i++)
                 {
                     var folder = folders[i];
                     builder.Append(folder).Append('/');
                     lastNode = FindByHeaderOrNull(parentNode, folder);
-
-                    static TreeItem FindByHeaderOrNull(IReadOnlyList<TreeItem> list, string header)
-                    {
-                        for (var i = 0; i < list.Count; i++)
-                        {
-                            if (list[i].Header == header)
-                                return list[i];
-                        }
-
-                        return null;
-                    }
 
                     if (lastNode == null)
                     {

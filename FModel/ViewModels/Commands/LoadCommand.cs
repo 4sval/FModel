@@ -113,6 +113,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
     private void FilterDirectoryFilesToDisplay(CancellationToken cancellationToken, IEnumerable<FileItem> directoryFiles)
     {
         HashSet<string> filter;
+        var includeLooseFiles = false;
         if (directoryFiles == null) filter = null;
         else
         {
@@ -120,11 +121,17 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
             foreach (var directoryFile in directoryFiles)
             {
                 if (!directoryFile.IsEnabled) continue;
+                if (directoryFile.IsLooseFilesContainer)
+                {
+                    includeLooseFiles = true;
+                    continue;
+                }
                 filter.Add(directoryFile.Name);
             }
         }
 
         var hasFilter = filter != null && filter.Count != 0;
+        var hasSelection = hasFilter || includeLooseFiles;
         var entries = new List<GameFile>();
 
         foreach (var asset in _applicationView.CUE4Parse.Provider.Files.Values)
@@ -132,9 +139,13 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
             cancellationToken.ThrowIfCancellationRequested(); // cancel if needed
             if (asset.IsUePackagePayload) continue;
 
-            if (hasFilter)
+            if (hasSelection)
             {
                 if (asset is VfsEntry entry && filter.Contains(entry.Vfs.Name))
+                {
+                    entries.Add(asset);
+                }
+                else if (includeLooseFiles && asset is OsGameFile)
                 {
                     entries.Add(asset);
                 }

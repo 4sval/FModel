@@ -99,7 +99,7 @@ public class SkeletalModel : UModel<SkinnedMeshVertex>
 
         foreach (var morph in export.MorphTargets)
         {
-            if (!morph.TryLoad(out UMorphTarget morphTarget) || morphTarget.MorphLODModels.Length < 1 ||
+            if (!morph.TryLoad(out UMorphTarget morphTarget) || morphTarget.MorphLODModels.Length <= skeletalMesh.LODs[LodLevel].SourceLodIndex ||
                 morphTarget.MorphLODModels[skeletalMesh.LODs[LodLevel].SourceLodIndex].Vertices.Length < 1)
                 continue;
 

@@ -101,14 +101,17 @@
     <Style x:Key="DirectoryFilesListBox" TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
         <Setter Property="ItemsSource" Value="{Binding CUE4Parse.GameDirectory.DirectoryFilesView, IsAsync=True}" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode" Value="NeverExpand"/>
-        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement" Value="Docked"/>
+        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode" Value="NeverExpand" />
+        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement" Value="Docked" />
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
                 <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                     <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
-                    <Setter Property="Padding" Value="5 3" />
+                    <Setter Property="Margin" Value="0 1" />
+                    <Setter Property="Padding" Value="7 5" />
+                    <Setter Property="BorderBrush" Value="Transparent" />
+                    <Setter Property="BorderThickness" Value="1" />
                 </Style>
             </Setter.Value>
         </Setter>
@@ -119,14 +122,26 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="25" />
-                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="95" />
+                            <ColumnDefinition Width="85" />
                         </Grid.ColumnDefinitions>
 
                         <Image x:Name="ListImage" Source="/FModel;component/Resources/archive.png"
-                               Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3 0" />
-                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
-                        <TextBlock Grid.Column="3" HorizontalAlignment="Right" Text="{Binding Length, Converter={x:Static converters:SizeToStringConverter.Instance}}" />
+                               Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 4 0"
+                               VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality" />
+                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Name}" TextTrimming="CharacterEllipsis"
+                                   VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="2"
+                                   Margin="12 0 8 0"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Right"
+                                   Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                   Opacity="0.75"
+                                   Text="{Binding FileCount, StringFormat={}{0:N0} files}" />
+                        <TextBlock x:Name="LengthText"
+                                   Grid.Column="3" HorizontalAlignment="Right" Text="{Binding Length, Converter={x:Static converters:SizeToStringConverter.Instance}}"
+                                   Margin="8 0 0 0"
+                                   VerticalAlignment="Center" />
                     </Grid>
                     <DataTemplate.Triggers>
                         <DataTrigger Binding="{Binding IsEnabled}" Value="True">
@@ -134,6 +149,10 @@
                         </DataTrigger>
                         <DataTrigger Binding="{Binding IsEnabled}" Value="False">
                             <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/archive_disabled.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsLooseFilesContainer}" Value="True">
+                            <Setter TargetName="LengthText" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset.png" />
                         </DataTrigger>
                     </DataTemplate.Triggers>
                 </DataTemplate>
