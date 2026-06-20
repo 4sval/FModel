@@ -198,24 +198,36 @@ public partial class SettingsView
         _applicationView.SettingsView.SelectedMapStructTypes = editor.MapStructTypes;
     }
 
-    private void OpenAesEndpoint(object sender, RoutedEventArgs e)
+    private async void OpenAesEndpoint(object sender, RoutedEventArgs e)
     {
         var editor = new EndpointEditor(
             _applicationView.SettingsView.AesEndpoint, "Endpoint Configuration (AES)", EEndpointType.Aes);
         if (_applicationView.Status.IsReady)
             _applicationView.Status.SetStatus(EStatusKind.Configuring);
         editor.ShowDialog();
+        if (editor.DialogResult == true)
+        {
+            await _applicationView.CUE4Parse.RefreshAes();
+            await _applicationView.AesManager.InitAes();
+            _applicationView.AesManager.HasChange = true;
+            await _applicationView.UpdateProvider(false);
+        }
         if (_applicationView.Status.IsReady)
             _applicationView.Status.SetStatus(EStatusKind.Ready);
     }
 
-    private void OpenMappingEndpoint(object sender, RoutedEventArgs e)
+    private async void OpenMappingEndpoint(object sender, RoutedEventArgs e)
     {
         var editor = new EndpointEditor(
             _applicationView.SettingsView.MappingEndpoint, "Endpoint Configuration (Mapping)", EEndpointType.Mapping);
         if (_applicationView.Status.IsReady)
             _applicationView.Status.SetStatus(EStatusKind.Configuring);
         editor.ShowDialog();
+        if (editor.DialogResult == true)
+        {
+            await _applicationView.CUE4Parse.InitMappings(true);
+            await _applicationView.UpdateProvider(false);
+        }
         if (_applicationView.Status.IsReady)
             _applicationView.Status.SetStatus(EStatusKind.Ready);
     }
