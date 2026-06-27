@@ -590,5 +590,13 @@ namespace FModel.Settings
             get => _previewTexturesAssetExplorer;
             set => SetProperty(ref _previewTexturesAssetExplorer, value);
         }
+
+        private EExplorerViewMode _explorerViewMode = EExplorerViewMode.Grid;
+
+        public EExplorerViewMode ExplorerViewMode
+        {
+            get => _explorerViewMode;
+            set => SetProperty(ref _explorerViewMode, value);
+        }
     }
 }

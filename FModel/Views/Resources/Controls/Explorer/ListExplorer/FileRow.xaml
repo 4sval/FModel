@@ -1,0 +1,77 @@
+<UserControl x:Class="FModel.Views.Resources.Controls.ListExplorer.FileRow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:FModel.ViewModels"
+             xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+             mc:Ignorable="d"
+             d:DesignHeight="32"
+             d:DesignWidth="900"
+             d:DataContext="{d:DesignInstance Type=vm:GameFileViewModel, IsDesignTimeCreatable=False}">
+    <Grid Height="32"
+          Margin="8,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{StaticResource ExplorerNameColumn}" />
+            <ColumnDefinition Width="{StaticResource ExplorerTypeColumn}" />
+            <ColumnDefinition Width="{StaticResource ExplorerDetailsColumn}" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0"
+                    Orientation="Horizontal"
+                    VerticalAlignment="Center">
+            <Grid Width="20"
+                  Height="20"
+                  Margin="0 0 8 0">
+                <Image Stretch="Uniform"
+                       Source="{Binding PreviewImage}" />
+                <Path x:Name="FallbackIcon"
+                      Stretch="Uniform">
+                    <Path.Style>
+                        <Style TargetType="{x:Type Path}">
+                            <Setter Property="Visibility"
+                                    Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding PreviewImage}"
+                                             Value="{x:Null}">
+                                    <Setter Property="Visibility"
+                                            Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Path.Style>
+                    <Path.Data>
+                        <MultiBinding Converter="{x:Static converters:FileToGeometryConverter.Instance}">
+                            <Binding Path="AssetCategory" />
+                            <Binding Path="ResolvedAssetType" />
+                        </MultiBinding>
+                    </Path.Data>
+                    <Path.Fill>
+                        <MultiBinding Converter="{x:Static converters:FileToGeometryConverter.Instance}">
+                            <Binding Path="AssetCategory" />
+                            <Binding Path="ResolvedAssetType" />
+                        </MultiBinding>
+                    </Path.Fill>
+                </Path>
+            </Grid>
+            <TextBlock Text="{Binding Asset.NameWithoutExtension}"
+                       VerticalAlignment="Center"
+                       FontSize="13"
+                       FontWeight="DemiBold"
+                       TextTrimming="CharacterEllipsis"
+                       Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+        </StackPanel>
+        <TextBlock Grid.Column="1"
+                   Text="{Binding ResolvedAssetType}"
+                   VerticalAlignment="Center"
+                   FontSize="12"
+                   TextTrimming="CharacterEllipsis"
+                   Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+        <TextBlock Grid.Column="2"
+                   Text="{Binding Asset.Size, Converter={x:Static converters:SizeToStringConverter.Instance}}"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Right"
+                   FontSize="12"
+                   Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+    </Grid>
+</UserControl>

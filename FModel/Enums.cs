@@ -172,3 +172,9 @@ public enum EUnluacMode
     Decompile,
     Disassemble,
 }
+
+public enum EExplorerViewMode
+{
+    Grid,
+    List
+}

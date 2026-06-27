@@ -20,7 +20,7 @@
                 <ResourceDictionary Source="Views/Resources/Controls/ContextMenus/FolderContextMenu.xaml" />
 
                 <ResourceDictionary Source="Views/Resources/Resources.xaml" />
-                <ResourceDictionary Source="Views/Resources/Controls/TiledExplorer/Resources.xaml" />
+                <ResourceDictionary Source="Views/Resources/Controls/Explorer/Resources.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <Color x:Key="{x:Static adonisUi:Colors.AccentColor}">#206BD4</Color>

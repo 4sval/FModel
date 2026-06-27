@@ -2258,4 +2258,27 @@
         </Setter>
     </Style>
 
+    <!-- Just to keep border color during toggle -->
+    <Style x:Key="ExplorerViewToggleButton"
+           TargetType="{x:Type ToggleButton}"
+           BasedOn="{StaticResource {x:Type ToggleButton}}">
+        <Setter Property="Width"
+                Value="32" />
+        <Setter Property="Height"
+                Value="28" />
+        <Setter Property="Padding"
+                Value="7" />
+        <Setter Property="BorderThickness"
+                Value="1" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BorderBrush}}" />
+        <Style.Triggers>
+            <Trigger Property="IsChecked"
+                     Value="True">
+                <Setter Property="BorderBrush"
+                        Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1InteractionBorderBrush}}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
 </ResourceDictionary>

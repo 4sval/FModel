@@ -54,8 +54,10 @@ public partial class MainWindow
         InitializeComponent();
 
         AssetsExplorer.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
+        AssetsListExplorer.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
         AssetsListName.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
         AssetsExplorer.SelectionChanged += (_, e) => SyncSelection(AssetsListName, e);
+        AssetsListExplorer.SelectionChanged += (_, e) => SyncSelection(AssetsListName, e);
         AssetsListName.SelectionChanged += (_, e) => SyncSelection(AssetsExplorer, e);
 
         FLogger.Logger = LogRtbName;

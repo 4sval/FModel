@@ -503,6 +503,8 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="5" />
                                         <ColumnDefinition Width="Auto" MinWidth="150" />
+                                        <ColumnDefinition Width="5" />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
                                     <inputs:SearchTextBox x:Name="AssetsExplorerSearch" Grid.Column="0"
@@ -512,17 +514,87 @@
                                     <ComboBox x:Name="CategoriesSelector" Grid.Column="2"
                                               ItemsSource="{Binding Categories}"
                                               SelectedItem="{Binding SelectedItem.SelectedCategory, ElementName=AssetsFolderName, Mode=TwoWay}" />
+
+                                    <StackPanel Grid.Column="4"
+                                                Orientation="Horizontal"
+                                                HorizontalAlignment="Right">
+                                        <ToggleButton Style="{StaticResource ExplorerViewToggleButton}"
+                                                      Width="32"
+                                                      Height="28"
+                                                      Padding="7"
+                                                      ToolTip="Grid View"
+                                                      IsChecked="{Binding ExplorerViewMode,
+                                                                  Source={x:Static local:Settings.UserSettings.Default},
+                                                                  Converter={x:Static converters:EnumToBoolConverter.Instance},
+                                                                  ConverterParameter={x:Static local:EExplorerViewMode.Grid},
+                                                                  Mode=TwoWay}">
+                                            <Path Data="{StaticResource GridIcon}"
+                                                  Width="14"
+                                                  Height="14"
+                                                  Stretch="Uniform"
+                                                  Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                                        </ToggleButton>
+                                        <ToggleButton Style="{StaticResource ExplorerViewToggleButton}"
+                                                      Width="32"
+                                                      Height="28"
+                                                      Padding="7"
+                                                      ToolTip="List View"
+                                                      IsChecked="{Binding ExplorerViewMode,
+                                                                  Source={x:Static local:Settings.UserSettings.Default},
+                                                                  Converter={x:Static converters:EnumToBoolConverter.Instance},
+                                                                  ConverterParameter={x:Static local:EExplorerViewMode.List},
+                                                                  Mode=TwoWay}">
+                                            <Path Data="{StaticResource ListIcon}"
+                                                  Width="14"
+                                                  Height="14"
+                                                  Stretch="Uniform"
+                                                  Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                                        </ToggleButton>
+                                    </StackPanel>
                                 </Grid>
 
                                 <controls:Breadcrumb Grid.Row="1" Margin="0 5 0 0"
                                                      HorizontalAlignment="Left"
                                                      DataContext="{Binding SelectedItem.PathAtThisPoint, ElementName=AssetsFolderName}" />
 
-                                <ListBox x:Name="AssetsExplorer" Grid.Row="2"
-                                         ItemsSource="{Binding SelectedItem.CombinedEntries, ElementName=AssetsFolderName, IsAsync=True}"
-                                         Style="{StaticResource TiledExplorer}"
-                                         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
-                                         PreviewKeyDown="OnPreviewKeyDown" />
+                                <Grid Grid.Row="2">
+                                    <ListBox x:Name="AssetsExplorer"
+                                             ItemsSource="{Binding SelectedItem.CombinedEntries, ElementName=AssetsFolderName, IsAsync=True}"
+                                             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
+                                             PreviewKeyDown="OnPreviewKeyDown">
+                                        <ListBox.Style>
+                                            <Style TargetType="ListBox"
+                                                   BasedOn="{StaticResource TiledExplorer}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ExplorerViewMode, Source={x:Static local:Settings.UserSettings.Default}}"
+                                                                 Value="{x:Static local:EExplorerViewMode.List}">
+                                                        <Setter Property="Visibility"
+                                                                Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ListBox.Style>
+                                    </ListBox>
+                                    <ListBox x:Name="AssetsListExplorer"
+                                             ItemsSource="{Binding SelectedItem.CombinedEntries, ElementName=AssetsFolderName, IsAsync=True}"
+                                             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
+                                             PreviewKeyDown="OnPreviewKeyDown">
+                                        <ListBox.Style>
+                                            <Style TargetType="ListBox"
+                                                   BasedOn="{StaticResource ListExplorer}">
+                                                <Setter Property="Visibility"
+                                                        Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ExplorerViewMode, Source={x:Static local:Settings.UserSettings.Default}}"
+                                                                 Value="{x:Static local:EExplorerViewMode.List}">
+                                                        <Setter Property="Visibility"
+                                                                Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ListBox.Style>
+                                    </ListBox>
+                                </Grid>
                             </Grid>
                         </Border>
 

@@ -788,6 +788,7 @@ public class CUE4ParseViewModel : ViewModel
             }
             case "ebd" when Provider.Versions.Game is EGame.GAME_ArcRaiders:
             case "json":
+            case "Json":
             {
                 var data = Provider.SaveAsset(entry);
                 using var stream = new MemoryStream(data) { Position = 0 };
