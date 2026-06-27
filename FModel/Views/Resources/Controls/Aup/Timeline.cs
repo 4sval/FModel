@@ -100,8 +100,8 @@ public sealed class Timeline : UserControl
 
     private void OnSourceEvent(object sender, SourceEventArgs e)
     {
-        if (e.Event != ESourceEventType.Loading || Source == null) return;
-        Dispatcher.BeginInvoke((Action) UpdateTimeline);
+        if (e is not { Event: ESourceEventType.Loading } || Source == null) return;
+        Dispatcher.BeginInvoke(UpdateTimeline);
     }
 
     private void OnSourcePropertyChangedEvent(object sender, SourcePropertyChangedEventArgs e)

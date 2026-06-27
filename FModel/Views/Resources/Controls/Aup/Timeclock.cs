@@ -116,9 +116,9 @@ public sealed class Timeclock : UserControl
 
     private void OnSourceEvent(object sender, SourceEventArgs e)
     {
-        if (e.Event != ESourceEventType.Loading || Source == null) return;
+        if (e is not { Event: ESourceEventType.Loading } || Source == null) return;
         Label = Source.PlayedFile.FileName;
-        Dispatcher.BeginInvoke((Action) CalculateTime);
+        Dispatcher.BeginInvoke(CalculateTime);
     }
 
     private void OnSourcePropertyChangedEvent(object sender, SourcePropertyChangedEventArgs e)

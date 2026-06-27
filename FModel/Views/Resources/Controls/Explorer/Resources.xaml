@@ -126,7 +126,7 @@
         <Setter Property="tiledExplorer:SmoothScroll.IsEnabled"
                 Value="True" />
         <Setter Property="tiledExplorer:SmoothScroll.Factor"
-                Value="1.25" />
+                Value="0.1" />
         <Setter Property="SelectionMode"
                 Value="Extended" />
         <Setter Property="ContextMenu"

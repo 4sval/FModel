@@ -121,7 +121,7 @@ public sealed class SpectrumAnalyzer : UserControl
 
     private void OnSourceEvent(object sender, SourceEventArgs e)
     {
-        if (e.Event != ESourceEventType.Loading) return;
+        if (e is not { Event: ESourceEventType.Loading } g) return;
         _spectrumProvider = Source.Spectrum;
         UpdateFrequencyMapping();
     }
