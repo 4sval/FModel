@@ -14,6 +14,7 @@ using CUE4Parse.Utils;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Settings;
+using FModel.Views;
 using FModel.Views.Snooper;
 using Serilog.Events;
 
@@ -58,7 +59,16 @@ public class ExportSessionViewModel : ViewModel
         get
         {
             if (_session != null) return _session;
-            _session = new ExportSession();
+            _session = new ExportSession((args, ct) =>
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    var window = new StreamingLevelFilterWindow(new StreamingLevelFilterViewModel(args));
+                    _stopwatch.Stop();
+                    window.ShowDialog();
+                    _stopwatch.Start();
+                }, DispatcherPriority.Normal, ct);
+            });
             _session.PropertyChanged += OnSessionPropertyChanged;
             return _session;
         }
