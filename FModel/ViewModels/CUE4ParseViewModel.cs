@@ -676,7 +676,34 @@ public class CUE4ParseViewModel : ViewModel
 
                 if (saveProperties || updateUi)
                 {
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(saveProperties), Formatting.Indented), saveProperties, updateUi);
+                    var displayData = result.GetDisplayData(saveProperties);
+
+                    if (UserSettings.Default.MergeEditorOnlyDataExports && Provider.TryLoadPackage(entry.Path.SubstringBefore('.') + ".o.uasset", out var editorAsset))
+                    {
+                        var pkg = Provider.LoadPackage(entry.Path);
+                        var exports = pkg.GetExports().ToArray();
+                        var finalExports = new List<UObject>(exports);
+                        var editorOnlyDataExports = new HashSet<UObject>();
+
+                        foreach (var export in exports)
+                        {
+                            var editorData = editorAsset.GetExportOrNull(export.Name + "EditorOnlyData");
+                            if (editorData == null)
+                                continue;
+
+                            export.Properties.AddRange(editorData.Properties);
+                            editorOnlyDataExports.Add(editorData);
+                        }
+
+                        if (editorOnlyDataExports.Count > 0)
+                        {
+                            finalExports.AddRange(editorAsset.GetExports().Where(editorExport => !editorOnlyDataExports.Contains(editorExport)));
+                        }
+
+                        displayData = finalExports;
+                    }
+
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(displayData, Formatting.Indented), saveProperties, updateUi);
                     if (saveProperties) break; // do not search for viewable exports if we are dealing with jsons
                 }
 
