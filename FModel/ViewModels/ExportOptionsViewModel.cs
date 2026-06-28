@@ -56,6 +56,12 @@ public class ExportOptionsViewModel : ViewModel
             if (!SetProperty(ref field, value)) return;
             RaisePropertyChanged(nameof(SocketSettingsEnabled));
             RaisePropertyChanged(nameof(CompressionSettingsEnabled));
+            RaisePropertyChanged(nameof(TextureFormatsEnabled));
+
+            if (value == EMeshFormat.USD)
+            {
+                SelectedTextureFormat = ETextureFormat.Png;
+            }
         }
     }
 
@@ -122,6 +128,7 @@ public class ExportOptionsViewModel : ViewModel
         get;
         set => SetProperty(ref field, value);
     }
+    public bool TextureFormatsEnabled => SelectedMeshFormat != EMeshFormat.USD;
     public bool ExportHdrTexturesAsHdr
     {
         get;

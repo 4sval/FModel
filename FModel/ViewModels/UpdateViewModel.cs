@@ -111,7 +111,7 @@ public partial class UpdateViewModel : ViewModel
             foreach (var (commit, usernames) in coAuthorMap)
             {
                 var coAuthors = usernames
-                    .Where(username => authorCache.ContainsKey(username))
+                    .Where(authorCache.ContainsKey)
                     .Select(username => authorCache[username])
                     .ToArray();
 

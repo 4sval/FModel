@@ -114,7 +114,7 @@ public class TabImage : ViewModel
         else
         {
             ImageBuffer = imageData;
-            ExportName += "." + (NoAlpha ? "jpg" : "png");
+            ExportName += "." + (NoAlpha || UserSettings.Default.TextureExportFormat == ETextureFormat.Jpeg ? "jpg" : "png");
         }
 
         using var stream = new MemoryStream(imageData);

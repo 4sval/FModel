@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FModel.Framework;
 using FModel.ViewModels.ApiEndpoints.Models;
@@ -26,7 +27,7 @@ public class GitHubApiEndpoint(RestClient client) : AbstractApiProvider(client)
 
     public async Task<Author> GetUserAsync(string username)
     {
-        var request = new FRestRequest($"https://api.github.com/users/{username}");
+        var request = new FRestRequest($"https://api.github.com/users/{Uri.EscapeDataString(username)}");
         var response = await _client.ExecuteAsync<Author>(request).ConfigureAwait(false);
         return response.Data;
     }
