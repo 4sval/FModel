@@ -48,6 +48,7 @@ using CUE4Parse.UE4.BinaryConfig;
 using CUE4Parse.UE4.CriWare;
 using CUE4Parse.UE4.CriWare.Readers;
 using CUE4Parse.UE4.FMod;
+using CUE4Parse.UE4.GameFeatures;
 using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Localization;
 using CUE4Parse.UE4.Lua.unluac;
@@ -198,6 +199,10 @@ public class CUE4ParseViewModel : ViewModel
                     "eFootball" => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
                     [
                         new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\KONAMI\\eFootball\\ST\\Download")
+                    ], SearchOption.AllDirectories, versionContainer, pathComparer),
+                    "DeadByDaylight" => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
+                    [
+                        new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\DeadByDaylight\\Saved\\PersistentDownloadDir\\DynamicContent")
                     ], SearchOption.AllDirectories, versionContainer, pathComparer),
                     _ when versionContainer.Game is EGame.GAME_AshEchoes => new AEDefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
                     _ when versionContainer.Game is EGame.GAME_BlackStigma => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, StringComparer.Ordinal),
@@ -650,7 +655,34 @@ public class CUE4ParseViewModel : ViewModel
 
                 if (saveProperties || updateUi)
                 {
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(saveProperties), Formatting.Indented), saveProperties, updateUi);
+                    var displayData = result.GetDisplayData(saveProperties);
+
+                    if (UserSettings.Default.MergeEditorOnlyDataExports && Provider.TryLoadPackage(entry.Path.SubstringBefore('.') + ".o.uasset", out var editorAsset))
+                    {
+                        var pkg = Provider.LoadPackage(entry.Path);
+                        var exports = pkg.GetExports().ToArray();
+                        var finalExports = new List<UObject>(exports);
+                        var editorOnlyDataExports = new HashSet<UObject>();
+
+                        foreach (var export in exports)
+                        {
+                            var editorData = editorAsset.GetExportOrNull(export.Name + "EditorOnlyData");
+                            if (editorData == null)
+                                continue;
+
+                            export.Properties.AddRange(editorData.Properties);
+                            editorOnlyDataExports.Add(editorData);
+                        }
+
+                        if (editorOnlyDataExports.Count > 0)
+                        {
+                            finalExports.AddRange(editorAsset.GetExports().Where(editorExport => !editorOnlyDataExports.Contains(editorExport)));
+                        }
+
+                        displayData = finalExports;
+                    }
+
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(displayData, Formatting.Indented), saveProperties, updateUi);
                     if (saveProperties) break; // do not search for viewable exports if we are dealing with jsons
                 }
 
@@ -829,6 +861,13 @@ public class CUE4ParseViewModel : ViewModel
                 var registry = new FGlobalShaderCache(archive);
                 TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), saveProperties, updateUi);
 
+                break;
+            }
+            case "bin" when entry.Name.Contains("GameFeatureVersePaths", StringComparison.OrdinalIgnoreCase):
+            {
+                var archive = entry.CreateReader();
+                var versePathLookup = new FGameFeatureVersePathLookup(archive);
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(versePathLookup, Formatting.Indented), saveProperties, updateUi);
                 break;
             }
             case "bank":
@@ -1075,6 +1114,11 @@ public class CUE4ParseViewModel : ViewModel
             {
                 var l10nData = new FAion2L10NFile(entry, Provider);
                 TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(l10nData, Formatting.Indented), saveProperties, updateUi);
+            }
+            else if (entry.NameWithoutExtension.Equals("key_manifest"))
+            {
+                var keymanifest = new FAion2KeyManifestFile(entry, Provider);
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(keymanifest, Formatting.Indented), saveProperties, updateUi);
             }
             else
             {

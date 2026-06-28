@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -229,11 +230,17 @@ public class AssetsFolderViewModel
                 return null;
             }
 
+            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData).Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
             foreach (var entry in entries)
             {
                 TreeItem lastNode = null;
                 TreeItem parentItem = null;
-                var folders = entry.Path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+                var path = entry.Path;
+                if (path.StartsWith(localAppData, StringComparison.OrdinalIgnoreCase))
+                    path = path[localAppData.Length..].TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+                var folders = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
                 var builder = new StringBuilder(64);
                 var parentNode = treeItems;
 

@@ -46,6 +46,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -259,12 +260,24 @@
 
                     <TextBlock Grid.Row="21"
                                Grid.Column="0"
+                               Text="Merge Editor-Only Data (.o.uasset)"
+                               VerticalAlignment="Center"
+                               ToolTip="Reads .o.uasset packages and merges their editor-only data into the parent asset. Useful for JSON-based asset export workflows"
+                               Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="21"
+                              Grid.Column="2"
+                              Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                              IsChecked="{Binding MergeEditorOnlyDataExports, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                              Margin="0 5 0 10"
+                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
+
+                    <TextBlock Grid.Row="22"
+                               Grid.Column="0"
                                Text="CRIWARE Decryption Key"
                                VerticalAlignment="Center"
                                Margin="0 0 0 10" />
-
                     <TextBox x:Name="CriwareKeyBox"
-                             Grid.Row="21"
+                             Grid.Row="22"
                              Grid.Column="2"
                              Grid.ColumnSpan="5"
                              Margin="0 5 0 10"
@@ -274,8 +287,7 @@
                              ToolTip="Enter decryption key in numeric or hexadecimal format (valid key is up to 20 digits or 8 bytes long)"
                              TextAlignment="Right"
                              TextChanged="CriwareKeyBox_TextChanged"
-                             Loaded="CriwareKeyBox_Loaded"/>
-
+                             Loaded="CriwareKeyBox_Loaded" />
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="CreatorTemplate">
