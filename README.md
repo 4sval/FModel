@@ -17,9 +17,6 @@ For installation, follow the instructions from [here](https://github.com/4sval/F
 
 ### Sponsorship:
 <p>
-  <a href="https://www.jetbrains.com/">
-    <img src="https://cdn.fmodel.app/i/svg/jetbrains.svg" width="256px">
-  </a>
   <a href="https://1password.com/">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://cdn.fmodel.app/i/svg/1password-light.svg">

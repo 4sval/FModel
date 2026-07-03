@@ -575,6 +575,7 @@
                                             </Style>
                                         </ListBox.Style>
                                     </ListBox>
+                                    <!-- once we need sorting, convert this to a listview (see search window) and add the header back (customize the template to re-add GridViewHeaderRowPresenter) -->
                                     <ListBox x:Name="AssetsListExplorer"
                                              ItemsSource="{Binding SelectedItem.CombinedEntries, ElementName=AssetsFolderName, IsAsync=True}"
                                              Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"

@@ -60,7 +60,13 @@ public class ExportOptionsViewModel : ViewModel
 
             if (value == EMeshFormat.USD)
             {
+                _preUsdTextureFormat = SelectedTextureFormat;
                 SelectedTextureFormat = ETextureFormat.Png;
+            }
+            else if (_preUsdTextureFormat.HasValue)
+            {
+                SelectedTextureFormat = _preUsdTextureFormat.Value;
+                _preUsdTextureFormat = null;
             }
         }
     }
@@ -128,7 +134,10 @@ public class ExportOptionsViewModel : ViewModel
         get;
         set => SetProperty(ref field, value);
     }
+
+    private ETextureFormat? _preUsdTextureFormat;
     public bool TextureFormatsEnabled => SelectedMeshFormat != EMeshFormat.USD;
+
     public bool ExportHdrTexturesAsHdr
     {
         get;
