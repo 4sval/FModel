@@ -184,7 +184,7 @@ public class Renderer : IDisposable
                     {
                         addedModel.AddInstance(t);
                     }
-                    else if (st.TryConvert(out var mesh))
+                    else if (st.TryConvert(out var mesh, EMeshQuality.Highest))
                     {
                         addedModel = new StaticModel(st, mesh, t);
                         Options.Models[guid] = addedModel;
@@ -194,7 +194,7 @@ public class Renderer : IDisposable
                 case USkeletalMesh sk:
                 {
                     guid = Guid.NewGuid();
-                    if (!Options.Models.ContainsKey(guid) && sk.TryConvert(out var mesh))
+                    if (!Options.Models.ContainsKey(guid) && sk.TryConvert(out var mesh, EMeshQuality.Highest))
                     {
                         addedModel = new SkeletalModel(sk, mesh, t);
                         Options.Models[guid] = addedModel;
@@ -363,7 +363,7 @@ public class Renderer : IDisposable
     private void LoadSkeletalMesh(USkeletalMesh original)
     {
         var guid = new FGuid((uint) original.GetFullName().GetHashCode());
-        if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh)) return;
+        if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh, EMeshQuality.Highest)) return;
 
         var skeletalModel = new SkeletalModel(original, mesh);
         Options.Models[guid] = skeletalModel;
@@ -394,7 +394,7 @@ public class Renderer : IDisposable
             return;
         }
 
-        if (!editorCube.TryConvert(out var mesh))
+        if (!editorCube.TryConvert(out var mesh, EMeshQuality.Highest))
             return;
 
         Options.Models[guid] = new StaticModel(original, mesh);
