@@ -76,7 +76,7 @@
                         <ColumnDefinition.Width>
                             <MultiBinding Converter="{x:Static converters:RatioToGridLengthConverter.Instance}">
                                 <Binding Path="Folders.Count" />
-                                <Binding Path="AssetsList.Assets.Count" />
+                                <Binding Path="AssetsList.Count" />
                             </MultiBinding>
                         </ColumnDefinition.Width>
                     </ColumnDefinition>

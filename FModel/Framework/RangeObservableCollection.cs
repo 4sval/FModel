@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 
 namespace FModel.Framework;
 
 public sealed class RangeObservableCollection<T> : ObservableCollection<T>
 {
+    private static readonly PropertyChangedEventArgs CountChanged = new(nameof(Count));
+    private static readonly PropertyChangedEventArgs IndexerChanged = new("Item[]");
     private bool _suppressNotification;
 
     protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
@@ -20,14 +23,25 @@ public sealed class RangeObservableCollection<T> : ObservableCollection<T>
         if (list == null)
             throw new ArgumentNullException(nameof(list));
 
-        _suppressNotification = true;
-
+        var changed = false;
         foreach (var item in list)
-            Add(item);
+        {
+            Items.Add(item);
+            changed = true;
+        }
 
-        _suppressNotification = false;
+        if (!changed || _suppressNotification)
+            return;
+
+        OnPropertyChanged(CountChanged);
+        OnPropertyChanged(IndexerChanged);
         OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
     }
+
+    /// <summary>
+    /// Adds an item while constructing a collection that has not been published to a binding yet.
+    /// </summary>
+    public void AddWithoutNotification(T item) => Items.Add(item);
 
     public void SetSuppressionState(bool state)
     {

@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using CUE4Parse_Conversion.Textures.BC;
 using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
@@ -27,6 +28,10 @@ namespace FModel.ViewModels;
 
 public class ApplicationViewModel : ViewModel
 {
+    private readonly object _providerStatusLock = new();
+    private (string Label, string Prefix)? _pendingProviderStatus;
+    private bool _providerStatusScheduled;
+
     private EBuildKind _build;
     public EBuildKind Build
     {
@@ -59,6 +64,8 @@ public class ApplicationViewModel : ViewModel
             SetProperty(ref _isAssetsExplorerVisible, value);
         }
     }
+
+    public bool IsAssetPreviewLoadingSuspended { get; set; }
 
     private int _selectedLeftTabIndex;
     public int SelectedLeftTabIndex
@@ -113,13 +120,13 @@ public class ApplicationViewModel : ViewModel
         CUE4Parse.Provider.VfsRegistered += (sender, count) =>
         {
             if (sender is not IAesVfsReader reader) return;
-            Status.UpdateStatusLabel($"{count} Archives ({reader.Name})", "Registered");
+            QueueProviderStatus($"{count} Archives ({reader.Name})", "Registered");
             CUE4Parse.GameDirectory.Add(reader);
         };
         CUE4Parse.Provider.VfsMounted += (sender, count) =>
         {
             if (sender is not IAesVfsReader reader) return;
-            Status.UpdateStatusLabel($"{count:N0} Packages ({reader.Name})", "Mounted");
+            QueueProviderStatus($"{count:N0} Packages ({reader.Name})", "Mounted");
             CUE4Parse.GameDirectory.Verify(reader);
         };
         CUE4Parse.Provider.VfsUnmounted += (sender, _) =>
@@ -133,6 +140,34 @@ public class ApplicationViewModel : ViewModel
         AudioPlayer = new AudioPlayerViewModel();
 
         Status.SetStatus(EStatusKind.Ready);
+    }
+
+    private void QueueProviderStatus(string label, string prefix)
+    {
+        lock (_providerStatusLock)
+        {
+            _pendingProviderStatus = (label, prefix);
+            if (_providerStatusScheduled)
+                return;
+
+            _providerStatusScheduled = true;
+        }
+
+        _ = Application.Current.Dispatcher.BeginInvoke(PublishProviderStatus, DispatcherPriority.Background);
+    }
+
+    private void PublishProviderStatus()
+    {
+        (string Label, string Prefix)? update;
+        lock (_providerStatusLock)
+        {
+            update = _pendingProviderStatus;
+            _pendingProviderStatus = null;
+            _providerStatusScheduled = false;
+        }
+
+        if (update is { } status)
+            Status.UpdateStatusLabel(status.Label, status.Prefix);
     }
 
     public DirectorySettings AvoidEmptyGameDirectory(bool bAlreadyLaunched)

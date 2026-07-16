@@ -39,7 +39,7 @@ public partial class ResourcesDictionary
 
                 // Auto expand single child folders
                 var childFolder = folder;
-                while (childFolder.Folders.Count == 1 && childFolder.AssetsList.Assets.Count == 0)
+                while (childFolder.Folders.Count == 1 && childFolder.AssetsList.Count == 0)
                 {
                     childFolder.IsExpanded = true;
                     childFolder = childFolder.Folders[0];

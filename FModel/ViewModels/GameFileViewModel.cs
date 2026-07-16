@@ -67,6 +67,7 @@ namespace FModel.ViewModels;
 public class GameFileViewModel(GameFile asset) : ViewModel
 {
     private const int MaxPreviewSize = 128;
+    private static readonly SemaphoreSlim ResolverConcurrency = new(4, 4);
 
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
     private EGame? GameVersion => _applicationView.CUE4Parse?.Provider.Versions.Game;
@@ -133,24 +134,24 @@ public class GameFileViewModel(GameFile asset) : ViewModel
         => ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
             _applicationView.CUE4Parse.ExtractSelected(cancellationToken, [Asset]));
 
-    public Task ResolveAsync(EResolveCompute resolve)
+    public async Task ResolveAsync(EResolveCompute resolve)
     {
         try
         {
-            return ResolveInternalAsync(resolve);
+            await ResolveInternalAsync(resolve).ConfigureAwait(false);
         }
         catch (Exception e)
         {
             Log.Error(e, "Failed to resolve asset {AssetName} ({Resolver})", Asset.Path, resolve.ToStringBitfield());
 
             Resolved = EResolveCompute.All;
-            return Task.CompletedTask;
         }
     }
 
     private Task ResolveInternalAsync(EResolveCompute resolve)
     {
-        if (!_applicationView.IsAssetsExplorerVisible || !UserSettings.Default.PreviewTexturesAssetExplorer)
+        if (!_applicationView.IsAssetsExplorerVisible || _applicationView.IsAssetPreviewLoadingSuspended ||
+            !UserSettings.Default.PreviewTexturesAssetExplorer)
         {
             resolve &= ~EResolveCompute.Preview;
         }
@@ -184,7 +185,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             return Task.CompletedTask;
         }
 
-        return Task.Run(() =>
+        return RunResolverAsync(() =>
         {
             // TODO: cache and reuse packages
             var pkg = _applicationView.CUE4Parse?.Provider.LoadPackage(Asset);
@@ -405,7 +406,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 if (!resolve.HasFlag(EResolveCompute.Preview))
                     break;
 
-                return Task.Run(() =>
+                return RunResolverAsync(() =>
                 {
                     var data = _applicationView.CUE4Parse.Provider.SaveAsset(Asset);
                     using var stream = new MemoryStream(data);
@@ -464,6 +465,19 @@ public class GameFileViewModel(GameFile asset) : ViewModel
         return Task.CompletedTask;
     }
 
+    private static async Task RunResolverAsync(Action action)
+    {
+        await ResolverConcurrency.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            await Task.Run(action).ConfigureAwait(false);
+        }
+        finally
+        {
+            ResolverConcurrency.Release();
+        }
+    }
+
     private void SetPreviewImage(SKData data)
     {
         using var ms = new MemoryStream(data.ToArray());
@@ -492,7 +506,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
         Task.Delay(100, token).ContinueWith(t =>
         {
             if (t.IsCanceled) return;
-            ResolveAsync(EResolveCompute.All);
+            _ = ResolveAsync(EResolveCompute.All);
         }, TaskScheduler.FromCurrentSynchronizationContext());
     }
 }

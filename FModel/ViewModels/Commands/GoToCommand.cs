@@ -1,4 +1,5 @@
-using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using FModel.Framework;
 using FModel.Services;
 
@@ -12,46 +13,41 @@ public class GoToCommand : ViewModelCommand<CustomDirectoriesViewModel>
     {
     }
 
-    public override void Execute(CustomDirectoriesViewModel contextViewModel, object parameter)
+    public override async void Execute(CustomDirectoriesViewModel contextViewModel, object parameter)
     {
         if (parameter is not string s || string.IsNullOrEmpty(s)) return;
 
-        JumpTo(s);
+        await JumpToAsync(s);
     }
 
-    public TreeItem JumpTo(string directory)
+    public async Task<TreeItem> JumpToAsync(string directory)
     {
         _applicationView.SelectedLeftTabIndex = 1; // folders tab
-        var root = _applicationView.CUE4Parse.AssetsFolder.Folders;
-        if (root is not { Count: > 0 }) return null;
+        if (!_applicationView.CUE4Parse.AssetsFolder.TryGetFolder(directory, out var folder))
+            return null;
 
-        var i = 0;
-        var done = false;
-        var folders = directory.Split('/');
-        while (!done)
+        // An ancestor of the selected folder is already realized. Selecting it directly
+        // avoids running the virtualized path walker again (notably for breadcrumbs).
+        if (MainWindow.YesWeCats.AssetsFolderName.SelectedItem is TreeItem selectedFolder)
         {
-            foreach (var folder in root)
+            for (var ancestor = selectedFolder; ancestor != null; ancestor = ancestor.Parent)
             {
-                if (!folder.Header.Equals(folders[i], i == 0 ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
+                if (!ReferenceEquals(ancestor, folder))
                     continue;
 
-                folder.IsExpanded = true; // folder found = expand
-
-                // is this the last folder aka the one we want to jump in
-                if (i >= folders.Length - 1)
-                {
-                    folder.IsSelected = true; // select it
-                    return folder;
-                }
-
-                root = folder.Folders; // grab his subfolders
-                break;
+                folder.IsSelected = true;
+                return folder;
             }
-
-            i++;
-            done = i == folders.Length || root.Count == 0;
         }
 
-        return null;
+        var ancestors = new Stack<TreeItem>();
+        for (var ancestor = folder; ancestor != null; ancestor = ancestor.Parent)
+            ancestors.Push(ancestor);
+
+        var path = new List<TreeItem>(ancestors.Count);
+        while (ancestors.TryPop(out var ancestor))
+            path.Add(ancestor);
+
+        return await MainWindow.YesWeCats.SelectFolderAsync(path) ? folder : null;
     }
 }

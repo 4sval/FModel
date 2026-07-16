@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -7,6 +8,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Threading;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels;
@@ -106,6 +109,14 @@ public partial class MainWindow
             ApplicationViewModel.InitZlib()
         );
 
+        var auxiliaryInitialization = Task.WhenAll(
+            _applicationView.CUE4Parse.InitMappings(),
+            ApplicationViewModel.InitDetex(),
+            ApplicationViewModel.InitVgmStream(),
+            ApplicationViewModel.InitImGuiSettings(newOrUpdated),
+            UserSettings.Default.DecompileLua ? ApplicationViewModel.InitUnluac() : Task.CompletedTask
+        );
+
         await _applicationView.CUE4Parse.Initialize();
         await _applicationView.AesManager.InitAes();
         await _applicationView.UpdateProvider(true);
@@ -116,16 +127,12 @@ public partial class MainWindow
         await Task.WhenAll(
             _applicationView.CUE4Parse.VerifyConsoleVariables(),
             _applicationView.CUE4Parse.VerifyOnDemandArchives(),
-            _applicationView.CUE4Parse.InitMappings(),
-            ApplicationViewModel.InitDetex(),
-            ApplicationViewModel.InitVgmStream(),
-            ApplicationViewModel.InitImGuiSettings(newOrUpdated),
+            auxiliaryInitialization,
             Task.Run(() =>
             {
                 if (UserSettings.Default.DiscordRpc == EDiscordRpc.Always)
                     _discordHandler.Initialize(_applicationView.GameDisplayName);
-            }),
-            UserSettings.Default.DecompileLua ? ApplicationViewModel.InitUnluac() : Task.CompletedTask
+            })
         ).ConfigureAwait(false);
 
 #if DEBUG
@@ -254,6 +261,9 @@ public partial class MainWindow
     private void OnPreviewTexturesToggled(object sender, RoutedEventArgs e) => ItemContainerGenerator_StatusChanged(AssetsExplorer.ItemContainerGenerator, EventArgs.Empty);
     private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
     {
+        if (_applicationView.IsAssetPreviewLoadingSuspended)
+            return;
+
         if (sender is not ItemContainerGenerator { Status: GeneratorStatus.ContainersGenerated } generator)
             return;
 
@@ -275,6 +285,94 @@ public partial class MainWindow
                 file.OnIsVisible();
             }
         }
+    }
+
+    public void RefreshVisibleAssetPreviews()
+        => ItemContainerGenerator_StatusChanged(AssetsExplorer.ItemContainerGenerator, EventArgs.Empty);
+
+    public async Task<bool> SelectFolderAsync(IReadOnlyList<TreeItem> path)
+    {
+        if (path.Count == 0)
+            return false;
+
+        // Set the complete model path first. A virtualized container will pick up the
+        // expansion state whenever WPF realizes it, independently of UI timing.
+        for (var i = 0; i < path.Count - 1; i++)
+            path[i].IsExpanded = true;
+
+        ItemsControl parent = AssetsFolderName;
+        TreeViewItem container = null;
+
+        for (var i = 0; i < path.Count; i++)
+        {
+            container = await GetTreeViewItemAsync(parent, path[i]);
+            if (container == null)
+                return false;
+
+            // Only ancestors must be expanded. Expanding the target itself can realize a
+            // large child subtree even though Go To never needs to display those children.
+            if (i < path.Count - 1)
+            {
+                container.IsExpanded = true;
+            }
+
+            parent = container;
+        }
+
+        container.IsSelected = false;
+        container.IsSelected = true;
+        await Dispatcher.InvokeAsync(static () => { }, DispatcherPriority.Background);
+        return ReferenceEquals(AssetsFolderName.SelectedItem, path[^1]);
+    }
+
+    private async Task<TreeViewItem> GetTreeViewItemAsync(ItemsControl parent, TreeItem item)
+    {
+        // FoldersView is bound with IsAsync=True. For large sibling collections its sorted
+        // view can take substantially longer than a fixed number of dispatcher turns.
+        var timeoutAt = DateTime.UtcNow + TimeSpan.FromSeconds(15);
+        while (DateTime.UtcNow < timeoutAt)
+        {
+            parent.ApplyTemplate();
+            var presenter = parent.Template.FindName("ItemsHost", parent) as ItemsPresenter ??
+                            FindVisualChild<ItemsPresenter>(parent);
+            if (presenter == null)
+            {
+                parent.UpdateLayout();
+                presenter = FindVisualChild<ItemsPresenter>(parent);
+            }
+
+            presenter?.ApplyTemplate();
+            var index = parent.Items.IndexOf(item);
+            if (index >= 0 && presenter != null && VisualTreeHelper.GetChildrenCount(presenter) > 0 &&
+                VisualTreeHelper.GetChild(presenter, 0) is NavigableVirtualizingStackPanel panel)
+            {
+                _ = panel.Children; // Ensure that the item generator is connected.
+                panel.BringItemIntoView(index);
+                parent.UpdateLayout();
+
+                if (parent.ItemContainerGenerator.ContainerFromIndex(index) is TreeViewItem container)
+                    return container;
+            }
+
+            await Task.Delay(1);
+        }
+
+        return null;
+    }
+
+    private static T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
+    {
+        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+        {
+            var child = VisualTreeHelper.GetChild(parent, i);
+            if (child is T match)
+                return match;
+
+            if (FindVisualChild<T>(child) is { } descendant)
+                return descendant;
+        }
+
+        return null;
     }
 
     private void OnAssetsTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
@@ -338,7 +436,7 @@ public partial class MainWindow
                 }
 
                 var childFolder = folder;
-                while (childFolder.Folders.Count == 1 && childFolder.AssetsList.Assets.Count == 0)
+                while (childFolder.Folders.Count == 1 && childFolder.AssetsList.Count == 0)
                 {
                     childFolder.IsExpanded = true;
                     childFolder = childFolder.Folders[0];
@@ -360,14 +458,14 @@ public partial class MainWindow
         if (e.Key != Key.Enter || sender is not TreeView treeView || treeView.SelectedItem is not TreeItem folder)
             return;
 
-        if ((folder.IsExpanded || folder.Folders.Count == 0) && folder.AssetsList.Assets.Count > 0)
+        if ((folder.IsExpanded || folder.Folders.Count == 0) && folder.AssetsList.Count > 0)
         {
             _applicationView.SelectedLeftTabIndex++;
             return;
         }
 
         var childFolder = folder;
-        while (childFolder.Folders.Count == 1 && childFolder.AssetsList.Assets.Count == 0)
+        while (childFolder.Folders.Count == 1 && childFolder.AssetsList.Count == 0)
         {
             childFolder.IsExpanded = true;
             childFolder = childFolder.Folders[0];

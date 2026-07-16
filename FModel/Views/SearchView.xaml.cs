@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Threading;
 using CUE4Parse.FileProvider.Objects;
 using FModel.Services;
 using FModel.ViewModels;
@@ -19,15 +20,22 @@ public enum ESearchViewTab
 
 public partial class SearchView
 {
+    private static readonly TimeSpan AutoSearchDelay = TimeSpan.FromMilliseconds(500);
+
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
     private SearchViewModel _searchViewModel => _applicationView.CUE4Parse.SearchVm;
     private SearchViewModel _refViewModel => _applicationView.CUE4Parse.RefVm;
 
     private ESearchViewTab _currentTab = ESearchViewTab.SearchView;
+    private readonly DispatcherTimer _autoSearchTimer;
+    private SearchViewModel _pendingAutoSearch;
 
     public SearchView()
     {
+        _autoSearchTimer = new DispatcherTimer { Interval = AutoSearchDelay };
+        _autoSearchTimer.Tick += OnAutoSearchTimerTick;
+
         DataContext = new
         {
             mainApplication = _applicationView,
@@ -95,7 +103,28 @@ public partial class SearchView
         if (viewModel == null)
             return;
         viewModel.FilterText = string.Empty;
+        CancelAutoSearch();
         viewModel.RefreshFilter();
+    }
+
+    private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+    {
+        _pendingAutoSearch = ReferenceEquals(sender, RefSearchTextBox) ? _refViewModel : _searchViewModel;
+        _autoSearchTimer.Stop();
+        _autoSearchTimer.Start();
+    }
+
+    private void OnAutoSearchTimerTick(object sender, EventArgs e)
+    {
+        var viewModel = _pendingAutoSearch;
+        CancelAutoSearch();
+        viewModel?.RefreshFilter();
+    }
+
+    private void CancelAutoSearch()
+    {
+        _autoSearchTimer.Stop();
+        _pendingAutoSearch = null;
     }
 
     private SearchViewModel CurrentViewModel => _currentTab switch
@@ -141,30 +170,35 @@ public partial class SearchView
 
     private async Task NavigateToAssetAndSelect(GameFile entry)
     {
-        WindowState = WindowState.Minimized;
-        MainWindow.YesWeCats.AssetsListName.ItemsSource = null;
-        var folder = _applicationView.CustomDirectories.GoToCommand.JumpTo(entry.Directory);
-        if (folder == null)
-            return;
-
-        MainWindow.YesWeCats.Activate();
-
-        do
-        { await Task.Delay(100); } while (MainWindow.YesWeCats.AssetsListName.Items.Count < folder.AssetsList.Assets.Count);
-
-        while (!folder.IsSelected || MainWindow.YesWeCats.AssetsFolderName.SelectedItem != folder)
-            await Task.Delay(50); // stops assets tab from opening too early
-
-        ApplicationService.ApplicationView.SelectedLeftTabIndex = 2; // assets tab
-        do
+        _applicationView.IsAssetPreviewLoadingSuspended = true;
+        try
         {
-            await Task.Delay(100);
-            var vm = MainWindow.YesWeCats.AssetsListName.Items
-                .OfType<GameFileViewModel>()
-                .FirstOrDefault(x => x.Asset == entry);
+            WindowState = WindowState.Minimized;
+            MainWindow.YesWeCats.AssetsListName.ClearValue(ItemsControl.ItemsSourceProperty);
+            var folder = await _applicationView.CustomDirectories.GoToCommand.JumpToAsync(entry.Directory);
+            if (folder == null)
+                return;
+
+            MainWindow.YesWeCats.Activate();
+
+            while (MainWindow.YesWeCats.AssetsListName.Items.Count < folder.AssetsList.Count)
+                await Task.Delay(10);
+
+            ApplicationService.ApplicationView.SelectedLeftTabIndex = 2; // assets tab
+            GameFileViewModel vm;
+            while ((vm = MainWindow.YesWeCats.AssetsListName.Items
+                    .OfType<GameFileViewModel>()
+                    .FirstOrDefault(x => x.Asset == entry)) == null)
+                await Task.Delay(10);
+
             MainWindow.YesWeCats.AssetsListName.SelectedItem = vm;
             MainWindow.YesWeCats.AssetsListName.ScrollIntoView(vm);
-        } while (MainWindow.YesWeCats.AssetsListName.SelectedItem == null);
+        }
+        finally
+        {
+            _applicationView.IsAssetPreviewLoadingSuspended = false;
+            MainWindow.YesWeCats.RefreshVisibleAssetPreviews();
+        }
     }
 
     private async void OnAssetExtract(object sender, RoutedEventArgs e)
@@ -182,7 +216,15 @@ public partial class SearchView
     {
         if (e.Key != Key.Enter)
             return;
+
+        CancelAutoSearch();
         CurrentViewModel?.RefreshFilter();
+    }
+
+    private void OnWindowClosed(object sender, EventArgs e)
+    {
+        CancelAutoSearch();
+        _autoSearchTimer.Tick -= OnAutoSearchTimerTick;
     }
 
     private void OnStateChanged(object sender, EventArgs e)

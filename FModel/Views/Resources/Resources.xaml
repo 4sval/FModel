@@ -105,6 +105,12 @@
                 Value="{Binding CUE4Parse.GameDirectory.DirectoryFilesView, IsAsync=True}" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"
                 Value="Disabled" />
+        <Setter Property="ScrollViewer.CanContentScroll"
+                Value="True" />
+        <Setter Property="VirtualizingPanel.IsVirtualizing"
+                Value="True" />
+        <Setter Property="VirtualizingPanel.VirtualizationMode"
+                Value="Recycling" />
         <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode"
                 Value="NeverExpand" />
         <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement"
@@ -291,6 +297,19 @@
                 Value="Docked" />
         <Setter Property="HorizontalContentAlignment"
                 Value="Stretch" />
+        <Setter Property="VirtualizingPanel.IsVirtualizing"
+                Value="True" />
+        <Setter Property="VirtualizingPanel.VirtualizationMode"
+                Value="Recycling" />
+        <Setter Property="ScrollViewer.CanContentScroll"
+                Value="True" />
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <controls:NavigableVirtualizingStackPanel />
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
         <Setter Property="ItemTemplate">
             <Setter.Value>
                 <HierarchicalDataTemplate ItemsSource="{Binding FoldersView, IsAsync=True}">
@@ -308,7 +327,7 @@
                                 Background="#705542"
                                 Margin="-10.5 0 4.5 0"
                                 VerticalAlignment="Bottom">
-                            <TextBlock Text="{Binding AssetsList.Assets.Count}"
+                            <TextBlock Text="{Binding AssetsList.Count}"
                                        Margin="2.5 0 2.5 0"
                                        Padding="1 0 0 0"
                                        FontSize="7"
@@ -325,7 +344,7 @@
                                             <MultiBinding StringFormat="{}{0} has {1} folders and {2} packages">
                                                 <Binding Path="Header" />
                                                 <Binding Path="FoldersView.Count" />
-                                                <Binding Path="AssetsList.Assets.Count" />
+                                                <Binding Path="AssetsList.Count" />
                                             </MultiBinding>
                                         </TextBlock.Text>
                                     </TextBlock>
@@ -340,7 +359,7 @@
                                     Property="Source"
                                     Value="/FModel;component/Resources/empty_folder.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding AssetsList.Assets.Count}"
+                        <DataTrigger Binding="{Binding AssetsList.Count}"
                                      Value="0">
                             <Setter TargetName="TreeBadge"
                                     Property="Visibility"
@@ -572,6 +591,13 @@
                        BasedOn="{StaticResource TreeViewItemStyle}">
                     <Setter Property="HorizontalContentAlignment"
                             Value="Stretch" />
+                    <Setter Property="ItemsPanel">
+                        <Setter.Value>
+                            <ItemsPanelTemplate>
+                                <controls:NavigableVirtualizingStackPanel />
+                            </ItemsPanelTemplate>
+                        </Setter.Value>
+                    </Setter>
                     <Setter Property="IsSelected"
                             Value="{Binding IsSelected, Mode=TwoWay}" />
                     <Setter Property="IsExpanded"

@@ -316,7 +316,7 @@
                                             <MultiBinding StringFormat="{}'{0}' has {1} folders and {2} packages">
                                                 <Binding Path="SelectedItem.Header" ElementName="AssetsFolderName" FallbackValue="None" />
                                                 <Binding Path="SelectedItem.FoldersView.Count" ElementName="AssetsFolderName" FallbackValue="0" />
-                                                <Binding Path="SelectedItem.AssetsList.Assets.Count" ElementName="AssetsFolderName" FallbackValue="0" />
+                                                <Binding Path="SelectedItem.AssetsList.Count" ElementName="AssetsFolderName" FallbackValue="0" />
                                             </MultiBinding>
                                         </TextBlock.Text>
                                     </TextBlock>
@@ -371,7 +371,7 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
 
-                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.AssetsList.Assets.Count, ElementName=AssetsFolderName, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.AssetsList.Count, ElementName=AssetsFolderName, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                     <TextBlock Grid.Row="0" Grid.Column="1" Text="Packages Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                     <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.FoldersView.Count, ElementName=AssetsFolderName, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                     <TextBlock Grid.Row="1" Grid.Column="1" Text="Folders Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
@@ -386,7 +386,7 @@
                         </Grid>
                     </TabItem>
                     <TabItem Style="{StaticResource TabItemFillSpace}"
-                             Header="{Binding SelectedItem.AssetsList.Assets.Count, FallbackValue=0, ElementName=AssetsFolderName}"
+                             Header="{Binding SelectedItem.AssetsList.Count, FallbackValue=0, ElementName=AssetsFolderName}"
                              HeaderStringFormat="{}{0} Packages">
                         <DockPanel>
 

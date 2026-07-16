@@ -100,7 +100,7 @@
                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                        Opacity="0.8" />
             <TextBlock Grid.Row="3"
-                       Text="{Binding AssetsList.Assets.Count, StringFormat=Assets: {0}}"
+                       Text="{Binding AssetsList.Count, StringFormat=Assets: {0}}"
                        FontSize="11"
                        HorizontalAlignment="Center"
                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"

@@ -334,6 +334,7 @@ public class CUE4ParseViewModel : ViewModel
 
             Provider.Initialize();
             GameDirectory.AddLooseFiles(Provider.LooseFileCount);
+            GameDirectory.FlushPendingChanges();
             _wwiseProviderLazy = new Lazy<WwiseProvider>(() => new WwiseProvider(Provider, UserSettings.Default.GameDirectory));
             _fmodProviderLazy = new Lazy<FModProvider>(() => new FModProvider(Provider, UserSettings.Default.GameDirectory));
             _criWareProviderLazy = new Lazy<CriWareProvider>(() => new CriWareProvider(Provider, UserSettings.Default.GameDirectory));
@@ -379,6 +380,7 @@ public class CUE4ParseViewModel : ViewModel
     {
         Provider.SubmitKeys(aesKeys);
         Provider.PostMount();
+        GameDirectory.FlushPendingChanges();
 
         var aesMax = Provider.RequiredKeys.Count + Provider.Keys.Count;
         var archiveMax = Provider.UnloadedVfs.Count + Provider.MountedVfs.Count;
@@ -389,8 +391,8 @@ public class CUE4ParseViewModel : ViewModel
     {
         if (Provider == null) return;
 
-        AssetsFolder.Folders.Clear();
-        SearchVm.SearchResults.Clear();
+        AssetsFolder.Clear();
+        SearchVm.Clear();
         Helper.CloseWindow<AdonisWindow>("Search For Packages");
         Provider.UnloadNonStreamedVfs();
         GC.Collect();

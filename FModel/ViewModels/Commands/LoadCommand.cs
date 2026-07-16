@@ -53,8 +53,8 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
 #if DEBUG
         var loadingTime = Stopwatch.StartNew();
 #endif
-        _applicationView.CUE4Parse.AssetsFolder.Folders.Clear();
-        _applicationView.CUE4Parse.SearchVm.SearchResults.Clear();
+        _applicationView.CUE4Parse.AssetsFolder.Clear();
+        _applicationView.CUE4Parse.SearchVm.Clear();
         _applicationView.SelectedLeftTabIndex = 1; // folders tab
         _applicationView.IsAssetsExplorerVisible = true;
         Helper.CloseWindow<AdonisWindow>("Search For Packages"); // close search window if opened
