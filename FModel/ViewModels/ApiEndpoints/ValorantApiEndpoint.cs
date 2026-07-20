@@ -78,7 +78,7 @@ public class VManifest
 
     public async ValueTask PrefetchChunk(VChunk chunk, CancellationToken cancellationToken)
     {
-        var chunkPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", $"{chunk.Id}.chunk");
+        var chunkPath = Path.Combine(CacheManager.ChunksDirectory, $"{chunk.Id}.chunk");
         if (File.Exists(chunkPath)) return;
         using var response = await _client.GetAsync(chunk.GetUrl(), cancellationToken).ConfigureAwait(false);
 
@@ -91,7 +91,7 @@ public class VManifest
 
     public async Task<byte[]> GetChunkBytes(VChunk chunk, CancellationToken cancellationToken)
     {
-        var chunkPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", $"{chunk.Id}.chunk");
+        var chunkPath = Path.Combine(CacheManager.ChunksDirectory, $"{chunk.Id}.chunk");
         byte[] chunkBytes;
 
         if (File.Exists(chunkPath))

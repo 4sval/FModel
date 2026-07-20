@@ -110,7 +110,7 @@ public partial class App
         Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Backups"));
         if (createMe) Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Exports"));
         Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Logs"));
-        Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"));
+        CacheManager.EnsureDirectories();
 
 #if DEBUG
         var filePath = Path.Combine(UserSettings.Default.OutputDirectory, "Logs", $"FModel-Debug-Log-{DateTime.Now:yyyy-MM-dd}.log");
@@ -137,6 +137,7 @@ public partial class App
             .MinimumLevel.Override("CUE4Parse_Conversion", LogEventLevel.Verbose).WriteTo.Sink(ImGuiSink.Instance)
             .CreateLogger();
 
+        CacheManager.MigrateLegacyFiles();
         Log.Information("Version {Version} ({CommitId})", Constants.APP_VERSION, Constants.APP_COMMIT_ID);
         Log.Information("{OS}", GetOperatingSystemProductName());
         Log.Information("{RuntimeVer}", RuntimeInformation.FrameworkDescription);

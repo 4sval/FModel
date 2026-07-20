@@ -59,50 +59,53 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
         _applicationView.IsAssetsExplorerVisible = true;
         Helper.CloseWindow<AdonisWindow>("Search For Packages"); // close search window if opened
 
-        await Task.WhenAll(
-            _applicationView.CUE4Parse.LoadLocalizedResources(), // load locres if not already loaded,
-            _applicationView.CUE4Parse.LoadVirtualPaths(), // load virtual paths if not already loaded
-            _threadWorkerView.Begin(cancellationToken =>
+        // Populate the package tree before doing supplemental reads. For streamed providers those
+        // reads may download BuildPatch chunks and must not delay or hide an otherwise valid tree.
+        await _threadWorkerView.Begin(cancellationToken =>
+        {
+            // filter what to show
+            _applicationView.Status.UpdateStatusLabel("Packages", "Filtering");
+            switch (UserSettings.Default.LoadingMode)
             {
-                // filter what to show
-                _applicationView.Status.UpdateStatusLabel("Packages", "Filtering");
-                switch (UserSettings.Default.LoadingMode)
+                case ELoadingMode.Multiple:
                 {
-                    case ELoadingMode.Multiple:
+                    var l = (IList) parameter;
+                    if (l.Count == 0)
                     {
-                        var l = (IList) parameter;
-                        if (l.Count == 0)
-                        {
-                            UserSettings.Default.LoadingMode = ELoadingMode.All;
-                            goto case ELoadingMode.All;
-                        }
+                        UserSettings.Default.LoadingMode = ELoadingMode.All;
+                        goto case ELoadingMode.All;
+                    }
 
-                        var directoryFilesToShow = l.Cast<FileItem>();
-                        FilterDirectoryFilesToDisplay(cancellationToken, directoryFilesToShow);
-                        break;
-                    }
-                    case ELoadingMode.All:
-                    {
-                        FilterDirectoryFilesToDisplay(cancellationToken, null);
-                        break;
-                    }
-                    case ELoadingMode.AllButNew:
-                    case ELoadingMode.AllButModified:
-                    {
-                        FilterNewOrModifiedFilesToDisplay(cancellationToken);
-                        break;
-                    }
-                    case ELoadingMode.AllButPatched:
-                    {
-                        FilterPacthedFilesToDisplay(cancellationToken);
-                        break;
-                    }
-                    default: throw new ArgumentOutOfRangeException();
+                    var directoryFilesToShow = l.Cast<FileItem>();
+                    FilterDirectoryFilesToDisplay(cancellationToken, directoryFilesToShow);
+                    break;
                 }
+                case ELoadingMode.All:
+                {
+                    FilterDirectoryFilesToDisplay(cancellationToken, null);
+                    break;
+                }
+                case ELoadingMode.AllButNew:
+                case ELoadingMode.AllButModified:
+                {
+                    FilterNewOrModifiedFilesToDisplay(cancellationToken);
+                    break;
+                }
+                case ELoadingMode.AllButPatched:
+                {
+                    FilterPacthedFilesToDisplay(cancellationToken);
+                    break;
+                }
+                default: throw new ArgumentOutOfRangeException();
+            }
 
-                _discordHandler.UpdatePresence(_applicationView.CUE4Parse);
-            })
-        ).ConfigureAwait(false);
+            _discordHandler.UpdatePresence(_applicationView.CUE4Parse);
+        }).ConfigureAwait(false);
+
+        // These enrich later package reads but are not required to display the archive contents.
+        // Run them sequentially to avoid competing BuildPatch download bursts on Fortnite Live.
+        await _applicationView.CUE4Parse.LoadVirtualPaths().ConfigureAwait(false);
+        await _applicationView.CUE4Parse.LoadLocalizedResources().ConfigureAwait(false);
 #if DEBUG
         loadingTime.Stop();
         FLogger.Append(ELog.Debug, () =>

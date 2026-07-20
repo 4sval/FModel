@@ -122,8 +122,8 @@ public partial class SettingsView
         var openFileDialog = new OpenFileDialog
         {
             Title = "Select a mapping file",
-            InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, ".data"),
-            Filter = "USMAP Files (*.usmap)|*.usmap|All Files (*.*)|*.*"
+            InitialDirectory = CacheManager.MappingsDirectory,
+            Filter = "USMAP Files (*.usmap, *.jmap, *.jmap.gz)|*.usmap;*.jmap;*.jmap.gz|All Files (*.*)|*.*"
         };
 
         if (!openFileDialog.ShowDialog().GetValueOrDefault())
