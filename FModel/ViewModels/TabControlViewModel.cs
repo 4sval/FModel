@@ -133,8 +133,6 @@ public class TabImage : ViewModel
 
 public class TabItem : ViewModel
 {
-    public string ParentExportType { get; private set; }
-
     private GameFile _entry;
     public GameFile Entry
     {
@@ -268,10 +266,9 @@ public class TabItem : ViewModel
     private GoToCommand _goToCommand;
     public GoToCommand GoToCommand => _goToCommand ??= new GoToCommand(null);
 
-    public TabItem(GameFile entry, string parentExportType)
+    public TabItem(GameFile entry)
     {
         Entry = entry;
-        ParentExportType = parentExportType;
         _images = new ObservableCollection<TabImage>();
     }
 
@@ -279,7 +276,6 @@ public class TabItem : ViewModel
     {
         Entry = entry;
         TitleExtra = string.Empty;
-        ParentExportType = string.Empty;
         ScrollTrigger = null;
         Application.Current.Dispatcher.Invoke(() =>
         {
@@ -473,7 +469,7 @@ public class TabControlViewModel : ViewModel
 
     public void AddTab() => AddTab("New Tab");
     public void AddTab(string title) => AddTab(new FakeGameFile(title));
-    public void AddTab(GameFile entry, string parentExportType = null)
+    public void AddTab(GameFile entry)
     {
         if (SelectedTab?.Header == "New Tab")
         {
@@ -484,7 +480,7 @@ public class TabControlViewModel : ViewModel
         if (!CanAddTabs) return;
         Application.Current.Dispatcher.Invoke(() =>
         {
-            _tabItems.Add(new TabItem(entry, parentExportType ?? string.Empty));
+            _tabItems.Add(new TabItem(entry));
             SelectedTab = _tabItems.Last();
         });
     }

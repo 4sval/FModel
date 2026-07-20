@@ -1228,12 +1228,12 @@ public class CUE4ParseViewModel : ViewModel
         return decompiled;
     }
 
-    public void ExtractAndScroll(CancellationToken cancellationToken, string fullPath, string objectName, string parentExportType)
+    public void ExtractAndScroll(CancellationToken cancellationToken, string fullPath, string objectName)
     {
         Log.Information("User CTRL-CLICKED to extract '{FullPath}'", fullPath);
 
         var entry = Provider[fullPath];
-        TabControl.AddTab(entry, parentExportType);
+        TabControl.AddTab(entry);
         TabControl.SelectedTab.ScrollTrigger = objectName;
 
         var result = Provider.GetLoadPackageResult(entry, objectName);
@@ -1529,13 +1529,13 @@ public class CUE4ParseViewModel : ViewModel
                 return false;
             }
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:
-            case UBlueprintGeneratedClass when isNone && UserSettings.Default.PreviewWorlds && TabControl.SelectedTab.ParentExportType switch
-            {
-                "JunoBuildInstructionsItemDefinition" => true,
-                "JunoBuildingSetAccountItemDefinition" => true,
-                "JunoBuildingPropAccountItemDefinition" => true,
-                _ => false
-            }:
+            // case UBlueprintGeneratedClass when isNone && UserSettings.Default.PreviewWorlds && TabControl.SelectedTab.ParentExportType switch
+            // {
+            //     "JunoBuildInstructionsItemDefinition" => true,
+            //     "JunoBuildingSetAccountItemDefinition" => true,
+            //     "JunoBuildingPropAccountItemDefinition" => true,
+            //     _ => false
+            // }:
             case UPaperSprite when isNone && UserSettings.Default.PreviewMaterials:
             case UStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
             case USkeletalMesh when isNone && UserSettings.Default.PreviewSkeletalMeshes:

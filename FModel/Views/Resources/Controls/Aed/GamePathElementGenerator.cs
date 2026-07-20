@@ -33,7 +33,6 @@ public class GamePathElementGenerator : VisualLineElementGenerator
         if (!m.Success || m.Index != 0 ||
             !m.Groups.TryGetValue("target", out var g)) return null;
 
-        var parentExportType = CurrentContext.Document.GetParentExportType(offset);
-        return new GamePathVisualLineText(g.Value, parentExportType, CurrentContext.VisualLine, g.Length + g.Index + 1);
+        return new GamePathVisualLineText(g.Value, CurrentContext.VisualLine, g.Length + g.Index + 1);
     }
 }
