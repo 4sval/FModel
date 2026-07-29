@@ -13,6 +13,8 @@ using FModel.Services;
 using FModel.Settings;
 using Newtonsoft.Json;
 using Serilog.Sinks.SystemConsole.Themes;
+using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
@@ -130,6 +132,17 @@ public partial class App
         Log.Information("{OS}", GetOperatingSystemProductName());
         Log.Information("{RuntimeVer}", RuntimeInformation.FrameworkDescription);
         Log.Information("Culture {SysLang}", CultureInfo.CurrentCulture);
+
+        GLFWProvider.SetErrorCallback((error, description) =>
+        {
+            if (error == ErrorCode.PlatformError && description.Contains("Win32: Failed to query monitor DPI"))
+            {
+                Log.Information("Absorbed benign DPI-related GLFW error for asset viewer.");
+                return;
+            }
+
+            throw new GLFWException(description, error);
+        });
     }
 
     private void AppExit(object sender, ExitEventArgs e)
