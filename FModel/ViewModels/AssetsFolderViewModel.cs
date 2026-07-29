@@ -237,8 +237,10 @@ public class AssetsFolderViewModel
                 TreeItem parentItem = null;
 
                 var path = entry.Path;
-                if (path.StartsWith(localAppData, StringComparison.OrdinalIgnoreCase))
-                    path = path[localAppData.Length..].TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+                var index = path.IndexOf(localAppData, StringComparison.OrdinalIgnoreCase);
+                if (index >= 0)
+                    path = path[(index + localAppData.Length)..].TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
                 var folders = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
                 var builder = new StringBuilder(64);
