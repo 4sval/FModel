@@ -27,10 +27,14 @@ using CUE4Parse.GameTypes.DFHO.Assets.Objects;
 using CUE4Parse.GameTypes.HonorOfKings.FileProvider;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
 using CUE4Parse.GameTypes.LegoBatman.Assets;
+using CUE4Parse.GameTypes.LordOfMysteries.FileProvider;
 using CUE4Parse.GameTypes.RocoKingdomWorld.Assets.Objects;
 using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
 using CUE4Parse.GameTypes.SquareEnix.UE4.Assets.Exports;
+using CUE4Parse.GameTypes.Theia.FileProvider;
 using CUE4Parse.MappingsProvider;
+using CUE4Parse.MappingsProvider.Jmap;
+using CUE4Parse.MappingsProvider.Usmap;
 using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
@@ -64,9 +68,6 @@ using CUE4Parse.UE4.Wwise;
 using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Exporters;
 using CUE4Parse_Conversion.Sounds;
-using CUE4Parse.GameTypes.LordOfMysteries.FileProvider;
-using CUE4Parse.MappingsProvider.Jmap;
-using CUE4Parse.MappingsProvider.Usmap;
 using EpicManifestParser;
 using EpicManifestParser.UE;
 using FModel.Creator;
@@ -209,6 +210,7 @@ public class CUE4ParseViewModel : ViewModel
                     _ when versionContainer.Game is EGame.GAME_BlackStigma => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, StringComparer.Ordinal),
                     _ when versionContainer.Game is EGame.GAME_HonorofKingsWorld => new HoKWDefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
                     _ when versionContainer.Game is EGame.GAME_LordOfMysteries => new LoMDefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
+                    _ when versionContainer.Game is EGame.GAME_ArcRaiders => new TheiaFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
                     _ => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer)
                 };
 
