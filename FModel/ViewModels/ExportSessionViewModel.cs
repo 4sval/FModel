@@ -250,6 +250,22 @@ public class ExportSessionViewModel : ViewModel
         ClearExportHistory();
     }
 
+    public void RemoveFromQueue(ObjectGroupViewModel item)
+    {
+        if (IsRunning || _session?.Remove(item.Path) != true)
+            return;
+
+        var group = ClassGroups.FirstOrDefault(x => x.Objects.Contains(item));
+        if (group == null)
+            return;
+
+        group.Objects.Remove(item);
+        if (group.Objects.Count == 0)
+        {
+            ClassGroups.Remove(group);
+        }
+    }
+
     private void StartUiTimer()
     {
         _uiTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };

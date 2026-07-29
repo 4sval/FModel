@@ -36,6 +36,14 @@ public partial class ExportSessionWindow
             viewModel.ClearQueue();
     }
 
+    private void OnRemoveFromQueueClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { DataContext: ObjectGroupViewModel item } && DataContext is ExportSessionViewModel viewModel)
+        {
+            viewModel.RemoveFromQueue(item);
+        }
+    }
+
     private void OnMakeDefaultOptions(object sender, RoutedEventArgs e)
     {
         if (sender is Button { DataContext: ExportSessionViewModel viewModel })
