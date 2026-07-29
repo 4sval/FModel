@@ -1,0 +1,137 @@
+<adonisControls:AdonisWindow x:Class="FModel.Views.AnimGraphViewer"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+        xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+        xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+        WindowStartupLocation="CenterScreen" IconVisibility="Collapsed"
+        Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.75'}"
+        Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.75'}">
+    <adonisControls:AdonisWindow.Style>
+        <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}">
+            <Setter Property="Title" Value="Animation Blueprint Graph Viewer"/>
+        </Style>
+    </adonisControls:AdonisWindow.Style>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <Border Grid.Row="0" Padding="8 4"
+                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                adonisExtensions:LayerExtension.IncreaseLayer="True">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="PackageNameText" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0 0 16 0"/>
+                <TextBlock x:Name="NodeCountText" VerticalAlignment="Center" Margin="0 0 16 0"/>
+                <TextBlock x:Name="ConnectionCountText" VerticalAlignment="Center" Margin="0 0 16 0"/>
+                <Button Content="Fit to View" MinWidth="78" Margin="4 0" Click="OnFitToView"/>
+                <Button Content="Reset Zoom" MinWidth="78" Margin="4 0" Click="OnResetZoom"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Main content: Graph + Properties panel -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="240" MinWidth="180"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*" MinWidth="200"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="280" MinWidth="200"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Layer list -->
+            <Border Grid.Column="0"
+                    Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                    adonisExtensions:LayerExtension.IncreaseLayer="True">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" Padding="8 6"
+                            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}">
+                        <TextBlock Text="Layers" FontWeight="SemiBold" FontSize="13"/>
+                    </Border>
+
+                    <ListBox x:Name="LayerListBox"
+                             Grid.Row="1"
+                             Margin="8 6"
+                             BorderThickness="0"
+                             Background="Transparent"
+                         MouseDoubleClick="OnLayerListDoubleClick">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"
+                                           TextTrimming="CharacterEllipsis"
+                                           ToolTip="{Binding Name}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </Border>
+
+            <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                          Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}"/>
+
+            <!-- Layer tabs with graph canvas (single-line, scrollable tab strip) -->
+            <TabControl x:Name="LayerTabControl" Grid.Column="2" SelectionChanged="OnLayerTabChanged"
+                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}">
+                <TabControl.Template>
+                    <ControlTemplate TargetType="TabControl">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                                <TabPanel IsItemsHost="True"/>
+                            </ScrollViewer>
+                            <ContentPresenter Grid.Row="1" ContentSource="SelectedContent"/>
+                        </Grid>
+                    </ControlTemplate>
+                </TabControl.Template>
+            </TabControl>
+
+            <GridSplitter Grid.Column="3" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                          Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}"/>
+
+            <!-- Node properties panel -->
+            <Border Grid.Column="4"
+                    Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                    adonisExtensions:LayerExtension.IncreaseLayer="True">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Properties header -->
+                    <Border Grid.Row="0" Padding="8 6"
+                            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}">
+                        <TextBlock x:Name="PropertiesTitleText" Text="Properties" FontWeight="SemiBold" FontSize="13"/>
+                    </Border>
+
+                    <!-- Properties list -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                        <StackPanel x:Name="PropertiesPanel" Margin="8 4"/>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Status bar -->
+        <Border Grid.Row="2" Padding="8 4"
+                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                adonisExtensions:LayerExtension.IncreaseLayer="True">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="ZoomText" Text="Zoom: 100%" VerticalAlignment="Center" Margin="0 0 16 0"/>
+                <TextBlock x:Name="SelectedNodeText" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</adonisControls:AdonisWindow>
