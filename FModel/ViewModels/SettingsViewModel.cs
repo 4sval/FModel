@@ -124,7 +124,7 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _unluacOpcodeMap, value);
     }
 
-    public ExportOptionsViewModel Options { get; } = new();
+    public ExportOptionsViewModel Options { get; } = new(showExportImmediatelyOption: true);
 
     public ReadOnlyObservableCollection<EGame> UeGames { get; private set; }
     public ReadOnlyObservableCollection<ELanguage> AssetLanguages { get; private set; }

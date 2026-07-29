@@ -613,4 +613,11 @@ public sealed class UserSettings : ViewModel
         get => _exportAllTextureMips;
         set => SetProperty(ref _exportAllTextureMips, value);
     }
+
+    private bool _exportImmediately;
+    public bool ExportImmediately
+    {
+        get => _exportImmediately;
+        set => SetProperty(ref _exportImmediately, value);
+    }
 }

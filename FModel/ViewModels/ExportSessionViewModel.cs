@@ -239,6 +239,14 @@ public class ExportSessionViewModel : ViewModel
         }
     }
 
+    public async Task ExportAutomaticallyAsync()
+    {
+        if (UserSettings.Default.ExportImmediately)
+        {
+            await ExportAsync();
+        }
+    }
+
     public void CancelExport()
     {
         _cts?.Cancel();

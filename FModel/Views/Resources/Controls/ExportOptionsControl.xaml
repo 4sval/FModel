@@ -31,6 +31,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -45,10 +46,20 @@
                  Text="{Binding OutputDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         <Button Grid.Row="0" Grid.Column="4" Content="..." MinWidth="28" Click="OnBrowseOutputDirectory" />
 
-        <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" Tag="MESH" Margin="0 10 0 10" />
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Export Immediately" VerticalAlignment="Center" Margin="0 8 0 0"
+                   Visibility="{Binding ShowExportImmediatelyOption, Converter={StaticResource BoolToVisibilityConverter}}"
+                   ToolTip="Start exporting automatically after all selected assets have been queued." />
+        <CheckBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 8 0 0"
+                  IsChecked="{Binding ExportImmediately, Mode=TwoWay}"
+                  Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                  Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
+                  Visibility="{Binding ShowExportImmediatelyOption, Converter={StaticResource BoolToVisibilityConverter}}"
+                  ToolTip="Start exporting automatically after all selected assets have been queued." />
 
-        <TextBlock Grid.Row="2" Grid.Column="0" Text="Mesh Format" VerticalAlignment="Center" Margin="0 0 0 5" />
-        <ComboBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
+        <Separator Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" Tag="MESH" Margin="0 10 0 10" />
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Mesh Format" VerticalAlignment="Center" Margin="0 0 0 5" />
+        <ComboBox Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
                   ItemsSource="{Binding MeshFormats}"
                   SelectedItem="{Binding SelectedMeshFormat, Mode=TwoWay}">
             <ComboBox.ItemTemplate>
@@ -58,7 +69,7 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
 
-        <ContentControl Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" FontSize="10" Margin="0 0 0 5">
+        <ContentControl Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" FontSize="10" Margin="0 0 0 5">
             <ContentControl.Style>
                 <Style TargetType="{x:Type ContentControl}">
                     <Setter Property="Visibility" Value="Collapsed" />
@@ -95,8 +106,8 @@
             </ContentControl.Style>
         </ContentControl>
 
-        <TextBlock Grid.Row="4" Grid.Column="0" Text="Mesh Quality" VerticalAlignment="Center" Margin="0 0 0 5" />
-        <ComboBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="Mesh Quality" VerticalAlignment="Center" Margin="0 0 0 5" />
+        <ComboBox Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
                   ItemsSource="{Binding MeshQualities}"
                   SelectedItem="{Binding SelectedMeshQuality, Mode=TwoWay}">
             <ComboBox.ItemTemplate>
@@ -106,9 +117,9 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
 
-        <TextBlock Grid.Row="5" Grid.Column="0" Text="Socket Format" VerticalAlignment="Center" Margin="0 0 0 5"
+        <TextBlock Grid.Row="6" Grid.Column="0" Text="Socket Format" VerticalAlignment="Center" Margin="0 0 0 5"
                    IsEnabled="{Binding SocketSettingsEnabled}" />
-        <ComboBox Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
+        <ComboBox Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
                   ItemsSource="{Binding SocketFormats}"
                   SelectedItem="{Binding SelectedSocketFormat, Mode=TwoWay}"
                   IsEnabled="{Binding SocketSettingsEnabled}">
@@ -119,9 +130,9 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
 
-        <TextBlock Grid.Row="6" Grid.Column="0" Text="Compression Format" VerticalAlignment="Center" Margin="0 0 0 5"
+        <TextBlock Grid.Row="7" Grid.Column="0" Text="Compression Format" VerticalAlignment="Center" Margin="0 0 0 5"
                    IsEnabled="{Binding CompressionSettingsEnabled}" />
-        <ComboBox Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
+        <ComboBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
                   ItemsSource="{Binding CompressionFormats}"
                   SelectedItem="{Binding SelectedCompressionFormat, Mode=TwoWay}"
                   IsEnabled="{Binding CompressionSettingsEnabled}">
@@ -132,8 +143,8 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
 
-        <TextBlock Grid.Row="7" Grid.Column="0" Text="Nanite Format" VerticalAlignment="Center" Margin="0 0 0 5" />
-        <ComboBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
+        <TextBlock Grid.Row="8" Grid.Column="0" Text="Nanite Format" VerticalAlignment="Center" Margin="0 0 0 5" />
+        <ComboBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
                   ItemsSource="{Binding NaniteMeshFormats}"
                   SelectedItem="{Binding SelectedNaniteMeshFormat, Mode=TwoWay}">
             <ComboBox.ItemTemplate>
@@ -143,7 +154,7 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
 
-        <Border Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="5" Margin="0 10 0 5" CornerRadius="1"
+        <Border Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="5" Margin="0 10 0 5" CornerRadius="1"
                 Background="#1AFFA726" BorderBrush="#FFA726" BorderThickness="1" Padding="10"
                 Visibility="{Binding ShowNaniteWarning, Converter={StaticResource BoolToVisibilityConverter}}">
             <Grid>
@@ -173,11 +184,11 @@
             </Grid>
         </Border>
 
-        <Separator Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" Tag="TEXTURE" Margin="0 10 0 10" />
+        <Separator Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" Tag="TEXTURE" Margin="0 10 0 10" />
 
-        <TextBlock Grid.Row="10" Grid.Column="0" Text="Texture Format" VerticalAlignment="Center" Margin="0 0 0 5"
+        <TextBlock Grid.Row="11" Grid.Column="0" Text="Texture Format" VerticalAlignment="Center" Margin="0 0 0 5"
                    IsEnabled="{Binding TextureFormatsEnabled}" />
-        <ComboBox Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
+        <ComboBox Grid.Row="11" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
                   ItemsSource="{Binding TextureFormats}"
                   SelectedItem="{Binding SelectedTextureFormat, Mode=TwoWay}"
                   IsEnabled="{Binding TextureFormatsEnabled}">
@@ -188,8 +199,8 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
 
-        <TextBlock Grid.Row="11" Grid.Column="0" Text="Texture Platform" VerticalAlignment="Center" Margin="0 0 0 10" />
-        <ComboBox Grid.Row="11" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 10"
+        <TextBlock Grid.Row="12" Grid.Column="0" Text="Texture Platform" VerticalAlignment="Center" Margin="0 0 0 10" />
+        <ComboBox Grid.Row="12" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 10"
                   ItemsSource="{Binding TexturePlatforms}"
                   SelectedItem="{Binding SelectedTexturePlatform, Mode=TwoWay}">
             <ComboBox.ItemTemplate>
@@ -199,33 +210,33 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
 
-        <TextBlock Grid.Row="12" Grid.Column="0" Text="Texture Quality" VerticalAlignment="Center" Margin="0 0 0 12" />
-        <Slider Grid.Row="12" Grid.Column="2" Grid.ColumnSpan="3" Minimum="1" Maximum="100" TickPlacement="None"
+        <TextBlock Grid.Row="13" Grid.Column="0" Text="Texture Quality" VerticalAlignment="Center" Margin="0 0 0 12" />
+        <Slider Grid.Row="13" Grid.Column="2" Grid.ColumnSpan="3" Minimum="1" Maximum="100" TickPlacement="None"
                 AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" Margin="0 0 0 12"
                 Value="{Binding TextureQuality, Mode=TwoWay}" />
 
-        <TextBlock Grid.Row="13" Grid.Column="0" Text="Save HDR as .hdr" VerticalAlignment="Center" Margin="0 0 0 12" />
-        <CheckBox Grid.Row="13" Grid.Column="2" Grid.ColumnSpan="3"
+        <TextBlock Grid.Row="14" Grid.Column="0" Text="Save HDR as .hdr" VerticalAlignment="Center" Margin="0 0 0 12" />
+        <CheckBox Grid.Row="14" Grid.Column="2" Grid.ColumnSpan="3"
                   IsChecked="{Binding ExportHdrTexturesAsHdr, Mode=TwoWay}"
                   Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                   Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
                   Margin="0 0 0 12" />
 
-        <TextBlock Grid.Row="14"
+        <TextBlock Grid.Row="15"
                    Grid.Column="0"
                    Text="Export all texture mips"
                    VerticalAlignment="Center" />
-        <CheckBox Grid.Row="14"
+        <CheckBox Grid.Row="15"
                   Grid.Column="2"
                   Grid.ColumnSpan="3"
                   IsChecked="{Binding ExportAllTextureMips, Mode=TwoWay}"
                   Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                   Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
 
-        <Separator Grid.Row="15" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" Tag="MATERIAL &amp; MORPH" Margin="0 10 0 10" />
+        <Separator Grid.Row="16" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" Tag="MATERIAL &amp; MORPH" Margin="0 10 0 10" />
 
-        <TextBlock Grid.Row="16" Grid.Column="0" Text="Material Depth" VerticalAlignment="Center" Margin="0 0 0 12" />
-        <ComboBox Grid.Row="16" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 12"
+        <TextBlock Grid.Row="17" Grid.Column="0" Text="Material Depth" VerticalAlignment="Center" Margin="0 0 0 12" />
+        <ComboBox Grid.Row="17" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 12"
                   ItemsSource="{Binding MaterialDepths}"
                   SelectedItem="{Binding SelectedMaterialDepth, Mode=TwoWay}">
             <ComboBox.ItemTemplate>
@@ -235,9 +246,9 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
 
-        <TextBlock Grid.Row="17" Grid.Column="0" Text="Auto-Export Attached Materials" VerticalAlignment="Center" Margin="0 0 0 15"
+        <TextBlock Grid.Row="18" Grid.Column="0" Text="Auto-Export Attached Materials" VerticalAlignment="Center" Margin="0 0 0 15"
                    ToolTip="When exporting a mesh, also find and export its attached materials." />
-        <Grid Grid.Row="17" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 15">
+        <Grid Grid.Row="18" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 15">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
@@ -252,8 +263,8 @@
                        Text="For geometry-only exports, it can be significantly faster to disable this option." />
         </Grid>
 
-        <TextBlock Grid.Row="18" Grid.Column="0" Text="Export Morph Targets" VerticalAlignment="Center" Margin="0 0 0 15" />
-        <CheckBox Grid.Row="18" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 15"
+        <TextBlock Grid.Row="19" Grid.Column="0" Text="Export Morph Targets" VerticalAlignment="Center" Margin="0 0 0 15" />
+        <CheckBox Grid.Row="19" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 15"
                   IsChecked="{Binding ExportMorphTargets, Mode=TwoWay}"
                   Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                   Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />

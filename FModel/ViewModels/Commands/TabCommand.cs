@@ -1,3 +1,4 @@
+using System;
 using System.Windows;
 using AdonisUI.Controls;
 using FModel.Framework;
@@ -104,6 +105,11 @@ public class TabCommand : ViewModelCommand<TabItem>
             case "File_Name_No_Extension":
                 Clipboard.SetText(tabViewModel.Entry.NameWithoutExtension);
                 break;
+        }
+
+        if (parameter is string command && command.StartsWith("Save_", StringComparison.Ordinal)) // This is kinda bad
+        {
+            await ExportSessionViewModel.Instance.ExportAutomaticallyAsync();
         }
     }
 }

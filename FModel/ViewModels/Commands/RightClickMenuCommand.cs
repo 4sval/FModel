@@ -162,6 +162,11 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                 }
             }
         });
+
+        if (action is EAction.Export)
+        {
+            await ExportSessionViewModel.Instance.ExportAutomaticallyAsync();
+        }
     }
 
     private void LogExport(ApplicationViewModel contextViewModel, string directory, string path, string basePath, string fileType, int queuedBefore = 0)

@@ -47,6 +47,13 @@ public class ExportOptionsViewModel : ViewModel
         set => SetProperty(ref field, value);
     }
 
+    public bool ShowExportImmediatelyOption { get; }
+    public bool ExportImmediately
+    {
+        get;
+        set => SetProperty(ref field, value);
+    }
+
     public IEnumerable<EMeshFormat> MeshFormats { get; } = Enum.GetValues<EMeshFormat>();
     public EMeshFormat SelectedMeshFormat
     {
@@ -162,8 +169,9 @@ public class ExportOptionsViewModel : ViewModel
         set => SetProperty(ref field, value);
     }
 
-    public ExportOptionsViewModel()
+    public ExportOptionsViewModel(bool showExportImmediatelyOption = false)
     {
+        ShowExportImmediatelyOption = showExportImmediatelyOption;
         ResetToUserDefaults();
     }
 
@@ -183,6 +191,7 @@ public class ExportOptionsViewModel : ViewModel
         ExportMorphTargets = UserSettings.Default.SaveMorphTargets;
         TextureQuality = UserSettings.Default.TextureQuality;
         ExportAllTextureMips = UserSettings.Default.ExportAllTextureMips;
+        ExportImmediately = UserSettings.Default.ExportImmediately;
 
         OverrideOptions = false;
         FeedbackMessage = "Reset to defaults";
@@ -204,6 +213,7 @@ public class ExportOptionsViewModel : ViewModel
         UserSettings.Default.SaveMorphTargets = ExportMorphTargets;
         UserSettings.Default.TextureQuality = TextureQuality;
         UserSettings.Default.ExportAllTextureMips = ExportAllTextureMips;
+        UserSettings.Default.ExportImmediately = ExportImmediately;
         UserSettings.Save();
 
         OverrideOptions = false;
