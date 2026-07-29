@@ -1275,7 +1275,16 @@ public class CUE4ParseViewModel : ViewModel
             }
             case UTexture when (isNone || saveTextures) && pointer.Object.Value is UTexture texture:
             {
-                TabControl.SelectedTab.AddImage(texture, saveTextures, updateUi);
+                if (saveTextures)
+                {
+                    SaveExport(texture);
+                }
+
+                if (updateUi)
+                {
+                    TabControl.SelectedTab.AddImage(texture, false, true);
+                }
+
                 return false;
             }
             case USvgAsset when (isNone || saveTextures) && pointer.Object.Value is USvgAsset svgasset:

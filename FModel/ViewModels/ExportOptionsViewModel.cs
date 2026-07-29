@@ -143,6 +143,7 @@ public class ExportOptionsViewModel : ViewModel
         get;
         set => SetProperty(ref field, value);
     }
+
     public int TextureQuality
     {
         get;
@@ -150,6 +151,12 @@ public class ExportOptionsViewModel : ViewModel
     }
 
     public bool ExportMorphTargets
+    {
+        get;
+        set => SetProperty(ref field, value);
+    }
+
+    public bool ExportAllTextureMips
     {
         get;
         set => SetProperty(ref field, value);
@@ -175,6 +182,7 @@ public class ExportOptionsViewModel : ViewModel
         ExportHdrTexturesAsHdr = UserSettings.Default.SaveHdrTexturesAsHdr;
         ExportMorphTargets = UserSettings.Default.SaveMorphTargets;
         TextureQuality = UserSettings.Default.TextureQuality;
+        ExportAllTextureMips = UserSettings.Default.ExportAllTextureMips;
 
         OverrideOptions = false;
         FeedbackMessage = "Reset to defaults";
@@ -195,6 +203,7 @@ public class ExportOptionsViewModel : ViewModel
         UserSettings.Default.SaveHdrTexturesAsHdr = ExportHdrTexturesAsHdr;
         UserSettings.Default.SaveMorphTargets = ExportMorphTargets;
         UserSettings.Default.TextureQuality = TextureQuality;
+        UserSettings.Default.ExportAllTextureMips = ExportAllTextureMips;
         UserSettings.Save();
 
         OverrideOptions = false;
@@ -213,6 +222,7 @@ public class ExportOptionsViewModel : ViewModel
         ExportMaterials,
         ExportMorphTargets,
         SelectedSocketFormat,
-        SelectedCompressionFormat
+        SelectedCompressionFormat,
+        ExportAllTextureMips
     );
 }
