@@ -8,6 +8,7 @@
                              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
                              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+                             xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
                              WindowStartupLocation="CenterScreen" ResizeMode="NoResize" IconVisibility="Collapsed" SizeToContent="Height"
                              MinHeight="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.10'}"
                              Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.45'}"
@@ -611,7 +612,7 @@
                                             HotKey="{Binding NextAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
                 </Grid>
             </DataTemplate>
-            <DataTemplate x:Key="unluacTemplate">
+            <DataTemplate x:Key="UnluacTemplate">
                 <Grid adonisExtensions:LayerExtension.Layer="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -703,6 +704,65 @@
                          ToolTip="Paste a custom opcode map." />
                 </Grid>
             </DataTemplate>
+            <DataTemplate x:Key="ThemesTemplate">
+                <Grid adonisExtensions:LayerExtension.Layer="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="10" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="10" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="0"
+                               Text="JSON Highlight Theme"
+                               VerticalAlignment="Center"
+                               Margin="0 0 0 5" />
+                    <ComboBox Grid.Row="0"
+                              Grid.Column="2"
+                              ItemsSource="{Binding SettingsView.JsonHighlightThemes}"
+                              SelectedItem="{Binding SettingsView.SelectedJsonHighlightTheme, Mode=TwoWay}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                              Margin="0 0 0 5"
+                              SelectionChanged="OnJsonHighlightThemeChanged"
+                              Tag="{Binding ElementName=JsonThemePreviewEditor}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Separator Grid.Row="2"
+                               Grid.Column="0"
+                               Grid.ColumnSpan="3"
+                               Style="{StaticResource CustomSeparator}"
+                               Tag="PREVIEW" />
+                    <Border Grid.Row="4"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="3"
+                            Padding="1"
+                            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}">
+                        <avalonEdit:TextEditor x:Name="JsonThemePreviewEditor"
+                                               Height="520"
+                                               FontFamily="Cascadia Mono, Consolas"
+                                               FontSize="13"
+                                               Padding="12"
+                                               ShowLineNumbers="True"
+                                               IsReadOnly="True"
+                                               WordWrap="False"
+                                               HorizontalScrollBarVisibility="Auto"
+                                               VerticalScrollBarVisibility="Auto"
+                                               Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
+                                               Foreground="#DCDDE4"
+                                               Loaded="OnJsonThemePreviewLoaded" />
+                    </Border>
+                </Grid>
+            </DataTemplate>
         </ResourceDictionary>
     </adonisControls:AdonisWindow.Resources>
     <Grid>
@@ -780,7 +840,7 @@
                     </StackPanel>
                 </TreeViewItem.Header>
             </TreeViewItem>
-            <TreeViewItem Tag="unluacTemplate">
+            <TreeViewItem Tag="UnluacTemplate">
                 <TreeViewItem.Header>
                     <StackPanel Orientation="Horizontal">
                         <Viewbox Width="16" Height="16" HorizontalAlignment="Center" Margin="-20 4 7.5 4">
@@ -788,7 +848,7 @@
                                 <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource LuaIcon}" />
                             </Canvas>
                         </Viewbox>
-                        <TextBlock Text="unluac" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        <TextBlock Text="Unluac" HorizontalAlignment="Left" VerticalAlignment="Center" />
                     </StackPanel>
                 </TreeViewItem.Header>
                 <TreeViewItem.Style>
@@ -801,6 +861,25 @@
                         </Style.Triggers>
                     </Style>
                 </TreeViewItem.Style>
+            </TreeViewItem>
+            <TreeViewItem Tag="ThemesTemplate">
+                <TreeViewItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Viewbox Width="16"
+                                 Height="16"
+                                 HorizontalAlignment="Center"
+                                 Margin="-20 4 7.5 4">
+                            <Canvas Width="24"
+                                    Height="24">
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}"
+                                      Data="{StaticResource ThemeIcon}" />
+                            </Canvas>
+                        </Viewbox>
+                        <TextBlock Text="Themes"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </TreeViewItem.Header>
             </TreeViewItem>
         </TreeView>
 

@@ -108,7 +108,7 @@ public partial class App
         Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Backups"));
         if (createMe) Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Exports"));
         Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Logs"));
-        Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"));
+        CacheManager.EnsureDirectories();
 
         const string template = "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Enriched}: {Message:lj}{NewLine}{Exception}";
         Log.Logger = new LoggerConfiguration()
@@ -125,6 +125,7 @@ public partial class App
 #endif
             .CreateLogger();
 
+        CacheManager.MigrateLegacyFiles();
         Log.Information("Version {Version} ({CommitId})", Constants.APP_VERSION, Constants.APP_COMMIT_ID);
         Log.Information("{OS}", GetOperatingSystemProductName());
         Log.Information("{RuntimeVer}", RuntimeInformation.FrameworkDescription);

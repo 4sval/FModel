@@ -5,13 +5,14 @@ using System.Windows;
 using System.Windows.Input;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Nanite;
+using CUE4Parse.UE4.Lua.unluac;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Animations;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
 using CUE4Parse_Conversion.UEFormat.Enums;
-using CUE4Parse.UE4.Lua.unluac;
+using FModel.Extensions.Themes;
 using FModel.Framework;
 using FModel.ViewModels;
 using FModel.ViewModels.ApiEndpoints.Models;
@@ -309,6 +310,13 @@ namespace FModel.Settings
                 if (!SetProperty(ref _unluacFlags, value)) return;
                 RaisePropertyChanged(nameof(UnluacMode));
             }
+        }
+
+        private EJsonHighlightTheme _jsonHighlightTheme;
+        public EJsonHighlightTheme JsonHighlightTheme
+        {
+            get => _jsonHighlightTheme;
+            set => SetProperty(ref _jsonHighlightTheme, value);
         }
 
         private IDictionary<string, DirectorySettings> _perDirectory = new Dictionary<string, DirectorySettings>();

@@ -98,17 +98,33 @@
         </Setter>
     </Style>
 
-    <Style x:Key="DirectoryFilesListBox" TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
-        <Setter Property="ItemsSource" Value="{Binding CUE4Parse.GameDirectory.DirectoryFilesView, IsAsync=True}" />
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode" Value="NeverExpand"/>
-        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement" Value="Docked"/>
+    <Style x:Key="DirectoryFilesListBox"
+           TargetType="ListBox"
+           BasedOn="{StaticResource {x:Type ListBox}}">
+        <Setter Property="ItemsSource"
+                Value="{Binding CUE4Parse.GameDirectory.DirectoryFilesView, IsAsync=True}" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"
+                Value="Disabled" />
+        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode"
+                Value="NeverExpand" />
+        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement"
+                Value="Docked" />
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
-                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
-                    <Setter Property="Padding" Value="5 3" />
+                <Style TargetType="{x:Type ListBoxItem}"
+                       BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                    <Setter Property="HorizontalContentAlignment"
+                            Value="Stretch" />
+                    <Setter Property="IsEnabled"
+                            Value="{Binding IsEnabled}" />
+                    <Setter Property="Margin"
+                            Value="0 1" />
+                    <Setter Property="Padding"
+                            Value="7 5" />
+                    <Setter Property="BorderBrush"
+                            Value="Transparent" />
+                    <Setter Property="BorderThickness"
+                            Value="1" />
                 </Style>
             </Setter.Value>
         </Setter>
@@ -119,50 +135,97 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="25" />
-                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="95" />
+                            <ColumnDefinition Width="85" />
                         </Grid.ColumnDefinitions>
-
-                        <Image x:Name="ListImage" Source="/FModel;component/Resources/archive.png"
-                               Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3 0" />
-                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
-                        <TextBlock Grid.Column="3" HorizontalAlignment="Right" Text="{Binding Length, Converter={x:Static converters:SizeToStringConverter.Instance}}" />
+                        <Image x:Name="ListImage"
+                               Source="/FModel;component/Resources/archive.png"
+                               Width="16"
+                               Height="16"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Margin="0 0 4 0"
+                               RenderOptions.BitmapScalingMode="HighQuality" />
+                        <TextBlock Grid.Column="1"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Left"
+                                   Text="{Binding Name}"
+                                   TextTrimming="CharacterEllipsis" />
+                        <TextBlock Grid.Column="2"
+                                   Margin="12 0 8 0"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Right"
+                                   Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                   Opacity="0.75"
+                                   Text="{Binding FileCount, StringFormat={}{0:N0} files}" />
+                        <TextBlock x:Name="LengthText"
+                                   Grid.Column="3"
+                                   Margin="8 0 0 0"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Right"
+                                   Text="{Binding Length, Converter={x:Static converters:SizeToStringConverter.Instance}}" />
                     </Grid>
                     <DataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding IsEnabled}" Value="True">
-                            <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/archive_enabled.png" />
+                        <DataTrigger Binding="{Binding IsEnabled}"
+                                     Value="True">
+                            <Setter TargetName="ListImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/archive_enabled.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding IsEnabled}" Value="False">
-                            <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/archive_disabled.png" />
+                        <DataTrigger Binding="{Binding IsEnabled}"
+                                     Value="False">
+                            <Setter TargetName="ListImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/archive_disabled.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsLooseFilesContainer}"
+                                     Value="True">
+                            <Setter TargetName="LengthText"
+                                    Property="Visibility"
+                                    Value="Collapsed" />
+                            <Setter TargetName="ListImage"
+                                    Property="Source"
+                                    Value="/FModel;component/Resources/asset.png" />
                         </DataTrigger>
                     </DataTemplate.Triggers>
                 </DataTemplate>
             </Setter.Value>
         </Setter>
         <Style.Triggers>
-            <DataTrigger Binding="{Binding Items.Count, RelativeSource={RelativeSource Self}, FallbackValue=0}" Value="0">
+            <DataTrigger Binding="{Binding Items.Count, RelativeSource={RelativeSource Self}, FallbackValue=0}"
+                         Value="0">
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="No archives found in the specified directory" FontWeight="SemiBold" TextAlignment="Center"
+                                <TextBlock Text="No archives found in the specified directory"
+                                           FontWeight="SemiBold"
+                                           TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
             </DataTrigger>
-            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}" Value="{x:Static local:ELoadingMode.Multiple}">
-                <Setter Property="SelectionMode" Value="Extended" />
+            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}"
+                         Value="{x:Static local:ELoadingMode.Multiple}">
+                <Setter Property="SelectionMode"
+                        Value="Extended" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}" Value="{x:Static local:ELoadingMode.All}">
-                <Setter Property="SelectionMode" Value="Extended" />
+            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}"
+                         Value="{x:Static local:ELoadingMode.All}">
+                <Setter Property="SelectionMode"
+                        Value="Extended" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}" Value="{x:Static local:ELoadingMode.AllButNew}">
-                <Setter Property="SelectionMode" Value="Extended" />
+            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}"
+                         Value="{x:Static local:ELoadingMode.AllButNew}">
+                <Setter Property="SelectionMode"
+                        Value="Extended" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}" Value="{x:Static local:ELoadingMode.AllButModified}">
-                <Setter Property="SelectionMode" Value="Extended" />
+            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}}"
+                         Value="{x:Static local:ELoadingMode.AllButModified}">
+                <Setter Property="SelectionMode"
+                        Value="Extended" />
             </DataTrigger>
         </Style.Triggers>
     </Style>

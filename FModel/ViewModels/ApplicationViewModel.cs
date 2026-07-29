@@ -22,6 +22,7 @@ using FModel.Views.Resources.Controls;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
+using System.Runtime.Intrinsics.X86;
 
 namespace FModel.ViewModels;
 
@@ -292,6 +293,9 @@ public class ApplicationViewModel : ViewModel
 
     public static async Task InitOodle()
     {
+        if (!Avx2.IsSupported)
+            return;
+
         var oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_NAME_OLD);
         if (!File.Exists(oodlePath))
         {

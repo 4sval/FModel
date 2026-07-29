@@ -7,10 +7,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using CUE4Parse.UE4.Lua.unluac;
+using FModel.Extensions;
+using FModel.Extensions.Themes;
+using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels;
 using FModel.Views.Resources.Controls;
+using ICSharpCode.AvalonEdit;
 using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
 
@@ -19,6 +23,7 @@ namespace FModel.Views;
 public partial class SettingsView
 {
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
+    private SettingsViewModel _settingsView => _applicationView.SettingsView;
 
     public SettingsView()
     {
@@ -115,8 +120,8 @@ public partial class SettingsView
         var openFileDialog = new OpenFileDialog
         {
             Title = "Select a mapping file",
-            InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, ".data"),
-            Filter = "USMAP Files (*.usmap)|*.usmap|All Files (*.*)|*.*"
+            InitialDirectory = CacheManager.MappingsDirectory,
+            Filter = "USMAP Files (*.usmap, *.jmap, *.jmap.gz)|*.usmap;*.jmap;*.jmap.gz|All Files (*.*)|*.*"
         };
 
         if (!openFileDialog.ShowDialog().GetValueOrDefault())
@@ -291,5 +296,65 @@ public partial class SettingsView
         var isChecked = cb.IsChecked == true;
 
         UserSettings.Default.UnluacFlags = isChecked ? (current | flag) : (current & ~flag);
+    }
+
+    private const string JsonThemePreviewText =
+    """
+    {
+      "title": "This is an example JSON",
+      "environment": "production",
+      "enabled": true,
+      "version": 4,
+      "scale": 0.92,
+      "features": {
+        "previewAssets": true,
+        "autoSave": false,
+        "maxRecentFiles": 12
+      },
+      "export": {
+        "rootDirectory": "C:\\Exports\\Assets",
+        "keepDirectoryStructure": true,
+        "formats": [
+          "json",
+          "png",
+          "wav"
+        ]
+      },
+      "paths": [
+        "/Game/Characters/Hero",
+        "/Game/UI/Widgets",
+        "/Game/Audio/Music"
+      ],
+      "metadata": {
+        "lastOpened": "2026-06-20T14:30:00Z",
+        "experimental": false,
+        "fallbackTheme": null,
+        "escapeExample": "Line one\nLine two\tTabbed",
+        "accentColor": "#FFC857"
+      }
+    }
+    """;
+
+    private void OnJsonThemePreviewLoaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is not TextEditor editor)
+            return;
+
+        editor.SyntaxHighlighting = AvalonExtensions.HighlighterSelector("json");
+        editor.Text = JsonThemePreviewText;
+        ApplyJsonThemePreview(editor);
+    }
+
+    private void OnJsonHighlightThemeChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (sender is FrameworkElement { Tag: TextEditor editor })
+            Dispatcher.BeginInvoke(() => ApplyJsonThemePreview(editor));
+    }
+
+    private void ApplyJsonThemePreview(TextEditor editor)
+    {
+        editor.SyntaxHighlighting ??= AvalonExtensions.HighlighterSelector("json");
+        editor.SyntaxHighlighting.ApplyJsonTheme(_applicationView.SettingsView.SelectedJsonHighlightTheme);
+        editor.TextArea.TextView.Redraw();
     }
 }

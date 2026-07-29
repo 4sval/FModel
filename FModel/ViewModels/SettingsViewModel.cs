@@ -10,9 +10,12 @@ using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
 using CUE4Parse_Conversion.UEFormat.Enums;
+using FModel.Extensions;
+using FModel.Extensions.Themes;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
+using ICSharpCode.AvalonEdit.Highlighting;
 
 namespace FModel.ViewModels;
 
@@ -165,6 +168,13 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedTextureExportFormat, value);
     }
 
+    private EJsonHighlightTheme _selectedJsonHighlightTheme;
+    public EJsonHighlightTheme SelectedJsonHighlightTheme
+    {
+        get => _selectedJsonHighlightTheme;
+        set => SetProperty(ref _selectedJsonHighlightTheme, value);
+    }
+
     private ulong _criwareDecryptionKey;
     public ulong CriwareDecryptionKey
     {
@@ -196,6 +206,7 @@ public class SettingsViewModel : ViewModel
     public ReadOnlyObservableCollection<EMaterialFormat> MaterialExportFormats { get; private set; }
     public ReadOnlyObservableCollection<ETextureFormat> TextureExportFormats { get; private set; }
     public ReadOnlyObservableCollection<ETexturePlatform> Platforms { get; private set; }
+    public ReadOnlyObservableCollection<EJsonHighlightTheme> JsonHighlightThemes { get; private set; }
 
     private string _outputSnapshot;
     private string _rawDataSnapshot;
@@ -220,6 +231,7 @@ public class SettingsViewModel : ViewModel
     private ENaniteMeshFormat _naniteMeshExportFormatSnapshot;
     private EMaterialFormat _materialExportFormatSnapshot;
     private ETextureFormat _textureExportFormatSnapshot;
+    private EJsonHighlightTheme _jsonHighlightThemeSnapshot;
 
     private bool _mappingsUpdate = false;
 
@@ -264,6 +276,7 @@ public class SettingsViewModel : ViewModel
         _naniteMeshExportFormatSnapshot = UserSettings.Default.NaniteMeshExportFormat;
         _materialExportFormatSnapshot = UserSettings.Default.MaterialExportFormat;
         _textureExportFormatSnapshot = UserSettings.Default.TextureExportFormat;
+        _jsonHighlightThemeSnapshot = UserSettings.Default.JsonHighlightTheme;
 
         SelectedUePlatform = _uePlatformSnapshot;
         SelectedUeGame = _ueGameSnapshot;
@@ -282,6 +295,7 @@ public class SettingsViewModel : ViewModel
         SelectedTextureExportFormat = _textureExportFormatSnapshot;
         CriwareDecryptionKey = _criwareDecryptionKey;
         UnluacOpcodeMap = _unluacOpcodeMap;
+        SelectedJsonHighlightTheme = _jsonHighlightThemeSnapshot;
         SelectedAesReload = UserSettings.Default.AesReload;
         SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
 
@@ -299,6 +313,7 @@ public class SettingsViewModel : ViewModel
         MaterialExportFormats = new ReadOnlyObservableCollection<EMaterialFormat>(new ObservableCollection<EMaterialFormat>(EnumerateMaterialExportFormat()));
         TextureExportFormats = new ReadOnlyObservableCollection<ETextureFormat>(new ObservableCollection<ETextureFormat>(EnumerateTextureExportFormat()));
         Platforms = new ReadOnlyObservableCollection<ETexturePlatform>(new ObservableCollection<ETexturePlatform>(EnumerateUePlatforms()));
+        JsonHighlightThemes = new ReadOnlyObservableCollection<EJsonHighlightTheme>(new ObservableCollection<EJsonHighlightTheme>(EnumerateJsonHighlightThemes()));
     }
 
     public bool Save(out List<SettingsOut> whatShouldIDo)
@@ -337,6 +352,7 @@ public class SettingsViewModel : ViewModel
         UserSettings.Default.TextureExportFormat = SelectedTextureExportFormat;
         UserSettings.Default.AesReload = SelectedAesReload;
         UserSettings.Default.DiscordRpc = SelectedDiscordRpc;
+        UserSettings.Default.JsonHighlightTheme = SelectedJsonHighlightTheme;
 
         if (SelectedDiscordRpc == EDiscordRpc.Never)
             _discordHandler.Shutdown();
@@ -362,4 +378,5 @@ public class SettingsViewModel : ViewModel
     private IEnumerable<EMaterialFormat> EnumerateMaterialExportFormat() => Enum.GetValues<EMaterialFormat>();
     private IEnumerable<ETextureFormat> EnumerateTextureExportFormat() => Enum.GetValues<ETextureFormat>();
     private IEnumerable<ETexturePlatform> EnumerateUePlatforms() => Enum.GetValues<ETexturePlatform>();
+    private IEnumerable<EJsonHighlightTheme> EnumerateJsonHighlightThemes() => Enum.GetValues<EJsonHighlightTheme>();
 }

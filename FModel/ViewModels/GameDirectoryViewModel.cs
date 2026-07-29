@@ -56,6 +56,13 @@ public class FileItem : ViewModel
         set => SetProperty(ref _isEnabled, value);
     }
 
+    private bool _isLooseFilesContainer;
+    public bool IsLooseFilesContainer
+    {
+        get => _isLooseFilesContainer;
+        set => SetProperty(ref _isLooseFilesContainer, value);
+    }
+
     private string _key;
     public string Key
     {
@@ -83,6 +90,18 @@ public class FileItem : ViewModel
         Length = length;
     }
 
+    public FileItem(string name, int fileCount, long length, bool isLooseFile)
+    {
+        Name = name;
+        Length = length;
+        FileCount = fileCount;
+        IsLooseFilesContainer = isLooseFile;
+        IsEnabled = true;
+        Key = string.Empty;
+        MountPoint = string.Empty;
+        CompressionMethods = [];
+    }
+
     public FileItem(IAesVfsReader reader)
     {
         Name = reader.Name;
@@ -90,6 +109,7 @@ public class FileItem : ViewModel
         Guid = reader.EncryptionKeyGuid;
         IsEncrypted = reader.IsEncrypted;
         IsEnabled = false;
+        IsLooseFilesContainer = false;
         Key = string.Empty;
         FileCount = reader is IoStoreReader storeReader ? (int) storeReader.TocResource.Header.TocEntryCount - 1 : 0;
         CompressionMethods = reader.CompressionMethods;
@@ -101,19 +121,25 @@ public class FileItem : ViewModel
     }
 }
 
-public class GameDirectoryViewModel : ViewModel
+public partial class GameDirectoryViewModel : ViewModel
 {
-    public bool HasNoFile => DirectoryFiles.Count < 1;
     public readonly ObservableCollection<FileItem> DirectoryFiles;
+
     public ICollectionView DirectoryFilesView { get; }
 
-    private readonly Regex _hiddenArchives = new(@"^(?!global|pakchunk.+(optional|ondemand)\-).+(pak|utoc)$", // should be universal
-        RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    private readonly Regex _hiddenArchives = ArchivesRegex();
 
     public GameDirectoryViewModel()
     {
-        DirectoryFiles = new ObservableCollection<FileItem>();
-        DirectoryFilesView = new ListCollectionView(DirectoryFiles) { SortDescriptions = { new SortDescription("Name", ListSortDirection.Ascending) } };
+        DirectoryFiles = [];
+        DirectoryFilesView = new ListCollectionView(DirectoryFiles)
+        {
+            SortDescriptions =
+            {
+                new SortDescription(nameof(FileItem.IsLooseFilesContainer), ListSortDirection.Ascending),
+                new SortDescription(nameof(FileItem.Name), ListSortDirection.Ascending)
+            }
+        };
     }
 
     public void Add(IAesVfsReader reader)
@@ -122,6 +148,25 @@ public class GameDirectoryViewModel : ViewModel
 
         var fileItem = new FileItem(reader);
         Application.Current.Dispatcher.Invoke(() => DirectoryFiles.Add(fileItem));
+    }
+
+    public void AddLooseFiles(int fileCount)
+    {
+        if (fileCount < 1)
+            return;
+
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            var looseFilesContainer = DirectoryFiles.FirstOrDefault(x => x.IsLooseFilesContainer);
+            if (looseFilesContainer is not null)
+            {
+                looseFilesContainer.FileCount += fileCount;
+            }
+            else
+            {
+                DirectoryFiles.Add(new FileItem("Loose Files", fileCount, 0, true));
+            }
+        });
     }
 
     public void Verify(IAesVfsReader reader)
@@ -138,4 +183,7 @@ public class GameDirectoryViewModel : ViewModel
         if (DirectoryFiles.FirstOrDefault(x => x.Name == reader.Name) is not { } file) return;
         file.IsEnabled = false;
     }
+
+    [GeneratedRegex(@"^(?!global|pakchunk.+(optional|ondemand)\-).+(pak|utoc)$", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant)]
+    private static partial Regex ArchivesRegex();
 }

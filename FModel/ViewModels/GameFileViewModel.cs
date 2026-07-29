@@ -366,6 +366,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             case "stinfo":
             case "ushaderbytecode":
             case "upipelinecache":
+            case "dxbc":
                 AssetCategory = EAssetCategory.ByteCode;
                 break;
             case "wav":
