@@ -184,7 +184,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         {
             FLogger.Append(ELog.Information, () =>
             {
-                FLogger.Text($"Queued {queuedDelta} {fileType} for export from {directory}", Constants.WHITE, true);
+                FLogger.Text($"Queued {queuedDelta} {fileType} for export from {directory}{(UserSettings.Default.ExportImmediately ? ", exporting automatically..." : "")}", Constants.WHITE, true);
             });
         }
         else if (contextViewModel.CUE4Parse.FailedExportCount == 0)

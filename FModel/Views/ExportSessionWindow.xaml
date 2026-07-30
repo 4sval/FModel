@@ -186,6 +186,7 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <Viewbox Grid.Column="0" Width="16" Height="16" Margin="0 0 5 0" VerticalAlignment="Center"
@@ -199,54 +200,31 @@
                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                            ToolTip="{Binding Path}" />
 
-                <StackPanel Grid.Column="3" Orientation="Horizontal">
-                    <Button ToolTip="Remove from queue" Click="OnRemoveFromQueueClick"
-                            Width="16" Height="16" Padding="0" Margin="0"
-                            Visibility="{Binding DataContext.CanExport, RelativeSource={RelativeSource AncestorType=adonisControls:AdonisWindow}, Converter={StaticResource BoolToVisibilityConverter}}"
-                            HorizontalAlignment="Center" VerticalAlignment="Center" Focusable="False">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
-                                <Setter Property="Background" Value="Transparent" />
-                                <Setter Property="BorderThickness" Value="0" />
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border Background="Transparent">
-                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Foreground" Value="#EF5350" />
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                                      Data="{StaticResource RemoveIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </Button>
-                    
-                    <Button ToolTip="Open in Explorer" Click="OnOpenInExplorerClick"
+                <Button Grid.Column="3" ToolTip="Remove from queue" Click="OnRemoveFromQueueClick"
+                        Visibility="{Binding DataContext.CanExport, RelativeSource={RelativeSource AncestorType=adonisControls:AdonisWindow}, Converter={StaticResource BoolToVisibilityConverter}}"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="0" Margin="0" Focusable="False"
+                        Foreground="#EF5350" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}">
+                    <Viewbox Width="16" Height="16">
+                        <Canvas Width="24" Height="24">
+                            <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                  Data="{StaticResource RemoveIcon}" />
+                        </Canvas>
+                    </Viewbox>
+                </Button>
+
+                <Button Grid.Column="4" ToolTip="Open in Explorer" Click="OnOpenInExplorerClick"
                         Tag="{Binding FirstFilePath}"
                         Visibility="{Binding HasFilePath, Converter={StaticResource BoolToVisibilityConverter}}"
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}"
                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="0" Margin="0">
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
-                                <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M11 13l9 -9" />
-                                <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M15 4h5v5" />
-                            </Canvas>
-                        </Viewbox>
-                    </Button>
-                </StackPanel>
+                    <Viewbox Width="16" Height="16">
+                        <Canvas Width="24" Height="24">
+                            <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
+                            <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M11 13l9 -9" />
+                            <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M15 4h5v5" />
+                        </Canvas>
+                    </Viewbox>
+                </Button>
             </Grid>
         </DataTemplate>
 

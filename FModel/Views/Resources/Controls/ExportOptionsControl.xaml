@@ -224,7 +224,7 @@
 
         <TextBlock Grid.Row="15"
                    Grid.Column="0"
-                   Text="Export all texture mips"
+                   Text="Export All Mips"
                    VerticalAlignment="Center" />
         <CheckBox Grid.Row="15"
                   Grid.Column="2"
