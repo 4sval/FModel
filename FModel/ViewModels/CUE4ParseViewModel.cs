@@ -1141,7 +1141,7 @@ public class CUE4ParseViewModel : ViewModel
             }
             else if (entry.NameWithoutExtension.Equals("key_manifest"))
             {
-                var keymanifest = new FAion2KeyManifestFile(entry, Provider);
+                var keymanifest = new FAion2KeyManifestFile(entry);
                 TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(keymanifest, Formatting.Indented), saveProperties, updateUi);
             }
             else

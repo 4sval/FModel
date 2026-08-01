@@ -811,16 +811,36 @@
                         <Button x:Name="ExportSessionButton"
                                 HorizontalContentAlignment="Stretch"
                                 VerticalContentAlignment="Center"
-                                Command="{Binding MenuCommand}" CommandParameter="Views_ExportSession"
-                                ToolTip="There are items waiting in the export queue, click to open the export session and process them!"
-                                Background="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}"
-                                Style="{StaticResource StatusBarButton}"
-                                Visibility="{Binding Session.TotalQueued, Source={x:Static viewModels:ExportSessionViewModel.Instance}, Converter={x:Static converters:IntGreaterThanZeroToVisibilityConverter.Instance}}">
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                Command="{Binding MenuCommand}" CommandParameter="Views_ExportSession">
+                            <Button.Style>
+                                <Style TargetType="Button"
+                                       BasedOn="{StaticResource StatusBarButton}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Session.HasQueuedItems, Source={x:Static viewModels:ExportSessionViewModel.Instance}}"
+                                                     Value="False">
+                                            <Setter Property="Background"
+                                                    Value="{Binding Background, RelativeSource={RelativeSource AncestorType=StatusBar}}" />
+                                            <Setter Property="ToolTip"
+                                                    Value="No items are currently queued for export." />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Session.HasQueuedItems, Source={x:Static viewModels:ExportSessionViewModel.Instance}}"
+                                                     Value="True">
+                                            <Setter Property="Background"
+                                                    Value="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}" />
+                                            <Setter Property="ToolTip"
+                                                    Value="There are items waiting in the export queue. Click to open the export session and process them!" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <StackPanel Orientation="Horizontal"
+                                        VerticalAlignment="Center">
                                 <Viewbox Width="16" Height="16">
                                     <StaticResource ResourceKey="ExportSessionIcon" />
                                 </Viewbox>
-                                <TextBlock Margin="10 0 0 0" Text="{Binding Session.TotalQueued, Source={x:Static viewModels:ExportSessionViewModel.Instance}, Mode=OneWay, StringFormat=Queued Items: {0}}" />
+                                <TextBlock Margin="10 0 0 0"
+                                           Text="{Binding Session.TotalQueued, Source={x:Static viewModels:ExportSessionViewModel.Instance}, Mode=OneWay, StringFormat=Queued Items: {0}}"
+                                           Visibility="{Binding Session.TotalQueued, Source={x:Static viewModels:ExportSessionViewModel.Instance}, Converter={x:Static converters:IntGreaterThanZeroToVisibilityConverter.Instance}}" />
                             </StackPanel>
                         </Button>
                     </StatusBarItem>
@@ -874,7 +894,7 @@
                         <TextBlock Text="Export Session" FontWeight="SemiBold"
                                    Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
                         <TextBlock Text="{Binding ToolTip, ElementName=ExportSessionButton}"
-                                   MaxWidth="250" TextWrapping="Wrap" FontSize="11"
+                                   MaxWidth="300" TextWrapping="Wrap" FontSize="11"
                                    Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
                     </StackPanel>
                 </StackPanel>
