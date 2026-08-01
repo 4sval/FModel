@@ -230,19 +230,12 @@ public class AssetsFolderViewModel
                 return null;
             }
 
-            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData).Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
             foreach (var entry in entries)
             {
                 TreeItem lastNode = null;
                 TreeItem parentItem = null;
 
-                var path = entry.Path;
-
-                var index = path.IndexOf(localAppData, StringComparison.OrdinalIgnoreCase);
-                if (index >= 0)
-                    path = path[(index + localAppData.Length)..].TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-
-                var folders = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+                var folders = entry.Path.Split('/', StringSplitOptions.RemoveEmptyEntries);
                 var builder = new StringBuilder(64);
                 var parentNode = treeItems;
 
