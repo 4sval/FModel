@@ -6,10 +6,10 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using CUE4Parse_Conversion.Options;
+using CUE4Parse_Conversion.Textures;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.Utils;
-using CUE4Parse_Conversion.Textures;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
@@ -245,6 +245,7 @@ public class TabItem : ViewModel
             if (_selectedImage == value) return;
             SetProperty(ref _selectedImage, value);
             RaisePropertyChanged("HasImage");
+            RaisePropertyChanged("ShowExportName");
             RaisePropertyChanged("Page");
         }
     }
@@ -252,6 +253,10 @@ public class TabItem : ViewModel
     public string Header => $"{Entry.Name}{(string.IsNullOrEmpty(TitleExtra) ? "" : $" ({TitleExtra})")}";
 
     public bool HasImage => SelectedImage != null;
+    public bool ShowExportName => HasImage && !string.Equals(
+        Path.GetFileNameWithoutExtension(SelectedImage.ExportName),
+        Path.GetFileNameWithoutExtension(Entry.Name),
+        StringComparison.OrdinalIgnoreCase);
     public bool HasMultipleImages => _images.Count > 1;
     public string Page => $"{_images.IndexOf(_selectedImage) + 1} / {_images.Count}";
 

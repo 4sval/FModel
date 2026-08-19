@@ -1,8 +1,8 @@
 using System;
-using FModel.ViewModels.ApiEndpoints.Models;
-using RestSharp;
 using System.Threading.Tasks;
 using FModel.Framework;
+using FModel.ViewModels.ApiEndpoints.Models;
+using RestSharp;
 
 namespace FModel.ViewModels.ApiEndpoints;
 

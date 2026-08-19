@@ -1,14 +1,10 @@
 using System.Threading;
 using System.Threading.Tasks;
-
 using EpicManifestParser.Api;
-
 using FModel.Framework;
 using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
-
 using RestSharp;
-
 using Serilog;
 
 namespace FModel.ViewModels.ApiEndpoints;

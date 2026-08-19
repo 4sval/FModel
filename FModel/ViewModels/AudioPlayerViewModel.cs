@@ -191,7 +191,14 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
     public MMDevice SelectedAudioDevice
     {
         get => _selectedAudioDevice;
-        set => SetProperty(ref _selectedAudioDevice, value);
+        set
+        {
+            if (SetProperty(ref _selectedAudioDevice, value))
+            {
+                UserSettings.Default.AudioDeviceId = value?.DeviceID;
+                UserSettings.Save();
+            }
+        }
     }
 
     private AudioCommand _audioCommand;
@@ -213,7 +220,13 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
         var audioDevices = new ObservableCollection<MMDevice>(EnumerateDevices());
         AudioDevicesView = new ListCollectionView(audioDevices) { SortDescriptions = { new SortDescription("FriendlyName", ListSortDirection.Ascending) } };
-        SelectedAudioDevice ??= audioDevices.FirstOrDefault();
+        SelectedAudioDevice = audioDevices.FirstOrDefault(x => x.DeviceID == UserSettings.Default.AudioDeviceId) ?? GetDefaultAudioDevice() ?? audioDevices.FirstOrDefault();
+    }
+
+    private MMDevice GetDefaultAudioDevice()
+    {
+        using var enumerator = new MMDeviceEnumerator();
+        return enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
     }
 
     public void Load()
@@ -527,6 +540,7 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         });
     }
 
+    [DebuggerHidden]
     private void TimerTick(object state)
     {
         if (_waveSource == null || _soundOut == null) return;

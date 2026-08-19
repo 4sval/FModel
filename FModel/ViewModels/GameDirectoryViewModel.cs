@@ -1,4 +1,3 @@
-using FModel.Framework;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -9,6 +8,7 @@ using CUE4Parse.Compression;
 using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.VirtualFileSystem;
+using FModel.Framework;
 
 namespace FModel.ViewModels;
 

@@ -5,6 +5,7 @@ using CUE4Parse.UE4.Assets.Exports;
 using FModel.Creator.Bases;
 using FModel.Creator.Bases.FN;
 using FModel.Creator.Bases.MV;
+using BaseQuest = FModel.Creator.Bases.FN.BaseQuest;
 
 namespace FModel.Creator;
 
@@ -214,7 +215,7 @@ public class CreatorPackage : IDisposable
             case "FortQuestItemDefinition_Campaign":
             case "AthenaDailyQuestDefinition":
             case "FortUrgentQuestItemDefinition":
-                creator = new Bases.FN.BaseQuest(_object.Value, _style);
+                creator = new BaseQuest(_object.Value, _style);
                 return true;
             case "FortCompendiumItemDefinition":
             case "FortCompendiumBundleDefinition":

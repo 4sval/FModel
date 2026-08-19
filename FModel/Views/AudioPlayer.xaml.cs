@@ -36,11 +36,10 @@ public partial class AudioPlayer
 
     private void OnDeviceSwap(object sender, SelectionChangedEventArgs e)
     {
-        if (sender is not ComboBox { SelectedItem: MMDevice selectedDevice })
-            return;
-
-        UserSettings.Default.AudioDeviceId = selectedDevice.DeviceID;
-        _applicationView.AudioPlayer.Device();
+        if (sender is ComboBox { SelectedItem: MMDevice selectedDevice })
+        {
+            _applicationView.AudioPlayer.Device();
+        }
     }
 
     private void OnVolumeChange(object sender, RoutedEventArgs e)

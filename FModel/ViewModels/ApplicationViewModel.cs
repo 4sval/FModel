@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.Intrinsics.X86;
 using System.Threading.Tasks;
 using System.Windows;
 using CUE4Parse_Conversion.Textures.BC;
@@ -22,7 +23,6 @@ using FModel.Views.Resources.Controls;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
-using System.Runtime.Intrinsics.X86;
 
 namespace FModel.ViewModels;
 

@@ -1,6 +1,6 @@
+using System.Windows;
 using FModel.ViewModels;
 using Ookii.Dialogs.Wpf;
-using System.Windows;
 
 namespace FModel.Views;
 

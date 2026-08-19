@@ -7,6 +7,7 @@
                              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                              WindowStartupLocation="CenterScreen" ResizeMode="CanResize" ShowInTaskbar="True"
                              IconVisibility="Collapsed" KeyDown="OnWindowKeyDown" StateChanged="OnStateChanged"
+                             Closed="OnWindowClosed"
                              Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.75'}"
                              Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.65'}">
     <adonisControls:AdonisWindow.Style>
@@ -38,14 +39,14 @@
                                     </Canvas>
                                 </Viewbox>
                             </Grid>
-                            <TextBox x:Name="SearchTextBox" Grid.Column="0" Grid.ColumnSpan="2" Padding="25 0 0 0" AcceptsTab="False" AcceptsReturn="False">
+                            <TextBox x:Name="SearchTextBox" Grid.Column="0" Grid.ColumnSpan="2" Padding="25 0 0 0" AcceptsTab="False" AcceptsReturn="False" TextChanged="OnSearchTextChanged">
                                 <TextBox.Style>
                                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                         <Setter Property="Text" Value="{Binding SearchTab.FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                        <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Write your pattern and press enter..." />
+                                        <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Search package paths..." />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding SearchTab.HasRegexEnabled}" Value="True">
-                                                <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Write your regex pattern and press enter..." />
+                                                <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Search package paths with a regex..." />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -91,7 +92,7 @@
                             </TextBlock>
                         </Grid>
                         <ListView Grid.Row="1" x:Name="SearchListView" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling"
-                                      ScrollViewer.CanContentScroll="True" ItemsSource="{Binding SearchTab.SearchResultsView, IsAsync=True}">
+                                      ScrollViewer.CanContentScroll="True" ItemsSource="{Binding SearchTab.SearchResults, IsAsync=True}">
                             <ListView.Resources>
                                 <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -453,10 +454,10 @@
                                 <TextBox.Style>
                                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                         <Setter Property="Text" Value="{Binding RefTab.FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                        <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Write your pattern and press enter..." />
+                                        <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Search package paths..." />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding RefTab.HasRegexEnabled}" Value="True">
-                                                <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Write your regex pattern and press enter..." />
+                                                <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Search package paths with a regex..." />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -506,7 +507,7 @@
                                       VirtualizingPanel.IsVirtualizing="True"
                                       VirtualizingPanel.VirtualizationMode="Recycling"
                                       ScrollViewer.CanContentScroll="True"
-                                      ItemsSource="{Binding RefTab.SearchResultsView, IsAsync=True}">
+                                      ItemsSource="{Binding RefTab.SearchResults, IsAsync=True}">
                             <ListView.Resources>
                                 <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />

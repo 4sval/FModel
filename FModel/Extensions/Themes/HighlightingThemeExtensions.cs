@@ -1,7 +1,6 @@
 using System.Windows;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit.Highlighting;
-using static FModel.Extensions.AvalonExtensions;
 using static FModel.Extensions.Themes.JsonHighlightThemes;
 
 namespace FModel.Extensions.Themes;

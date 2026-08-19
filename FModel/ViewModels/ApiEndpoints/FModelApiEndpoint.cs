@@ -1,9 +1,9 @@
 using System;
-using AdonisUI.Controls;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using AdonisUI.Controls;
 using AutoUpdaterDotNET;
 using CUE4Parse.Utils;
 using FModel.Extensions;
@@ -18,6 +18,7 @@ using Serilog;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
+using Version = System.Version;
 
 namespace FModel.ViewModels.ApiEndpoints;
 
@@ -139,7 +140,7 @@ public class FModelApiEndpoint : AbstractApiProvider
                 return;
             }
 
-            var currentVersion = new System.Version(args.CurrentVersion);
+            var currentVersion = new Version(args.CurrentVersion);
             UserSettings.Default.ShowChangelog = currentVersion != args.InstalledVersion;
 
             const string message = "A new update is available!";

@@ -30,6 +30,11 @@ public class ManifestInfoDilly
     [J] public string DownloadUrl { get; private set; }
 }
 
+public class CloudContent
+{
+    public string ManifestPath { get; private set; }
+}
+
 public class Donator
 {
     [J] public string Username { get; private set; }

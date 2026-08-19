@@ -1,6 +1,6 @@
-using System;
 using System.Diagnostics;
 using System.Reflection;
+using Serilog;
 using Serilog.Core;
 using Serilog.Events;
 
@@ -14,7 +14,7 @@ public abstract class SerilogEnricher : ILogEventEnricher
     {
         method = null;
 
-        var serilogAssembly = typeof(Serilog.Log).Assembly;
+        var serilogAssembly = typeof(Log).Assembly;
         var stack = new StackTrace(3);
 
         foreach (var frame in stack.GetFrames())

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Globalization;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Objects.Core.i18N;

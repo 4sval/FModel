@@ -8,13 +8,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
 using CUE4Parse.Compression;
 using CUE4Parse.UE4.Exceptions;
 using CUE4Parse.UE4.Readers;
-
 using FModel.Framework;
-using FModel.Settings;
 using OffiUtils;
 using RestSharp;
 

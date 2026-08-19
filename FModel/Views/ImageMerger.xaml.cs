@@ -1,10 +1,3 @@
-using AdonisUI.Controls;
-using FModel.Extensions;
-using FModel.Settings;
-using FModel.Views.Resources.Controls;
-using Microsoft.Win32;
-using Serilog;
-using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
@@ -16,6 +9,14 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using AdonisUI.Controls;
+using FModel.Extensions;
+using FModel.Settings;
+using FModel.Views.Resources.Controls;
+using Microsoft.Win32;
+using Serilog;
+using SkiaSharp;
+using Image = System.Drawing.Image;
 
 namespace FModel.Views;
 
@@ -66,7 +67,7 @@ public partial class ImageMerger
             {
                 await using var tmp = new MemoryStream();
                 await stream.CopyToAsync(tmp);
-                System.Drawing.Image.FromStream(tmp).Save(ms, ImageFormat.Png);
+                Image.FromStream(tmp).Save(ms, ImageFormat.Png);
             }
             else
             {

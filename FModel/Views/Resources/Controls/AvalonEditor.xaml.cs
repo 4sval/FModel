@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using CUE4Parse.Utils;
@@ -11,6 +12,7 @@ using FModel.Services;
 using FModel.ViewModels;
 using ICSharpCode.AvalonEdit;
 using SkiaSharp;
+using TabItem = FModel.ViewModels.TabItem;
 
 namespace FModel.Views.Resources.Controls;
 
@@ -20,10 +22,10 @@ namespace FModel.Views.Resources.Controls;
 public partial class AvalonEditor
 {
     public static TextEditor YesWeEditor;
-    public static System.Windows.Controls.TextBox YesWeSearch;
+    public static TextBox YesWeSearch;
     private readonly Regex _hexColorRegex = new("\"Hex\": \"(?'target'[0-9A-Fa-f]{3,8})\"$",
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-    private readonly System.Windows.Controls.ToolTip _toolTip = new();
+    private readonly ToolTip _toolTip = new();
     private readonly Dictionary<string, NavigationList<int>> _savedCarets = new();
     private NavigationList<int> _caretsOffsets
     {

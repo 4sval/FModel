@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-
+using CUE4Parse_Conversion.Textures;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.GameTypes.Borderlands3.Assets.Exports;
 using CUE4Parse.GameTypes.Borderlands4.Assets.Exports;
@@ -51,17 +51,11 @@ using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Objects.UObject.Editor;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.Utils;
-
-using CUE4Parse_Conversion.Textures;
-
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
-
 using Serilog;
-
 using SkiaSharp;
-
 using Svg.Skia;
 
 namespace FModel.ViewModels;

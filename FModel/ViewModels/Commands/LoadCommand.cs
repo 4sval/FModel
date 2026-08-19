@@ -6,7 +6,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using AdonisUI.Controls;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.Readers;
@@ -176,7 +175,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
         if (!openFileDialog.ShowDialog().GetValueOrDefault()) return;
 
         FLogger.Append(ELog.Information, () =>
-            FLogger.Text($"Backup file older than current game is '{openFileDialog.FileName.SubstringAfterLast("\\")}'", Constants.WHITE, true));
+            FLogger.Text($"Loaded old backup file '{openFileDialog.FileName.SubstringAfterLast("\\")}'", Constants.WHITE, true));
 
         var mode = UserSettings.Default.LoadingMode;
         var entries = ParseBackup(openFileDialog.FileName, mode, cancellationToken);

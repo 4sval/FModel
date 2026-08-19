@@ -3,8 +3,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
 using FModel.Extensions;
-using FModel.Services;
-using FModel.ViewModels;
 using ICSharpCode.AvalonEdit.Rendering;
 
 namespace FModel.Views.Resources.Controls;

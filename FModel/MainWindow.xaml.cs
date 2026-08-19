@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -120,6 +119,7 @@ public partial class MainWindow
         await Task.WhenAll(
             _applicationView.CUE4Parse.VerifyConsoleVariables(),
             _applicationView.CUE4Parse.VerifyOnDemandArchives(),
+            _applicationView.CUE4Parse.VerifyCloudArchives(),
             _applicationView.CUE4Parse.InitMappings(),
             ApplicationViewModel.InitDetex(),
             ApplicationViewModel.InitVgmStream(),
@@ -131,12 +131,6 @@ public partial class MainWindow
             }),
             UserSettings.Default.DecompileLua ? ApplicationViewModel.InitUnluac() : Task.CompletedTask
         ).ConfigureAwait(false);
-
-#if DEBUG
-        // await _threadWorkerView.Begin(cancellationToken =>
-        //     _applicationView.CUE4Parse.Extract(cancellationToken,
-        //         _applicationView.CUE4Parse.Provider["Marvel/Content/Marvel/Wwise/Assets/Events/Music/music_new/event/Entry.uasset"]));
-#endif
     }
 
     private void OnGridSplitterDoubleClick(object sender, MouseButtonEventArgs e)
