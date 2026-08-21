@@ -32,6 +32,7 @@ public class BaseIcon : UCreator
         // rarity
         if (Object.TryGetValue(out FPackageIndex series, "Series")) GetSeries(series);
         else if (Object.TryGetValue(out FStructFallback componentContainer, "ComponentContainer")) GetSeries(componentContainer);
+        else if (Object.TryGetValue(out EFortRarity hackRarity, "HackRarity")) GetRarity(hackRarity);
         else GetRarity(Object.GetOrDefault("Rarity", EFortRarity.Uncommon)); // default is uncommon
 
         if (Object.TryGetValue(out FInstancedStruct[] dataList, "DataList"))
@@ -48,7 +49,7 @@ public class BaseIcon : UCreator
                 Preview = preview;
             else if (Object.TryGetValue(out FPackageIndex itemDefinition, "HeroDefinition", "WeaponDefinition"))
                 Preview = Utils.GetBitmap(itemDefinition);
-            else if (Object.TryGetValue(out FSoftObjectPath largePreview, "LargePreviewImage", "EntryListIcon", "SmallPreviewImage", "BundleImage", "ItemDisplayAsset", "LargeIcon", "ToastIcon", "SmallIcon"))
+            else if (Object.TryGetValue(out FSoftObjectPath largePreview, "LargePreviewImage", "EntryListIcon", "SmallPreviewImage", "BundleImage", "ItemDisplayAsset", "LargeIcon", "ToastIcon", "SmallIcon", "CartridgeIcon", "EffectIcon"))
                 Preview = Utils.GetBitmap(largePreview);
             else if (Object.TryGetValue(out string s, "LargePreviewImage") && !string.IsNullOrEmpty(s))
                 Preview = Utils.GetBitmap(s);
@@ -66,9 +67,9 @@ public class BaseIcon : UCreator
         }
 
         // text
-        if (Object.TryGetValue(out FText displayName, "DisplayName", "ItemName", "BundleName", "DefaultHeaderText", "UIDisplayName", "EntryName", "EventCalloutTitle"))
+        if (Object.TryGetValue(out FText displayName, "DisplayName", "ItemName", "BundleName", "DefaultHeaderText", "UIDisplayName", "EntryName", "EventCalloutTitle", "KeyName", "HackDisplayName"))
             DisplayName = displayName.Text;
-        if (Object.TryGetValue(out FText description, "Description", "ItemDescription", "SetDescription", "BundleDescription", "GeneralDescription", "DefaultBodyText", "UIDescription", "UIDisplayDescription", "EntryDescription", "EventCalloutDescription"))
+        if (Object.TryGetValue(out FText description, "Description", "ItemDescription", "SetDescription", "BundleDescription", "GeneralDescription", "DefaultBodyText", "UIDescription", "UIDisplayDescription", "EntryDescription", "EventCalloutDescription", "KeyDescription", "HackDescription"))
             Description = description.Text;
         else if (Object.TryGetValue(out FText[] descriptions, "Description"))
             Description = string.Join('\n', descriptions.Select(x => x.Text));
