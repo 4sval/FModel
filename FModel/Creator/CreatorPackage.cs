@@ -65,6 +65,7 @@ public class CreatorPackage : IDisposable
             case "AthenaEmojiItemDefinition":
             case "AthenaItemWrapDefinition":
             case "AthenaToyItemDefinition":
+            case "FortHackData":
             case "FortHeroType":
             case "FortTokenType":
             case "FortAbilityKit":
@@ -72,7 +73,9 @@ public class CreatorPackage : IDisposable
             case "FortMissionInfo":
             case "RewardGraphToken":
             case "JunoKnowledgeBundle":
+            case "FortHackDataMinimal":
             case "FortBannerTokenType":
+            case "FortHackKeyCoreData":
             case "FortVariantTokenType":
             case "FortDecoItemDefinition":
             case "FortStatItemDefinition":
@@ -88,6 +91,7 @@ public class CreatorPackage : IDisposable
             case "SparksBassItemDefinition":
             case "FortGadgetItemDefinition":
             case "AthenaCharmItemDefinition":
+            case "FortHackKeyItemDefinition":
             case "FortPlaysetItemDefinition":
             case "FortGiftBoxItemDefinition":
             case "FortOutpostItemDefinition":
@@ -124,6 +128,7 @@ public class CreatorPackage : IDisposable
             case "JunoRecipeBundleItemDefinition":
             case "FortHomebaseNodeItemDefinition":
             case "FortNeverPersistItemDefinition":
+            case "FortHackCartridgeItemDefinition":
             case "FortPlayerAugmentItemDefinition":
             case "FortSmartBuildingItemDefinition":
             case "FortGiftBoxUnlockItemDefinition":
