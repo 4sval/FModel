@@ -1,6 +1,7 @@
 using System;
 using System.Numerics;
 using CUE4Parse_Conversion.Dto;
+using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
@@ -141,6 +142,12 @@ public class StaticModel : UModel<MeshVertex>
             if (s.Load<UStaticMeshSocket>() is not { } socket) continue;
             Sockets.Add(new Socket(socket));
         }
+    }
+
+    public StaticModel(UGeometryCollection export, StaticMeshDto staticMesh, Transform transform = null)
+        : base(export, staticMesh.LODs[LodLevel], export.Materials, staticMesh.LODs[LodLevel].Vertices, staticMesh.LODs.Count, transform)
+    {
+        Box = staticMesh.Bounds * Constants.SCALE_DOWN_RATIO;
     }
 
     public override void RenderCollision(Shader shader)

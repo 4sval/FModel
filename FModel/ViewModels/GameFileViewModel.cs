@@ -219,7 +219,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 USkeletalMesh => (EAssetCategory.SkeletalMesh, EBulkType.Meshes),
                 UCustomizableObject => (EAssetCategory.CustomizableObject, EBulkType.None),
                 UNaniteDisplacedMesh => (EAssetCategory.NaniteDisplacedMesh, EBulkType.None),
-                UGeometryCollection => (EAssetCategory.GeometryCollection, EBulkType.None),
+                UGeometryCollection => (EAssetCategory.GeometryCollection, EBulkType.Meshes),
 
                 UTexture => (EAssetCategory.Texture, EBulkType.Textures),
 

@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Threading;
 using System.Windows;
 using CUE4Parse_Conversion.Animations;
+using CUE4Parse_Conversion.Dto;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Options;
 using CUE4Parse.UE4.Assets.Exports;
@@ -29,6 +30,7 @@ using FModel.Views.Snooper.Lights;
 using FModel.Views.Snooper.Models;
 using FModel.Views.Snooper.Shading;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using Serilog;
 
 namespace FModel.Views.Snooper;
 
@@ -88,6 +90,9 @@ public class Renderer : IDisposable
             case UStaticMesh when export.Value is UStaticMesh st:
                 LoadStaticMesh(st, UserSettings.Default.NaniteMeshExportFormat);
                 break;
+            case UGeometryCollection when export.Value is UGeometryCollection gc:
+                LoadStaticMesh(gc, UserSettings.Default.NaniteMeshExportFormat);
+                break;
             case USkeletalMesh when export.Value is USkeletalMesh sk:
                 LoadSkeletalMesh(sk);
                 break;
@@ -132,7 +137,7 @@ public class Renderer : IDisposable
                 {
                     // do nothing, selected model has the correct skeleton for this animation
                 }
-                else */if (animBase.Skeleton.TryLoad(out USkeleton skeleton))
+                else */if (animBase.Skeleton?.TryLoad(out USkeleton skeleton) == true)
                 {
                     LoadSkeleton(skeleton);
                 }
@@ -144,7 +149,7 @@ public class Renderer : IDisposable
     }
     private void Animate(UObject anim, FGuid guid)
     {
-        if (anim is not UAnimSequenceBase animBase || !animBase.Skeleton.TryLoad(out USkeleton skeleton) ||
+        if (anim is not UAnimSequenceBase animBase || animBase.Skeleton == null || !animBase.Skeleton.TryLoad(out USkeleton skeleton) ||
             !Options.TryGetModel(guid, out var m) || m is not SkeletalModel model)
             return;
 
@@ -356,6 +361,31 @@ public class Renderer : IDisposable
 
         if (!original.TryConvert(out var mesh, EMeshQuality.Highest, naniteFormat))
             return;
+
+        Options.Models[guid] = new StaticModel(original, mesh);
+        Options.SelectModel(guid);
+    }
+
+    private void LoadStaticMesh(UGeometryCollection original, ENaniteMeshFormat naniteFormat = ENaniteMeshFormat.NoNanite)
+    {
+        var guid = new FGuid((uint) original.GetFullName().GetHashCode());
+        if (Options.TryGetModel(guid, out var model))
+        {
+            model.AddInstance(Transform.Identity);
+            Application.Current.Dispatcher.Invoke(() => model.SetupInstances());
+            return;
+        }
+
+        StaticMeshDto mesh;
+        try
+        {
+            mesh = new StaticMeshDto(original, naniteFormat);
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "Failed to convert geometry collection");
+            return;
+        }
 
         Options.Models[guid] = new StaticModel(original, mesh);
         Options.SelectModel(guid);

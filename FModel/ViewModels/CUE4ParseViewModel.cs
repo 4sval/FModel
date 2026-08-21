@@ -69,6 +69,7 @@ using CUE4Parse.UE4.Wwise;
 using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Exporters;
 using CUE4Parse_Conversion.Sounds;
+using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
 using EpicManifestParser;
 using EpicManifestParser.UE;
 using FModel.Creator;
@@ -1561,6 +1562,7 @@ public class CUE4ParseViewModel : ViewModel
             // }:
             case UPaperSprite when isNone && UserSettings.Default.PreviewMaterials:
             case UStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
+            case UGeometryCollection when isNone && UserSettings.Default.PreviewStaticMeshes:
             case USkeletalMesh when isNone && UserSettings.Default.PreviewSkeletalMeshes:
             case USkeleton when isNone && UserSettings.Default.SaveSkeletonAsMesh:
             case UMaterialInstance when isNone && UserSettings.Default.PreviewMaterials && !ModelIsOverwritingMaterial &&
@@ -1587,6 +1589,7 @@ public class CUE4ParseViewModel : ViewModel
                 return true;
             }
             case UStaticMesh when HasFlag(bulk, EBulkType.Meshes):
+            case UGeometryCollection when HasFlag(bulk, EBulkType.Meshes):
             case USkeletalMesh when HasFlag(bulk, EBulkType.Meshes):
             case USkeleton when UserSettings.Default.SaveSkeletonAsMesh && HasFlag(bulk, EBulkType.Meshes):
             // case UMaterialInterface when HasFlag(bulk, EBulkType.Materials):
