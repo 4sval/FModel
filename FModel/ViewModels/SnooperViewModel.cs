@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
 using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Objects.Engine;
@@ -13,6 +14,7 @@ using FModel.Services;
 using Snooper.Rendering.Actors;
 using Snooper.Rendering.Components;
 using Snooper.Rendering.Components.Light;
+using Snooper.Rendering.Components.Mesh;
 using Snooper.Rendering.Components.Primitive;
 using Snooper.Rendering.Components.Transforms;
 
@@ -40,6 +42,7 @@ public class SnooperViewModel : ViewModel, IDisposable
         {
             UStaticMesh sm => new MeshActor(sm),
             USkeletalMesh sk => new MeshActor(sk),
+            UGeometryCollection gc => new MeshActor(gc),
             UWorld w => new WorldActor(w),
             _ => null
         };
@@ -48,12 +51,19 @@ public class SnooperViewModel : ViewModel, IDisposable
         editor.Invoke(() =>
         {
             if (editor.Manager.RootActor == null)
-                editor.Manager.LoadScene(CreateScene(obj is UWorld));
+                editor.Manager.LoadScene(CreateScene(actor is WorldActor));
 
             if (actor != null)
                 editor.Manager.LoadScene(actor);
 
             editor.Show();
+
+            if (actor?.RootComponent is MeshComponent mesh)
+            {
+                mesh.SnapToGround();
+                mesh.UpdateWorldMatrix(); // just so teleport works properly
+                mesh.TeleportTo();
+            }
         });
     }
 
@@ -67,12 +77,12 @@ public class SnooperViewModel : ViewModel, IDisposable
         scene.Children.Add(grid);
 
         var camera = new CameraActor("Camera");
-        camera.CameraComponent.LocalTransform.Position = new Vector3(1, 2, -0.5f);
-        camera.CameraComponent.LocalTransform.Rotation = new Quaternion(0, -1, 0, 1);
+        camera.CameraComponent.SetLocalTransform(new Transform(new Vector3(0, 1.14f, 3.5f), new Vector3(180, 18, 0)));
         scene.Children.Add(camera);
 
+        const float distance = 500;
         var sun = new Actor("Sun Light");
-        sun.Components.Add(new DirectionalLightComponent(MathF.PI, new Vector3(1.0f, 0.87f, 0.72f), new Transform(new Vector3(16.5f, 0, 0), new Quaternion(new Vector3(0.5f, -0.5f, 0.0f), 1.0f)), "Directional Light"));
+        sun.Components.Add(new DirectionalLightComponent(MathF.PI, new Vector3(1.00f, 0.96f, 0.90f), new Transform(new Vector3(-distance, distance, distance), new Vector3(140, 37, 0)), "Directional Light"));
         scene.Children.Add(sun);
 
         return scene;

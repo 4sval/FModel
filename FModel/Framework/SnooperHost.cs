@@ -50,13 +50,13 @@ public sealed class SnooperHost(Func<EditorWindow> build) : IDisposable
         // this thread must never die until fmodel closes
         // if it dies first, opening any menu hangs the ui thread inside UiaReturnRawElementProvider, which is
         // wpf building the popup, and exiting hangs too (dead thread leaves com state behind???)
-        var thread = new Thread(RenderLoop) { IsBackground = true, Name = "Snooper" };
+        var thread = new Thread(WindowLoop) { IsBackground = true, Name = "Snooper" };
         thread.Start();
 
         return thread;
     }
 
-    private void RenderLoop()
+    private void WindowLoop()
     {
         using var _ = LogContext.PushProperty("SourceContext", "Snooper");
         GLFWProvider.CheckForMainThread = false;
