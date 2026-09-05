@@ -68,6 +68,7 @@ using CUE4Parse.UE4.Wwise;
 using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Exporters;
 using CUE4Parse_Conversion.Sounds;
+using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
 using EpicManifestParser;
 using EpicManifestParser.UE;
 using FModel.Creator;
@@ -97,20 +98,6 @@ public class CUE4ParseViewModel : ViewModel
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private static readonly HttpClient _chunkClient = ManifestParseOptions.CreateDefaultClient();
-
-    private bool _modelIsOverwritingMaterial;
-    public bool ModelIsOverwritingMaterial
-    {
-        get => _modelIsOverwritingMaterial;
-        set => SetProperty(ref _modelIsOverwritingMaterial, value);
-    }
-
-    private bool _modelIsWaitingAnimation;
-    public bool ModelIsWaitingAnimation
-    {
-        get => _modelIsWaitingAnimation;
-        set => SetProperty(ref _modelIsWaitingAnimation, value);
-    }
 
     public AbstractVfsFileProvider Provider { get; }
     public GameDirectoryViewModel GameDirectory { get; }
@@ -1228,6 +1215,11 @@ public class CUE4ParseViewModel : ViewModel
         var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class, pkg);
         switch (dummy)
         {
+            case not null when isNone && SnooperViewModel.Instance.TryDeliver(pointer.Object.Value):
+            {
+                // the viewer asked for this kind of asset and took it
+                return true;
+            }
             case UVerseDigest when isNone && pointer.Object.Value is UVerseDigest verseDigest:
             {
                 if (!TabControl.CanAddTabs) return false;
@@ -1515,40 +1507,20 @@ public class CUE4ParseViewModel : ViewModel
                 return false;
             }
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:
-            // case UBlueprintGeneratedClass when isNone && UserSettings.Default.PreviewWorlds && TabControl.SelectedTab.ParentExportType switch
-            // {
-            //     "JunoBuildInstructionsItemDefinition" => true,
-            //     "JunoBuildingSetAccountItemDefinition" => true,
-            //     "JunoBuildingPropAccountItemDefinition" => true,
-            //     _ => false
-            // }:
-            case UPaperSprite when isNone && UserSettings.Default.PreviewMaterials:
+            case UBlueprintGeneratedClass when isNone && UserSettings.Default.PreviewWorlds:
+            // case UPaperSprite when isNone && UserSettings.Default.PreviewMaterials:
             case UStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
             case UGeometryCollection when isNone && UserSettings.Default.PreviewStaticMeshes:
             case USkeletalMesh when isNone && UserSettings.Default.PreviewSkeletalMeshes:
             case USkeleton when isNone && UserSettings.Default.SaveSkeletonAsMesh:
-            case UMaterialInstance when isNone && UserSettings.Default.PreviewMaterials && !ModelIsOverwritingMaterial &&
-                                        !(Provider.ProjectName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase) &&
-                                          (pkg.Name.Contains("/MI_OfferImages/", StringComparison.OrdinalIgnoreCase) ||
-                                           pkg.Name.Contains("/RenderSwitch_Materials/", StringComparison.OrdinalIgnoreCase) ||
-                                           pkg.Name.Contains("/MI_BPTile/", StringComparison.OrdinalIgnoreCase))):
+            case UAnimationAsset when isNone && UserSettings.Default.PreviewAnimations:
+            // case UMaterialInstance when isNone && UserSettings.Default.PreviewMaterials &&
+            //                             !(Provider.ProjectName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase) &&
+            //                               (pkg.Name.Contains("/MI_OfferImages/", StringComparison.OrdinalIgnoreCase) ||
+            //                                pkg.Name.Contains("/RenderSwitch_Materials/", StringComparison.OrdinalIgnoreCase) ||
+            //                                pkg.Name.Contains("/MI_BPTile/", StringComparison.OrdinalIgnoreCase))):
             {
                 SnooperViewModel.Instance.Load(pointer.Object.Value);
-                // if (SnooperViewer.TryLoadExport(cancellationToken, dummy, pointer.Object))
-                //     SnooperViewer.Run();
-                return true;
-            }
-            case UMaterialInstance when isNone && ModelIsOverwritingMaterial && pointer.Object.Value is UMaterialInstance m:
-            {
-                // SnooperViewer.Renderer.Swap(m);
-                // SnooperViewer.Run();
-                return true;
-            }
-            case UAnimSequenceBase when isNone && UserSettings.Default.PreviewAnimations || ModelIsWaitingAnimation:
-            {
-                // animate all animations using their specified skeleton or when we explicitly asked for a loaded model to be animated (ignoring whether we wanted to preview animations)
-                // SnooperViewer.Renderer.Animate(pointer.Object.Value);
-                // SnooperViewer.Run();
                 return true;
             }
             case UStaticMesh when HasFlag(bulk, EBulkType.Meshes):

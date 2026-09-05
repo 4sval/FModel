@@ -39,7 +39,6 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
                 break;
             case "Views_3dViewer":
                 SnooperViewModel.Instance.Load(null);
-                SnooperViewModel.Instance.Run();
                 break;
             case "Views_ExportSession":
                 Helper.OpenWindow<AdonisWindow>("Export Session", () => new ExportSessionWindow().Show());

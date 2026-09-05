@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
 using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
@@ -11,6 +12,8 @@ using CUE4Parse.UE4.Objects.Engine;
 using Editor;
 using FModel.Framework;
 using FModel.Services;
+using FModel.Settings;
+using Snooper.Hosting;
 using Snooper.Rendering.Actors;
 using Snooper.Rendering.Components;
 using Snooper.Rendering.Components.Light;
@@ -26,6 +29,15 @@ public class SnooperViewModel : ViewModel, IDisposable
 
     private readonly SnooperHost _host;
 
+    /// <summary>
+    /// Mirrors <see cref="Bridge.PendingRequest"/> for bindings.
+    /// </summary>
+    public AssetRequest PendingRequest
+    {
+        get;
+        private set => SetProperty(ref field, value);
+    }
+
     private SnooperViewModel()
     {
         var scale = GetDpiScale();
@@ -33,19 +45,32 @@ public class SnooperViewModel : ViewModel, IDisposable
         var width = Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenWidth * .9 * scale);
         var height = Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenHeight * .85 * scale);
 
+        Bridge.Host = new FModelBridgeHost();
+        Bridge.PendingRequestChanged += request => PendingRequest = request;
+
         _host = new SnooperHost(() => new EditorWindow(htz, width, height, ApplicationService.ApplicationView.CUE4Parse.Provider, false, true));
     }
 
     public void Load(UObject? obj)
     {
+        SetOptions();
+
         Actor? actor = obj switch
         {
             UStaticMesh sm => new MeshActor(sm),
             USkeletalMesh sk => new MeshActor(sk),
             UGeometryCollection gc => new MeshActor(gc),
+            UAnimationAsset anim => new MeshActor(anim),
+            UBlueprintGeneratedClass bp => new BlueprintActor(bp),
             UWorld w => new WorldActor(w),
             _ => null
         };
+
+        if (actor != null && actor.Components.Count == 0 && actor.Children.Count == 0)
+        {
+            // there's nothing to show
+            return;
+        }
 
         var editor = _host.Window;
         editor.Invoke(() =>
@@ -65,6 +90,15 @@ public class SnooperViewModel : ViewModel, IDisposable
                 mesh.TeleportTo();
             }
         });
+    }
+
+    public bool TryDeliver(UObject obj)
+    {
+        if (!Bridge.TryDeliver(obj)) return false;
+
+        var editor = _host.Window;
+        editor.Invoke(editor.Show);
+        return true;
     }
 
     private Actor CreateScene(bool transparentGrid)
@@ -88,10 +122,16 @@ public class SnooperViewModel : ViewModel, IDisposable
         return scene;
     }
 
-    public void Run()
+    private void SetOptions()
     {
-        var editor = _host.Window;
-        editor.Invoke(editor.Show);
+        var settings = UserSettings.Default;
+        var options = Bridge.Options;
+
+        options.NaniteMeshFormat = settings.NaniteMeshExportFormat;
+        options.MaterialDepth = settings.MaterialExportFormat;
+        options.TexturePlatform = settings.CurrentDir.TexturePlatform;
+        options.LoadMorphTargets = settings.SaveMorphTargets;
+        options.MaxTextureMipSize = settings.PreviewMaxTextureSize;
     }
 
     [DllImport("user32.dll")]

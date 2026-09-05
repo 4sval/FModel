@@ -807,6 +807,19 @@
                            HorizontalAlignment="Right" VerticalAlignment="Stretch"
                            HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
                 <StackPanel Orientation="Horizontal">
+                    <StatusBarItem Margin="0 0 10 0" Padding="0">
+                        <StatusBarItem.Style>
+                            <Style TargetType="StatusBarItem">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding PendingRequest, Source={x:Static viewModels:SnooperViewModel.Instance}}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StatusBarItem.Style>
+                        <TextBlock VerticalAlignment="Center" Text="{Binding PendingRequest.DisplayText, Source={x:Static viewModels:SnooperViewModel.Instance}, Mode=OneWay, StringFormat={}{0}: double-click one}" />
+                    </StatusBarItem>
+
                     <StatusBarItem Margin="0 0 10 0" Padding="0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
                         <Button x:Name="ExportSessionButton"
                                 HorizontalContentAlignment="Stretch"
