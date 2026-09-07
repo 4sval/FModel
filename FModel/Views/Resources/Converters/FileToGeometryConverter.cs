@@ -32,6 +32,7 @@ public class FileToGeometryConverter : IMultiValueConverter
 
             EAssetCategory.StaticMesh => ("StaticMeshIconAlt", "NeutralBrush"),
             EAssetCategory.SkeletalMesh => ("SkeletalMeshIconAlt", "NeutralBrush"),
+            EAssetCategory.ChaosClothAsset => ("ChaosClothIcon", "ChaosClothBrush"),
             EAssetCategory.CustomizableObject => ("StaticMeshIconAlt", "CustomizableObjectBrush"),
             EAssetCategory.NaniteDisplacedMesh => ("StaticMeshIconAlt", "NaniteDisplacedMeshBrush"),
             EAssetCategory.GeometryCollection => ("GeometryCollectionIcon", "NeutralBrush"),
@@ -99,7 +100,7 @@ public class FileToGeometryConverter : IMultiValueConverter
             EAssetCategory.Aion2 => ("AionIcon", "AionBrush"),
             EAssetCategory.RocoKingdomWorld => ("RocoKingdomWorldIcon", "RocoKingdomWorldBrush"),
             EAssetCategory.DeltaForce => ("DeltaForceIcon", "DeltaForceBrush"),
-            EAssetCategory.LegoBatman => ("BatmanIcon", "BatmanBrush"),
+            EAssetCategory.LegoBatman or EAssetCategory.GothamKnights => ("BatmanIcon", "BatmanBrush"),
             EAssetCategory.ArcSys => ("ArcSysIcon", "ArcSysBrush"),
 
             _ => ("AssetIcon", "NeutralBrush")

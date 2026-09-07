@@ -131,6 +131,7 @@ public enum EAssetCategory : uint
         CustomizableObject = Mesh + 3,
         NaniteDisplacedMesh = Mesh + 4,
         GeometryCollection = Mesh + 5,
+        ChaosClothAsset = Mesh + 6,
     Texture = AssetCategoryExtensions.CategoryBase + (3 << 16),
     Materials = AssetCategoryExtensions.CategoryBase + (4 << 16),
         Material = Materials + 1,
@@ -167,6 +168,7 @@ public enum EAssetCategory : uint
         DeltaForce = GameSpecific + 4,
         LegoBatman = GameSpecific + 5,
         ArcSys = GameSpecific + 6,
+        GothamKnights = GameSpecific + 7,
 }
 
 public enum EUnluacMode

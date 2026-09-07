@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using CUE4Parse_Conversion.Dto;
 using CUE4Parse.UE4.Assets.Exports.Animation;
+using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.PhysicsEngine;
@@ -24,7 +25,7 @@ public class SkeletalModel : UModel<SkinnedMeshVertex>
 
     public float MorphTime;
 
-    public SkeletalModel(USkeletalMesh export, SkeletalMeshDto skeletalMesh, Transform transform = null)
+    public SkeletalModel(USkinnedAsset export, SkeletalMeshDto skeletalMesh, Transform transform = null)
         : base(export, skeletalMesh.LODs[LodLevel], export.Materials, skeletalMesh.LODs[LodLevel].Vertices, skeletalMesh.LODs.Count, transform)
     {
         Box = skeletalMesh.Bounds * Constants.SCALE_DOWN_RATIO;

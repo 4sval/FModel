@@ -4,17 +4,13 @@ using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Windows;
-using CUE4Parse_Conversion.Animations;
-using CUE4Parse_Conversion.Dto;
-using CUE4Parse_Conversion.Meshes;
-using CUE4Parse_Conversion.Options;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Component.SplineMesh;
 using CUE4Parse.UE4.Assets.Exports.Component.StaticMesh;
+using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
 using CUE4Parse.UE4.Assets.Exports.Material;
-using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
@@ -22,6 +18,10 @@ using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.Utils;
+using CUE4Parse_Conversion.Animations;
+using CUE4Parse_Conversion.Dto;
+using CUE4Parse_Conversion.Meshes;
+using CUE4Parse_Conversion.Options;
 using FModel.Creator;
 using FModel.Settings;
 using FModel.Views.Snooper.Animations;
@@ -93,8 +93,8 @@ public class Renderer : IDisposable
             case UGeometryCollection when export.Value is UGeometryCollection gc:
                 LoadStaticMesh(gc, UserSettings.Default.NaniteMeshExportFormat);
                 break;
-            case USkeletalMesh when export.Value is USkeletalMesh sk:
-                LoadSkeletalMesh(sk);
+            case USkinnedAsset when export.Value is USkinnedAsset sa:
+                LoadSkinnedAsset(sa);
                 break;
             case USkeleton when export.Value is USkeleton skel:
                 LoadSkeleton(skel);
@@ -197,12 +197,12 @@ public class Renderer : IDisposable
                     }
                     break;
                 }
-                case USkeletalMesh sk:
+                case USkinnedAsset sa:
                 {
                     guid = Guid.NewGuid();
-                    if (!Options.Models.ContainsKey(guid) && sk.TryConvert(out var mesh, EMeshQuality.Highest))
+                    if (!Options.Models.ContainsKey(guid) && sa.TryConvert(out var mesh, EMeshQuality.Highest))
                     {
-                        addedModel = new SkeletalModel(sk, mesh, t);
+                        addedModel = new SkeletalModel(sa, mesh, t);
                         Options.Models[guid] = addedModel;
                     }
                     break;
@@ -391,13 +391,28 @@ public class Renderer : IDisposable
         Options.SelectModel(guid);
     }
 
-    private void LoadSkeletalMesh(USkeletalMesh original)
+    private void LoadSkinnedAsset(USkinnedAsset original, ENaniteMeshFormat naniteFormat = ENaniteMeshFormat.NoNanite)
     {
         var guid = new FGuid((uint) original.GetFullName().GetHashCode());
-        if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh, EMeshQuality.Highest)) return;
+        if (Options.TryGetModel(guid, out var model))
+        {
+            model.AddInstance(Transform.Identity);
+            Application.Current.Dispatcher.Invoke(() => model.SetupInstances());
+            return;
+        }
 
-        var skeletalModel = new SkeletalModel(original, mesh);
-        Options.Models[guid] = skeletalModel;
+        SkeletalMeshDto mesh;
+        try
+        {
+            mesh = new SkeletalMeshDto(original, EMeshQuality.Highest, naniteFormat);
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "Failed to convert chaos cloth asset");
+            return;
+        }
+
+        Options.Models[guid] = new SkeletalModel(original, mesh);
         Options.SelectModel(guid);
     }
 

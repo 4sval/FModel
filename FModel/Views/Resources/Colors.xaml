@@ -11,6 +11,8 @@
     <SolidColorBrush x:Key="UserDefinedEnumBrush" Color="DarkGoldenrod" />
     <SolidColorBrush x:Key="UserDefinedStructBrush" Color="Tan" />
 
+    <SolidColorBrush x:Key="GroomAssetBrush" Color="RosyBrown " />
+    <SolidColorBrush x:Key="ChaosClothBrush" Color="LightSlateGray" />
     <SolidColorBrush x:Key="CustomizableObjectBrush" Color="DarkRed" />
     <SolidColorBrush x:Key="NaniteDisplacedMeshBrush" Color="ForestGreen" />
 
@@ -22,7 +24,7 @@
     <SolidColorBrush x:Key="BinaryBrush" Color="Yellow" />
     <SolidColorBrush x:Key="TextureBrush" Color="MediumPurple" />
     <SolidColorBrush x:Key="ConfigBrush" Color="LightSlateGray" />
-    
+
     <SolidColorBrush x:Key="AudioBrush" Color="MediumSeaGreen" />
     <SolidColorBrush x:Key="SoundBankBrush" Color="DarkSeaGreen" />
     <SolidColorBrush x:Key="AudioEventBrush" Color="LightSeaGreen" />
