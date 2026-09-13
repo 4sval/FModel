@@ -171,6 +171,14 @@ public enum EAssetCategory : uint
         GothamKnights = GameSpecific + 7,
 }
 
+public enum EAssetFamily
+{
+    None,
+    Criware,
+    Wwise,
+    FMod,
+}
+
 public enum EUnluacMode
 {
     Decompile,

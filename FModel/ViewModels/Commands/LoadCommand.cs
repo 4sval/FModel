@@ -148,7 +148,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
                 {
                     entries.Add(asset);
                 }
-                else if (includeLooseFiles && asset is OsGameFile)
+                else if (includeLooseFiles && asset is not VfsEntry)
                 {
                     entries.Add(asset);
                 }

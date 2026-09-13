@@ -54,6 +54,11 @@
     <SolidColorBrush x:Key="PythonBrush" Color="#3d77a8" />
     <SolidColorBrush x:Key="CSharpBrush" Color="#9e559a" />
 
+    <!-- Asset family brushes -->
+    <SolidColorBrush x:Key="CriwareBrush" Color="#005bab" />
+    <SolidColorBrush x:Key="WwiseBrush" Color="#0152a1" />
+    <SolidColorBrush x:Key="FModBrush" Color="#00758f" />
+
     <!-- For specific games -->
     <SolidColorBrush x:Key="BorderlandsBrush" Color="Yellow"></SolidColorBrush>
     <SolidColorBrush x:Key="AionBrush" Color="DeepSkyBlue"></SolidColorBrush>

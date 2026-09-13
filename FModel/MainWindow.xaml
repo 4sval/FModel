@@ -807,6 +807,33 @@
                            HorizontalAlignment="Right" VerticalAlignment="Stretch"
                            HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
                 <StackPanel Orientation="Horizontal">
+                    <StatusBarItem Margin="0 0 10 0"
+                                   Padding="0"
+                                   HorizontalContentAlignment="Stretch"
+                                   VerticalContentAlignment="Stretch"
+                                   Visibility="{Binding IsUpdateAvailable, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Button HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Center"
+                                Style="{StaticResource StatusBarButton}"
+                                Background="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}"
+                                ToolTip="A new version of FModel is available. Click to view it."
+                                Command="{Binding MenuCommand}"
+                                CommandParameter="Help_Releases">
+                            <StackPanel Orientation="Horizontal"
+                                        VerticalAlignment="Center">
+                                <Viewbox Width="16"
+                                         Height="16">
+                                    <Canvas Width="24"
+                                            Height="24">
+                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}"
+                                              Data="{StaticResource UpdateIcon}" />
+                                    </Canvas>
+                                </Viewbox>
+                                <TextBlock Margin="10 0 0 0"
+                                           Text="Update Available" />
+                            </StackPanel>
+                        </Button>
+                    </StatusBarItem>
                     <StatusBarItem Margin="0 0 10 0" Padding="0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
                         <Button x:Name="ExportSessionButton"
                                 HorizontalContentAlignment="Stretch"

@@ -22,7 +22,8 @@ using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.BuildData;
 using CUE4Parse.UE4.Assets.Exports.ChaosClothAsset;
 using CUE4Parse.UE4.Assets.Exports.Component;
-using CUE4Parse.UE4.Assets.Exports.CriWare;
+using CUE4Parse.UE4.Assets.Exports.Criware;
+using CUE4Parse.UE4.Assets.Exports.Criware.Media;
 using CUE4Parse.UE4.Assets.Exports.CustomizableObject;
 using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.Engine.Font;
@@ -95,6 +96,13 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             SetProperty(ref _assetCategory, value);
             Resolved |= EResolveCompute.Category; // blindly assume category is resolved when set, even if unchanged
         }
+    }
+
+    private EAssetFamily _assetFamily = EAssetFamily.None;
+    public EAssetFamily AssetFamily
+    {
+        get => _assetFamily;
+        private set => SetProperty(ref _assetFamily, value);
     }
 
     private EBulkType _assetActions = EBulkType.None;
@@ -200,6 +208,20 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class, pkg);
             ResolvedAssetType = dummy.ExportType;
 
+            AssetFamily = dummy switch
+            {
+                UAtomSoundBase or UAtomSoundBank or USoundAtomCue or USoundAtomCueSheet
+                    or USoundAtomConfig or UAtomDspBusSetting or UAtomRackBase => EAssetFamily.Criware,
+
+                UAkAudioType or UAkAssetData or UAkAssetPlatformData or UAkMediaAssetData
+                    or UAkMediaAsset or UWwiseAssetLibrary or UExternalSource or UExternalSourceBank => EAssetFamily.Wwise,
+
+                UFMODEvent or UFMODBank or UFMODBankLookup or UFMODBus
+                    or UFMODSnapshot or UFMODSnapshotReverb or UFMODVCA => EAssetFamily.FMod,
+
+                _ => EAssetFamily.None,
+            };
+
             (AssetCategory, AssetActions) = dummy switch
             {
                 URigVMBlueprintGeneratedClass => (EAssetCategory.RigVMBlueprintGeneratedClass, EBulkType.Code),
@@ -242,18 +264,23 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 UObjectRedirector => (EAssetCategory.ObjectRedirector, EBulkType.None),
                 UPhysicalMaterial => (EAssetCategory.PhysicalMaterial, EBulkType.None),
 
-                USoundAtomCue or UAkAudioEvent or USoundCue or UFMODEvent
+                USoundAtomCue or UAtomSoundCue or UAkAudioEvent or USoundCue or UFMODEvent
                     or UAkAssetData or UAkAssetPlatformData => (EAssetCategory.AudioEvent, EBulkType.Audio),
 
-                UFMODBankLookup => (EAssetCategory.Data, EBulkType.None),
+                UFileManaMovie => (EAssetCategory.Video, EBulkType.None),
 
-                UFMODBus or UFMODSnapshot or UFMODSnapshotReverb or UFMODVCA or USQEXSEADSoundAttenuation => (EAssetCategory.Audio, EBulkType.None),
+                UFMODBankLookup or USoundAtomConfig or UFMODSnapshotReverb or UFMODBus or UFMODSnapshot
+                    or UFMODVCA or UAtomDspBusSetting => (EAssetCategory.Data, EBulkType.None),
 
-                UFMODBank or UAkAudioBank or UAtomWaveBank or UAkInitBank or USQEXSEADSoundBank => (EAssetCategory.SoundBank, EBulkType.Audio),
+                USQEXSEADSoundAttenuation => (EAssetCategory.Audio, EBulkType.None),
 
-                UWwiseAssetLibrary or USoundBase or UAkMediaAssetData or UAtomCueSheet
-                    or USoundAtomCueSheet or UAkAudioType or UExternalSource or UExternalSourceBank
-                    or UAkMediaAsset => (EAssetCategory.Audio, EBulkType.Audio),
+                UFMODBank or UAkAudioBank or UAtomSoundBank or USoundAtomCueSheet
+                    or UAkInitBank or USQEXSEADSoundBank => (EAssetCategory.SoundBank, EBulkType.Audio),
+
+                UWwiseAssetLibrary or UAtomSoundBase or USoundBase or UAkMediaAssetData
+                    or UExternalSource or UExternalSourceBank or UAkMediaAsset => (EAssetCategory.Audio, EBulkType.Audio),
+
+                UAkAudioType => (EAssetCategory.Data, EBulkType.None),
 
                 UFileMediaSource => (EAssetCategory.Video, EBulkType.None),
                 UFont or UFontFace or USMGLocaleFontUMG => (EAssetCategory.Font, EBulkType.None),
@@ -334,6 +361,15 @@ public class GameFileViewModel(GameFile asset) : ViewModel
     {
         Resolved |= EResolveCompute.Preview;
         var lowercaseExtension = Asset.Extension.ToLowerInvariant();
+
+        AssetFamily = lowercaseExtension switch
+        {
+            "acb" or "acf" or "adx" or "awb" or "hca" or "usm" => EAssetFamily.Criware,
+            "bnk" or "pck" or "wem" => EAssetFamily.Wwise,
+            "bank" or "fsb" => EAssetFamily.FMod,
+            _ => EAssetFamily.None,
+        };
+
         switch (lowercaseExtension)
         {
             case "uproject":
@@ -363,6 +399,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             case "sql":
             case "py":
             case "cs":
+            case "acf":
                 AssetCategory = EAssetCategory.Data;
                 break;
             case "stinfo":
@@ -373,6 +410,8 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 break;
             case "wav":
             case "awb": // This is technically soundbank and should be below but I want it to be distinguishable from "acb"
+            case "adx":
+            case "hca":
             case "xvag":
             case "flac":
             case "at9":
@@ -383,6 +422,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 break;
             case "acb":
             case "bank":
+            case "fsb":
             case "bnk":
             case "pck":
                 AssetCategory = EAssetCategory.SoundBank;
@@ -393,7 +433,9 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             case "ttf":
                 AssetCategory = EAssetCategory.Font;
                 break;
+            case "webm":
             case "mp4":
+            case "usm":
                 AssetCategory = EAssetCategory.Video;
                 break;
             case "jpg":

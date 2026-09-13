@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace FModel.Views.Resources.Controls;
 
@@ -17,8 +18,9 @@ public class FilterableComboBox : ComboBox
     /// If true, on lost focus or enter key pressed, checks the text in the combobox. If the text is not present
     /// in the list, it leaves it blank.
     /// </summary>
-    public bool OnlyValuesInList {
-        get => (bool)GetValue(OnlyValuesInListProperty);
+    public bool OnlyValuesInList
+    {
+        get => (bool) GetValue(OnlyValuesInListProperty);
         set => SetValue(OnlyValuesInListProperty, value);
     }
     public static readonly DependencyProperty OnlyValuesInListProperty =
@@ -27,8 +29,9 @@ public class FilterableComboBox : ComboBox
     /// <summary>
     /// Selected item, changes only on lost focus or enter key pressed
     /// </summary>
-    public object EffectivelySelectedItem {
-        get => (bool)GetValue(EffectivelySelectedItemProperty);
+    public object EffectivelySelectedItem
+    {
+        get => (bool) GetValue(EffectivelySelectedItemProperty);
         set => SetValue(EffectivelySelectedItemProperty, value);
     }
     public static readonly DependencyProperty EffectivelySelectedItemProperty =
@@ -38,6 +41,7 @@ public class FilterableComboBox : ComboBox
     private bool TextBoxFreezed;
     protected TextBox EditableTextBox => GetTemplateChild("PART_EditableTextBox") as TextBox;
     private UserChange<bool> IsDropDownOpenUC;
+    private readonly DispatcherTimer FilterTimer;
 
     /// <summary>
     /// Triggers on lost focus or enter key pressed, if the selected item changed since the last time focus was lost or enter was pressed.
@@ -47,6 +51,15 @@ public class FilterableComboBox : ComboBox
     public FilterableComboBox()
     {
         IsDropDownOpenUC = new UserChange<bool>(v => IsDropDownOpen = v);
+        FilterTimer = new DispatcherTimer(DispatcherPriority.Background, Dispatcher)
+        {
+            Interval = TimeSpan.FromMilliseconds(125)
+        };
+        FilterTimer.Tick += (_, _) =>
+        {
+            FilterTimer.Stop();
+            RefreshFilter();
+        };
         DropDownOpened += FilteredComboBox_DropDownOpened;
 
         Focusable = true;
@@ -55,7 +68,8 @@ public class FilterableComboBox : ComboBox
         StaysOpenOnEdit = true;
         IsReadOnly = false;
 
-        Loaded += (s, e) => {
+        Loaded += (s, e) =>
+        {
             if (EditableTextBox != null)
                 new TextBoxBaseUserChangeTracker(EditableTextBox).UserTextChanged += FilteredComboBox_UserTextChange;
         };
@@ -67,25 +81,53 @@ public class FilterableComboBox : ComboBox
 
     protected override void OnPreviewKeyDown(KeyEventArgs e)
     {
+        if (IsDropDownOpen && Keyboard.Modifiers == ModifierKeys.None && e.Key is Key.Up or Key.Down)
+        {
+            MoveSelection(e.Key);
+            e.Handled = true;
+            return;
+        }
+
         base.OnPreviewKeyDown(e);
-        if (e.Key == Key.Down && !IsDropDownOpen) {
+        if (e.Key == Key.Down && !IsDropDownOpen)
+        {
+            ApplyPendingFilter();
             IsDropDownOpen = true;
             e.Handled = true;
         }
-        else if (e.Key == Key.Escape) {
+        else if (e.Key == Key.Escape)
+        {
             ClearFilter();
             Text = "";
             IsDropDownOpen = true;
         }
-        else if (e.Key == Key.Enter || e.Key == Key.Tab) {
+        else if (e.Key == Key.Enter || e.Key == Key.Tab)
+        {
+            ApplyPendingFilter();
             CheckSelectedItem();
             TriggerSelectedItemChanged();
         }
     }
 
+    private void MoveSelection(Key key)
+    {
+        ApplyPendingFilter();
+        if (Items.Count == 0)
+            return;
+
+        var index = SelectedItem == null ? -1 : Items.IndexOf(SelectedItem);
+        index = index < 0
+            ? key == Key.Up ? Items.Count - 1 : 0
+            : Math.Clamp(index + (key == Key.Up ? -1 : 1), 0, Items.Count - 1);
+
+        SelectedItem = Items[index];
+        (ItemContainerGenerator.ContainerFromIndex(index) as ComboBoxItem)?.BringIntoView();
+    }
+
     protected override void OnPreviewLostKeyboardFocus(KeyboardFocusChangedEventArgs e)
     {
         base.OnPreviewLostKeyboardFocus(e);
+        ApplyPendingFilter();
         CheckSelectedItem();
         if ((e.OldFocus == this || e.OldFocus == EditableTextBox) && e.NewFocus != this && e.NewFocus != EditableTextBox)
             TriggerSelectedItemChanged();
@@ -100,7 +142,8 @@ public class FilterableComboBox : ComboBox
     private bool shouldTriggerSelectedItemChanged = false;
     private void TriggerSelectedItemChanged()
     {
-        if (shouldTriggerSelectedItemChanged) {
+        if (shouldTriggerSelectedItemChanged)
+        {
             SelectionEffectivelyChanged?.Invoke(this, SelectedItem);
             shouldTriggerSelectedItemChanged = false;
         }
@@ -108,9 +151,12 @@ public class FilterableComboBox : ComboBox
 
     public void ClearFilter()
     {
-        if (string.IsNullOrEmpty(CurrentFilter)) return;
+        FilterTimer.Stop();
+        if (string.IsNullOrEmpty(CurrentFilter))
+            return;
         CurrentFilter = "";
-        CollectionViewSource.GetDefaultView(ItemsSource).Refresh();
+        if (ItemsSource != null)
+            CollectionViewSource.GetDefaultView(ItemsSource).Refresh();
     }
 
     private void FilteredComboBox_DropDownOpened(object sender, EventArgs e)
@@ -121,47 +167,64 @@ public class FilterableComboBox : ComboBox
 
     private void FilteredComboBox_UserTextChange(object sender, EventArgs e)
     {
-        if (TextBoxFreezed) return;
+        if (TextBoxFreezed)
+            return;
         var tb = EditableTextBox;
         if (tb.SelectionStart + tb.SelectionLength == tb.Text.Length)
-            CurrentFilter = tb.Text.Substring(0, tb.SelectionStart).ToLower();
+            CurrentFilter = tb.Text.Substring(0, tb.SelectionStart);
         else
-            CurrentFilter = tb.Text.ToLower();
-        RefreshFilter();
+            CurrentFilter = tb.Text;
+
+        FilterTimer.Stop();
+        FilterTimer.Start();
     }
 
     protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
     {
-        if (newValue != null) {
+        FilterTimer.Stop();
+
+        if (newValue != null)
+        {
             var view = CollectionViewSource.GetDefaultView(newValue);
             view.Filter += FilterItem;
         }
 
-        if (oldValue != null) {
+        if (oldValue != null)
+        {
             var view = CollectionViewSource.GetDefaultView(oldValue);
-            if (view != null) view.Filter -= FilterItem;
+            if (view != null)
+                view.Filter -= FilterItem;
         }
 
         base.OnItemsSourceChanged(oldValue, newValue);
     }
 
+    private void ApplyPendingFilter()
+    {
+        if (!FilterTimer.IsEnabled)
+            return;
+        FilterTimer.Stop();
+        RefreshFilter();
+    }
+
     private void RefreshFilter()
     {
-        if (ItemsSource == null) return;
+        if (ItemsSource == null)
+            return;
 
         var view = CollectionViewSource.GetDefaultView(ItemsSource);
-        FreezTextBoxState(() => {
-            var isDropDownOpen = IsDropDownOpen;
-            //always hide because showing it enables the user to pick with up and down keys, otherwise it's not working because of the glitch in view.Refresh()
-            IsDropDownOpenUC.Set(false);
+        FreezTextBoxState(() =>
+        {
             view.Refresh();
 
-            if (!string.IsNullOrEmpty(CurrentFilter) || isDropDownOpen)
+            if (!IsDropDownOpen && !string.IsNullOrEmpty(CurrentFilter))
                 IsDropDownOpenUC.Set(true);
 
-            if (SelectedItem == null) {
+            if (SelectedItem == null)
+            {
                 foreach (var itm in ItemsSource)
-                    if (itm.ToString() == Text) {
+                    if (itm.ToString() == Text)
+                    {
                         SelectedItem = itm;
                         break;
                     }
@@ -185,10 +248,16 @@ public class FilterableComboBox : ComboBox
 
     private bool FilterItem(object value)
     {
-        if (value == null) return false;
-        if (CurrentFilter.Length == 0) return true;
+        if (value == null)
+            return false;
+        if (CurrentFilter.Length == 0)
+            return true;
 
-        return value.ToString().ToLower().Contains(CurrentFilter);
+        var text = value.ToString();
+        if (text?.StartsWith("GAME_", StringComparison.OrdinalIgnoreCase) == true)
+            text = text[5..];
+
+        return text?.Contains(CurrentFilter, StringComparison.OrdinalIgnoreCase) == true;
     }
 
     private class TextBoxBaseUserChangeTracker
@@ -205,11 +274,13 @@ public class FilterableComboBox : ComboBox
             TextBoxBase = textBoxBase;
             LastText = TextBoxBase.ToString();
 
-            textBoxBase.PreviewTextInput += (s, e) => {
+            textBoxBase.PreviewTextInput += (s, e) =>
+            {
                 IsTextInput = true;
             };
 
-            textBoxBase.TextChanged += (s, e) => {
+            textBoxBase.TextChanged += (s, e) =>
+            {
                 var isUserChange = PressedKeys.Count > 0 || IsTextInput || LastText == TextBoxBase.ToString();
                 IsTextInput = false;
                 LastText = TextBoxBase.ToString();
@@ -217,17 +288,21 @@ public class FilterableComboBox : ComboBox
                     UserTextChanged?.Invoke(this, e);
             };
 
-            textBoxBase.PreviewKeyDown += (s, e) => {
-                switch (e.Key) {
+            textBoxBase.PreviewKeyDown += (s, e) =>
+            {
+                switch (e.Key)
+                {
                     case Key.Back:
                     case Key.Space:
                         if (!PressedKeys.Contains(e.Key))
                             PressedKeys.Add(e.Key);
                         break;
                 }
-                if (e.Key == Key.Back) {
+                if (e.Key == Key.Back)
+                {
                     var textBox = textBoxBase as TextBox;
-                    if (textBox.SelectionStart > 0 && textBox.SelectionLength > 0 && (textBox.SelectionStart + textBox.SelectionLength) == textBox.Text.Length) {
+                    if (textBox.SelectionStart > 0 && textBox.SelectionLength > 0 && (textBox.SelectionStart + textBox.SelectionLength) == textBox.Text.Length)
+                    {
                         textBox.SelectionStart--;
                         textBox.SelectionLength++;
                         e.Handled = true;
@@ -236,12 +311,14 @@ public class FilterableComboBox : ComboBox
                 }
             };
 
-            textBoxBase.PreviewKeyUp += (s, e) => {
+            textBoxBase.PreviewKeyUp += (s, e) =>
+            {
                 if (PressedKeys.Contains(e.Key))
                     PressedKeys.Remove(e.Key);
             };
 
-            textBoxBase.LostFocus += (s, e) => {
+            textBoxBase.LostFocus += (s, e) =>
+            {
                 PressedKeys.Clear();
                 IsTextInput = false;
             };
@@ -261,11 +338,13 @@ public class FilterableComboBox : ComboBox
 
         public void Set(T val)
         {
-            try {
+            try
+            {
                 IsUserChange = false;
                 action(val);
             }
-            finally {
+            finally
+            {
                 IsUserChange = true;
             }
         }
