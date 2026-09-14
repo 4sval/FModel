@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using CUE4Parse.FileProvider.Objects;
+using CUE4Parse.UE4.VirtualFileSystem;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -21,6 +22,7 @@ namespace FModel.ViewModels;
 public class BackupManagerViewModel : ViewModel
 {
     public const uint FBKP_MAGIC = 0x504B4246;
+    public const string FBKP_NONVFS = "nonvfs";
 
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
     private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
@@ -81,6 +83,11 @@ public class BackupManagerViewModel : ViewModel
                 writer.Write(asset.Size);
                 writer.Write(asset.IsEncrypted);
                 writer.Write(asset.Path);
+
+                if (asset is VfsEntry vfsAsset)
+                    writer.Write(vfsAsset.Vfs.Name);
+                else
+                    writer.Write(FBKP_NONVFS);
             }
 
             SaveCheck(fullPath, fileName, "created", "create");
@@ -122,6 +129,7 @@ public enum EBackupVersion : byte
     BeforeVersionWasAdded = 0,
     Initial,
     PerfectPath, // no more leading slash and ToLower
+    Vfs, // added vfs name
 
     LatestPlusOne,
     Latest = LatestPlusOne - 1
