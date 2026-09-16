@@ -5,8 +5,8 @@ using System.Windows;
 using System.Windows.Forms;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
+using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
-using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Objects.Engine;
 using Editor;
@@ -58,7 +58,7 @@ public class SnooperViewModel : ViewModel, IDisposable
         Actor? actor = obj switch
         {
             UStaticMesh sm => new MeshActor(sm),
-            USkeletalMesh sk => new MeshActor(sk),
+            USkinnedAsset sa => new MeshActor(sa),
             UGeometryCollection gc => new MeshActor(gc),
             UAnimationAsset anim => new MeshActor(anim),
             UBlueprintGeneratedClass bp => new BlueprintActor(bp),
@@ -76,7 +76,7 @@ public class SnooperViewModel : ViewModel, IDisposable
         editor.Invoke(() =>
         {
             if (editor.Manager.RootActor == null)
-                editor.Manager.LoadScene(CreateScene(actor is WorldActor));
+                editor.Manager.LoadScene(CreateScene(actor is not MeshActor));
 
             if (actor != null)
                 editor.Manager.LoadScene(actor);
@@ -85,8 +85,8 @@ public class SnooperViewModel : ViewModel, IDisposable
 
             if (actor?.RootComponent is MeshComponent mesh)
             {
-                mesh.SnapToGround();
-                mesh.UpdateWorldMatrix(); // just so teleport works properly
+                if (mesh.SnapToGround())
+                    mesh.UpdateWorldMatrix(); // just so teleport works properly
                 mesh.TeleportTo();
             }
         });
