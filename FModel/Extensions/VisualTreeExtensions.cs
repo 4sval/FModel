@@ -11,7 +11,9 @@ public static class VisualTreeExtensions
         {
             if (current is T t)
                 return t;
-            current = VisualTreeHelper.GetParent(current);
+            current = current is FrameworkContentElement contentElement
+                ? contentElement.Parent
+                : VisualTreeHelper.GetParent(current);
         }
         return null;
     }

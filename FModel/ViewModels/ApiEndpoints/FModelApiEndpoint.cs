@@ -131,6 +131,7 @@ public class FModelApiEndpoint : AbstractApiProvider
             UserSettings.Default.LastUpdateCheck = DateTime.Now;
 
             var targetHash = ((CustomMandatory) args.Mandatory).CommitHash;
+            _applicationView.IsUpdateAvailable = targetHash != Constants.APP_COMMIT_ID;
             if (targetHash == Constants.APP_COMMIT_ID)
             {
                 if (UserSettings.Default.ShowChangelog)

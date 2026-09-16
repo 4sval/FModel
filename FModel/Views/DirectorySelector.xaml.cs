@@ -1,6 +1,13 @@
 using FModel.ViewModels;
+using FModel.Views.Resources.Controls;
 using Ookii.Dialogs.Wpf;
+using Serilog;
 using System.Windows;
+using MessageBox = AdonisUI.Controls.MessageBox;
+using MessageBoxButtons = AdonisUI.Controls.MessageBoxButtons;
+using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
+using MessageBoxModel = AdonisUI.Controls.MessageBoxModel;
+using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 
 namespace FModel.Views;
 
@@ -61,6 +68,37 @@ public partial class DirectorySelector
             return;
 
         gameLauncherViewModel.DeleteSelectedGame();
+    }
+
+    private void OnClearDirectories(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is not GameSelectorViewModel gameSelectorViewModel)
+            return;
+
+        var messageBox = new MessageBoxModel
+        {
+            Text = "Remove all saved game directories that no longer exist?",
+            Caption = "Clear Empty Directories",
+            Icon = MessageBoxImage.Question,
+            Buttons = MessageBoxButtons.YesNo(),
+            IsSoundEnabled = false
+        };
+
+        MessageBox.Show(messageBox);
+        if (messageBox.Result != MessageBoxResult.Yes)
+            return;
+
+        var removedCount = gameSelectorViewModel.ClearMissingDirectories();
+        var message = removedCount switch
+        {
+            0 => "No empty directories were found",
+            1 => "Removed 1 empty game directory",
+            _ => $"Removed {removedCount} empty game directories"
+        };
+
+        Log.Information("{Message}", message);
+        if (FLogger.Logger is not null) // When only directory selector is open, FLogger.Logger is null
+            FLogger.Append(ELog.Information, () => FLogger.Text(message, Constants.WHITE, true));
     }
 
     public void AddManualGame(string directory)

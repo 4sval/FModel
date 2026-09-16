@@ -10,6 +10,8 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AdonisUI.Controls;
+using CUE4Parse_Conversion.Exporters;
+using CUE4Parse_Conversion.Sounds;
 using CUE4Parse;
 using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
@@ -22,15 +24,17 @@ using CUE4Parse.GameTypes.AshEchoes.FileProvider;
 using CUE4Parse.GameTypes.Borderlands3.Assets.Exports;
 using CUE4Parse.GameTypes.Borderlands4.Assets.Exports;
 using CUE4Parse.GameTypes.Borderlands4.Wwise;
+using CUE4Parse.GameTypes.Dawnwalker.Assets.Exports;
 using CUE4Parse.GameTypes.DFHO.Assets.Objects;
 using CUE4Parse.GameTypes.HonorOfKings.FileProvider;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
 using CUE4Parse.GameTypes.LegoBatman.Assets;
 using CUE4Parse.GameTypes.LordOfMysteries.FileProvider;
-using CUE4Parse.GameTypes.RocoKingdomWorld.Assets.Objects;
+using CUE4Parse.GameTypes.Tencent.RocoKingdomWorld.Assets.Objects;
 using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
 using CUE4Parse.GameTypes.SquareEnix.UE4.Assets.Exports;
 using CUE4Parse.GameTypes.Theia.FileProvider;
+using CUE4Parse.GameTypes.WarnerBros.GothamKnights.Assets.Exports.Wwise;
 using CUE4Parse.MappingsProvider;
 using CUE4Parse.MappingsProvider.Jmap;
 using CUE4Parse.MappingsProvider.Usmap;
@@ -38,10 +42,11 @@ using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
-using CUE4Parse.UE4.Assets.Exports.CriWare;
+using CUE4Parse.UE4.Assets.Exports.Criware;
+using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.Fmod;
+using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
 using CUE4Parse.UE4.Assets.Exports.Material;
-using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.Sound;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
@@ -49,8 +54,8 @@ using CUE4Parse.UE4.Assets.Exports.Verse;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.BinaryConfig;
-using CUE4Parse.UE4.CriWare;
-using CUE4Parse.UE4.CriWare.Readers;
+using CUE4Parse.UE4.Criware;
+using CUE4Parse.UE4.Criware.Readers;
 using CUE4Parse.UE4.FMod;
 using CUE4Parse.UE4.GameFeatures;
 using CUE4Parse.UE4.IO;
@@ -1300,6 +1305,11 @@ public class CUE4ParseViewModel : ViewModel
                 TabControl.SelectedTab.AddImage(sourceFile.SubstringAfterLast('/'), false, bitmap, false, updateUi);
                 return false;
             }
+            case UBiomesMaskTextureData when (isNone || saveTextures) && pointer.Object.Value is UBiomesMaskTextureData biomes && biomes.MaskData is { } maskData:
+            {
+                TabControl.SelectedTab.AddImage(biomes.Name, false, SKBitmap.Decode(maskData.Value), false, updateUi);
+                return false;
+            }
             // Supermassive Games (for example - The Dark Pictures Anthology: House of Ashes etc.)
             case UExternalSource when (isNone || saveAudio) && pointer.Object.Value is UExternalSource externalSource:
             {
@@ -1506,12 +1516,37 @@ public class CUE4ParseViewModel : ViewModel
                 }
                 return false;
             }
+            // Gotham Knights
+            case UOrpheusBank when (isNone || saveAudio) && pointer.Object.Value is UOrpheusBank orpheusBank:
+            {
+                if (orpheusBank.SoundBank is null)
+                    return false;
+
+                var extractedSounds = WwiseProvider.ExtractBankSounds(orpheusBank.SoundBank);
+                foreach (var sound in extractedSounds)
+                {
+                    SaveAndPlaySound(cancellationToken, sound.OutputPath, sound.Extension, sound.Data?.GetData() ?? [], saveAudio, updateUi);
+                }
+
+                return false;
+            }
+            // Gotham Knights
+            case UOrpheusEvent when (isNone || saveAudio) && pointer.Object.Value is UOrpheusEvent orpheusEvent:
+            {
+                var extractedSounds = WwiseProvider.ExtractGothamKnightsAudioEventSounds(orpheusEvent);
+                foreach (var sound in extractedSounds)
+                {
+                    SaveAndPlaySound(cancellationToken, sound.OutputPath, sound.Extension, sound.Data?.GetData() ?? [], saveAudio, updateUi);
+                }
+
+                return false;
+            }
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:
             case UBlueprintGeneratedClass when isNone && UserSettings.Default.PreviewWorlds:
             // case UPaperSprite when isNone && UserSettings.Default.PreviewMaterials:
             case UStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
             case UGeometryCollection when isNone && UserSettings.Default.PreviewStaticMeshes:
-            case USkeletalMesh when isNone && UserSettings.Default.PreviewSkeletalMeshes:
+            case USkinnedAsset when isNone && UserSettings.Default.PreviewSkeletalMeshes:
             case USkeleton when isNone && UserSettings.Default.SaveSkeletonAsMesh:
             case UAnimationAsset when isNone && UserSettings.Default.PreviewAnimations:
             // case UMaterialInstance when isNone && UserSettings.Default.PreviewMaterials &&
@@ -1524,7 +1559,8 @@ public class CUE4ParseViewModel : ViewModel
                 return true;
             }
             case UStaticMesh when HasFlag(bulk, EBulkType.Meshes):
-            case USkeletalMesh when HasFlag(bulk, EBulkType.Meshes):
+            case UGeometryCollection when HasFlag(bulk, EBulkType.Meshes):
+            case USkinnedAsset when HasFlag(bulk, EBulkType.Meshes):
             case USkeleton when UserSettings.Default.SaveSkeletonAsMesh && HasFlag(bulk, EBulkType.Meshes):
             // case UMaterialInterface when HasFlag(bulk, EBulkType.Materials):
             case UAnimationAsset when HasFlag(bulk, EBulkType.Animations):

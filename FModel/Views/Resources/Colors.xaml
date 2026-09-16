@@ -11,6 +11,8 @@
     <SolidColorBrush x:Key="UserDefinedEnumBrush" Color="DarkGoldenrod" />
     <SolidColorBrush x:Key="UserDefinedStructBrush" Color="Tan" />
 
+    <SolidColorBrush x:Key="GroomAssetBrush" Color="RosyBrown " />
+    <SolidColorBrush x:Key="ChaosClothBrush" Color="LightSlateGray" />
     <SolidColorBrush x:Key="CustomizableObjectBrush" Color="DarkRed" />
     <SolidColorBrush x:Key="NaniteDisplacedMeshBrush" Color="ForestGreen" />
 
@@ -22,7 +24,7 @@
     <SolidColorBrush x:Key="BinaryBrush" Color="Yellow" />
     <SolidColorBrush x:Key="TextureBrush" Color="MediumPurple" />
     <SolidColorBrush x:Key="ConfigBrush" Color="LightSlateGray" />
-    
+
     <SolidColorBrush x:Key="AudioBrush" Color="MediumSeaGreen" />
     <SolidColorBrush x:Key="SoundBankBrush" Color="DarkSeaGreen" />
     <SolidColorBrush x:Key="AudioEventBrush" Color="LightSeaGreen" />
@@ -51,6 +53,11 @@
     <SolidColorBrush x:Key="SQLBrush" Color="#00758f" />
     <SolidColorBrush x:Key="PythonBrush" Color="#3d77a8" />
     <SolidColorBrush x:Key="CSharpBrush" Color="#9e559a" />
+
+    <!-- Asset family brushes -->
+    <SolidColorBrush x:Key="CriwareBrush" Color="#005bab" />
+    <SolidColorBrush x:Key="WwiseBrush" Color="#0152a1" />
+    <SolidColorBrush x:Key="FModBrush" Color="#00758f" />
 
     <!-- For specific games -->
     <SolidColorBrush x:Key="BorderlandsBrush" Color="Yellow"></SolidColorBrush>

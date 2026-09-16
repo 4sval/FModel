@@ -61,6 +61,13 @@ public class ApplicationViewModel : ViewModel
         }
     }
 
+    private bool _isUpdateAvailable;
+    public bool IsUpdateAvailable
+    {
+        get => _isUpdateAvailable;
+        internal set => SetProperty(ref _isUpdateAvailable, value);
+    }
+
     private int _selectedLeftTabIndex;
     public int SelectedLeftTabIndex
     {
@@ -139,7 +146,7 @@ public class ApplicationViewModel : ViewModel
     public DirectorySettings AvoidEmptyGameDirectory(bool bAlreadyLaunched)
     {
         var gameDirectory = UserSettings.Default.GameDirectory;
-        if (!bAlreadyLaunched && UserSettings.Default.PerDirectory.TryGetValue(gameDirectory, out var currentDir))
+        if (!bAlreadyLaunched && GameSelectorViewModel.IsGameDirectoryAvailable(gameDirectory) && UserSettings.Default.PerDirectory.TryGetValue(gameDirectory, out var currentDir))
             return currentDir;
 
         Status.SetStatus(EStatusKind.Configuring);
