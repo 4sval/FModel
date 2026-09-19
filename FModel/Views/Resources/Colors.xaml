@@ -60,10 +60,11 @@
     <SolidColorBrush x:Key="FModBrush" Color="#00758f" />
 
     <!-- For specific games -->
-    <SolidColorBrush x:Key="BorderlandsBrush" Color="Yellow"></SolidColorBrush>
-    <SolidColorBrush x:Key="AionBrush" Color="DeepSkyBlue"></SolidColorBrush>
-    <SolidColorBrush x:Key="RocoKingdomWorldBrush" Color="#fecf4d"></SolidColorBrush>
-    <SolidColorBrush x:Key="DeltaForceBrush" Color="LightGreen"></SolidColorBrush>
-    <SolidColorBrush x:Key="BatmanBrush" Color="Gold"></SolidColorBrush>
-    <SolidColorBrush x:Key="ArcSysBrush" Color="Red"></SolidColorBrush>
+    <SolidColorBrush x:Key="BorderlandsBrush" Color="Yellow" />
+    <SolidColorBrush x:Key="AionBrush" Color="DeepSkyBlue" />
+    <SolidColorBrush x:Key="RocoKingdomWorldBrush" Color="#fecf4d" />
+    <SolidColorBrush x:Key="DeltaForceBrush" Color="LightGreen" />
+    <SolidColorBrush x:Key="BatmanBrush" Color="Gold" />
+    <SolidColorBrush x:Key="ArcSysBrush" Color="Red" />
+    <SolidColorBrush x:Key="NascarBrush" Color="#dd002a" />
 </ResourceDictionary>

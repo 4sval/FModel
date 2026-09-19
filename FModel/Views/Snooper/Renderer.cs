@@ -13,6 +13,7 @@ using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
+using CUE4Parse.GameTypes.Nascar.Assets.Exports;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Objects.Engine;
@@ -89,6 +90,9 @@ public class Renderer : IDisposable
         {
             case UStaticMesh when export.Value is UStaticMesh st:
                 LoadStaticMesh(st, UserSettings.Default.NaniteMeshExportFormat);
+                break;
+            case UIRMesh when export.Value is UIRMesh ir:
+                LoadIRMesh(ir);
                 break;
             case UGeometryCollection when export.Value is UGeometryCollection gc:
                 LoadStaticMesh(gc, UserSettings.Default.NaniteMeshExportFormat);
@@ -366,13 +370,39 @@ public class Renderer : IDisposable
         Options.SelectModel(guid);
     }
 
+    private void LoadIRMesh(UIRMesh original)
+    {
+        var guid = new FGuid((uint) original.GetFullName().GetHashCode());
+        if (Options.TryGetModel(guid, out var model))
+        {
+            model.AddInstance(Transform.Identity);
+            Application.Current.Dispatcher.Invoke(model.SetupInstances);
+            return;
+        }
+
+        StaticMeshDto mesh;
+        try
+        {
+            mesh = new StaticMeshDto(original);
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "Failed to convert IR mesh");
+            return;
+        }
+
+        Options.Models[guid] = new StaticModel(original, mesh);
+        mesh.Dispose();
+        Options.SelectModel(guid);
+    }
+
     private void LoadStaticMesh(UGeometryCollection original, ENaniteMeshFormat naniteFormat = ENaniteMeshFormat.NoNanite)
     {
         var guid = new FGuid((uint) original.GetFullName().GetHashCode());
         if (Options.TryGetModel(guid, out var model))
         {
             model.AddInstance(Transform.Identity);
-            Application.Current.Dispatcher.Invoke(() => model.SetupInstances());
+            Application.Current.Dispatcher.Invoke(model.SetupInstances);
             return;
         }
 
@@ -397,7 +427,7 @@ public class Renderer : IDisposable
         if (Options.TryGetModel(guid, out var model))
         {
             model.AddInstance(Transform.Identity);
-            Application.Current.Dispatcher.Invoke(() => model.SetupInstances());
+            Application.Current.Dispatcher.Invoke(model.SetupInstances);
             return;
         }
 
@@ -408,7 +438,7 @@ public class Renderer : IDisposable
         }
         catch (Exception e)
         {
-            Log.Error(e, "Failed to convert chaos cloth asset");
+            Log.Error(e, "Failed to convert skinned asset");
             return;
         }
 
@@ -456,7 +486,7 @@ public class Renderer : IDisposable
         if (Options.TryGetModel(guid, out var model))
         {
             model.AddInstance(Transform.Identity);
-            Application.Current.Dispatcher.Invoke(() => model.SetupInstances());
+            Application.Current.Dispatcher.Invoke(model.SetupInstances);
             return;
         }
 

@@ -102,6 +102,7 @@ public class FileToGeometryConverter : IMultiValueConverter
             EAssetCategory.DeltaForce => ("DeltaForceIcon", "DeltaForceBrush"),
             EAssetCategory.LegoBatman or EAssetCategory.GothamKnights => ("BatmanIcon", "BatmanBrush"),
             EAssetCategory.ArcSys => ("ArcSysIcon", "ArcSysBrush"),
+            EAssetCategory.Nascar => ("NascarIcon", "NascarBrush"),
 
             _ => ("AssetIcon", "NeutralBrush")
         };

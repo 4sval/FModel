@@ -169,6 +169,7 @@ public enum EAssetCategory : uint
         LegoBatman = GameSpecific + 5,
         ArcSys = GameSpecific + 6,
         GothamKnights = GameSpecific + 7,
+        Nascar = GameSpecific + 8,
 }
 
 public enum EAssetFamily

@@ -1,12 +1,14 @@
 using System;
 using System.Numerics;
-using CUE4Parse_Conversion.Dto;
+using CUE4Parse.GameTypes.Nascar.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.PhysicsEngine;
+using CUE4Parse.UE4.Objects.UObject;
+using CUE4Parse_Conversion.Dto;
 using FModel.Views.Snooper.Shading;
 using OpenTK.Graphics.OpenGL4;
 
@@ -148,6 +150,12 @@ public class StaticModel : UModel<MeshVertex>
         : base(export, staticMesh.LODs[LodLevel], export.Materials, staticMesh.LODs[LodLevel].Vertices, staticMesh.LODs.Count, transform)
     {
         Box = staticMesh.Bounds * Constants.SCALE_DOWN_RATIO;
+    }
+
+    public StaticModel(UIRMesh export, StaticMeshDto mesh)
+        : base(export, mesh.LODs[LodLevel], new FPackageIndex[mesh.Materials.Length], mesh.LODs[LodLevel].Vertices, mesh.LODs.Count)
+    {
+        Box = mesh.Bounds * Constants.SCALE_DOWN_RATIO;
     }
 
     public override void RenderCollision(Shader shader)

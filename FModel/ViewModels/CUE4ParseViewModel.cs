@@ -30,6 +30,7 @@ using CUE4Parse.GameTypes.DFHO.Assets.Objects;
 using CUE4Parse.GameTypes.HonorOfKings.FileProvider;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
 using CUE4Parse.GameTypes.LegoBatman.Assets;
+using CUE4Parse.GameTypes.Nascar.Assets.Exports;
 using CUE4Parse.GameTypes.LordOfMysteries.FileProvider;
 using CUE4Parse.GameTypes.Tencent.RocoKingdomWorld.Assets.Objects;
 using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
@@ -1594,6 +1595,7 @@ public class CUE4ParseViewModel : ViewModel
             // }:
             case UPaperSprite when isNone && UserSettings.Default.PreviewMaterials:
             case UStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
+            case UIRMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
             case UGeometryCollection when isNone && UserSettings.Default.PreviewStaticMeshes:
             case USkinnedAsset when isNone && UserSettings.Default.PreviewSkeletalMeshes:
             case USkeleton when isNone && UserSettings.Default.SaveSkeletonAsMesh:
@@ -1621,6 +1623,7 @@ public class CUE4ParseViewModel : ViewModel
                 return true;
             }
             case UStaticMesh when HasFlag(bulk, EBulkType.Meshes):
+            case UIRMesh when HasFlag(bulk, EBulkType.Meshes):
             case UGeometryCollection when HasFlag(bulk, EBulkType.Meshes):
             case USkinnedAsset when HasFlag(bulk, EBulkType.Meshes):
             case USkeleton when UserSettings.Default.SaveSkeletonAsMesh && HasFlag(bulk, EBulkType.Meshes):

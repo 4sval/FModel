@@ -11,6 +11,7 @@ using CUE4Parse.GameTypes.Borderlands3.Assets.Exports;
 using CUE4Parse.GameTypes.Borderlands4.Assets.Exports;
 using CUE4Parse.GameTypes.FN.Assets.Exports.DataAssets;
 using CUE4Parse.GameTypes.LegoBatman.Assets;
+using CUE4Parse.GameTypes.Nascar.Assets.Exports;
 using CUE4Parse.GameTypes.RED.Assets.Exports;
 using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
 using CUE4Parse.GameTypes.SMG.UE4.Assets.Objects;
@@ -294,6 +295,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 UWubAudioEvent or UWubDialogueEvent when GameVersion is EGame.GAME_LEGOBatmanLegacyoftheDarkKnight => (EAssetCategory.LegoBatman, EBulkType.Audio), // Lego Batman: Legacy of the Dark Knight;
                 UREDBinaryObject => (EAssetCategory.ArcSys, EBulkType.None), // Arc System Works games;
                 UOrpheusBank or UOrpheusEvent => (EAssetCategory.GothamKnights, EBulkType.Audio), // Gotham Knights;
+                UIRMesh => (EAssetCategory.Nascar, EBulkType.Meshes), // iRacing games;
 
                 _ => (EAssetCategory.All, EBulkType.None),
             };
