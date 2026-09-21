@@ -23,7 +23,7 @@ namespace FModel;
 /// </summary>
 public partial class MainWindow
 {
-    public static MainWindow YesWeCats;
+    public static MainWindow Instance => (MainWindow) Application.Current.MainWindow;
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
     private DiscordHandler _discordHandler => DiscordService.DiscordHandler;
@@ -48,7 +48,7 @@ public partial class MainWindow
             else if (LeftTabControl.SelectedIndex == 1 && AssetsFolderName.SelectedItem is TreeItem { Parent: TreeItem parent })
             {
                 AssetsFolderName.Focus();
-                parent.IsSelected = true;
+                SelectFolder(parent);
             }
         }));
 
@@ -63,7 +63,6 @@ public partial class MainWindow
         AssetsListName.SelectionChanged += (_, e) => SyncSelection(AssetsExplorer, e);
 
         FLogger.Logger = LogRtbName;
-        YesWeCats = this;
     }
 
     // Hack to sync selection between packages tab and explorer
@@ -236,7 +235,7 @@ public partial class MainWindow
                 DirectoryFilesListBox.Focus();
                 break;
             case 1:
-                AssetsFolderName.Focus();
+                AssetsFolderName.FocusSelection();
                 break;
             case 2:
                 AssetsListName.Focus();
@@ -264,12 +263,7 @@ public partial class MainWindow
         }
     }
 
-    private void OnAssetsTreeMouseDoubleClick(object sender, MouseButtonEventArgs e)
-    {
-        if (sender is not TreeView { SelectedItem: TreeItem treeItem } || treeItem.Folders.Count > 0) return;
-
-        _applicationView.SelectedLeftTabIndex++;
-    }
+    private void OnFolderOpenAssets(object sender, EventArgs e) => _applicationView.SelectedLeftTabIndex = 2;
 
     private void OnPreviewTexturesToggled(object sender, RoutedEventArgs e) => ItemContainerGenerator_StatusChanged(AssetsExplorer.ItemContainerGenerator, EventArgs.Empty);
     private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
@@ -297,12 +291,41 @@ public partial class MainWindow
         }
     }
 
-    private void OnAssetsTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+    private void OnAssetsTreeSelectedItemChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (sender is not TreeView { SelectedItem: TreeItem }) return;
+        if (sender is not ListBox { SelectedItem: TreeItem })
+            return;
 
         _applicationView.IsAssetsExplorerVisible = true;
         _applicationView.SelectedLeftTabIndex = 1;
+    }
+
+    public void SelectFolder(TreeItem folder)
+    {
+        _applicationView.SelectedLeftTabIndex = 1;
+        UpdateLayout();
+        AssetsFolderName.SelectFolder(folder);
+        AssetsFolderName.FocusSelection();
+    }
+
+    public void SelectAsset(GameFileViewModel asset)
+    {
+        var useExplorer = UserSettings.Default.FeaturePreviewNewAssetExplorer;
+
+        _applicationView.SelectedLeftTabIndex = useExplorer ? 1 : 2;
+        if (useExplorer)
+        {
+            _applicationView.IsAssetsExplorerVisible = true;
+        }
+
+        var list = useExplorer ? UserSettings.Default.ExplorerViewMode == EExplorerViewMode.List ? AssetsListExplorer : AssetsExplorer : AssetsListName;
+        list.GetBindingExpression(ItemsControl.ItemsSourceProperty)?.UpdateTarget();
+        list.UnselectAll();
+        list.SelectedItem = asset;
+        UpdateLayout();
+        var container = list.RevealItem(asset);
+        Activate();
+        container?.Focus();
     }
 
     private async void OnAssetsListMouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -348,24 +371,18 @@ public partial class MainWindow
                 await _threadWorkerView.Begin(cancellationToken => _applicationView.CUE4Parse.ExtractSelected(cancellationToken, [file.Asset]));
                 break;
             case TreeItem folder:
+                e.Handled = true;
                 ApplicationService.ApplicationView.SelectedLeftTabIndex = 1;
-
-                var parent = folder.Parent;
-                while (parent != null)
-                {
-                    parent.IsExpanded = true;
-                    parent = parent.Parent;
-                }
 
                 var childFolder = folder;
                 while (childFolder.Folders.Count == 1 && childFolder.AssetsList.Assets.Count == 0)
                 {
-                    childFolder.IsExpanded = true;
+                    _applicationView.CUE4Parse.AssetsFolder.Expand(childFolder);
                     childFolder = childFolder.Folders[0];
                 }
 
-                childFolder.IsExpanded = true;
-                childFolder.IsSelected = true;
+                _applicationView.CUE4Parse.AssetsFolder.Expand(childFolder);
+                SelectFolder(childFolder);
                 break;
         }
     }
@@ -375,34 +392,12 @@ public partial class MainWindow
         _applicationView.IsAssetsExplorerVisible = false;
     }
 
-    private async void OnFoldersPreviewKeyDown(object sender, KeyEventArgs e)
-    {
-        if (e.Key != Key.Enter || sender is not TreeView treeView || treeView.SelectedItem is not TreeItem folder)
-            return;
-
-        if ((folder.IsExpanded || folder.Folders.Count == 0) && folder.AssetsList.Assets.Count > 0)
-        {
-            _applicationView.SelectedLeftTabIndex++;
-            return;
-        }
-
-        var childFolder = folder;
-        while (childFolder.Folders.Count == 1 && childFolder.AssetsList.Assets.Count == 0)
-        {
-            childFolder.IsExpanded = true;
-            childFolder = childFolder.Folders[0];
-        }
-
-        childFolder.IsExpanded = true;
-        childFolder.IsSelected = true;
-    }
-
     private void OnExportHotkey(string trigger)
     {
         if (!_applicationView.Status.IsReady || Keyboard.FocusedElement is not DependencyObject focused)
             return;
 
-        IList selection = focused.FindAncestor<TreeView>() == AssetsFolderName
+        IList selection = focused.FindAncestor<ListBox>() == AssetsFolderName
             ? new[] { AssetsFolderName.SelectedItem }
             : focused.FindAncestor<ListBox>()?.SelectedItems;
 

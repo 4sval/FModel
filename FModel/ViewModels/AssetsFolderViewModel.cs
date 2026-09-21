@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -80,26 +79,22 @@ public class TreeItem : ViewModel
         set
         {
             if (SetProperty(ref _selectedCategory, value))
-                _ = OnSelectedCategoryChanged();
+            {
+                if (value == EAssetCategory.All)
+                {
+                    RefreshFilters();
+                }
+                else
+                {
+                    _ = OnSelectedCategoryChanged();
+                }
+            }
         }
     }
 
     public string PathAtThisPoint { get; }
     public AssetsListViewModel AssetsList { get; } = new();
     public RangeObservableCollection<TreeItem> Folders { get; } = [];
-
-    private ICollectionView _foldersView;
-    public ICollectionView FoldersView
-    {
-        get
-        {
-            _foldersView ??= new ListCollectionView(Folders)
-            {
-                SortDescriptions = { new SortDescription(nameof(Header), ListSortDirection.Ascending) }
-            };
-            return _foldersView;
-        }
-    }
 
     private ICollectionView? _filteredFoldersView;
     public ICollectionView? FilteredFoldersView
@@ -116,35 +111,15 @@ public class TreeItem : ViewModel
     }
 
     private CompositeCollection _combinedEntries;
-    public CompositeCollection CombinedEntries
-    {
-        get
-        {
-            if (_combinedEntries == null)
-            {
-                void CreateCombinedEntries()
-                {
-                    _combinedEntries = new CompositeCollection
-                    {
-                        new CollectionContainer { Collection = FilteredFoldersView },
-                        new CollectionContainer { Collection = AssetsList.AssetsView }
-                    };
-                }
-
-                if (!Application.Current.Dispatcher.CheckAccess())
-                {
-                    Application.Current.Dispatcher.Invoke(CreateCombinedEntries);
-                }
-                else
-                {
-                    CreateCombinedEntries();
-                }
-            }
-            return _combinedEntries;
-        }
-    }
+    public CompositeCollection CombinedEntries => _combinedEntries ??=
+    [
+        new CollectionContainer { Collection = FilteredFoldersView },
+        new CollectionContainer { Collection = AssetsList.AssetsView }
+    ];
 
     public TreeItem Parent { get; init; }
+    public int Depth => Parent?.Depth + 1 ?? 0;
+    public Thickness Indent => new(Depth * 16, 0, 0, 0); // For folder tree indentation
 
     public TreeItem(string header, GameFile entry, string pathHere)
     {
@@ -198,15 +173,177 @@ public class TreeItem : ViewModel
     public override string ToString() => $"{Header} | {Folders.Count} Folders | {AssetsList.Assets.Count} Files";
 }
 
-public class AssetsFolderViewModel
+public class AssetsFolderViewModel : ViewModel
 {
-    public RangeObservableCollection<TreeItem> Folders { get; }
-    public ICollectionView FoldersView { get; }
+    public RangeObservableCollection<TreeItem> Folders { get; } = [];
+    public RangeObservableCollection<TreeItem> VisibleFolders { get; } = [];
 
-    public AssetsFolderViewModel()
+    private TreeItem? _selectedFolder;
+    public TreeItem? SelectedFolder
     {
-        Folders = [];
-        FoldersView = new ListCollectionView(Folders) { SortDescriptions = { new SortDescription("Header", ListSortDirection.Ascending) } };
+        get => _selectedFolder;
+        set
+        {
+            var previous = _selectedFolder;
+            if (!SetProperty(ref _selectedFolder, value))
+                return;
+
+            previous?.IsSelected = false;
+            value?.IsSelected = true;
+        }
+    }
+
+    public void Clear()
+    {
+        SelectedFolder = null;
+        VisibleFolders.Clear();
+        Folders.Clear();
+    }
+
+    public void CollapseAll()
+    {
+        static void CollapseChildren(TreeItem folder)
+        {
+            folder.IsExpanded = false;
+            foreach (var child in folder.Folders)
+            {
+                CollapseChildren(child);
+            }
+        }
+
+        var selected = SelectedFolder;
+        while (selected?.Parent != null)
+            selected = selected.Parent;
+
+        foreach (var folder in Folders)
+        {
+            CollapseChildren(folder);
+        }
+
+        SelectedFolder = selected;
+        for (var i = VisibleFolders.Count - 1; i >= 0; i--)
+        {
+            if (VisibleFolders[i].Parent != null)
+            {
+                VisibleFolders.RemoveAt(i);
+            }
+        }
+    }
+
+    public void Expand(TreeItem folder)
+    {
+        if (folder.Folders.Count == 0)
+            return;
+
+        var index = VisibleFolders.IndexOf(folder);
+        if (index < 0)
+            return;
+
+        if (index + 1 < VisibleFolders.Count && ReferenceEquals(VisibleFolders[index + 1].Parent, folder))
+        {
+            folder.IsExpanded = true;
+            return;
+        }
+
+        foreach (var child in EnumerateVisibleChildren(folder))
+        {
+            VisibleFolders.Insert(++index, child);
+        }
+
+        folder.IsExpanded = true;
+    }
+
+    public void Collapse(TreeItem folder)
+    {
+        if (!folder.IsExpanded)
+            return;
+
+        var index = VisibleFolders.IndexOf(folder);
+        if (index < 0)
+            return;
+
+        var selected = SelectedFolder;
+        var start = index + 1;
+        var count = 0;
+        while (start + count < VisibleFolders.Count && VisibleFolders[start + count].Depth > folder.Depth)
+            count++;
+
+        if (selected != null && IsDescendantOf(selected, folder))
+        {
+            SelectedFolder = folder;
+        }
+
+        for (var i = start + count - 1; i >= start; i--)
+        {
+            VisibleFolders.RemoveAt(i);
+        }
+
+        folder.IsExpanded = false;
+    }
+
+    public void Toggle(TreeItem folder)
+    {
+        if (folder.IsExpanded)
+        {
+            Collapse(folder);
+        }
+        else
+        {
+            Expand(folder);
+        }
+    }
+
+    public void Reveal(TreeItem folder)
+    {
+        var parents = new Stack<TreeItem>();
+
+        for (var parent = folder.Parent; parent != null; parent = parent.Parent)
+            parents.Push(parent);
+
+        while (parents.Count > 0)
+            Expand(parents.Pop());
+
+        SelectedFolder = folder;
+    }
+
+    private static bool IsDescendantOf(TreeItem item, TreeItem parent)
+    {
+        for (var current = item.Parent; current != null; current = current.Parent)
+        {
+            if (ReferenceEquals(current, parent))
+                return true;
+        }
+
+        return false;
+    }
+
+    private static IEnumerable<TreeItem> EnumerateVisibleChildren(TreeItem folder)
+    {
+        foreach (var child in folder.Folders)
+        {
+            yield return child;
+
+            if (!child.IsExpanded)
+                continue;
+
+            foreach (var descendant in EnumerateVisibleChildren(child))
+            {
+                yield return descendant;
+            }
+        }
+    }
+
+    private static void SortFolders(RangeObservableCollection<TreeItem> folders)
+    {
+        if (folders.Count > 1)
+        {
+            folders.ReplaceRange([.. folders.OrderBy(x => x.Header, StringComparer.OrdinalIgnoreCase)]);
+        }
+
+        foreach (var folder in folders)
+        {
+            SortFolders(folder.Folders);
+        }
     }
 
     public void BulkPopulate(IReadOnlyCollection<GameFile> entries)
@@ -283,14 +420,15 @@ public class AssetsFolderViewModel
                 lastNode?.AssetsList.Add(entry);
             }
 
+            SortFolders(treeItems);
+
             Folders.AddRange(treeItems);
+            VisibleFolders.AddRange(treeItems);
 
             if (treeItems.Count > 0)
             {
-                // Select after publishing the collection. Selecting a detached TreeItem lets WPF
-                // auto-select the first root (usually the synthetic "Content" bucket) instead.
                 var projectName = ApplicationService.ApplicationView.CUE4Parse.Provider.ProjectName;
-                (treeItems.FirstOrDefault(x => x.Header.Equals(projectName, StringComparison.OrdinalIgnoreCase)) ?? treeItems[0]).IsSelected = true;
+                SelectedFolder = treeItems.FirstOrDefault(x => x.Header.Equals(projectName, StringComparison.OrdinalIgnoreCase)) ?? treeItems[0];
             }
 
             ApplicationService.ApplicationView.CUE4Parse.SearchVm.ChangeCollection(entries);

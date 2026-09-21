@@ -243,7 +243,7 @@
            TargetType="ListBox"
            BasedOn="{StaticResource {x:Type ListBox}}">
         <Setter Property="ItemsSource"
-                Value="{Binding SelectedItem.AssetsList.AssetsView, ElementName=AssetsFolderName, IsAsync=True}" />
+                Value="{Binding CUE4Parse.AssetsFolder.SelectedFolder.AssetsList.AssetsView}" />
         <Setter Property="SelectionMode"
                 Value="Extended" />
         <Setter Property="ContextMenu"
