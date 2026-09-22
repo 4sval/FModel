@@ -347,7 +347,7 @@ public class CUE4ParseViewModel : ViewModel
     {
         if (Provider == null) return;
 
-        AssetsFolder.Folders.Clear();
+        AssetsFolder.Clear();
         SearchVm.SearchResults.Clear();
         Helper.CloseWindow<AdonisWindow>("Search For Packages");
         Provider.UnloadNonStreamedVfs();

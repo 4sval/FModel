@@ -29,24 +29,12 @@ public partial class ResourcesDictionary
             case TreeItem folder:
                 ApplicationService.ApplicationView.SelectedLeftTabIndex = 1;
 
-                // Expand all parent folders if not expanded
-                var parent = folder.Parent;
-                while (parent != null)
-                {
-                    parent.IsExpanded = true;
-                    parent = parent.Parent;
-                }
-
-                // Auto expand single child folders
                 var childFolder = folder;
                 while (childFolder.Folders.Count == 1 && childFolder.AssetsList.Assets.Count == 0)
-                {
-                    childFolder.IsExpanded = true;
                     childFolder = childFolder.Folders[0];
-                }
 
-                childFolder.IsExpanded = true;
-                childFolder.IsSelected = true;
+                MainWindow.Instance.SelectFolder(childFolder);
+                ApplicationService.ApplicationView.CUE4Parse.AssetsFolder.Expand(childFolder);
                 break;
         }
     }

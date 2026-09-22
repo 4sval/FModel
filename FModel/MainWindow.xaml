@@ -344,16 +344,16 @@
                                     <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
                                         <TextBlock.Text>
                                             <MultiBinding StringFormat="{}'{0}' has {1} folders and {2} packages">
-                                                <Binding Path="SelectedItem.Header" ElementName="AssetsFolderName" FallbackValue="None" />
-                                                <Binding Path="SelectedItem.FoldersView.Count" ElementName="AssetsFolderName" FallbackValue="0" />
-                                                <Binding Path="SelectedItem.AssetsList.Assets.Count" ElementName="AssetsFolderName" FallbackValue="0" />
+                                                <Binding Path="CUE4Parse.AssetsFolder.SelectedFolder.Header" FallbackValue="None" />
+                                                <Binding Path="CUE4Parse.AssetsFolder.SelectedFolder.Folders.Count" FallbackValue="0" />
+                                                <Binding Path="CUE4Parse.AssetsFolder.SelectedFolder.AssetsList.Assets.Count" FallbackValue="0" />
                                             </MultiBinding>
                                         </TextBlock.Text>
                                     </TextBlock>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
                                     <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Bring Selected Folder To View" Padding="4"
-                                            Command="{Binding MenuCommand}" CommandParameter="{Binding SelectedItem, ElementName=AssetsFolderName}">
+                                            Command="{Binding MenuCommand}" CommandParameter="{Binding CUE4Parse.AssetsFolder.SelectedFolder}">
                                         <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                             <Canvas Width="24" Height="24">
                                                 <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource LocateMeIcon}" />
@@ -379,13 +379,13 @@
                                 </StackPanel>
                             </Grid>
                             <Separator Grid.Row="1" Style="{StaticResource CustomSeparator}" Margin="0" />
-                            <TreeView Grid.Row="2"
-                                      x:Name="AssetsFolderName"
-                                      Style="{StaticResource AssetsFolderTreeView}"
-                                      SelectedItemChanged="OnAssetsTreeSelectedItemChanged"
-                                      PreviewKeyDown="OnFoldersPreviewKeyDown"
-                                      PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick">
-                            </TreeView>
+                            <controls:FolderTree Grid.Row="2" x:Name="AssetsFolderName"
+                                                 Style="{StaticResource AssetsFolderListBox}"
+                                                 Folders="{Binding CUE4Parse.AssetsFolder}"
+                                                 ItemsSource="{Binding CUE4Parse.AssetsFolder.VisibleFolders}"
+                                                 SelectedItem="{Binding CUE4Parse.AssetsFolder.SelectedFolder, Mode=TwoWay}"
+                                                 SelectionChanged="OnAssetsTreeSelectedItemChanged"
+                                                 OpenAssets="OnFolderOpenAssets" />
                             <Separator Grid.Row="3" Style="{StaticResource CustomSeparator}" Tag="INFORMATION" />
                             <StackPanel Grid.Row="4" Orientation="Vertical" Margin="0 0 0 5">
                                 <Grid HorizontalAlignment="Stretch">
@@ -401,27 +401,27 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
 
-                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.AssetsList.Assets.Count, ElementName=AssetsFolderName, FallbackValue=0, StringFormat={}{0:N0}}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding CUE4Parse.AssetsFolder.SelectedFolder.AssetsList.Assets.Count, FallbackValue=0, StringFormat={}{0:N0}}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                     <TextBlock Grid.Row="0" Grid.Column="1" Text="Packages Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.FoldersView.Count, ElementName=AssetsFolderName, FallbackValue=0, StringFormat={}{0:N0}}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding CUE4Parse.AssetsFolder.SelectedFolder.Folders.Count, FallbackValue=0, StringFormat={}{0:N0}}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                     <TextBlock Grid.Row="1" Grid.Column="1" Text="Folders Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding SelectedItem.Archive, ElementName=AssetsFolderName, FallbackValue='None'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding CUE4Parse.AssetsFolder.SelectedFolder.Archive, FallbackValue='None'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                     <TextBlock Grid.Row="2" Grid.Column="1" Text="Included In Archive" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.MountPoint, ElementName=AssetsFolderName, FallbackValue='/', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding CUE4Parse.AssetsFolder.SelectedFolder.MountPoint, FallbackValue='/', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                     <TextBlock Grid.Row="3" Grid.Column="1" Text="Archive Mount Point" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                    <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding SelectedItem.Version, ElementName=AssetsFolderName, FallbackValue='VER_UE4_LATEST', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding CUE4Parse.AssetsFolder.SelectedFolder.Version, FallbackValue='VER_UE4_LATEST', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                     <TextBlock Grid.Row="4" Grid.Column="1" Text="Archive Version" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                 </Grid>
                             </StackPanel>
                         </Grid>
                     </TabItem>
                     <TabItem Style="{StaticResource TabItemFillSpace}"
-                             Header="{Binding SelectedItem.AssetsList.Assets.Count, FallbackValue=0, ElementName=AssetsFolderName}"
+                             Header="{Binding CUE4Parse.AssetsFolder.SelectedFolder.AssetsList.Assets.Count, FallbackValue=0}"
                              HeaderStringFormat="{}{0} Packages">
                         <DockPanel>
 
                             <inputs:SearchTextBox DockPanel.Dock="Top" x:Name="AssetsSearchTextBox"
-                                                  Text="{Binding SelectedItem.SearchText, ElementName=AssetsFolderName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  Text="{Binding CUE4Parse.AssetsFolder.SelectedFolder.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                   ClearButtonClick="OnClearFilterClick" />
 
                             <Grid DockPanel.Dock="Top">
@@ -434,7 +434,7 @@
 
                                 <controls:Breadcrumb Grid.Row="0" HorizontalAlignment="Left" Margin="0 5 0 5"
                                                      MaxWidth="{Binding ActualWidth, ElementName=AssetsSearchTextBox}"
-                                                     DataContext="{Binding SelectedItem.PathAtThisPoint, ElementName=AssetsFolderName, FallbackValue='No/Directory/Detected/In/Folder'}"/>
+                                                     DataContext="{Binding CUE4Parse.AssetsFolder.SelectedFolder.PathAtThisPoint, FallbackValue='No/Directory/Detected/In/Folder'}"/>
 
                                 <ListBox Grid.Row="1" x:Name="AssetsListName"
                                          Style="{StaticResource AssetsListBox}"
@@ -508,12 +508,12 @@
                                     </Grid.ColumnDefinitions>
 
                                     <inputs:SearchTextBox x:Name="AssetsExplorerSearch" Grid.Column="0"
-                                                          Text="{Binding SelectedItem.SearchText, ElementName=AssetsFolderName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                          Text="{Binding CUE4Parse.AssetsFolder.SelectedFolder.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                           ClearButtonClick="OnClearFilterClick" />
 
                                     <ComboBox x:Name="CategoriesSelector" Grid.Column="2"
                                               ItemsSource="{Binding Categories}"
-                                              SelectedItem="{Binding SelectedItem.SelectedCategory, ElementName=AssetsFolderName, Mode=TwoWay}" />
+                                              SelectedItem="{Binding CUE4Parse.AssetsFolder.SelectedFolder.SelectedCategory, Mode=TwoWay}" />
 
                                     <StackPanel Grid.Column="4"
                                                 Orientation="Horizontal"
@@ -555,11 +555,11 @@
 
                                 <controls:Breadcrumb Grid.Row="1" Margin="0 5 0 0"
                                                      HorizontalAlignment="Left"
-                                                     DataContext="{Binding SelectedItem.PathAtThisPoint, ElementName=AssetsFolderName}" />
+                                                     DataContext="{Binding CUE4Parse.AssetsFolder.SelectedFolder.PathAtThisPoint}" />
 
                                 <Grid Grid.Row="2">
                                     <ListBox x:Name="AssetsExplorer"
-                                             ItemsSource="{Binding SelectedItem.CombinedEntries, ElementName=AssetsFolderName, IsAsync=True}"
+                                             ItemsSource="{Binding CUE4Parse.AssetsFolder.SelectedFolder.CombinedEntries}"
                                              Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
                                              PreviewKeyDown="OnPreviewKeyDown">
                                         <ListBox.Style>
@@ -577,7 +577,7 @@
                                     </ListBox>
                                     <!-- once we need sorting, convert this to a listview (see search window) and add the header back (customize the template to re-add GridViewHeaderRowPresenter) -->
                                     <ListBox x:Name="AssetsListExplorer"
-                                             ItemsSource="{Binding SelectedItem.CombinedEntries, ElementName=AssetsFolderName, IsAsync=True}"
+                                             ItemsSource="{Binding CUE4Parse.AssetsFolder.SelectedFolder.CombinedEntries}"
                                              Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
                                              PreviewKeyDown="OnPreviewKeyDown">
                                         <ListBox.Style>
