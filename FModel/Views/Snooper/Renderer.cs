@@ -460,7 +460,7 @@ public class Renderer : IDisposable
             return;
         }
 
-        Options.Models[guid] = new StaticModel(original, texture);
+        Options.Models[guid] = new StaticModel(original);
         Options.SelectModel(guid);
     }
 
@@ -804,8 +804,8 @@ public class Renderer : IDisposable
 
     private void WorldTextureData(Material material, UObject textureData, string name, string key)
     {
-        if (textureData.TryGetValue(out FPackageIndex package, name) && package.Load() is UTexture2D texture)
-            material.Parameters.Textures[key] = texture;
+        if (textureData.TryGetValue(out FPackageIndex package, name))
+            material.Parameters.Textures[key] = package;
     }
 
     private void AdditionalWorlds(UObject actor, Matrix4x4 relation, CancellationToken cancellationToken)

@@ -44,7 +44,7 @@ public partial class ResourcesDictionary
     {
         if (sender is not ListBoxItem item)
             return;
-        if (item.DataContext is not GameFileViewModel)
+        if (item.DataContext is not (GameFileViewModel or TreeItem))
             return;
         var listBox = ItemsControl.ItemsControlFromItemContainer(item) as ListBox;
         if (listBox == null)
@@ -57,9 +57,20 @@ public partial class ResourcesDictionary
         }
         item.Focus();
 
-        var contextMenu = listBox.FindResource("FileContextMenu") as ContextMenu;
+        var isFolder = item.DataContext is TreeItem;
+        var contextMenu = listBox.FindResource(isFolder ? "FolderContextMenu" : "FileContextMenu") as ContextMenu;
         if (contextMenu is not null)
         {
+            if (isFolder)
+            {
+                // Create FolderContextMenu only on right-click
+                listBox.ContextMenu = null;
+                contextMenu.PlacementTarget = item;
+                contextMenu.IsOpen = true;
+                e.Handled = true;
+                return;
+            }
+
             listBox.ContextMenu = null;
             item.Dispatcher.BeginInvoke(new Action(() =>
             {

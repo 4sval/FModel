@@ -56,7 +56,7 @@ public class StaticModel : UModel<MeshVertex>
         Box = staticMesh.Bounds * 1.5f * Constants.SCALE_DOWN_RATIO;
     }
 
-    public StaticModel(UPaperSprite paperSprite, UTexture2D texture) : base(paperSprite)
+    public StaticModel(UPaperSprite paperSprite) : base(paperSprite)
     {
         Indices = new uint[paperSprite.BakedRenderData.Length];
         for (int i = 0; i < Indices.Length; i++)
@@ -97,7 +97,7 @@ public class StaticModel : UModel<MeshVertex>
         {
             Materials[0] = new Material();
         }
-        Materials[0].Parameters.Textures[CMaterialParams2.FallbackDiffuse] = texture;
+        Materials[0].Parameters.Textures[CMaterialParams2.FallbackDiffuse] = paperSprite.BakedSourceTexture;
         Materials[0].IsUsed = true;
 
         Sections = new Section[1];

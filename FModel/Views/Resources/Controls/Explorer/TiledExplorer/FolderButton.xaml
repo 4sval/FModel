@@ -20,36 +20,13 @@
 
         <Viewbox Grid.Row="0" Height="96" VerticalAlignment="Center">
             <Canvas Width="128" Height="128">
-                <Canvas.Resources>
-                    <LinearGradientBrush x:Key="FolderTabGradient"
-                                         StartPoint="0,0"
-                                         EndPoint="0,1">
-                        <GradientStop Color="#FFE8C480"
-                                      Offset="0" />
-                        <GradientStop Color="#FFD9AA63"
-                                      Offset="1" />
-                    </LinearGradientBrush>
-
-                    <LinearGradientBrush x:Key="FolderBodyGradient"
-                                         StartPoint="0,0"
-                                         EndPoint="0,1">
-                        <GradientStop Color="#FFF3D9A4"
-                                      Offset="0" />
-                        <GradientStop Color="#FFE5BD77"
-                                      Offset="1" />
-                    </LinearGradientBrush>
-
-                    <SolidColorBrush x:Key="FolderOutlineBrush"
-                                     Color="#D8A360" />
-                </Canvas.Resources>
-
-                <Path Fill="{StaticResource FolderTabGradient}"
-                      Stroke="{StaticResource FolderOutlineBrush}"
+                <Path Fill="{StaticResource TiledFolderTabBrush}"
+                      Stroke="{StaticResource TiledFolderOutlineBrush}"
                       StrokeThickness="2"
                       Data="M20 34 H54 L62 46 H108 C112 46 115 49 115 53 V60 H13 V45 C13 39 16 34 20 34 Z" />
 
-                <Path Fill="{StaticResource FolderBodyGradient}"
-                      Stroke="{StaticResource FolderOutlineBrush}"
+                <Path Fill="{StaticResource TiledFolderBodyBrush}"
+                      Stroke="{StaticResource TiledFolderOutlineBrush}"
                       StrokeThickness="2"
                       Data="M13 60 H115 V104 C115 110 110 115 104 115 H24  C18 115 13 110 13 104 Z" />
 
