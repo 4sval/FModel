@@ -152,9 +152,10 @@ public class StaticModel : UModel<MeshVertex>
         Box = staticMesh.Bounds * Constants.SCALE_DOWN_RATIO;
     }
 
-    public StaticModel(UIRMesh export, StaticMeshDto mesh)
-        : base(export, mesh.LODs[LodLevel], new FPackageIndex[mesh.Materials.Length], mesh.LODs[LodLevel].Vertices, mesh.LODs.Count)
+    public StaticModel(UIRMesh export, StaticMeshDto mesh, int meshIndex)
+        : base(export, mesh.LODs[LodLevel], export.Materials, mesh.LODs[LodLevel].Vertices, mesh.LODs.Count)
     {
+        Name = meshIndex > 0 ? $"{Name}_{meshIndex}": Name;
         Box = mesh.Bounds * Constants.SCALE_DOWN_RATIO;
     }
 
