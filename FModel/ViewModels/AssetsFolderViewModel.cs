@@ -101,9 +101,9 @@ public class TreeItem : ViewModel
     {
         get
         {
+            // BulkPopulate sorts Folders before this view is created
             _filteredFoldersView ??= new ListCollectionView(Folders)
             {
-                SortDescriptions = { new SortDescription(nameof(Header), ListSortDirection.Ascending) },
                 Filter = e => ItemFilter(e, SearchText.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries))
             };
             return _filteredFoldersView;

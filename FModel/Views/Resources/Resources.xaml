@@ -311,33 +311,30 @@
                             <Setter TargetName="Arrow"
                                     Property="Tag"
                                     Value="-45" />
-                            <Trigger.EnterActions>
-                                <BeginStoryboard x:Name="ExpandArrow">
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="ArrowRotation"
-                                                         Storyboard.TargetProperty="Angle"
-                                                         From="-90"
-                                                         To="-45"
-                                                         Duration="0:0:0.2" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.EnterActions>
-                            <Trigger.ExitActions>
-                                <BeginStoryboard x:Name="CollapseArrow">
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="ArrowRotation"
-                                                         Storyboard.TargetProperty="Angle"
-                                                         From="-45"
-                                                         To="-90"
-                                                         Duration="0:0:0.2" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.ExitActions>
                         </Trigger>
-                        <!-- Don't replay animation whe not needed -->
-                        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                            <RemoveStoryboard BeginStoryboardName="ExpandArrow" />
-                            <RemoveStoryboard BeginStoryboardName="CollapseArrow" />
+                        <EventTrigger RoutedEvent="controls:FolderTree.ExpandArrow">
+                            <BeginStoryboard x:Name="ExpandArrow">
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="ArrowRotation"
+                                                     Storyboard.TargetProperty="Angle"
+                                                     From="-90"
+                                                     To="-45"
+                                                     FillBehavior="Stop"
+                                                     Duration="0:0:0.2" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="controls:FolderTree.CollapseArrow">
+                            <BeginStoryboard x:Name="CollapseArrow">
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="ArrowRotation"
+                                                     Storyboard.TargetProperty="Angle"
+                                                     From="-45"
+                                                     To="-90"
+                                                     FillBehavior="Stop"
+                                                     Duration="0:0:0.2" />
+                                </Storyboard>
+                            </BeginStoryboard>
                         </EventTrigger>
                         <EventTrigger RoutedEvent="FrameworkElement.Unloaded">
                             <RemoveStoryboard BeginStoryboardName="ExpandArrow" />

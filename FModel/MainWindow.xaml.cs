@@ -271,21 +271,17 @@ public partial class MainWindow
         if (sender is not ItemContainerGenerator { Status: GeneratorStatus.ContainersGenerated } generator)
             return;
 
-        var foundVisibleItem = false;
-        var itemCount = generator.Items.Count;
+        var list = ReferenceEquals(generator, AssetsExplorer.ItemContainerGenerator) ? AssetsExplorer
+            : ReferenceEquals(generator, AssetsListExplorer.ItemContainerGenerator) ? AssetsListExplorer
+            : AssetsListName;
 
-        for (var i = 0; i < itemCount; i++)
+        if (!list.IsVisible || list.FindVisualChild<VirtualizingPanel>() is not { } panel)
+            return;
+
+        foreach (var container in panel.Children.OfType<ListBoxItem>())
         {
-            var container = generator.ContainerFromIndex(i);
-            if (container == null)
+            if (container is FrameworkElement { IsVisible: true, DataContext: GameFileViewModel file })
             {
-                if (foundVisibleItem) break; // we're past the visible range already
-                continue; // keep scrolling to find visible items
-            }
-
-            if (container is FrameworkElement { IsVisible: true } && generator.Items[i] is GameFileViewModel file)
-            {
-                foundVisibleItem = true;
                 file.OnIsVisible();
             }
         }
@@ -303,7 +299,6 @@ public partial class MainWindow
     public void SelectFolder(TreeItem folder)
     {
         _applicationView.SelectedLeftTabIndex = 1;
-        UpdateLayout();
         AssetsFolderName.SelectFolder(folder);
         AssetsFolderName.FocusSelection();
     }

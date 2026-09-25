@@ -4,6 +4,7 @@
         xmlns:local="clr-namespace:FModel"
         xmlns:viewModels="clr-namespace:FModel.ViewModels"
         xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
+        xmlns:explorer="clr-namespace:FModel.Views.Resources.Controls.Explorer"
         xmlns:inputs="clr-namespace:FModel.Views.Resources.Controls.Inputs"
         xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
         xmlns:settings="clr-namespace:FModel.Settings"
@@ -558,7 +559,7 @@
                                                      DataContext="{Binding CUE4Parse.AssetsFolder.SelectedFolder.PathAtThisPoint}" />
 
                                 <Grid Grid.Row="2">
-                                    <ListBox x:Name="AssetsExplorer"
+                                    <explorer:AssetExplorerListBox x:Name="AssetsExplorer"
                                              ItemsSource="{Binding CUE4Parse.AssetsFolder.SelectedFolder.CombinedEntries}"
                                              Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
                                              PreviewKeyDown="OnPreviewKeyDown">
@@ -574,9 +575,9 @@
                                                 </Style.Triggers>
                                             </Style>
                                         </ListBox.Style>
-                                    </ListBox>
+                                    </explorer:AssetExplorerListBox>
                                     <!-- once we need sorting, convert this to a listview (see search window) and add the header back (customize the template to re-add GridViewHeaderRowPresenter) -->
-                                    <ListBox x:Name="AssetsListExplorer"
+                                    <explorer:AssetExplorerListBox x:Name="AssetsListExplorer"
                                              ItemsSource="{Binding CUE4Parse.AssetsFolder.SelectedFolder.CombinedEntries}"
                                              Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
                                              PreviewKeyDown="OnPreviewKeyDown">
@@ -594,7 +595,7 @@
                                                 </Style.Triggers>
                                             </Style>
                                         </ListBox.Style>
-                                    </ListBox>
+                                    </explorer:AssetExplorerListBox>
                                 </Grid>
                             </Grid>
                         </Border>
@@ -807,7 +808,7 @@
                            HorizontalAlignment="Right" VerticalAlignment="Stretch"
                            HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
                 <StackPanel Orientation="Horizontal">
-                    <StatusBarItem Margin="0 0 10 0" Padding="0">
+                    <StatusBarItem Margin="0 0 10 0" Padding="0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
                         <StatusBarItem.Style>
                             <Style TargetType="StatusBarItem">
                                 <Style.Triggers>

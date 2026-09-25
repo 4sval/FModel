@@ -12,6 +12,9 @@ public sealed class FolderTree : ListBox
 {
     public static readonly DependencyProperty FoldersProperty = DependencyProperty.Register(nameof(Folders), typeof(AssetsFolderViewModel), typeof(FolderTree));
 
+    public static readonly RoutedEvent ExpandArrowEvent = EventManager.RegisterRoutedEvent("ExpandArrow", RoutingStrategy.Direct, typeof(RoutedEventHandler), typeof(FolderTree));
+    public static readonly RoutedEvent CollapseArrowEvent = EventManager.RegisterRoutedEvent("CollapseArrow", RoutingStrategy.Direct, typeof(RoutedEventHandler), typeof(FolderTree));
+
     public AssetsFolderViewModel Folders
     {
         get => (AssetsFolderViewModel) GetValue(FoldersProperty);
@@ -58,12 +61,28 @@ public sealed class FolderTree : ListBox
         }
     }
 
+    private void ToggleFolder(TreeItem folder)
+    {
+        if (Folders == null)
+            return;
+
+        var wasExpanded = folder.IsExpanded;
+        Folders.Toggle(folder);
+        if (folder.IsExpanded == wasExpanded)
+            return;
+
+        if (ItemContainerGenerator.ContainerFromItem(folder) is ListBoxItem row)
+        {
+            row.FindVisualChild<ToggleButton>()?.RaiseEvent(new RoutedEventArgs(folder.IsExpanded ? ExpandArrowEvent : CollapseArrowEvent));
+        }
+    }
+
     protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
     {
         if (e.OriginalSource is DependencyObject source && source.FindAncestor<ToggleButton>() is { DataContext: TreeItem folder } && ContainerFromElement(this, source) is ListBoxItem)
         {
             e.Handled = true;
-            Folders?.Toggle(folder);
+            ToggleFolder(folder);
             return;
         }
 
@@ -77,7 +96,7 @@ public sealed class FolderTree : ListBox
             e.Handled = true;
             if (folder.Folders.Count > 0)
             {
-                Folders?.Toggle(folder);
+                ToggleFolder(folder);
             }
             else if (folder.AssetsList.Assets.Count > 0)
             {
@@ -113,7 +132,7 @@ public sealed class FolderTree : ListBox
             case Key.Left:
                 if (folder.IsExpanded)
                 {
-                    Folders?.Toggle(folder);
+                    ToggleFolder(folder);
                 }
                 else if (folder.Parent != null)
                 {
@@ -123,7 +142,7 @@ public sealed class FolderTree : ListBox
             case Key.Right:
                 if (!folder.IsExpanded)
                 {
-                    Folders?.Toggle(folder);
+                    ToggleFolder(folder);
                 }
                 else if (folder.Folders.Count > 0)
                 {
@@ -144,7 +163,7 @@ public sealed class FolderTree : ListBox
                 SelectFolder(folder);
                 if (!folder.IsExpanded)
                 {
-                    Folders?.Toggle(folder);
+                    ToggleFolder(folder);
                 }
                 break;
             default:
