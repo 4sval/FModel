@@ -27,7 +27,7 @@ public class Hotkey : ViewModel
 
     public bool IsTriggered(Key e)
     {
-        return Key != Key.None && e == Key && Keyboard.Modifiers.HasFlag(Modifiers);
+        return Key != Key.None && e == Key && Keyboard.Modifiers == Modifiers;
     }
 
     public override string ToString()
