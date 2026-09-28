@@ -20,12 +20,18 @@ public sealed class RangeObservableCollection<T> : ObservableCollection<T>
     {
         ArgumentNullException.ThrowIfNull(list);
 
-        _suppressNotification = true;
+        try
+        {
+            _suppressNotification = true;
 
-        foreach (var item in list)
-            Add(item);
+            foreach (var item in list)
+                Add(item);
+        }
+        finally
+        {
+            _suppressNotification = false;
+        }
 
-        _suppressNotification = false;
         OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
     }
 
