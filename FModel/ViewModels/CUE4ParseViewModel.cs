@@ -688,32 +688,6 @@ public class CUE4ParseViewModel : ViewModel
                 if (saveProperties || updateUi)
                 {
                     var displayData = result.GetDisplayData(saveProperties);
-
-                    if (UserSettings.Default.MergeEditorOnlyDataExports && Provider.TryLoadPackage(entry.Path.SubstringBefore('.') + ".o.uasset", out var editorAsset))
-                    {
-                        var pkg = Provider.LoadPackage(entry.Path);
-                        var exports = pkg.GetExports().ToArray();
-                        var finalExports = new List<UObject>(exports);
-                        var editorOnlyDataExports = new HashSet<UObject>();
-
-                        foreach (var export in exports)
-                        {
-                            var editorData = editorAsset.GetExportOrNull(export.Name + "EditorOnlyData");
-                            if (editorData == null)
-                                continue;
-
-                            export.Properties.AddRange(editorData.Properties);
-                            editorOnlyDataExports.Add(editorData);
-                        }
-
-                        if (editorOnlyDataExports.Count > 0)
-                        {
-                            finalExports.AddRange(editorAsset.GetExports().Where(editorExport => !editorOnlyDataExports.Contains(editorExport)));
-                        }
-
-                        displayData = finalExports;
-                    }
-
                     TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(displayData, Formatting.Indented), saveProperties, updateUi);
                     if (saveProperties) break; // do not search for viewable exports if we are dealing with jsons
                 }
@@ -1760,11 +1734,11 @@ public class CUE4ParseViewModel : ViewModel
         TabControl.SelectedTab.TitleExtra = "Decompiled";
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("cpp");
 
+        var pkg = Provider.LoadPackage(entry);
         UClassCookedMetaData cookedMetaData = null;
         try
         {
-            var editorPkg = Provider.LoadPackage(entry.Path.Replace(".uasset", ".o.uasset"));
-            cookedMetaData = editorPkg.GetExport<UClassCookedMetaData>("CookedClassMetaData");
+            cookedMetaData = pkg.GetExportOrNull<UClassCookedMetaData>("CookedClassMetaData");
         }
         catch
         {
@@ -1772,7 +1746,6 @@ public class CUE4ParseViewModel : ViewModel
         }
 
         var cppList = new List<string>();
-        var pkg = Provider.LoadPackage(entry);
         for (var i = 0; i < pkg.ExportMapLength; i++)
         {
             var pointer = new FPackageIndex(pkg, i + 1).ResolvedObject;
