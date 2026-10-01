@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -204,6 +206,8 @@ public partial class MainWindow
             _applicationView.SelectedLeftTabIndex--;
         else if (UserSettings.Default.DirRightTab.IsTriggered(e.Key) && _applicationView.SelectedLeftTabIndex < LeftTabControl.Items.Count - 1)
             _applicationView.SelectedLeftTabIndex++;
+        else if (UserSettings.Default.OpenLogsFolder.IsTriggered(e.Key))
+            OnOpenLogsFolderClick();
     }
 
     private void OnSearchViewClick(object sender, RoutedEventArgs e)
@@ -216,6 +220,11 @@ public partial class MainWindow
     {
         var searchView = Helper.GetWindow<SearchView>("Search For Packages", () => new SearchView().Show());
         searchView.FocusTab(ESearchViewTab.RefView);
+    }
+
+    private void OnOpenLogsFolderClick()
+    {
+        Process.Start(new ProcessStartInfo { FileName = Path.Combine(UserSettings.Default.OutputDirectory, "Logs"), UseShellExecute = true });
     }
 
     private void OnTabItemChange(object sender, SelectionChangedEventArgs e)

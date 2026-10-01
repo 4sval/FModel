@@ -396,6 +396,13 @@ public sealed class UserSettings : ViewModel
         set => SetProperty(ref _assetRemoveTab, value);
     }
 
+    private Hotkey _openLogsFolder = new(Key.L, ModifierKeys.Control);
+    public Hotkey OpenLogsFolder
+    {
+        get => _openLogsFolder;
+        set => SetProperty(ref _openLogsFolder, value);
+    }
+
     private Hotkey _addAudio = new(Key.N, ModifierKeys.Control);
     public Hotkey AddAudio
     {
