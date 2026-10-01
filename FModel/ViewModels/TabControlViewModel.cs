@@ -262,7 +262,6 @@ public class TabItem : ViewModel
             if (_selectedImage == value) return;
             SetProperty(ref _selectedImage, value);
             RaisePropertyChanged("HasImage");
-            RaisePropertyChanged("ShowExportName");
             RaisePropertyChanged("Page");
         }
     }
@@ -270,10 +269,6 @@ public class TabItem : ViewModel
     public string Header => $"{Entry.Name}{(string.IsNullOrEmpty(TitleExtra) ? "" : $" ({TitleExtra})")}";
 
     public bool HasImage => SelectedImage != null;
-    public bool ShowExportName => HasImage && !string.Equals(
-        Path.GetFileNameWithoutExtension(SelectedImage.ExportName),
-        Path.GetFileNameWithoutExtension(Entry.Name),
-        StringComparison.OrdinalIgnoreCase);
     public bool HasMultipleImages => _images.Count > 1;
     public string Page => $"{_images.IndexOf(_selectedImage) + 1} / {_images.Count}";
 
