@@ -12,7 +12,7 @@ public class FileToGeometryConverter : IMultiValueConverter
 
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
-        if (values.Length < 2 || values[0] is not EAssetCategory category || values[1] is not string resolvedAssetType)
+        if (values.Length < 3 || values[0] is not EAssetCategory category || values[1] is not string resolvedAssetType || values[2] is not EAssetFamily family)
             return null;
 
         resolvedAssetType = resolvedAssetType.ToLowerInvariant();
@@ -32,6 +32,7 @@ public class FileToGeometryConverter : IMultiValueConverter
 
             EAssetCategory.StaticMesh => ("StaticMeshIconAlt", "NeutralBrush"),
             EAssetCategory.SkeletalMesh => ("SkeletalMeshIconAlt", "NeutralBrush"),
+            EAssetCategory.ChaosClothAsset => ("ChaosClothIcon", "ChaosClothBrush"),
             EAssetCategory.CustomizableObject => ("StaticMeshIconAlt", "CustomizableObjectBrush"),
             EAssetCategory.NaniteDisplacedMesh => ("StaticMeshIconAlt", "NaniteDisplacedMeshBrush"),
             EAssetCategory.GeometryCollection => ("GeometryCollectionIcon", "NeutralBrush"),
@@ -99,10 +100,24 @@ public class FileToGeometryConverter : IMultiValueConverter
             EAssetCategory.Aion2 => ("AionIcon", "AionBrush"),
             EAssetCategory.RocoKingdomWorld => ("RocoKingdomWorldIcon", "RocoKingdomWorldBrush"),
             EAssetCategory.DeltaForce => ("DeltaForceIcon", "DeltaForceBrush"),
-            EAssetCategory.LegoBatman => ("BatmanIcon", "BatmanBrush"),
+            EAssetCategory.LegoBatman or EAssetCategory.GothamKnights => ("BatmanIcon", "BatmanBrush"),
             EAssetCategory.ArcSys => ("ArcSysIcon", "ArcSysBrush"),
 
             _ => ("AssetIcon", "NeutralBrush")
+        };
+
+        (geometry, brush) = (family, category) switch
+        {
+            (EAssetFamily.Criware, EAssetCategory.Data) => ("CriwareIcon", "CriwareBrush"),
+            (EAssetFamily.Criware, _) => ("CriwareIcon", brush),
+
+            (EAssetFamily.Wwise, EAssetCategory.Data) => ("WwiseIcon", "WwiseBrush"),
+            (EAssetFamily.Wwise, _) => ("WwiseIcon", brush),
+
+            (EAssetFamily.FMod, EAssetCategory.Data) => ("FModIcon", "FModBrush"),
+            (EAssetFamily.FMod, _) => ("FModIcon", brush),
+
+            _ => (geometry, brush),
         };
 
         if (targetType == typeof(Geometry))

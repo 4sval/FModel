@@ -4,16 +4,13 @@ using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Windows;
-using CUE4Parse_Conversion.Animations;
-using CUE4Parse_Conversion.Meshes;
-using CUE4Parse_Conversion.Options;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Component.SplineMesh;
 using CUE4Parse.UE4.Assets.Exports.Component.StaticMesh;
+using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
 using CUE4Parse.UE4.Assets.Exports.Material;
-using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
@@ -21,6 +18,10 @@ using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.Utils;
+using CUE4Parse_Conversion.Animations;
+using CUE4Parse_Conversion.Dto;
+using CUE4Parse_Conversion.Meshes;
+using CUE4Parse_Conversion.Options;
 using FModel.Creator;
 using FModel.Settings;
 using FModel.Views.Snooper.Animations;
@@ -29,6 +30,7 @@ using FModel.Views.Snooper.Lights;
 using FModel.Views.Snooper.Models;
 using FModel.Views.Snooper.Shading;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using Serilog;
 
 namespace FModel.Views.Snooper;
 
@@ -88,8 +90,11 @@ public class Renderer : IDisposable
             case UStaticMesh when export.Value is UStaticMesh st:
                 LoadStaticMesh(st, UserSettings.Default.NaniteMeshExportFormat);
                 break;
-            case USkeletalMesh when export.Value is USkeletalMesh sk:
-                LoadSkeletalMesh(sk);
+            case UGeometryCollection when export.Value is UGeometryCollection gc:
+                LoadStaticMesh(gc, UserSettings.Default.NaniteMeshExportFormat);
+                break;
+            case USkinnedAsset when export.Value is USkinnedAsset sa:
+                LoadSkinnedAsset(sa);
                 break;
             case USkeleton when export.Value is USkeleton skel:
                 LoadSkeleton(skel);
@@ -132,7 +137,7 @@ public class Renderer : IDisposable
                 {
                     // do nothing, selected model has the correct skeleton for this animation
                 }
-                else */if (animBase.Skeleton.TryLoad(out USkeleton skeleton))
+                else */if (animBase.Skeleton?.TryLoad(out USkeleton skeleton) == true)
                 {
                     LoadSkeleton(skeleton);
                 }
@@ -144,7 +149,7 @@ public class Renderer : IDisposable
     }
     private void Animate(UObject anim, FGuid guid)
     {
-        if (anim is not UAnimSequenceBase animBase || !animBase.Skeleton.TryLoad(out USkeleton skeleton) ||
+        if (anim is not UAnimSequenceBase animBase || animBase.Skeleton == null || !animBase.Skeleton.TryLoad(out USkeleton skeleton) ||
             !Options.TryGetModel(guid, out var m) || m is not SkeletalModel model)
             return;
 
@@ -192,12 +197,12 @@ public class Renderer : IDisposable
                     }
                     break;
                 }
-                case USkeletalMesh sk:
+                case USkinnedAsset sa:
                 {
                     guid = Guid.NewGuid();
-                    if (!Options.Models.ContainsKey(guid) && sk.TryConvert(out var mesh, EMeshQuality.Highest))
+                    if (!Options.Models.ContainsKey(guid) && sa.TryConvert(out var mesh, EMeshQuality.Highest))
                     {
-                        addedModel = new SkeletalModel(sk, mesh, t);
+                        addedModel = new SkeletalModel(sa, mesh, t);
                         Options.Models[guid] = addedModel;
                     }
                     break;
@@ -361,13 +366,53 @@ public class Renderer : IDisposable
         Options.SelectModel(guid);
     }
 
-    private void LoadSkeletalMesh(USkeletalMesh original)
+    private void LoadStaticMesh(UGeometryCollection original, ENaniteMeshFormat naniteFormat = ENaniteMeshFormat.NoNanite)
     {
         var guid = new FGuid((uint) original.GetFullName().GetHashCode());
-        if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh, EMeshQuality.Highest)) return;
+        if (Options.TryGetModel(guid, out var model))
+        {
+            model.AddInstance(Transform.Identity);
+            Application.Current.Dispatcher.Invoke(() => model.SetupInstances());
+            return;
+        }
 
-        var skeletalModel = new SkeletalModel(original, mesh);
-        Options.Models[guid] = skeletalModel;
+        StaticMeshDto mesh;
+        try
+        {
+            mesh = new StaticMeshDto(original, naniteFormat);
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "Failed to convert geometry collection");
+            return;
+        }
+
+        Options.Models[guid] = new StaticModel(original, mesh);
+        Options.SelectModel(guid);
+    }
+
+    private void LoadSkinnedAsset(USkinnedAsset original, ENaniteMeshFormat naniteFormat = ENaniteMeshFormat.NoNanite)
+    {
+        var guid = new FGuid((uint) original.GetFullName().GetHashCode());
+        if (Options.TryGetModel(guid, out var model))
+        {
+            model.AddInstance(Transform.Identity);
+            Application.Current.Dispatcher.Invoke(() => model.SetupInstances());
+            return;
+        }
+
+        SkeletalMeshDto mesh;
+        try
+        {
+            mesh = new SkeletalMeshDto(original, EMeshQuality.Highest, naniteFormat);
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "Failed to convert chaos cloth asset");
+            return;
+        }
+
+        Options.Models[guid] = new SkeletalModel(original, mesh);
         Options.SelectModel(guid);
     }
 
@@ -415,7 +460,7 @@ public class Renderer : IDisposable
             return;
         }
 
-        Options.Models[guid] = new StaticModel(original, texture);
+        Options.Models[guid] = new StaticModel(original);
         Options.SelectModel(guid);
     }
 
@@ -759,8 +804,8 @@ public class Renderer : IDisposable
 
     private void WorldTextureData(Material material, UObject textureData, string name, string key)
     {
-        if (textureData.TryGetValue(out FPackageIndex package, name) && package.Load() is UTexture2D texture)
-            material.Parameters.Textures[key] = texture;
+        if (textureData.TryGetValue(out FPackageIndex package, name))
+            material.Parameters.Textures[key] = package;
     }
 
     private void AdditionalWorlds(UObject actor, Matrix4x4 relation, CancellationToken cancellationToken)

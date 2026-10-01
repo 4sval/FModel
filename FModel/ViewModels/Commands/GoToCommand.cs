@@ -4,54 +4,56 @@ using FModel.Services;
 
 namespace FModel.ViewModels.Commands;
 
-public class GoToCommand : ViewModelCommand<CustomDirectoriesViewModel>
+public class GoToCommand(CustomDirectoriesViewModel contextViewModel) : ViewModelCommand<CustomDirectoriesViewModel>(contextViewModel)
 {
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
-
-    public GoToCommand(CustomDirectoriesViewModel contextViewModel) : base(contextViewModel)
-    {
-    }
 
     public override void Execute(CustomDirectoriesViewModel contextViewModel, object parameter)
     {
         if (parameter is not string s || string.IsNullOrEmpty(s)) return;
 
-        JumpTo(s);
+        var folder = JumpTo(s);
+        if (folder != null)
+        {
+            MainWindow.Instance.SelectFolder(folder);
+        }
     }
 
     public TreeItem JumpTo(string directory)
     {
-        _applicationView.SelectedLeftTabIndex = 1; // folders tab
-        var root = _applicationView.CUE4Parse.AssetsFolder.Folders;
-        if (root is not { Count: > 0 }) return null;
+        _applicationView.SelectedLeftTabIndex = 1;
 
-        var i = 0;
-        var done = false;
-        var folders = directory.Split('/');
-        while (!done)
+        var current = _applicationView.CUE4Parse.AssetsFolder.Folders;
+        if (current.Count == 0)
+            return null;
+
+        var folders = directory.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        TreeItem result = null;
+        for (var i = 0; i < folders.Length; i++)
         {
-            foreach (var folder in root)
+            result = null;
+
+            foreach (var folder in current)
             {
                 if (!folder.Header.Equals(folders[i], i == 0 ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
                     continue;
 
-                folder.IsExpanded = true; // folder found = expand
-
-                // is this the last folder aka the one we want to jump in
-                if (i >= folders.Length - 1)
-                {
-                    folder.IsSelected = true; // select it
-                    return folder;
-                }
-
-                root = folder.Folders; // grab his subfolders
+                result = folder;
                 break;
             }
 
-            i++;
-            done = i == folders.Length || root.Count == 0;
+            if (result == null)
+                return null;
+
+            current = result.Folders;
         }
 
-        return null;
+        if (result != null)
+        {
+            _applicationView.CUE4Parse.AssetsFolder.Reveal(result);
+        }
+
+        return result;
     }
 }

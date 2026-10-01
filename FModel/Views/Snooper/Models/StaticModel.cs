@@ -1,6 +1,7 @@
 using System;
 using System.Numerics;
 using CUE4Parse_Conversion.Dto;
+using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
@@ -55,7 +56,7 @@ public class StaticModel : UModel<MeshVertex>
         Box = staticMesh.Bounds * 1.5f * Constants.SCALE_DOWN_RATIO;
     }
 
-    public StaticModel(UPaperSprite paperSprite, UTexture2D texture) : base(paperSprite)
+    public StaticModel(UPaperSprite paperSprite) : base(paperSprite)
     {
         Indices = new uint[paperSprite.BakedRenderData.Length];
         for (int i = 0; i < Indices.Length; i++)
@@ -96,7 +97,7 @@ public class StaticModel : UModel<MeshVertex>
         {
             Materials[0] = new Material();
         }
-        Materials[0].Parameters.Textures[CMaterialParams2.FallbackDiffuse] = texture;
+        Materials[0].Parameters.Textures[CMaterialParams2.FallbackDiffuse] = paperSprite.BakedSourceTexture;
         Materials[0].IsUsed = true;
 
         Sections = new Section[1];
@@ -141,6 +142,12 @@ public class StaticModel : UModel<MeshVertex>
             if (s.Load<UStaticMeshSocket>() is not { } socket) continue;
             Sockets.Add(new Socket(socket));
         }
+    }
+
+    public StaticModel(UGeometryCollection export, StaticMeshDto staticMesh, Transform transform = null)
+        : base(export, staticMesh.LODs[LodLevel], export.Materials, staticMesh.LODs[LodLevel].Vertices, staticMesh.LODs.Count, transform)
+    {
+        Box = staticMesh.Bounds * Constants.SCALE_DOWN_RATIO;
     }
 
     public override void RenderCollision(Shader shader)

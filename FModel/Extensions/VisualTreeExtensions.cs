@@ -11,8 +11,26 @@ public static class VisualTreeExtensions
         {
             if (current is T t)
                 return t;
-            current = VisualTreeHelper.GetParent(current);
+            current = current is FrameworkContentElement contentElement
+                ? contentElement.Parent
+                : VisualTreeHelper.GetParent(current);
         }
         return null;
     }
+
+    public static T? FindVisualChild<T>(this DependencyObject parent) where T : DependencyObject
+    {
+        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+        {
+            var child = VisualTreeHelper.GetChild(parent, i);
+            if (child is T result)
+                return result;
+
+            if (FindVisualChild<T>(child) is { } descendant)
+                return descendant;
+        }
+
+        return null;
+    }
+
 }

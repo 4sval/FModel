@@ -9,6 +9,16 @@
                     xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                     xmlns:adonisConverters="clr-namespace:AdonisUI.Converters;assembly=AdonisUI"
                     x:Class="FModel.Views.Resources.Controls.TiledExplorer.ResourcesDictionary">
+    <LinearGradientBrush x:Key="TiledFolderTabBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#FFE8C480" Offset="0" />
+        <GradientStop Color="#FFD9AA63" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="TiledFolderBodyBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#FFF3D9A4" Offset="0" />
+        <GradientStop Color="#FFE5BD77" Offset="1" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="TiledFolderOutlineBrush" Color="#D8A360" />
+
     <controls:TypeDataTemplateSelector x:Key="TiledExplorerTemplateSelector"
                                        FolderTemplateKey="TiledFolderDataTemplate"
                                        FileTemplateKey="TiledFileDataTemplate" />
@@ -69,14 +79,7 @@
             </Setter.Value>
         </Setter>
 
-        <Setter Property="ItemTemplate">
-            <Setter.Value>
-                <DataTemplate>
-                    <ContentControl Content="{Binding}"
-                                    ContentTemplateSelector="{StaticResource TiledExplorerTemplateSelector}" />
-                </DataTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="ItemTemplateSelector" Value="{StaticResource TiledExplorerTemplateSelector}" />
 
         <Setter Property="Template">
             <Setter.Value>
@@ -201,7 +204,7 @@
     </DataTemplate>
 
     <DataTemplate x:Key="TiledFolderDataTemplate" DataType="{x:Type vm:TreeItem}">
-        <tiledExplorer:FolderButton ContextMenu="{StaticResource FolderContextMenu}" />
+        <tiledExplorer:FolderButton />
     </DataTemplate>
 
     <DataTemplate x:Key="ListFileDataTemplate"
@@ -211,7 +214,7 @@
 
     <DataTemplate x:Key="ListFolderDataTemplate"
                   DataType="{x:Type vm:TreeItem}">
-        <listExplorer:FolderRow ContextMenu="{StaticResource FolderContextMenu}" />
+        <listExplorer:FolderRow />
     </DataTemplate>
 
     <DataTemplate x:Key="TextureNumTemplate">
@@ -243,7 +246,7 @@
            TargetType="ListBox"
            BasedOn="{StaticResource {x:Type ListBox}}">
         <Setter Property="ItemsSource"
-                Value="{Binding SelectedItem.AssetsList.AssetsView, ElementName=AssetsFolderName, IsAsync=True}" />
+                Value="{Binding CUE4Parse.AssetsFolder.SelectedFolder.AssetsList.AssetsView}" />
         <Setter Property="SelectionMode"
                 Value="Extended" />
         <Setter Property="ContextMenu"

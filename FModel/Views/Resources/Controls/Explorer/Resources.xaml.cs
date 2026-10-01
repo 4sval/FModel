@@ -29,24 +29,12 @@ public partial class ResourcesDictionary
             case TreeItem folder:
                 ApplicationService.ApplicationView.SelectedLeftTabIndex = 1;
 
-                // Expand all parent folders if not expanded
-                var parent = folder.Parent;
-                while (parent != null)
-                {
-                    parent.IsExpanded = true;
-                    parent = parent.Parent;
-                }
-
-                // Auto expand single child folders
                 var childFolder = folder;
                 while (childFolder.Folders.Count == 1 && childFolder.AssetsList.Assets.Count == 0)
-                {
-                    childFolder.IsExpanded = true;
                     childFolder = childFolder.Folders[0];
-                }
 
-                childFolder.IsExpanded = true;
-                childFolder.IsSelected = true;
+                MainWindow.Instance.SelectFolder(childFolder);
+                ApplicationService.ApplicationView.CUE4Parse.AssetsFolder.Expand(childFolder);
                 break;
         }
     }
@@ -56,7 +44,7 @@ public partial class ResourcesDictionary
     {
         if (sender is not ListBoxItem item)
             return;
-        if (item.DataContext is not GameFileViewModel)
+        if (item.DataContext is not (GameFileViewModel or TreeItem))
             return;
         var listBox = ItemsControl.ItemsControlFromItemContainer(item) as ListBox;
         if (listBox == null)
@@ -69,9 +57,20 @@ public partial class ResourcesDictionary
         }
         item.Focus();
 
-        var contextMenu = listBox.FindResource("FileContextMenu") as ContextMenu;
+        var isFolder = item.DataContext is TreeItem;
+        var contextMenu = listBox.FindResource(isFolder ? "FolderContextMenu" : "FileContextMenu") as ContextMenu;
         if (contextMenu is not null)
         {
+            if (isFolder)
+            {
+                // Create FolderContextMenu only on right-click
+                listBox.ContextMenu = null;
+                contextMenu.PlacementTarget = item;
+                contextMenu.IsOpen = true;
+                e.Handled = true;
+                return;
+            }
+
             listBox.ContextMenu = null;
             item.Dispatcher.BeginInvoke(new Action(() =>
             {

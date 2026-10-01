@@ -156,6 +156,8 @@ public class Skeleton : IDisposable
         for (int s = 0; s < animation.Sequences.Count; s++)
         {
             var sequence = animation.Sequences[s];
+            if (sequence.Tracks is not { Count: > 0 })
+                continue;
             foreach (var bone in BonesByLoweredName.Values.Where(bone => sequence.OriginalSequence.FindTrackForBoneIndex(bone.SkeletonIndex) >= 0))
             {
                 bone.AnimatedBySequences.Add(s);
