@@ -485,11 +485,11 @@
                                     <TextBlock Grid.Row="0" Grid.Column="1" Text="Packages Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                     <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding CUE4Parse.AssetsFolder.SelectedFolder.Folders.Count, FallbackValue=0, StringFormat={}{0:N0}}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                     <TextBlock Grid.Row="1" Grid.Column="1" Text="Folders Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding SelectedItem.Archive, FallbackValue='None'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding CUE4Parse.AssetsFolder.SelectedFolder.Archive, FallbackValue='None'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                     <TextBlock Grid.Row="2" Grid.Column="1" Text="Included In Archive" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.MountPoint, FallbackValue='/', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding CUE4Parse.AssetsFolder.SelectedFolder.MountPoint, FallbackValue='/', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                     <TextBlock Grid.Row="3" Grid.Column="1" Text="Archive Mount Point" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                    <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding SelectedItem.Version, FallbackValue='VER_UE4_LATEST', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding CUE4Parse.AssetsFolder.SelectedFolder.Version, FallbackValue='VER_UE4_LATEST', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                     <TextBlock Grid.Row="4" Grid.Column="1" Text="Archive Version" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                 </Grid>
                             </StackPanel>
