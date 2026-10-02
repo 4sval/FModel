@@ -43,24 +43,28 @@
                                 <TextBox.Style>
                                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                         <Setter Property="Text" Value="{Binding SearchTab.FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                        <Setter Property="ToolTip" Value="{Binding SearchTab.FilterError}" />
                                         <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Search package paths..." />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding SearchTab.HasRegexEnabled}" Value="True">
                                                 <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Search package paths with a regex..." />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding SearchTab.FilterError, Converter={x:Static converters:IsNullToBoolReversedConverter.Instance}}" Value="True">
+                                                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </TextBox.Style>
                             </TextBox>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                <ToggleButton ToolTip="Match Case" Padding="5" IsChecked="{Binding SearchTab.HasMatchCaseEnabled}" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
+                                <ToggleButton ToolTip="Match Case" Padding="5" IsChecked="{Binding SearchTab.HasMatchCaseEnabled}" Click="OnSearchOptionsChanged" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
                                     <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                         <Canvas Width="24" Height="24">
                                             <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource MatchCaseIcon}" />
                                         </Canvas>
                                     </Viewbox>
                                 </ToggleButton>
-                                <ToggleButton ToolTip="Regex" Padding="5" IsChecked="{Binding SearchTab.HasRegexEnabled}" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
+                                <ToggleButton ToolTip="Regex" Padding="5" IsChecked="{Binding SearchTab.HasRegexEnabled}" Click="OnSearchOptionsChanged" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
                                     <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                         <Canvas Width="24" Height="24">
                                             <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource RegexIcon}" />
@@ -454,24 +458,28 @@
                                 <TextBox.Style>
                                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                         <Setter Property="Text" Value="{Binding RefTab.FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                        <Setter Property="ToolTip" Value="{Binding RefTab.FilterError}" />
                                         <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Search package paths..." />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding RefTab.HasRegexEnabled}" Value="True">
                                                 <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Search package paths with a regex..." />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding RefTab.FilterError, Converter={x:Static converters:IsNullToBoolReversedConverter.Instance}}" Value="True">
+                                                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </TextBox.Style>
                             </TextBox>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                <ToggleButton ToolTip="Match Case" Padding="5" IsChecked="{Binding RefTab.HasMatchCaseEnabled}" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
+                                <ToggleButton ToolTip="Match Case" Padding="5" IsChecked="{Binding RefTab.HasMatchCaseEnabled}" Click="OnSearchOptionsChanged" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
                                     <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                         <Canvas Width="24" Height="24">
                                             <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource MatchCaseIcon}" />
                                         </Canvas>
                                     </Viewbox>
                                 </ToggleButton>
-                                <ToggleButton ToolTip="Regex" Padding="5" IsChecked="{Binding RefTab.HasRegexEnabled}" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
+                                <ToggleButton ToolTip="Regex" Padding="5" IsChecked="{Binding RefTab.HasRegexEnabled}" Click="OnSearchOptionsChanged" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
                                     <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                         <Canvas Width="24" Height="24">
                                             <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource RegexIcon}" />

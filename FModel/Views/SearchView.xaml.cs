@@ -80,7 +80,7 @@ public partial class SearchView
         await _threadWorkerView.Begin(_ => _applicationView.CUE4Parse.FindReferences(entry));
     }
 
-    private void OnTabItemChange(object sender, SelectionChangedEventArgs e)
+    private async void OnTabItemChange(object sender, SelectionChangedEventArgs e)
     {
         if (e.OriginalSource is not TabControl tabControl)
             return;
@@ -93,16 +93,22 @@ public partial class SearchView
         };
         CurrentTextBox?.Focus();
         CurrentTextBox?.SelectAll();
+
+        if (_pendingAutoSearch is { } pending && pending != CurrentViewModel)
+        {
+            CancelAutoSearch();
+            await pending.RefreshFilter();
+        }
     }
 
-    private void OnDeleteSearchClick(object sender, RoutedEventArgs e)
+    private async void OnDeleteSearchClick(object sender, RoutedEventArgs e)
     {
         var viewModel = CurrentViewModel;
         if (viewModel == null)
             return;
         viewModel.FilterText = string.Empty;
         CancelAutoSearch();
-        viewModel.RefreshFilter();
+        await viewModel.RefreshFilter();
     }
 
     private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
@@ -112,11 +118,19 @@ public partial class SearchView
         _autoSearchTimer.Start();
     }
 
-    private void OnAutoSearchTimerTick(object sender, EventArgs e)
+    private async void OnAutoSearchTimerTick(object sender, EventArgs e)
     {
         var viewModel = _pendingAutoSearch;
         CancelAutoSearch();
-        viewModel?.RefreshFilter();
+        if (viewModel != null)
+            await viewModel.RefreshFilter();
+    }
+
+    private async void OnSearchOptionsChanged(object sender, RoutedEventArgs e)
+    {
+        CancelAutoSearch();
+        if (CurrentViewModel is { } viewModel)
+            await viewModel.RefreshFilter();
     }
 
     private void CancelAutoSearch()
@@ -148,7 +162,9 @@ public partial class SearchView
 
     private async void OnSearchSortClick(object sender, RoutedEventArgs e)
     {
-        await CurrentViewModel?.CycleSortSizeMode();
+        CancelAutoSearch();
+        if (CurrentViewModel is { } viewModel)
+            await viewModel.CycleSortSizeMode();
     }
 
     private void OnAssetDoubleClick(object sender, RoutedEventArgs e)
@@ -199,19 +215,25 @@ public partial class SearchView
         MainWindow.Instance.Activate();
     }
 
-    private void OnWindowKeyDown(object sender, KeyEventArgs e)
+    private async void OnWindowKeyDown(object sender, KeyEventArgs e)
     {
         if (e.Key != Key.Enter)
             return;
 
         CancelAutoSearch();
-        CurrentViewModel?.RefreshFilter();
+        if (CurrentViewModel is { } viewModel)
+            await viewModel.RefreshFilter();
     }
 
-    private void OnWindowClosed(object sender, EventArgs e)
+    private async void OnWindowClosed(object sender, EventArgs e)
     {
+        var pending = _pendingAutoSearch;
         CancelAutoSearch();
         _autoSearchTimer.Tick -= OnAutoSearchTimerTick;
+
+        // Search models are shared by later windows, so finish any pending filter.
+        if (pending != null)
+            await pending.RefreshFilter();
     }
 
     private void OnStateChanged(object sender, EventArgs e)
