@@ -167,6 +167,16 @@ public class GameSelectorViewModel : ViewModel
             else
             {
                 // Log.Warning("No Paks folder found under \"{GameDirectory}\".", gameDirectory);
+                if (Directory.GetFiles(targetGameDir, "*.upk", SearchOption.AllDirectories).Length > 0 ||
+                    Directory.GetFiles(targetGameDir, "*.u", SearchOption.AllDirectories).Length > 0 ||
+                    Directory.GetFiles(targetGameDir, "*.udk", SearchOption.AllDirectories).Length > 0)
+                {
+                    ueVersion = EGame.GAME_UE3_0;
+                    newGameDirectory = targetGameDir;
+                    Log.Information("Detected UE3 from \"{GameDirectory}\"", targetGameDir);
+                    return true;
+                }
+
                 ueVersion = EGame.GAME_UE4_LATEST;
                 newGameDirectory = targetGameDir;
                 return false;
