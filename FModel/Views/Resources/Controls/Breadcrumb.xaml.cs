@@ -96,6 +96,6 @@ public partial class Breadcrumb
         var directory = string.Join('/', pathAtThisPoint.Split('/').Take(index));
         if (pathAtThisPoint.Equals(directory)) return;
 
-        ApplicationService.ApplicationView.CustomDirectories.GoToCommand.JumpTo(directory);
+        ApplicationService.ApplicationView.CustomDirectories.GoToCommand.Execute(directory);
     }
 }

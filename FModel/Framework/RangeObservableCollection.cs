@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 
 namespace FModel.Framework;
 
@@ -17,8 +18,7 @@ public sealed class RangeObservableCollection<T> : ObservableCollection<T>
 
     public void AddRange(IEnumerable<T> list)
     {
-        if (list == null)
-            throw new ArgumentNullException(nameof(list));
+        ArgumentNullException.ThrowIfNull(list);
 
         _suppressNotification = true;
 
@@ -26,6 +26,24 @@ public sealed class RangeObservableCollection<T> : ObservableCollection<T>
             Add(item);
 
         _suppressNotification = false;
+        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+    }
+
+    public void ReplaceRange(IEnumerable<T> collection)
+    {
+        ArgumentNullException.ThrowIfNull(collection);
+
+        var items = collection as IList<T> ?? [.. collection];
+
+        CheckReentrancy();
+
+        Items.Clear();
+
+        foreach (var item in items)
+            Items.Add(item);
+
+        OnPropertyChanged(new PropertyChangedEventArgs(nameof(Count)));
+        OnPropertyChanged(new PropertyChangedEventArgs("Item[]"));
         OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
     }
 
