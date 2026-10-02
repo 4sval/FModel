@@ -30,6 +30,7 @@ using CUE4Parse.GameTypes.DFHO.Assets.Objects;
 using CUE4Parse.GameTypes.HonorOfKings.FileProvider;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
 using CUE4Parse.GameTypes.LegoBatman.Assets;
+using CUE4Parse.GameTypes.Nascar.Assets.Exports;
 using CUE4Parse.GameTypes.LordOfMysteries.FileProvider;
 using CUE4Parse.GameTypes.Tencent.RocoKingdomWorld.Assets.Objects;
 using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
@@ -47,6 +48,7 @@ using CUE4Parse.UE4.Assets.Exports.Criware;
 using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.Fmod;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
+using CUE4Parse.UE4.Assets.Exports.Houdini;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Sound;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
@@ -721,11 +723,14 @@ public class CUE4ParseViewModel : ViewModel
                     break;
                 }
 
+                var showSnooper = false;
                 for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
                 {
-                    if (CheckExport(cancellationToken, result.Package, i, bulk))
+                    if (CheckExport(cancellationToken, result.Package, i, ref showSnooper, bulk))
                         break;
                 }
+
+                if (showSnooper) SnooperViewer.Run();
 
                 break;
             }
@@ -1248,14 +1253,15 @@ public class CUE4ParseViewModel : ViewModel
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(""); // json
         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(), Formatting.Indented), false, false);
 
+        var showSnooper = false;
         for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
         {
-            if (CheckExport(cancellationToken, result.Package, i))
+            if (CheckExport(cancellationToken, result.Package, i, ref showSnooper))
                 break;
         }
     }
 
-    private bool CheckExport(CancellationToken cancellationToken, IPackage pkg, int index, EBulkType bulk = EBulkType.None) // return true once you want to stop searching for exports
+    private bool CheckExport(CancellationToken cancellationToken, IPackage pkg, int index, ref bool showSnooper, EBulkType bulk = EBulkType.None) // return true once you want to stop searching for exports
     {
         var isNone = bulk == EBulkType.None;
         var updateUi = !HasFlag(bulk, EBulkType.Auto);
@@ -1594,6 +1600,8 @@ public class CUE4ParseViewModel : ViewModel
             // }:
             case UPaperSprite when isNone && UserSettings.Default.PreviewMaterials:
             case UStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
+            case UIRMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
+            case UHoudiniStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
             case UGeometryCollection when isNone && UserSettings.Default.PreviewStaticMeshes:
             case USkinnedAsset when isNone && UserSettings.Default.PreviewSkeletalMeshes:
             case USkeleton when isNone && UserSettings.Default.SaveSkeletonAsMesh:
@@ -1604,23 +1612,32 @@ public class CUE4ParseViewModel : ViewModel
                                            pkg.Name.Contains("/MI_BPTile/", StringComparison.OrdinalIgnoreCase))):
             {
                 if (SnooperViewer.TryLoadExport(cancellationToken, dummy, pointer.Object))
-                    SnooperViewer.Run();
+                    showSnooper = true;
                 return true;
+            }
+            case UIRMeshComponent when isNone && UserSettings.Default.PreviewStaticMeshes:
+            {
+                if (SnooperViewer.TryLoadExport(cancellationToken, dummy, pointer.Object))
+                    showSnooper = true;
+                return false;
             }
             case UMaterialInstance when isNone && ModelIsOverwritingMaterial && pointer.Object.Value is UMaterialInstance m:
             {
                 SnooperViewer.Renderer.Swap(m);
-                SnooperViewer.Run();
+                showSnooper = true;
                 return true;
             }
             case UAnimSequenceBase when isNone && UserSettings.Default.PreviewAnimations || ModelIsWaitingAnimation:
             {
                 // animate all animations using their specified skeleton or when we explicitly asked for a loaded model to be animated (ignoring whether we wanted to preview animations)
                 SnooperViewer.Renderer.Animate(pointer.Object.Value);
-                SnooperViewer.Run();
+                showSnooper = true;
                 return true;
             }
             case UStaticMesh when HasFlag(bulk, EBulkType.Meshes):
+            case UIRMesh when HasFlag(bulk, EBulkType.Meshes):
+            case UHoudiniAsset when HasFlag(bulk, EBulkType.Meshes):
+            case UHoudiniStaticMesh when HasFlag(bulk, EBulkType.Meshes):
             case UGeometryCollection when HasFlag(bulk, EBulkType.Meshes):
             case USkinnedAsset when HasFlag(bulk, EBulkType.Meshes):
             case USkeleton when UserSettings.Default.SaveSkeletonAsMesh && HasFlag(bulk, EBulkType.Meshes):

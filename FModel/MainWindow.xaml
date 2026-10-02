@@ -382,6 +382,7 @@
                             <Separator Grid.Row="1" Style="{StaticResource CustomSeparator}" Margin="0" />
                             <controls:FolderTree Grid.Row="2" x:Name="AssetsFolderName"
                                                  Style="{StaticResource AssetsFolderListBox}"
+                                                 IsTextSearchEnabled="False"
                                                  Folders="{Binding CUE4Parse.AssetsFolder}"
                                                  ItemsSource="{Binding CUE4Parse.AssetsFolder.VisibleFolders}"
                                                  SelectedItem="{Binding CUE4Parse.AssetsFolder.SelectedFolder, Mode=TwoWay}"

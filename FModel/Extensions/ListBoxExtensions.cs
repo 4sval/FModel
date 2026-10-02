@@ -4,7 +4,7 @@ namespace FModel.Extensions;
 
 public static class ListBoxExtensions
 {
-    public static ListBoxItem RevealItem(this ListBox list, object item, bool alignToTop = false)
+    public static ListBoxItem RevealItem(this ListBox list, object item)
     {
         var index = list.Items.IndexOf(item);
         if (index < 0)
@@ -12,12 +12,6 @@ public static class ListBoxExtensions
 
         list.ApplyTemplate();
         list.UpdateLayout();
-        if (alignToTop && list.FindVisualChild<ScrollViewer>() is { } scroll)
-        {
-            scroll.ScrollToVerticalOffset(index);
-            list.UpdateLayout();
-        }
-
         if (list.FindVisualChild<VirtualizingPanel>() is { } panel)
         {
             panel.BringIndexIntoViewPublic(index);
