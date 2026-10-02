@@ -32,6 +32,7 @@ using CUE4Parse.UE4.Assets.Exports.Fmod;
 using CUE4Parse.UE4.Assets.Exports.FMod;
 using CUE4Parse.UE4.Assets.Exports.Foliage;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
+using CUE4Parse.UE4.Assets.Exports.Houdini;
 using CUE4Parse.UE4.Assets.Exports.Internationalization;
 using CUE4Parse.UE4.Assets.Exports.LevelSequence;
 using CUE4Parse.UE4.Assets.Exports.Material;
@@ -220,6 +221,8 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 UFMODEvent or UFMODBank or UFMODBankLookup or UFMODBus
                     or UFMODSnapshot or UFMODSnapshotReverb or UFMODVCA => EAssetFamily.FMod,
 
+                UHoudiniAsset or UHoudiniStaticMesh => EAssetFamily.Houdini,
+
                 _ => EAssetFamily.None,
             };
 
@@ -235,11 +238,14 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 UClassCookedMetaData or UStructCookedMetaData or UEnumCookedMetaData => (EAssetCategory.CookedMetaData, EBulkType.None),
 
                 UStaticMesh => (EAssetCategory.StaticMesh, EBulkType.Meshes),
+                UHoudiniStaticMesh => (EAssetCategory.StaticMesh, EBulkType.Meshes),
                 USkeletalMesh => (EAssetCategory.SkeletalMesh, EBulkType.Meshes),
                 UChaosClothAsset => (EAssetCategory.ChaosClothAsset, EBulkType.Meshes),
                 UCustomizableObject => (EAssetCategory.CustomizableObject, EBulkType.None),
                 UNaniteDisplacedMesh => (EAssetCategory.NaniteDisplacedMesh, EBulkType.None),
                 UGeometryCollection => (EAssetCategory.GeometryCollection, EBulkType.Meshes),
+
+                UHoudiniAsset => (EAssetCategory.Data, EBulkType.Meshes),
 
                 UTexture => (EAssetCategory.Texture, EBulkType.Textures),
 
@@ -369,6 +375,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             "acb" or "acf" or "adx" or "awb" or "hca" or "usm" => EAssetFamily.Criware,
             "bnk" or "pck" or "wem" => EAssetFamily.Wwise,
             "bank" or "fsb" => EAssetFamily.FMod,
+            "hda" or "hip" => EAssetFamily.Houdini,
             _ => EAssetFamily.None,
         };
 

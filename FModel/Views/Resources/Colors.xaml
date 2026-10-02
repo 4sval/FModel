@@ -58,6 +58,7 @@
     <SolidColorBrush x:Key="CriwareBrush" Color="#005bab" />
     <SolidColorBrush x:Key="WwiseBrush" Color="#0152a1" />
     <SolidColorBrush x:Key="FModBrush" Color="#00758f" />
+    <SolidColorBrush x:Key="HoudiniBrush" Color="#ff6600" />
 
     <!-- For specific games -->
     <SolidColorBrush x:Key="BorderlandsBrush" Color="Yellow" />

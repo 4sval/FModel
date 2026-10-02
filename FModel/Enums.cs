@@ -178,6 +178,7 @@ public enum EAssetFamily
     Criware,
     Wwise,
     FMod,
+    Houdini,
 }
 
 public enum EUnluacMode

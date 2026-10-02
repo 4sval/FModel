@@ -4,12 +4,14 @@ using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Windows;
+using CUE4Parse.GameTypes.Nascar.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Component.SplineMesh;
 using CUE4Parse.UE4.Assets.Exports.Component.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
+using CUE4Parse.UE4.Assets.Exports.Houdini;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
@@ -97,6 +99,9 @@ public class Renderer : IDisposable
                 break;
             case UIRMeshComponent when export.Value is UIRMeshComponent meshcomp:
                 LoadIRMeshComponent(meshcomp);
+                break;
+            case UHoudiniStaticMesh when export.Value is UHoudiniStaticMesh hst:
+                LoadHoudiniStaticMesh(hst);
                 break;
             case UGeometryCollection when export.Value is UGeometryCollection gc:
                 LoadStaticMesh(gc, UserSettings.Default.NaniteMeshExportFormat);
@@ -406,6 +411,31 @@ public class Renderer : IDisposable
         {
             LoadIRMeshCollection(mesh, original.OverrideMaterials);
         }
+    }
+
+    private void LoadHoudiniStaticMesh(UHoudiniStaticMesh original)
+    {
+        var guid = new FGuid((uint) original.GetFullName().GetHashCode());
+        if (Options.TryGetModel(guid, out var model))
+        {
+            model.AddInstance(Transform.Identity);
+            Application.Current.Dispatcher.Invoke(model.SetupInstances);
+            return;
+        }
+
+        StaticMeshDto mesh;
+        try
+        {
+            mesh = new StaticMeshDto(original);
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "Failed to convert houdini static mesh");
+            return;
+        }
+
+        Options.Models[guid] = new StaticModel(original, mesh);
+        Options.SelectModel(guid);
     }
 
     private void LoadStaticMesh(UGeometryCollection original, ENaniteMeshFormat naniteFormat = ENaniteMeshFormat.NoNanite)

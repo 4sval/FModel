@@ -48,6 +48,7 @@ using CUE4Parse.UE4.Assets.Exports.Criware;
 using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.Fmod;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
+using CUE4Parse.UE4.Assets.Exports.Houdini;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Sound;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
@@ -1600,6 +1601,7 @@ public class CUE4ParseViewModel : ViewModel
             case UPaperSprite when isNone && UserSettings.Default.PreviewMaterials:
             case UStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
             case UIRMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
+            case UHoudiniStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
             case UGeometryCollection when isNone && UserSettings.Default.PreviewStaticMeshes:
             case USkinnedAsset when isNone && UserSettings.Default.PreviewSkeletalMeshes:
             case USkeleton when isNone && UserSettings.Default.SaveSkeletonAsMesh:
@@ -1634,6 +1636,8 @@ public class CUE4ParseViewModel : ViewModel
             }
             case UStaticMesh when HasFlag(bulk, EBulkType.Meshes):
             case UIRMesh when HasFlag(bulk, EBulkType.Meshes):
+            case UHoudiniAsset when HasFlag(bulk, EBulkType.Meshes):
+            case UHoudiniStaticMesh when HasFlag(bulk, EBulkType.Meshes):
             case UGeometryCollection when HasFlag(bulk, EBulkType.Meshes):
             case USkinnedAsset when HasFlag(bulk, EBulkType.Meshes):
             case USkeleton when UserSettings.Default.SaveSkeletonAsMesh && HasFlag(bulk, EBulkType.Meshes):

@@ -118,6 +118,8 @@ public class FileToGeometryConverter : IMultiValueConverter
             (EAssetFamily.FMod, EAssetCategory.Data) => ("FModIcon", "FModBrush"),
             (EAssetFamily.FMod, _) => ("FModIcon", brush),
 
+            (EAssetFamily.Houdini, _) => ("HoudiniIcon", "HoudiniBrush"),
+
             _ => (geometry, brush),
         };
 
