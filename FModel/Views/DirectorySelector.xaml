@@ -36,6 +36,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -46,20 +47,62 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Detected Game" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <controls:FilterableComboBox Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3"
-                                                 ItemsSource="{Binding DetectedDirectories}" Margin="0 0 0 5"
-                                                 Style="{StaticResource UComboBox}"
-                                                 adonisExtensions:WatermarkExtension.Watermark="Search for a game..."
-                                                 VerticalAlignment="Center" SelectedItem="{Binding SelectedDirectory, Mode=TwoWay}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding GameName, Converter={x:Static converters:StringToGameConverter.Instance}}" />
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </controls:FilterableComboBox>
+                    <Grid Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="5" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="UE Versions" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <controls:FilterableComboBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
+                        <controls:FilterableComboBox Grid.Column="0" ItemsSource="{Binding DetectedDirectories}"
+                                                     Style="{StaticResource UComboBox}"
+                                                     adonisExtensions:WatermarkExtension.Watermark="Search for a game..."
+                                                     VerticalAlignment="Center" SelectedItem="{Binding SelectedDirectory, Mode=TwoWay}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding GameName, Converter={x:Static converters:StringToGameConverter.Instance}}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </controls:FilterableComboBox>
+                        <Button x:Name="DetectGamesButton" Grid.Column="2" MinWidth="60" Content="Scan" Click="OnDetectGames"
+                                ToolTip="Detect installed games by scanning Steam and Epic libraries for Unreal Engine archives"
+                                IsEnabled="{Binding IsDetectingGames, Converter={x:Static converters:InvertBooleanConverter.Instance}}"
+                                Visibility="{Binding IsDetectingGames, Converter={x:Static converters:InvertBoolToVisibilityConverter.Instance}}" />
+                        <Button x:Name="StopGameDetectionButton" Grid.Column="2" MinWidth="60" Content="Stop" Click="OnStopGameDetection"
+                                ToolTip="Stop detecting installed games"
+                                Visibility="{Binding IsDetectingGames, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    </Grid>
+
+                    <Grid x:Name="GameDetectionControls" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5">
+                        <Grid.Style>
+                            <Style TargetType="Grid">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding DetectionStatus}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <ProgressBar x:Name="GameDetectionProgress" Grid.Row="0" Grid.Column="0" Height="5" VerticalAlignment="Center"
+                                     Maximum="1" Value="{Binding DetectionProgress, Mode=OneWay}"
+                                     Visibility="{Binding IsDetectingGames, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        <TextBlock Grid.Row="0" Grid.Column="1" Margin="5 0 0 0" Text="{Binding DetectionProgress, StringFormat={}{0:P0}}"
+                                   Visibility="{Binding IsDetectingGames, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        <TextBlock x:Name="GameDetectionStatus" Grid.Row="1" Grid.ColumnSpan="2"
+                                   Text="{Binding DetectionStatus}" TextWrapping="Wrap" />
+                    </Grid>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="UE Versions" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <controls:FilterableComboBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
                                                  ItemsSource="{Binding UeGames}"
                                                  Style="{StaticResource UComboBox}"
                                                  VerticalAlignment="Center" SelectedItem="{Binding SelectedDirectory.UeVersion, Mode=TwoWay}">
@@ -70,10 +113,10 @@
                         </ComboBox.ItemTemplate>
                     </controls:FilterableComboBox>
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Directory" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding SelectedDirectory.GameDirectory, Mode=TwoWay}" />
-                    <Button Grid.Row="2" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseDirectories" />
-                    <Button Grid.Row="2" Grid.Column="4" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Padding="0"
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Directory" VerticalAlignment="Center" />
+                    <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding SelectedDirectory.GameDirectory, Mode=TwoWay}" />
+                    <Button Grid.Row="3" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseDirectories" />
+                    <Button Grid.Row="3" Grid.Column="4" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Padding="0"
                             Click="OnDeleteDirectory" Width="{Binding ActualWidth, ElementName=OkGuysButWhoFuckingAsked}" ToolTip="Delete Game"
                             Visibility="{Binding SelectedDirectory.IsManual, Converter={StaticResource BoolToVisibilityConverter}}">
                         <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
@@ -82,40 +125,6 @@
                             </Canvas>
                         </Viewbox>
                     </Button>
-                </Grid>
-
-                <Grid x:Name="GameDetectionControls" Margin="0 5 0 10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <Button x:Name="DetectGamesButton" Grid.Row="0" Grid.Column="0"
-                            Content="Detect installed games" HorizontalAlignment="Left" Click="OnDetectGames"
-                            ToolTip="Scan all installed Steam and Epic games for Unreal Engine archives"
-                            IsEnabled="{Binding IsDetectingGames, Converter={x:Static converters:InvertBooleanConverter.Instance}}" />
-                    <Button x:Name="StopGameDetectionButton" Grid.Row="0" Grid.Column="1" Content="Stop"
-                            Click="OnStopGameDetection" Visibility="{Binding IsDetectingGames, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <ProgressBar x:Name="GameDetectionProgress" Grid.Row="1" Grid.ColumnSpan="2" Height="5" Margin="0 5 0 0"
-                                 Maximum="1" Value="{Binding DetectionProgress, Mode=OneWay}"
-                                 Visibility="{Binding IsDetectingGames, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <TextBlock x:Name="GameDetectionStatus" Grid.Row="2" Grid.ColumnSpan="2" Margin="0 5 0 0"
-                               Text="{Binding DetectionStatus}" TextWrapping="Wrap">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding DetectionStatus}" Value="{x:Null}">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
                 </Grid>
 
                 <Separator Style="{StaticResource CustomSeparator}" Tag="ADD UNDETECTED GAME" Margin="0,0,0,0"/>
