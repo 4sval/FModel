@@ -50,6 +50,8 @@ public partial class App
             UserSettings.Default = new UserSettings();
         }
 
+        PubgMobileKeyService.Initialize();
+
         var createMe = false;
         if (!Directory.Exists(UserSettings.Default.OutputDirectory))
         {

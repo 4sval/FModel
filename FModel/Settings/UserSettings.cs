@@ -676,4 +676,18 @@ public sealed class UserSettings : ViewModel
         get => _exportImmediately;
         set => SetProperty(ref _exportImmediately, value);
     }
+
+    private IDictionary<uint, string> _pubgMobileKeySlots = new Dictionary<uint, string>();
+    public IDictionary<uint, string> PubgMobileKeySlots
+    {
+        get => _pubgMobileKeySlots;
+        set => SetProperty(ref _pubgMobileKeySlots, value);
+    }
+
+    private bool _pubgMobileAskForMissingKeys = true;
+    public bool PubgMobileAskForMissingKeys
+    {
+        get => _pubgMobileAskForMissingKeys;
+        set => SetProperty(ref _pubgMobileAskForMissingKeys, value);
+    }
 }
