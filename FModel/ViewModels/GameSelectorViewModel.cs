@@ -6,6 +6,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.Utils;
@@ -85,13 +87,56 @@ public class GameSelectorViewModel : ViewModel
         SelectedDirectory = DetectedDirectories.Last();
     }
 
-    private bool TryDetectUeVersion(string gameDirectory, out EGame ueVersion, [MaybeNullWhen(false)] out string newGameDirectory)
+    private bool TryDetectUeVersion(string gameDirectory, out EGame ueVersion, [MaybeNullWhen(false)] out string newGameDirectory,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return DetectUeVersion(gameDirectory, out ueVersion, out newGameDirectory, cancellationToken);
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or System.Security.SecurityException or ArgumentException)
+        {
+            Log.Warning(e, "Could not inspect game directory {GameDirectory}", gameDirectory);
+            ueVersion = EGame.GAME_UE4_LATEST;
+            newGameDirectory = gameDirectory;
+            return false;
+        }
+    }
+
+    private static string FindPaksDirectory(string gameDirectory, CancellationToken cancellationToken)
+    {
+        var pending = new Stack<string>();
+        pending.Push(gameDirectory);
+        var options = new EnumerationOptions
+        {
+            IgnoreInaccessible = true,
+            AttributesToSkip = FileAttributes.ReparsePoint
+        };
+
+        while (pending.TryPop(out var directory))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            foreach (var child in Directory.EnumerateDirectories(directory, "*", options))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (child.EndsWith("Engine\\Programs\\CrashReportClient", StringComparison.OrdinalIgnoreCase))
+                    continue;
+                if (child.EndsWith("\\Paks", StringComparison.OrdinalIgnoreCase))
+                    return child;
+                pending.Push(child);
+            }
+        }
+        return null;
+    }
+
+    private bool DetectUeVersion(string gameDirectory, out EGame ueVersion, [MaybeNullWhen(false)] out string newGameDirectory,
+        CancellationToken cancellationToken)
     {
         var targetGameDir = gameDirectory;
         if (!targetGameDir.EndsWith("Paks", StringComparison.OrdinalIgnoreCase))
         {
-            var dirs = Directory.GetDirectories(targetGameDir, "Paks", SearchOption.AllDirectories);
-            var paksDir = dirs.Length == 1 ? dirs[0] : dirs.FirstOrDefault(x => !x.EndsWith("Engine\\Programs\\CrashReportClient\\Content\\Paks"));
+            var paksDir = FindPaksDirectory(targetGameDir, cancellationToken);
             if (!string.IsNullOrEmpty(paksDir))
             {
                 Log.Warning("Selected directory \"{GameDirectory}\" does not end with \"Paks\". Looking in \"{PaksDir}\" instead.", targetGameDir, paksDir);
@@ -116,6 +161,7 @@ public class GameSelectorViewModel : ViewModel
         }
 
         // past this point, we assume targetGameDir is the correct Paks folder
+        cancellationToken.ThrowIfCancellationRequested();
         newGameDirectory = targetGameDir;
         var projectDir = Path.Combine(targetGameDir, "..", "..");
 
@@ -126,6 +172,7 @@ public class GameSelectorViewModel : ViewModel
             {
                 foreach (var exe in shipping)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     if (TryGetUeVersionFromExe(exe, out ueVersion))
                     {
                         Log.Information("Detected UE version {UeVersion} from \"{Exe}\"", ueVersion, exe);
@@ -137,6 +184,7 @@ public class GameSelectorViewModel : ViewModel
             {
                 foreach (var exe in exes)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     if (TryGetUeVersionFromExe(exe, out ueVersion))
                     {
                         Log.Information("Detected UE version {UeVersion} from \"{Exe}\"", ueVersion, exe);
@@ -160,6 +208,7 @@ public class GameSelectorViewModel : ViewModel
             {
                 foreach (var exe in shipping)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     if (TryGetUeVersionFromExe(exe, out ueVersion))
                     {
                         Log.Information("Detected UE version {UeVersion} from \"{Exe}\"", ueVersion, exe);
@@ -268,16 +317,35 @@ public class GameSelectorViewModel : ViewModel
         yield return GetRockstarGamesGame("GTA San Andreas - Definitive Edition", "\\Gameface\\Content\\Paks", EGame.GAME_GTATheTrilogyDefinitiveEdition);
         yield return GetRockstarGamesGame("GTA Vice City - Definitive Edition", "\\Gameface\\Content\\Paks", EGame.GAME_GTATheTrilogyDefinitiveEdition);
         yield return GetLevelInfiniteGame("tof_launcher", "\\Hotta\\Content\\Paks", EGame.GAME_TowerOfFantasy);
+    }
 
+    public async Task DetectInstalledGamesAsync(CancellationToken cancellationToken)
+    {
+        var games = await Task.Run(() => EnumerateInstalledGames(cancellationToken).ToList(), cancellationToken);
+        var directories = new HashSet<string>(_detectedDirectories.Select(x => x.GameDirectory), StringComparer.OrdinalIgnoreCase);
+        foreach (var game in games)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!directories.Add(game.GameDirectory))
+                continue;
+
+            _detectedDirectories.Add(game);
+            SelectedDirectory ??= game;
+        }
+    }
+
+    private IEnumerable<DirectorySettings> EnumerateInstalledGames(CancellationToken cancellationToken)
+    {
         foreach (var install in (_launcherInstalled?.InstallationList ?? []).Take(30)) // First 30 games only if a user has hundreds, it will be slow.
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (!IsUuidNamespace(install.NamespaceId) || !IsUuidNamespace(install.AppName)) // No official Epic games apps / apps with no name (needs api calls)
                 continue;
 
             if (!Directory.Exists(install.InstallLocation))
                 continue;
 
-            if (!TryDetectUeVersion(install.InstallLocation, out var ueVersion, out var detectedDir))
+            if (!TryDetectUeVersion(install.InstallLocation, out var ueVersion, out var detectedDir, cancellationToken))
                 continue;
 
             yield return DirectorySettings.Default(install.AppName, detectedDir ?? install.InstallLocation, ue: ueVersion);
@@ -285,7 +353,8 @@ public class GameSelectorViewModel : ViewModel
 
         foreach (var game in SteamDetection.GetSteamGames().Take(30))
         {
-            if (!TryDetectUeVersion(game.GameRoot, out var ueVersion, out var detectedDir))
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!TryDetectUeVersion(game.GameRoot, out var ueVersion, out var detectedDir, cancellationToken))
                 continue;
 
             yield return DirectorySettings.Default(game.Name, detectedDir ?? game.GameRoot, ue: ueVersion);

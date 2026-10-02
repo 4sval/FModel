@@ -1,9 +1,10 @@
+using System;
+using System.Threading;
 using System.Windows;
 using FModel.ViewModels;
 using FModel.Views.Resources.Controls;
 using Ookii.Dialogs.Wpf;
 using Serilog;
-using System.Windows;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButtons = AdonisUI.Controls.MessageBoxButtons;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
@@ -17,10 +18,41 @@ namespace FModel.Views;
 /// </summary>
 public partial class DirectorySelector
 {
+    private readonly CancellationTokenSource _detectionCts = new();
+
     public DirectorySelector(GameSelectorViewModel gameSelectorViewModel)
     {
         DataContext = gameSelectorViewModel;
         InitializeComponent();
+        ContentRendered += OnContentRendered;
+        Closed += OnClosed;
+    }
+
+    private async void OnContentRendered(object sender, EventArgs e)
+    {
+        ContentRendered -= OnContentRendered;
+        if (DataContext is not GameSelectorViewModel viewModel)
+            return;
+
+        try
+        {
+            await viewModel.DetectInstalledGamesAsync(_detectionCts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            // The selector was closed.
+        }
+        catch (Exception exception)
+        {
+            Log.Warning(exception, "Could not detect installed games");
+        }
+    }
+
+    private void OnClosed(object sender, EventArgs e)
+    {
+        ContentRendered -= OnContentRendered;
+        _detectionCts.Cancel();
+        _detectionCts.Dispose();
     }
 
     private void OnClick(object sender, RoutedEventArgs e)
