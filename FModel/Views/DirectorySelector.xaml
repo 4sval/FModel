@@ -84,6 +84,40 @@
                     </Button>
                 </Grid>
 
+                <Grid x:Name="GameDetectionControls" Margin="0 5 0 10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="DetectGamesButton" Grid.Row="0" Grid.Column="0"
+                            Content="Detect installed games" HorizontalAlignment="Left" Click="OnDetectGames"
+                            ToolTip="Scan all installed Steam and Epic games for Unreal Engine archives"
+                            IsEnabled="{Binding IsDetectingGames, Converter={x:Static converters:InvertBooleanConverter.Instance}}" />
+                    <Button x:Name="StopGameDetectionButton" Grid.Row="0" Grid.Column="1" Content="Stop"
+                            Click="OnStopGameDetection" Visibility="{Binding IsDetectingGames, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    <ProgressBar x:Name="GameDetectionProgress" Grid.Row="1" Grid.ColumnSpan="2" Height="5" Margin="0 5 0 0"
+                                 Maximum="1" Value="{Binding DetectionProgress, Mode=OneWay}"
+                                 Visibility="{Binding IsDetectingGames, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    <TextBlock x:Name="GameDetectionStatus" Grid.Row="2" Grid.ColumnSpan="2" Margin="0 5 0 0"
+                               Text="{Binding DetectionStatus}" TextWrapping="Wrap">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding DetectionStatus}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+
                 <Separator Style="{StaticResource CustomSeparator}" Tag="ADD UNDETECTED GAME" Margin="0,0,0,0"/>
                 <TextBlock Text="Drag &amp; drop folder to quickly configure new game" 
                            HorizontalAlignment="Center"

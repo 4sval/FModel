@@ -18,42 +18,44 @@ namespace FModel.Views;
 /// </summary>
 public partial class DirectorySelector
 {
-    private readonly CancellationTokenSource _detectionCts = new();
+    private CancellationTokenSource _detectionCts;
 
     public DirectorySelector(GameSelectorViewModel gameSelectorViewModel)
     {
         DataContext = gameSelectorViewModel;
         InitializeComponent();
-        ContentRendered += OnContentRendered;
         Closed += OnClosed;
     }
 
-    private async void OnContentRendered(object sender, EventArgs e)
+    private async void OnDetectGames(object sender, RoutedEventArgs e)
     {
-        ContentRendered -= OnContentRendered;
-        if (DataContext is not GameSelectorViewModel viewModel)
+        if (_detectionCts != null || DataContext is not GameSelectorViewModel viewModel)
             return;
 
+        var cts = new CancellationTokenSource();
+        _detectionCts = cts;
         try
         {
-            await viewModel.DetectInstalledGamesAsync(_detectionCts.Token);
+            await viewModel.DetectInstalledGamesAsync(cts.Token);
         }
         catch (OperationCanceledException)
         {
-            // The selector was closed.
+            // Detection was stopped or the selector was closed.
         }
         catch (Exception exception)
         {
             Log.Warning(exception, "Could not detect installed games");
         }
+        finally
+        {
+            _detectionCts = null;
+            cts.Dispose();
+        }
     }
 
-    private void OnClosed(object sender, EventArgs e)
-    {
-        ContentRendered -= OnContentRendered;
-        _detectionCts.Cancel();
-        _detectionCts.Dispose();
-    }
+    private void OnStopGameDetection(object sender, RoutedEventArgs e) => _detectionCts?.Cancel();
+
+    private void OnClosed(object sender, EventArgs e) => _detectionCts?.Cancel();
 
     private void OnClick(object sender, RoutedEventArgs e)
     {

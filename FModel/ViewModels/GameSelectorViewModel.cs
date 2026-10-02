@@ -47,6 +47,28 @@ public class GameSelectorViewModel : ViewModel
     private readonly ObservableCollection<DirectorySettings> _detectedDirectories;
     public ReadOnlyObservableCollection<DirectorySettings> DetectedDirectories { get; }
     public ReadOnlyObservableCollection<EGame> UeGames { get; }
+
+    private bool _isDetectingGames;
+    public bool IsDetectingGames
+    {
+        get => _isDetectingGames;
+        private set => SetProperty(ref _isDetectingGames, value);
+    }
+
+    private double _detectionProgress;
+    public double DetectionProgress
+    {
+        get => _detectionProgress;
+        private set => SetProperty(ref _detectionProgress, value);
+    }
+
+    private string _detectionStatus;
+    public string DetectionStatus
+    {
+        get => _detectionStatus;
+        private set => SetProperty(ref _detectionStatus, value);
+    }
+
     private readonly LauncherInstalled _launcherInstalled;
     public GameSelectorViewModel(string gameDirectory)
     {
@@ -321,22 +343,69 @@ public class GameSelectorViewModel : ViewModel
 
     public async Task DetectInstalledGamesAsync(CancellationToken cancellationToken)
     {
-        var games = await Task.Run(() => EnumerateInstalledGames(cancellationToken).ToList(), cancellationToken);
-        var directories = new HashSet<string>(_detectedDirectories.Select(x => x.GameDirectory), StringComparer.OrdinalIgnoreCase);
-        foreach (var game in games)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            if (!directories.Add(game.GameDirectory))
-                continue;
+        if (IsDetectingGames)
+            return;
 
-            _detectedDirectories.Add(game);
-            SelectedDirectory ??= game;
+        IsDetectingGames = true;
+        DetectionProgress = 0;
+        DetectionStatus = "Finding installed games...";
+
+        try
+        {
+            var games = await Task.Run(() => EnumerateInstalledGames(cancellationToken).ToList(), cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+            var addedCount = 0;
+            for (var i = 0; i < games.Count; i++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var game = games[i];
+                DetectionStatus = $"Checking {i + 1} of {games.Count}: {game.Name}";
+                var result = await Task.Run(() =>
+                {
+                    var found = TryDetectUeVersion(game.Directory, out var version, out var directory, cancellationToken);
+                    return (Found: found, Version: version, Directory: directory ?? game.Directory);
+                }, cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (result.Found && !_detectedDirectories.Any(x =>
+                        string.Equals(x.GameDirectory, result.Directory, StringComparison.OrdinalIgnoreCase)))
+                {
+                    var setting = DirectorySettings.Default(game.Name, result.Directory, ue: result.Version);
+                    _detectedDirectories.Add(setting);
+                    SelectedDirectory ??= setting;
+                    addedCount++;
+                }
+
+                DetectionProgress = (double)(i + 1) / games.Count;
+            }
+
+            DetectionProgress = 1;
+            DetectionStatus = addedCount switch
+            {
+                0 => "No new games found.",
+                1 => "Found 1 new game.",
+                _ => $"Found {addedCount} new games."
+            };
+        }
+        catch (OperationCanceledException)
+        {
+            DetectionStatus = "Game detection canceled.";
+            throw;
+        }
+        catch
+        {
+            DetectionStatus = "Game detection failed. See the log for details.";
+            throw;
+        }
+        finally
+        {
+            IsDetectingGames = false;
         }
     }
 
-    private IEnumerable<DirectorySettings> EnumerateInstalledGames(CancellationToken cancellationToken)
+    private IEnumerable<(string Name, string Directory)> EnumerateInstalledGames(CancellationToken cancellationToken)
     {
-        foreach (var install in (_launcherInstalled?.InstallationList ?? []).Take(30)) // First 30 games only if a user has hundreds, it will be slow.
+        foreach (var install in _launcherInstalled?.InstallationList ?? [])
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (!IsUuidNamespace(install.NamespaceId) || !IsUuidNamespace(install.AppName)) // No official Epic games apps / apps with no name (needs api calls)
@@ -345,19 +414,13 @@ public class GameSelectorViewModel : ViewModel
             if (!Directory.Exists(install.InstallLocation))
                 continue;
 
-            if (!TryDetectUeVersion(install.InstallLocation, out var ueVersion, out var detectedDir, cancellationToken))
-                continue;
-
-            yield return DirectorySettings.Default(install.AppName, detectedDir ?? install.InstallLocation, ue: ueVersion);
+            yield return (install.AppName, install.InstallLocation);
         }
 
-        foreach (var game in SteamDetection.GetSteamGames().Take(30))
+        foreach (var game in SteamDetection.GetSteamGames())
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (!TryDetectUeVersion(game.GameRoot, out var ueVersion, out var detectedDir, cancellationToken))
-                continue;
-
-            yield return DirectorySettings.Default(game.Name, detectedDir ?? game.GameRoot, ue: ueVersion);
+            yield return (game.Name, game.GameRoot);
         }
     }
 
