@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -119,6 +120,7 @@ public partial class MainWindow
         await Task.WhenAll(
             _applicationView.CUE4Parse.VerifyConsoleVariables(),
             _applicationView.CUE4Parse.VerifyOnDemandArchives(),
+            _applicationView.CUE4Parse.VerifyCloudArchives(),
             _applicationView.CUE4Parse.InitMappings(),
             ApplicationViewModel.InitDetex(),
             ApplicationViewModel.InitVgmStream(),
@@ -130,12 +132,6 @@ public partial class MainWindow
             }),
             UserSettings.Default.DecompileLua ? ApplicationViewModel.InitUnluac() : Task.CompletedTask
         ).ConfigureAwait(false);
-
-#if DEBUG
-        // await _threadWorkerView.Begin(cancellationToken =>
-        //     _applicationView.CUE4Parse.Extract(cancellationToken,
-        //         _applicationView.CUE4Parse.Provider["Marvel/Content/Marvel/Wwise/Assets/Events/Music/music_new/event/Entry.uasset"]));
-#endif
     }
 
     private void OnGridSplitterDoubleClick(object sender, MouseButtonEventArgs e)
@@ -145,7 +141,7 @@ public partial class MainWindow
 
     private void OnWindowKeyDown(object sender, KeyEventArgs e)
     {
-        if (e.OriginalSource is TextBox || e.OriginalSource is TextArea && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+        if (e.OriginalSource is TextBox || (e.OriginalSource is TextArea && Keyboard.Modifiers.HasFlag(ModifierKeys.Control)))
             return;
 
         if (_threadWorkerView.CanBeCanceled && e.Key == Key.Escape)
@@ -210,6 +206,8 @@ public partial class MainWindow
             _applicationView.SelectedLeftTabIndex--;
         else if (UserSettings.Default.DirRightTab.IsTriggered(e.Key) && _applicationView.SelectedLeftTabIndex < LeftTabControl.Items.Count - 1)
             _applicationView.SelectedLeftTabIndex++;
+        else if (UserSettings.Default.OpenLogsFolder.IsTriggered(e.Key))
+            OnOpenLogsFolderClick();
     }
 
     private void OnSearchViewClick(object sender, RoutedEventArgs e)
@@ -222,6 +220,11 @@ public partial class MainWindow
     {
         var searchView = Helper.GetWindow<SearchView>("Search For Packages", () => new SearchView().Show());
         searchView.FocusTab(ESearchViewTab.RefView);
+    }
+
+    private void OnOpenLogsFolderClick()
+    {
+        Process.Start(new ProcessStartInfo { FileName = Path.Combine(UserSettings.Default.OutputDirectory, "Logs"), UseShellExecute = true });
     }
 
     private void OnTabItemChange(object sender, SelectionChangedEventArgs e)

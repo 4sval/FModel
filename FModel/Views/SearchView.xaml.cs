@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Threading;
 using CUE4Parse.FileProvider.Objects;
 using FModel.Services;
 using FModel.ViewModels;
@@ -18,15 +19,21 @@ public enum ESearchViewTab
 
 public partial class SearchView
 {
+    private static readonly TimeSpan AutoSearchDelay = TimeSpan.FromMilliseconds(200);
+
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
     private SearchViewModel _searchViewModel => _applicationView.CUE4Parse.SearchVm;
     private SearchViewModel _refViewModel => _applicationView.CUE4Parse.RefVm;
 
     private ESearchViewTab _currentTab = ESearchViewTab.SearchView;
+    private readonly DispatcherTimer _autoSearchTimer;
+    private SearchViewModel _pendingAutoSearch;
 
     public SearchView()
     {
+        _autoSearchTimer = new DispatcherTimer { Interval = AutoSearchDelay };
+        _autoSearchTimer.Tick += OnAutoSearchTimerTick;
         DataContext = new
         {
             mainApplication = _applicationView,
@@ -73,7 +80,7 @@ public partial class SearchView
         await _threadWorkerView.Begin(_ => _applicationView.CUE4Parse.FindReferences(entry));
     }
 
-    private void OnTabItemChange(object sender, SelectionChangedEventArgs e)
+    private async void OnTabItemChange(object sender, SelectionChangedEventArgs e)
     {
         if (e.OriginalSource is not TabControl tabControl)
             return;
@@ -86,15 +93,50 @@ public partial class SearchView
         };
         CurrentTextBox?.Focus();
         CurrentTextBox?.SelectAll();
+
+        if (_pendingAutoSearch is { } pending && pending != CurrentViewModel)
+        {
+            CancelAutoSearch();
+            await pending.RefreshFilter();
+        }
     }
 
-    private void OnDeleteSearchClick(object sender, RoutedEventArgs e)
+    private async void OnDeleteSearchClick(object sender, RoutedEventArgs e)
     {
         var viewModel = CurrentViewModel;
         if (viewModel == null)
             return;
         viewModel.FilterText = string.Empty;
-        viewModel.RefreshFilter();
+        CancelAutoSearch();
+        await viewModel.RefreshFilter();
+    }
+
+    private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+    {
+        _pendingAutoSearch = ReferenceEquals(sender, RefSearchTextBox) ? _refViewModel : _searchViewModel;
+        _autoSearchTimer.Stop();
+        _autoSearchTimer.Start();
+    }
+
+    private async void OnAutoSearchTimerTick(object sender, EventArgs e)
+    {
+        var viewModel = _pendingAutoSearch;
+        CancelAutoSearch();
+        if (viewModel != null)
+            await viewModel.RefreshFilter();
+    }
+
+    private async void OnSearchOptionsChanged(object sender, RoutedEventArgs e)
+    {
+        CancelAutoSearch();
+        if (CurrentViewModel is { } viewModel)
+            await viewModel.RefreshFilter();
+    }
+
+    private void CancelAutoSearch()
+    {
+        _autoSearchTimer.Stop();
+        _pendingAutoSearch = null;
     }
 
     private SearchViewModel CurrentViewModel => _currentTab switch
@@ -120,7 +162,9 @@ public partial class SearchView
 
     private async void OnSearchSortClick(object sender, RoutedEventArgs e)
     {
-        await CurrentViewModel?.CycleSortSizeMode();
+        CancelAutoSearch();
+        if (CurrentViewModel is { } viewModel)
+            await viewModel.CycleSortSizeMode();
     }
 
     private void OnAssetDoubleClick(object sender, RoutedEventArgs e)
@@ -171,11 +215,25 @@ public partial class SearchView
         MainWindow.Instance.Activate();
     }
 
-    private void OnWindowKeyDown(object sender, KeyEventArgs e)
+    private async void OnWindowKeyDown(object sender, KeyEventArgs e)
     {
         if (e.Key != Key.Enter)
             return;
-        CurrentViewModel?.RefreshFilter();
+
+        CancelAutoSearch();
+        if (CurrentViewModel is { } viewModel)
+            await viewModel.RefreshFilter();
+    }
+
+    private async void OnWindowClosed(object sender, EventArgs e)
+    {
+        var pending = _pendingAutoSearch;
+        CancelAutoSearch();
+        _autoSearchTimer.Tick -= OnAutoSearchTimerTick;
+
+        // Search models are shared by later windows, so finish any pending filter.
+        if (pending != null)
+            await pending.RefreshFilter();
     }
 
     private void OnStateChanged(object sender, EventArgs e)

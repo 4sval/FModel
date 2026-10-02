@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Numerics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
@@ -10,10 +10,12 @@ using FModel.Settings;
 using ImGuiNET;
 using ImGuizmoNET;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using ErrorCode = OpenTK.Graphics.OpenGL4.ErrorCode;
 using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
+using Vector2 = System.Numerics.Vector2;
 
 namespace FModel.Framework;
 
@@ -67,7 +69,7 @@ public class ImGuiController : IDisposable
             io.NativePtr->IniFilename = (byte*)iniFileNamePtr;
         }
 
-        var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+        var assembly = Assembly.GetExecutingAssembly();
         var assemblyName = assembly.GetName().Name;
         byte[] LoadFont(string name)
         {
@@ -421,7 +423,7 @@ void main()
 
         // Setup orthographic projection matrix into our constant buffer
         ImGuiIOPtr io = ImGui.GetIO();
-        var mvp = OpenTK.Mathematics.Matrix4.CreateOrthographicOffCenter(
+        var mvp = Matrix4.CreateOrthographicOffCenter(
             0.0f,
             io.DisplaySize.X,
             io.DisplaySize.Y,

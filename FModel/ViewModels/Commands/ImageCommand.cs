@@ -1,9 +1,9 @@
+using System.Windows;
+using System.Windows.Media;
 using AdonisUI.Controls;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Views.Resources.Controls;
-using System.Windows;
-using System.Windows.Media;
 using FModel.Views.Resources.Converters;
 
 namespace FModel.ViewModels.Commands;

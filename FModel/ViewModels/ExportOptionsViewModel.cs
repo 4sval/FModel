@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Threading;
-using CUE4Parse.UE4.Assets.Exports.Material;
-using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse_Conversion.Options;
 using CUE4Parse_Conversion.Writers.UEFormat.Enums;
+using CUE4Parse.UE4.Assets.Exports.Material;
+using CUE4Parse.UE4.Assets.Exports.Texture;
 using FModel.Framework;
 using FModel.Settings;
 

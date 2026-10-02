@@ -74,8 +74,7 @@
                         HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK" Click="OnClick" />
                 <Button Grid.Column="2" MinWidth="78" Margin="0 0 12 0" IsDefault="False"  IsCancel="False"
                         HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Refresh" Click="OnRefreshAes"
-                        Visibility="{Binding Converter={x:Static converters:EndpointToTypeConverter.Instance}, ConverterParameter={x:Static local:EEndpointType.Aes}}">
-                </Button>
+                        Visibility="{Binding Converter={x:Static converters:EndpointToTypeConverter.Instance}, ConverterParameter={x:Static local:EEndpointType.Aes}}" />
             </Grid>
         </Border>
     </Grid>

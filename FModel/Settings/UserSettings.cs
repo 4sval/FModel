@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
-using CUE4Parse.UE4.Assets.Exports.Material;
-using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Options;
 using CUE4Parse_Conversion.Writers.UEFormat.Enums;
+using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Lua.unluac;
+using CUE4Parse.UE4.Versions;
 using FModel.Extensions.Themes;
 using FModel.Framework;
 using FModel.ViewModels;
@@ -394,6 +394,13 @@ public sealed class UserSettings : ViewModel
     {
         get => _assetRemoveTab;
         set => SetProperty(ref _assetRemoveTab, value);
+    }
+
+    private Hotkey _openLogsFolder = new(Key.L, ModifierKeys.Control);
+    public Hotkey OpenLogsFolder
+    {
+        get => _openLogsFolder;
+        set => SetProperty(ref _openLogsFolder, value);
     }
 
     private Hotkey _addAudio = new(Key.N, ModifierKeys.Control);

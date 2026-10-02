@@ -79,11 +79,13 @@ using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
+using FModel.ViewModels.ApiEndpoints.Models;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
 using FModel.Views.Snooper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using Serilog;
@@ -93,6 +95,7 @@ using UE4Config.Parsing;
 using static CUE4Parse.UE4.Versions.EGame;
 using Application = System.Windows.Application;
 using FGuid = CUE4Parse.UE4.Objects.Core.Misc.FGuid;
+using Version = System.Version;
 
 namespace FModel.ViewModels;
 
@@ -135,7 +138,7 @@ public class CUE4ParseViewModel : ViewModel
                     new GameWindowSettings { UpdateFrequency = htz },
                     new NativeWindowSettings
                     {
-                        ClientSize = new OpenTK.Mathematics.Vector2i(
+                        ClientSize = new Vector2i(
                             Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenWidth * .75 * scale),
                             Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenHeight * .85 * scale)),
                         NumberOfSamples = Constants.SAMPLES_COUNT,
@@ -377,6 +380,21 @@ public class CUE4ParseViewModel : ViewModel
         }
     }
 
+    private void RegisterArchivesFromManifest(DefaultFileProvider provider, FBuildPatchAppManifest manifest)
+    {
+        var archiveFiles = manifest.Files.Where(x =>
+            _fnLiveRegex.IsMatch(x.FileName) &&
+            (x.FileName.EndsWith(".pak", StringComparison.OrdinalIgnoreCase) ||
+             x.FileName.EndsWith(".utoc", StringComparison.OrdinalIgnoreCase))).ToList();
+
+        Parallel.ForEach(archiveFiles, fileManifest =>
+            {
+                provider.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream()],
+                    it => new FRandomAccessStreamArchive(it, manifest.FindFile(it)!.GetStream(), provider.Versions));
+            });
+    }
+
+
     /// <summary>
     /// load virtual files system from GameDirectory
     /// </summary>
@@ -396,7 +414,8 @@ public class CUE4ParseViewModel : ViewModel
         if (Provider == null) return;
 
         AssetsFolder.Clear();
-        SearchVm.SearchResults.Clear();
+        SearchVm.Clear();
+        RefVm.Clear();
         Helper.CloseWindow<AdonisWindow>("Search For Packages");
         Provider.UnloadNonStreamedVfs();
         GC.Collect();
@@ -556,6 +575,47 @@ public class CUE4ParseViewModel : ViewModel
         });
     }
 
+    public Task VerifyCloudArchives()
+    {
+        if (Provider is not DefaultFileProvider p || !Provider.ProjectName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase))
+            return Task.CompletedTask;
+
+        var cloudContentPath = Path.Combine(UserSettings.Default.GameDirectory, "..\\..\\..\\Cloud\\cloudcontent.json");
+        if (!File.Exists(cloudContentPath))
+            return Task.CompletedTask;
+
+        return Task.Run(async () =>
+        {
+            var startTs = Stopwatch.GetTimestamp();
+
+            var cloudContent = JsonConvert.DeserializeObject<CloudContent>(await File.ReadAllTextAsync(cloudContentPath));
+            if (cloudContent is null || string.IsNullOrEmpty(cloudContent.ManifestPath))
+                return;
+
+            var manifestBytes = await _chunkClient.GetByteArrayAsync("https://egdownload.fastly-edge.com/" + cloudContent.ManifestPath);
+
+            var manifestOptions = new ManifestParseOptions
+            {
+                ChunkCacheDirectory = CacheManager.ChunksDirectory,
+                ManifestCacheDirectory = CacheManager.ManifestsDirectory,
+                ChunkBaseUrl = "https://egdownload.fastly-edge.com/Builds/Fortnite/CloudDir/",
+                Decompressor = Compression.Decompressor,
+                Client = _chunkClient,
+                CacheChunksAsIs = false
+            };
+
+            var contentManifest = FBuildPatchAppManifest.Deserialize(manifestBytes, manifestOptions);
+
+            RegisterArchivesFromManifest(p, contentManifest);
+
+            var cloudCount = await Provider.MountAsync();
+            var elapsedTime = Stopwatch.GetElapsedTime(startTs);
+
+            FLogger.Append(ELog.Information, () =>
+                FLogger.Text($"{cloudCount} cloud archive{(cloudCount > 1 ? "s" : "")} streamed via epicgames.com in {elapsedTime.TotalMilliseconds:F1}ms", Constants.WHITE, true));
+        });
+    }
+
     public int LocalizedResourcesCount { get; set; }
     public bool LocalResourcesDone { get; set; }
     public bool HotfixedResourcesDone { get; set; }
@@ -647,9 +707,8 @@ public class CUE4ParseViewModel : ViewModel
 
     public void ExportFolder(CancellationToken cancellationToken, TreeItem folder)
     {
-        Parallel.ForEach(folder.AssetsList.Assets, entry =>
+        Parallel.ForEach(folder.AssetsList.Assets, new ParallelOptions { CancellationToken = cancellationToken }, entry =>
         {
-            cancellationToken.ThrowIfCancellationRequested();
             ExportData(entry.Asset);
         });
 

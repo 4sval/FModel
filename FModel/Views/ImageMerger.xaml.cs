@@ -1,10 +1,3 @@
-using AdonisUI.Controls;
-using FModel.Extensions;
-using FModel.Settings;
-using FModel.Views.Resources.Controls;
-using Microsoft.Win32;
-using Serilog;
-using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
@@ -16,6 +9,14 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using AdonisUI.Controls;
+using FModel.Extensions;
+using FModel.Settings;
+using FModel.Views.Resources.Controls;
+using Microsoft.Win32;
+using Serilog;
+using SkiaSharp;
+using Image = System.Drawing.Image;
 
 namespace FModel.Views;
 
@@ -43,6 +44,13 @@ public partial class ImageMerger
 
     private async Task DrawPreview()
     {
+        if (ImagesListBox.Items.Count == 0)
+        {
+            ImagePreview.Source = null;
+            _imageBuffer = null;
+            return;
+        }
+
         AddButton.IsEnabled = false;
         UpButton.IsEnabled = false;
         DownButton.IsEnabled = false;
@@ -59,21 +67,36 @@ public partial class ImageMerger
         for (var i = 0; i < images.Length; i++)
         {
             var item = (ListBoxItem) ImagesListBox.Items[i];
-            var ms = new MemoryStream();
-            var stream = new FileStream(item.ContentStringFormat, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
-            if (item.ContentStringFormat.EndsWith(".tif"))
+            SKBitmap image;
+            await using (var ms = new MemoryStream())
             {
-                await using var tmp = new MemoryStream();
-                await stream.CopyToAsync(tmp);
-                System.Drawing.Image.FromStream(tmp).Save(ms, ImageFormat.Png);
-            }
-            else
-            {
-                await stream.CopyToAsync(ms);
+                using (var stream = new FileStream(item.ContentStringFormat, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    if (item.ContentStringFormat.EndsWith(".tif"))
+                    {
+                        await using var tmp = new MemoryStream();
+                        await stream.CopyToAsync(tmp);
+                        tmp.Position = 0;
+                        using var drawing = Image.FromStream(tmp);
+                        drawing.Save(ms, ImageFormat.Png);
+                    }
+                    else
+                    {
+                        await stream.CopyToAsync(ms);
+                    }
+                }
+
+                image = SKBitmap.Decode(ms.ToArray());
             }
 
-            var image = SKBitmap.Decode(ms.ToArray());
+            if (image == null)
+            {
+                Log.Warning("Image merger skipped an undecodable file: {File}", item.ContentStringFormat);
+                images[i] = null;
+                continue;
+            }
+
             positions[i] = new SKPoint(curW, curH);
             images[i] = image;
 
@@ -108,6 +131,9 @@ public partial class ImageMerger
 
             for (var i = 0; i < images.Length; i++)
             {
+                if (images[i] == null)
+                    continue;
+
                 using (images[i])
                 {
                     canvas.DrawBitmap(images[i], positions[i], new SKPaint { FilterQuality = SKFilterQuality.High, IsAntialias = true });
@@ -185,7 +211,6 @@ public partial class ImageMerger
                     }
                 }
 
-                ImagesListBox.SelectedItems.Add(indices);
                 if (reloadImage)
                 {
                     await DrawPreview().ConfigureAwait(false);
@@ -221,6 +246,13 @@ public partial class ImageMerger
                 {
                     for (var i = ImagesListBox.SelectedItems.Count - 1; i >= 0; --i)
                         ImagesListBox.Items.Remove(ImagesListBox.SelectedItems[i]);
+                }
+
+                if (ImagesListBox.Items.Count == 0)
+                {
+                    ImagePreview.Source = null;
+                    _imageBuffer = null;
+                    break;
                 }
 
                 await DrawPreview().ConfigureAwait(false);

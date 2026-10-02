@@ -13,7 +13,6 @@
                              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
                              xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
                              xmlns:serilog="clr-namespace:Serilog.Events;assembly=Serilog"
-                             xmlns:c4pMeshes="clr-namespace:CUE4Parse_Conversion.Options;assembly=CUE4Parse-Conversion"
 
                              DataContext="{x:Static vm:ExportSessionViewModel.Instance}"
                              WindowStartupLocation="CenterScreen" ResizeMode="NoResize" IconVisibility="Collapsed"

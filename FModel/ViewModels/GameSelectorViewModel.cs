@@ -1,20 +1,23 @@
-using FModel.Framework;
-using Newtonsoft.Json;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.Utils;
+using FModel.Framework;
 using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
 using Microsoft.Win32;
+using Newtonsoft.Json;
+using Serilog;
 
 namespace FModel.ViewModels;
 
@@ -39,26 +42,73 @@ public class GameSelectorViewModel : ViewModel
     public DirectorySettings SelectedDirectory
     {
         get => _selectedDirectory;
-        set => SetProperty(ref _selectedDirectory, value);
+        set
+        {
+            if (IsSelectable(value))
+                SetProperty(ref _selectedDirectory, value);
+            else
+                RaisePropertyChanged(nameof(SelectedDirectory));
+        }
+    }
+
+    private bool IsSelectable(DirectorySettings directory)
+        => directory is not { IsDirectoryMissing: true } || _selectedDirectory is not { IsDirectoryMissing: false };
+
+    private bool _isMissingDirectoriesVisible;
+    public bool IsMissingDirectoriesVisible
+    {
+        get => _isMissingDirectoriesVisible;
+        set => SetProperty(ref _isMissingDirectoriesVisible, value);
     }
 
     private readonly ObservableCollection<DirectorySettings> _detectedDirectories;
+    private readonly ObservableCollection<DirectorySettings> _missingDirectories = [];
     public ReadOnlyObservableCollection<DirectorySettings> DetectedDirectories { get; }
+    public ReadOnlyObservableCollection<DirectorySettings> MissingDirectories { get; }
     public ReadOnlyObservableCollection<EGame> UeGames { get; }
 
+    private bool _isDetectingGames;
+    public bool IsDetectingGames
+    {
+        get => _isDetectingGames;
+        private set => SetProperty(ref _isDetectingGames, value);
+    }
+
+    private double _detectionProgress;
+    public double DetectionProgress
+    {
+        get => _detectionProgress;
+        private set => SetProperty(ref _detectionProgress, value);
+    }
+
+    private string _detectionStatus;
+    public string DetectionStatus
+    {
+        get => _detectionStatus;
+        private set => SetProperty(ref _detectionStatus, value);
+    }
+
+    private readonly LauncherInstalled _launcherInstalled;
     public GameSelectorViewModel(string gameDirectory)
     {
-        _detectedDirectories = new ObservableCollection<DirectorySettings>(EnumerateDetectedGames().Where(x => x != null));
+        _launcherInstalled = GetDriveLauncherInstalls<LauncherInstalled>("ProgramData\\Epic\\UnrealEngineLauncher\\LauncherInstalled.dat");
+        _detectedDirectories = new ObservableCollection<DirectorySettings>(EnumerateDetectedGames()
+            .Where(x => x != null)
+            .GroupBy(x => x.GameDirectory, StringComparer.OrdinalIgnoreCase)
+            .Select(g => g.First()));
+
         foreach (var dir in UserSettings.Default.PerDirectory.Values.Where(x => x.IsManual))
         {
             _detectedDirectories.Add((DirectorySettings) dir.Clone());
         }
 
         DetectedDirectories = new ReadOnlyObservableCollection<DirectorySettings>(_detectedDirectories);
+        MissingDirectories = new ReadOnlyObservableCollection<DirectorySettings>(_missingDirectories);
+        WatchDirectories();
 
         if (DetectedDirectories.FirstOrDefault(x => x.GameDirectory == gameDirectory) is { } detectedGame)
             SelectedDirectory = detectedGame;
-        else if (IsGameDirectoryAvailable(gameDirectory))
+        else if (DirectorySettings.IsDirectoryAvailable(gameDirectory))
             AddUndetectedDir(gameDirectory);
         else
             SelectedDirectory = DetectedDirectories.FirstOrDefault();
@@ -66,7 +116,54 @@ public class GameSelectorViewModel : ViewModel
         UeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(EnumerateUeGames()));
     }
 
-    public void AddUndetectedDir(string gameDirectory) => AddUndetectedDir(gameDirectory.SubstringAfterLast('\\'), gameDirectory);
+    private void WatchDirectories()
+    {
+        foreach (var directory in _detectedDirectories)
+        {
+            directory.RefreshDirectoryAvailability();
+            directory.PropertyChanged += OnDirectoryPropertyChanged;
+        }
+        _detectedDirectories.CollectionChanged += (_, args) =>
+        {
+            if (args.NewItems is not null)
+                foreach (DirectorySettings directory in args.NewItems)
+                {
+                    directory.RefreshDirectoryAvailability();
+                    directory.PropertyChanged += OnDirectoryPropertyChanged;
+                }
+            RefreshMissingDirectories();
+        };
+        RefreshMissingDirectories();
+    }
+
+    public void RefreshDirectories()
+    {
+        foreach (var directory in _detectedDirectories)
+            directory.RefreshDirectoryAvailability();
+        RefreshMissingDirectories();
+    }
+
+    private void RefreshMissingDirectories()
+    {
+        var missingDirectories = _detectedDirectories.Where(x => x.IsDirectoryMissing).ToArray();
+        if (missingDirectories.SequenceEqual(_missingDirectories))
+            return;
+
+        _missingDirectories.Clear();
+        foreach (var directory in missingDirectories)
+            _missingDirectories.Add(directory);
+
+        if (_missingDirectories.Count == 0)
+            IsMissingDirectoriesVisible = false;
+    }
+
+    private void OnDirectoryPropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(DirectorySettings.IsDirectoryMissing))
+            RefreshMissingDirectories();
+    }
+
+    public void AddUndetectedDir(string gameDirectory) => AddUndetectedDir(Helper.GetGameName(gameDirectory), gameDirectory);
     public void AddUndetectedDir(string gameName, string gameDirectory)
     {
         if (TryDetectUeVersion(gameDirectory, out var ueVersion, out var newGameDirectory))
@@ -80,17 +177,77 @@ public class GameSelectorViewModel : ViewModel
         SelectedDirectory = DetectedDirectories.Last();
     }
 
-    private bool TryDetectUeVersion(string gameDirectory, out EGame ueVersion, [MaybeNullWhen(false)] out string newGameDirectory)
+    private bool TryDetectUeVersion(string gameDirectory, out EGame ueVersion, [MaybeNullWhen(false)] out string newGameDirectory,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return DetectUeVersion(gameDirectory, out ueVersion, out newGameDirectory, cancellationToken);
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or System.Security.SecurityException or ArgumentException)
+        {
+            Log.Warning(e, "Could not inspect game directory {GameDirectory}", gameDirectory);
+            ueVersion = EGame.GAME_UE4_LATEST;
+            newGameDirectory = gameDirectory;
+            return false;
+        }
+    }
+
+    private static string FindPaksDirectory(string gameDirectory, CancellationToken cancellationToken)
+    {
+        var pending = new Stack<string>();
+        pending.Push(gameDirectory);
+        var options = new EnumerationOptions
+        {
+            IgnoreInaccessible = true,
+            AttributesToSkip = FileAttributes.ReparsePoint
+        };
+
+        while (pending.TryPop(out var directory))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            foreach (var child in Directory.EnumerateDirectories(directory, "*", options))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (child.EndsWith("Engine\\Programs\\CrashReportClient", StringComparison.OrdinalIgnoreCase))
+                    continue;
+                if (child.EndsWith("\\Paks", StringComparison.OrdinalIgnoreCase))
+                    return child;
+                pending.Push(child);
+            }
+        }
+        return null;
+    }
+
+    private bool DetectUeVersion(string gameDirectory, out EGame ueVersion, [MaybeNullWhen(false)] out string newGameDirectory,
+        CancellationToken cancellationToken)
     {
         var targetGameDir = gameDirectory;
         if (!targetGameDir.EndsWith("Paks", StringComparison.OrdinalIgnoreCase))
         {
-            var dirs = Directory.GetDirectories(targetGameDir, "Paks", SearchOption.AllDirectories);
-            var paksDir = dirs.Length == 1 ? dirs[0] : dirs.FirstOrDefault(x => !x.EndsWith("Engine\\Programs\\CrashReportClient\\Content\\Paks"));
+            var paksDir = FindPaksDirectory(targetGameDir, cancellationToken);
             if (!string.IsNullOrEmpty(paksDir))
             {
                 Log.Warning("Selected directory \"{GameDirectory}\" does not end with \"Paks\". Looking in \"{PaksDir}\" instead.", targetGameDir, paksDir);
                 targetGameDir = paksDir;
+            }
+            else
+            {
+                // Log.Warning("No Paks folder found under \"{GameDirectory}\".", gameDirectory);
+                if (Directory.GetFiles(targetGameDir, "*.upk", SearchOption.AllDirectories).Length > 0 ||
+                    Directory.GetFiles(targetGameDir, "*.u", SearchOption.AllDirectories).Length > 0 ||
+                    Directory.GetFiles(targetGameDir, "*.udk", SearchOption.AllDirectories).Length > 0)
+                {
+                    ueVersion = EGame.GAME_UE3_0;
+                    newGameDirectory = targetGameDir;
+                    Log.Information("Detected UE3 from \"{GameDirectory}\"", targetGameDir);
+                    return true;
+                }
+
+                ueVersion = EGame.GAME_UE4_LATEST;
+                newGameDirectory = targetGameDir;
+                return false;
             }
 
             if (Directory.GetFiles(gameDirectory, "*.exe") is { Length: 1 } exe && TryGetUeVersionFromExe(exe[0], out ueVersion))
@@ -104,6 +261,7 @@ public class GameSelectorViewModel : ViewModel
         }
 
         // past this point, we assume targetGameDir is the correct Paks folder
+        cancellationToken.ThrowIfCancellationRequested();
         newGameDirectory = targetGameDir;
         var projectDir = Path.Combine(targetGameDir, "..", "..");
 
@@ -114,6 +272,7 @@ public class GameSelectorViewModel : ViewModel
             {
                 foreach (var exe in shipping)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     if (TryGetUeVersionFromExe(exe, out ueVersion))
                     {
                         Log.Information("Detected UE version {UeVersion} from \"{Exe}\"", ueVersion, exe);
@@ -125,6 +284,7 @@ public class GameSelectorViewModel : ViewModel
             {
                 foreach (var exe in exes)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     if (TryGetUeVersionFromExe(exe, out ueVersion))
                     {
                         Log.Information("Detected UE version {UeVersion} from \"{Exe}\"", ueVersion, exe);
@@ -148,6 +308,7 @@ public class GameSelectorViewModel : ViewModel
             {
                 foreach (var exe in shipping)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     if (TryGetUeVersionFromExe(exe, out ueVersion))
                     {
                         Log.Information("Detected UE version {UeVersion} from \"{Exe}\"", ueVersion, exe);
@@ -182,18 +343,57 @@ public class GameSelectorViewModel : ViewModel
         }
     }
 
-    public void DeleteSelectedGame()
+    public void DeleteSelectedGame() => DeleteDirectory(SelectedDirectory);
+
+    public void DeleteDirectory(DirectorySettings directory)
     {
-        UserSettings.Default.PerDirectory.Remove(SelectedDirectory.GameDirectory); // should not be a problem
-        _detectedDirectories.Remove(SelectedDirectory);
-        SelectedDirectory = DetectedDirectories.Last();
+        if (directory is null || !_detectedDirectories.Remove(directory))
+            return;
+
+        UserSettings.Default.PerDirectory.Remove(directory.GameDirectory); // should not be a problem
+        if (ReferenceEquals(SelectedDirectory, directory))
+        {
+            SelectedDirectory = null;
+            SelectedDirectory = DetectedDirectories.FirstOrDefault(x => !x.IsDirectoryMissing) ?? DetectedDirectories.LastOrDefault();
+        }
+    }
+
+    public void ChangeDirectory(DirectorySettings directory, string gameDirectory)
+    {
+        if (directory is null || string.IsNullOrWhiteSpace(gameDirectory))
+            return;
+
+        var previousDirectory = directory.GameDirectory;
+        if (string.Equals(previousDirectory, gameDirectory, StringComparison.OrdinalIgnoreCase))
+            return;
+
+        var perDirectory = UserSettings.Default.PerDirectory;
+        if (perDirectory.ContainsKey(previousDirectory) || directory.IsManual)
+        {
+            perDirectory.Remove(previousDirectory);
+            perDirectory[gameDirectory] = directory;
+        }
+
+        directory.GameDirectory = gameDirectory;
+        if (TryDetectUeVersion(gameDirectory, out var ueVersion, out _))
+            directory.UeVersion = ueVersion;
+    }
+
+    private static bool IsUuidNamespace(string ns)
+    {
+        return Guid.TryParseExact(ns, "N", out _);
     }
 
     public int ClearMissingDirectories()
     {
+        RefreshDirectories();
+
+        foreach (var directory in UserSettings.Default.PerDirectory.Values)
+            directory.RefreshDirectoryAvailability();
+
         var removedDirectories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var missingDirectories = UserSettings.Default.PerDirectory
-            .Where(x => !IsGameDirectoryAvailable(x.Value.GameDirectory))
+            .Where(x => x.Value.IsDirectoryMissing)
             .Select(x => new KeyValuePair<string, string>(x.Key, x.Value.GameDirectory))
             .ToArray();
 
@@ -204,7 +404,7 @@ public class GameSelectorViewModel : ViewModel
         }
 
         var missingDetectedDirectories = _detectedDirectories
-            .Where(x => !IsGameDirectoryAvailable(x.GameDirectory))
+            .Where(x => x.IsDirectoryMissing)
             .ToArray();
 
         foreach (var directory in missingDetectedDirectories)
@@ -214,13 +414,13 @@ public class GameSelectorViewModel : ViewModel
         }
 
         if (SelectedDirectory is null || !_detectedDirectories.Contains(SelectedDirectory))
+        {
+            SelectedDirectory = null;
             SelectedDirectory = DetectedDirectories.FirstOrDefault();
+        }
 
         return removedDirectories.Count;
     }
-
-    public static bool IsGameDirectoryAvailable(string gameDirectory)
-        => gameDirectory is Constants._FN_LIVE_TRIGGER or Constants._VAL_LIVE_TRIGGER || Directory.Exists(gameDirectory);
 
     private IEnumerable<EGame> EnumerateUeGames()
         => Enum.GetValues<EGame>()
@@ -253,10 +453,91 @@ public class GameSelectorViewModel : ViewModel
         yield return GetLevelInfiniteGame("tof_launcher", "\\Hotta\\Content\\Paks", EGame.GAME_TowerOfFantasy);
     }
 
-    private LauncherInstalled _launcherInstalled;
+    public async Task DetectInstalledGamesAsync(CancellationToken cancellationToken)
+    {
+        if (IsDetectingGames)
+            return;
+
+        IsDetectingGames = true;
+        DetectionProgress = 0;
+        DetectionStatus = "Finding installed games...";
+
+        try
+        {
+            var games = await Task.Run(() => EnumerateInstalledGames(cancellationToken).ToList(), cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+            var addedCount = 0;
+            for (var i = 0; i < games.Count; i++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var game = games[i];
+                DetectionStatus = $"Checking {i + 1} of {games.Count}: {game.Name}";
+                var result = await Task.Run(() =>
+                {
+                    var found = TryDetectUeVersion(game.Directory, out var version, out var directory, cancellationToken);
+                    return (Found: found, Version: version, Directory: directory ?? game.Directory);
+                }, cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (result.Found && !_detectedDirectories.Any(x =>
+                        string.Equals(x.GameDirectory, result.Directory, StringComparison.OrdinalIgnoreCase)))
+                {
+                    var setting = DirectorySettings.Default(game.Name, result.Directory, ue: result.Version);
+                    _detectedDirectories.Add(setting);
+                    SelectedDirectory ??= setting;
+                    addedCount++;
+                }
+
+                DetectionProgress = (double)(i + 1) / games.Count;
+            }
+
+            DetectionProgress = 1;
+            DetectionStatus = addedCount switch
+            {
+                0 => "No new games found.",
+                1 => "Found 1 new game.",
+                _ => $"Found {addedCount} new games."
+            };
+        }
+        catch (OperationCanceledException)
+        {
+            DetectionStatus = "Game detection canceled.";
+            throw;
+        }
+        catch
+        {
+            DetectionStatus = "Game detection failed. See the log for details.";
+            throw;
+        }
+        finally
+        {
+            IsDetectingGames = false;
+        }
+    }
+
+    private IEnumerable<(string Name, string Directory)> EnumerateInstalledGames(CancellationToken cancellationToken)
+    {
+        foreach (var install in _launcherInstalled?.InstallationList ?? [])
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!IsUuidNamespace(install.NamespaceId) || !IsUuidNamespace(install.AppName)) // No official Epic games apps / apps with no name (needs api calls)
+                continue;
+
+            if (!Directory.Exists(install.InstallLocation))
+                continue;
+
+            yield return (install.AppName, install.InstallLocation);
+        }
+
+        foreach (var game in SteamDetection.GetSteamGames())
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            yield return (game.Name, game.GameRoot);
+        }
+    }
+
     private DirectorySettings GetUnrealEngineGame(string gameName, string pakDirectory, EGame ueVersion)
     {
-        _launcherInstalled ??= GetDriveLauncherInstalls<LauncherInstalled>("ProgramData\\Epic\\UnrealEngineLauncher\\LauncherInstalled.dat");
         if (_launcherInstalled?.InstallationList != null)
         {
             foreach (var installationList in _launcherInstalled.InstallationList)
@@ -375,6 +656,7 @@ public class GameSelectorViewModel : ViewModel
     private class Installation
     {
         public string InstallLocation;
+        public string NamespaceId;
         public string AppName;
         public string AppVersion;
     }
@@ -428,6 +710,7 @@ public class GameSelectorViewModel : ViewModel
 
         public static AppInfo GetSteamGameById(int id) => _steamApps.FirstOrDefault(app => app.Id == id.ToString());
 
+        public static IEnumerable<AppInfo> GetSteamApps() => _steamApps;
         private static List<AppInfo> GetSteamApps(IEnumerable<string> steamLibs)
         {
             var apps = new List<AppInfo>();
@@ -440,6 +723,17 @@ public class GameSelectorViewModel : ViewModel
             }
 
             return apps;
+        }
+
+        public static IEnumerable<AppInfo> GetSteamGames()
+        {
+            foreach (var app in GetSteamApps())
+            {
+                if (!Directory.Exists(app.GameRoot))
+                    continue;
+
+                yield return app;
+            }
         }
 
         private static AppInfo GetAppInfo(string appMetaFile)

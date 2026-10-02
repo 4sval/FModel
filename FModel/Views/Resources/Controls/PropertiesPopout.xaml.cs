@@ -1,12 +1,12 @@
 using System;
 using System.Text.RegularExpressions;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using CUE4Parse.Utils;
-using FModel.ViewModels;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using SkiaSharp;
+using TabItem = FModel.ViewModels.TabItem;
 
 namespace FModel.Views.Resources.Controls;
 
@@ -14,7 +14,7 @@ public partial class PropertiesPopout
 {
     private readonly Regex _hexColorRegex = new("\"Hex\": \"(?'target'[0-9A-Fa-f]{3,8})\"$",
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-    private readonly System.Windows.Controls.ToolTip _toolTip = new();
+    private readonly ToolTip _toolTip = new();
     private JsonFoldingStrategies _manager;
 
     public PropertiesPopout(TabItem contextViewModel)

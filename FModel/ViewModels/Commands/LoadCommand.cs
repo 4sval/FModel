@@ -6,7 +6,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using AdonisUI.Controls;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.Readers;
@@ -54,7 +53,8 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
         var loadingTime = Stopwatch.StartNew();
 #endif
         _applicationView.CUE4Parse.AssetsFolder.Clear();
-        _applicationView.CUE4Parse.SearchVm.SearchResults.Clear();
+        _applicationView.CUE4Parse.SearchVm.Clear();
+        _applicationView.CUE4Parse.RefVm.Clear();
         _applicationView.SelectedLeftTabIndex = 1; // folders tab
         _applicationView.IsAssetsExplorerVisible = true;
         Helper.CloseWindow<AdonisWindow>("Search For Packages"); // close search window if opened
@@ -176,7 +176,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
         if (!openFileDialog.ShowDialog().GetValueOrDefault()) return;
 
         FLogger.Append(ELog.Information, () =>
-            FLogger.Text($"Backup file older than current game is '{openFileDialog.FileName.SubstringAfterLast("\\")}'", Constants.WHITE, true));
+            FLogger.Text($"Loaded old backup file '{openFileDialog.FileName.SubstringAfterLast("\\")}'", Constants.WHITE, true));
 
         var mode = UserSettings.Default.LoadingMode;
         var entries = ParseBackup(openFileDialog.FileName, mode, cancellationToken);

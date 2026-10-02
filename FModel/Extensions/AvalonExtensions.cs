@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Xml;
 using FModel.Extensions.Themes;
+using FModel.Settings;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 
@@ -61,7 +62,7 @@ public static class AvalonExtensions
             case "po":
                 return null;
             default:
-                _jsonHighlighter.ApplyJsonTheme(Settings.UserSettings.Default.JsonHighlightTheme);
+                _jsonHighlighter.ApplyJsonTheme(UserSettings.Default.JsonHighlightTheme);
                 return _jsonHighlighter;
         }
     }

@@ -7,6 +7,7 @@
                              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                              WindowStartupLocation="CenterScreen" ResizeMode="CanResize" ShowInTaskbar="True"
                              IconVisibility="Collapsed" KeyDown="OnWindowKeyDown" StateChanged="OnStateChanged"
+                             Closed="OnWindowClosed"
                              Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.75'}"
                              Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.65'}">
     <adonisControls:AdonisWindow.Style>
@@ -38,28 +39,32 @@
                                     </Canvas>
                                 </Viewbox>
                             </Grid>
-                            <TextBox x:Name="SearchTextBox" Grid.Column="0" Grid.ColumnSpan="2" Padding="25 0 0 0" AcceptsTab="False" AcceptsReturn="False">
+                            <TextBox x:Name="SearchTextBox" Grid.Column="0" Grid.ColumnSpan="2" Padding="25 0 0 0" AcceptsTab="False" AcceptsReturn="False" TextChanged="OnSearchTextChanged">
                                 <TextBox.Style>
                                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                         <Setter Property="Text" Value="{Binding SearchTab.FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                        <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Write your pattern and press enter..." />
+                                        <Setter Property="ToolTip" Value="{Binding SearchTab.FilterError}" />
+                                        <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Search package paths..." />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding SearchTab.HasRegexEnabled}" Value="True">
-                                                <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Write your regex pattern and press enter..." />
+                                                <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Search package paths with a regex..." />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding SearchTab.FilterError, Converter={x:Static converters:IsNullToBoolReversedConverter.Instance}}" Value="True">
+                                                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </TextBox.Style>
                             </TextBox>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                <ToggleButton ToolTip="Match Case" Padding="5" IsChecked="{Binding SearchTab.HasMatchCaseEnabled}" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
+                                <ToggleButton ToolTip="Match Case" Padding="5" IsChecked="{Binding SearchTab.HasMatchCaseEnabled}" Click="OnSearchOptionsChanged" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
                                     <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                         <Canvas Width="24" Height="24">
                                             <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource MatchCaseIcon}" />
                                         </Canvas>
                                     </Viewbox>
                                 </ToggleButton>
-                                <ToggleButton ToolTip="Regex" Padding="5" IsChecked="{Binding SearchTab.HasRegexEnabled}" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
+                                <ToggleButton ToolTip="Regex" Padding="5" IsChecked="{Binding SearchTab.HasRegexEnabled}" Click="OnSearchOptionsChanged" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
                                     <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                         <Canvas Width="24" Height="24">
                                             <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource RegexIcon}" />
@@ -91,7 +96,7 @@
                             </TextBlock>
                         </Grid>
                         <ListView Grid.Row="1" x:Name="SearchListView" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling"
-                                      ScrollViewer.CanContentScroll="True" ItemsSource="{Binding SearchTab.SearchResultsView, IsAsync=True}">
+                                      ScrollViewer.CanContentScroll="True" ItemsSource="{Binding SearchTab.SearchResults, IsAsync=True}">
                             <ListView.Resources>
                                 <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -449,28 +454,32 @@
                                     </Canvas>
                                 </Viewbox>
                             </Grid>
-                            <TextBox x:Name="RefSearchTextBox" Grid.Column="0" Grid.ColumnSpan="2" Padding="25 0 0 0" AcceptsTab="False" AcceptsReturn="False">
+                            <TextBox x:Name="RefSearchTextBox" Grid.Column="0" Grid.ColumnSpan="2" Padding="25 0 0 0" AcceptsTab="False" AcceptsReturn="False" TextChanged="OnSearchTextChanged">
                                 <TextBox.Style>
                                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                         <Setter Property="Text" Value="{Binding RefTab.FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                        <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Write your pattern and press enter..." />
+                                        <Setter Property="ToolTip" Value="{Binding RefTab.FilterError}" />
+                                        <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Search package paths..." />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding RefTab.HasRegexEnabled}" Value="True">
-                                                <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Write your regex pattern and press enter..." />
+                                                <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Search package paths with a regex..." />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding RefTab.FilterError, Converter={x:Static converters:IsNullToBoolReversedConverter.Instance}}" Value="True">
+                                                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </TextBox.Style>
                             </TextBox>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                <ToggleButton ToolTip="Match Case" Padding="5" IsChecked="{Binding RefTab.HasMatchCaseEnabled}" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
+                                <ToggleButton ToolTip="Match Case" Padding="5" IsChecked="{Binding RefTab.HasMatchCaseEnabled}" Click="OnSearchOptionsChanged" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
                                     <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                         <Canvas Width="24" Height="24">
                                             <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource MatchCaseIcon}" />
                                         </Canvas>
                                     </Viewbox>
                                 </ToggleButton>
-                                <ToggleButton ToolTip="Regex" Padding="5" IsChecked="{Binding RefTab.HasRegexEnabled}" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
+                                <ToggleButton ToolTip="Regex" Padding="5" IsChecked="{Binding RefTab.HasRegexEnabled}" Click="OnSearchOptionsChanged" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
                                     <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                         <Canvas Width="24" Height="24">
                                             <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource RegexIcon}" />
@@ -506,7 +515,7 @@
                                       VirtualizingPanel.IsVirtualizing="True"
                                       VirtualizingPanel.VirtualizationMode="Recycling"
                                       ScrollViewer.CanContentScroll="True"
-                                      ItemsSource="{Binding RefTab.SearchResultsView, IsAsync=True}">
+                                      ItemsSource="{Binding RefTab.SearchResults, IsAsync=True}">
                             <ListView.Resources>
                                 <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
