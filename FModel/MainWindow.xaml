@@ -27,6 +27,25 @@
         </TaskbarItemInfo>
     </Window.TaskbarItemInfo>
     <Window.Resources>
+        <Style x:Key="ArchiveInformationTextStyle" TargetType="TextBlock">
+            <Setter Property="Visibility" Value="Visible" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding SelectedItem.IsLooseFilesContainer, ElementName=DirectoryFilesListBox}" Value="True">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="AssetArchiveInformationTextStyle" TargetType="TextBlock">
+            <Setter Property="Visibility" Value="Visible" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName}" Value="{x:Null}">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName}" Value="">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
         <Canvas x:Key="ExportSessionIcon" x:Shared="False" Width="24" Height="24">
             <Path Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}"
                   StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
@@ -318,83 +337,17 @@
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.MountPoint, ElementName=DirectoryFilesListBox, FallbackValue='/', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding SelectedItem.IsLooseFilesContainer, ElementName=DirectoryFilesListBox}" Value="True">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Mount Point" VerticalAlignment="Center" HorizontalAlignment="Right">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding SelectedItem.IsLooseFilesContainer, ElementName=DirectoryFilesListBox}" Value="True">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.MountPoint, ElementName=DirectoryFilesListBox, FallbackValue='/', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" Style="{StaticResource ArchiveInformationTextStyle}" />
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Mount Point" VerticalAlignment="Center" HorizontalAlignment="Right" Style="{StaticResource ArchiveInformationTextStyle}" />
 
                                         <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.FileCount, ElementName=DirectoryFilesListBox, FallbackValue='0', StringFormat={}{0:N0} Files}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                         <TextBlock Grid.Row="1" Grid.Column="1" Text="File Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
 
-                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding SelectedItem.IsEncrypted, ElementName=DirectoryFilesListBox, FallbackValue='False'}" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding SelectedItem.IsLooseFilesContainer, ElementName=DirectoryFilesListBox}" Value="True">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="Is Encrypted" VerticalAlignment="Center" HorizontalAlignment="Right">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding SelectedItem.IsLooseFilesContainer, ElementName=DirectoryFilesListBox}" Value="True">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding SelectedItem.IsEncrypted, ElementName=DirectoryFilesListBox, FallbackValue='False'}" VerticalAlignment="Center" HorizontalAlignment="Left" Style="{StaticResource ArchiveInformationTextStyle}" />
+                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="Is Encrypted" VerticalAlignment="Center" HorizontalAlignment="Right" Style="{StaticResource ArchiveInformationTextStyle}" />
 
-                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.Guid, ElementName=DirectoryFilesListBox, FallbackValue='00000000000000000000000000000000'}" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding SelectedItem.IsLooseFilesContainer, ElementName=DirectoryFilesListBox}" Value="True">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                        <TextBlock Grid.Row="3" Grid.Column="1" Text="Global Unique Identifier" VerticalAlignment="Center" HorizontalAlignment="Right">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding SelectedItem.IsLooseFilesContainer, ElementName=DirectoryFilesListBox}" Value="True">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.Guid, ElementName=DirectoryFilesListBox, FallbackValue='00000000000000000000000000000000'}" VerticalAlignment="Center" HorizontalAlignment="Left" Style="{StaticResource ArchiveInformationTextStyle}" />
+                                        <TextBlock Grid.Row="3" Grid.Column="1" Text="Global Unique Identifier" VerticalAlignment="Center" HorizontalAlignment="Right" Style="{StaticResource ArchiveInformationTextStyle}" />
                                     </Grid>
                                 </StackPanel>
                             </Grid>
@@ -535,128 +488,16 @@
                                             <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.Asset.Offset, ElementName=AssetsListName, FallbackValue=0, StringFormat='{}0x{0:X}'}" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName}" Value="{x:Null}">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName}" Value="">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Offset" VerticalAlignment="Center" HorizontalAlignment="Right">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName}" Value="{x:Null}">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName}" Value="">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.Asset.Offset, ElementName=AssetsListName, FallbackValue=0, StringFormat='{}0x{0:X}'}" VerticalAlignment="Center" HorizontalAlignment="Left" Style="{StaticResource AssetArchiveInformationTextStyle}" />
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Offset" VerticalAlignment="Center" HorizontalAlignment="Right" Style="{StaticResource AssetArchiveInformationTextStyle}" />
                                         <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.Asset.Size, ElementName=AssetsListName, FallbackValue=0, Converter={x:Static converters:SizeToStringConverter.Instance}}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                         <TextBlock Grid.Row="1" Grid.Column="1" Text="Size" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding SelectedItem.Asset.CompressionMethod, ElementName=AssetsListName, FallbackValue='Unknown'}" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName}" Value="{x:Null}">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName}" Value="">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="Compression Method" VerticalAlignment="Center" HorizontalAlignment="Right">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName}" Value="{x:Null}">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName}" Value="">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.Asset.IsEncrypted, ElementName=AssetsListName, FallbackValue='False'}" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName}" Value="{x:Null}">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName}" Value="">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                        <TextBlock Grid.Row="3" Grid.Column="1" Text="Is Encrypted" VerticalAlignment="Center" HorizontalAlignment="Right">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName}" Value="{x:Null}">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName}" Value="">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                        <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName, FallbackValue='None'}" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName}" Value="{x:Null}">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName}" Value="">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                        <TextBlock Grid.Row="4" Grid.Column="1" Text="Included In Archive" VerticalAlignment="Center" HorizontalAlignment="Right">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName}" Value="{x:Null}">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName}" Value="">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding SelectedItem.Asset.CompressionMethod, ElementName=AssetsListName, FallbackValue='Unknown'}" VerticalAlignment="Center" HorizontalAlignment="Left" Style="{StaticResource AssetArchiveInformationTextStyle}" />
+                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="Compression Method" VerticalAlignment="Center" HorizontalAlignment="Right" Style="{StaticResource AssetArchiveInformationTextStyle}" />
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.Asset.IsEncrypted, ElementName=AssetsListName, FallbackValue='False'}" VerticalAlignment="Center" HorizontalAlignment="Left" Style="{StaticResource AssetArchiveInformationTextStyle}" />
+                                        <TextBlock Grid.Row="3" Grid.Column="1" Text="Is Encrypted" VerticalAlignment="Center" HorizontalAlignment="Right" Style="{StaticResource AssetArchiveInformationTextStyle}" />
+                                        <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding SelectedItem.Asset.Vfs.Name, ElementName=AssetsListName, FallbackValue='None'}" VerticalAlignment="Center" HorizontalAlignment="Left" Style="{StaticResource AssetArchiveInformationTextStyle}" />
+                                        <TextBlock Grid.Row="4" Grid.Column="1" Text="Included In Archive" VerticalAlignment="Center" HorizontalAlignment="Right" Style="{StaticResource AssetArchiveInformationTextStyle}" />
                                     </Grid>
                                 </StackPanel>
                             </Grid>
