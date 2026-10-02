@@ -32,7 +32,7 @@ public class ManifestInfoDilly
 
 public class CloudContent
 {
-    public string ManifestPath { get; private set; }
+    [J] public string ManifestPath { get; private set; }
 }
 
 public class Donator
