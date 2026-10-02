@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Windows;
+using FModel.Settings;
 using FModel.ViewModels;
 using FModel.Views.Resources.Controls;
 using Ookii.Dialogs.Wpf;
@@ -59,6 +60,21 @@ public partial class DirectorySelector
 
     private void OnClick(object sender, RoutedEventArgs e)
     {
+        if (DataContext is GameSelectorViewModel {SelectedDirectory.IsDirectoryMissing: true})
+        {
+            var messageBox = new MessageBoxModel
+            {
+                Text = "The selected game directory does not exist.\nPoint it to another folder or remove the game.",
+                Caption = "Directory Not Found",
+                Icon = MessageBoxImage.Warning,
+                Buttons = [MessageBoxButtons.Ok()],
+                IsSoundEnabled = false
+            };
+
+            MessageBox.Show(messageBox);
+            return;
+        }
+
         DialogResult = true;
         Close();
     }
@@ -88,13 +104,56 @@ public partial class DirectorySelector
     private void OnAddDirectory(object sender, RoutedEventArgs e)
     {
         if (DataContext is not GameSelectorViewModel gameLauncherViewModel ||
-            string.IsNullOrEmpty(HelloMyNameIsGame.Text) ||
             string.IsNullOrEmpty(HelloGameMyNameIsDirectory.Text))
             return;
 
-        gameLauncherViewModel.AddUndetectedDir(HelloMyNameIsGame.Text, HelloGameMyNameIsDirectory.Text);
+        var gameDirectory = HelloGameMyNameIsDirectory.Text.Trim();
+        var gameName = HelloMyNameIsGame.Text.Trim();
+
+        if (gameName.Length == 0)
+        {
+            gameLauncherViewModel.AddUndetectedDir(gameDirectory);
+        }
+        else
+        {
+            gameLauncherViewModel.AddUndetectedDir(gameName, gameDirectory);
+        }
         HelloMyNameIsGame.Clear();
         HelloGameMyNameIsDirectory.Clear();
+    }
+
+    private void OnChangeItemDirectory(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is not GameSelectorViewModel gameLauncherViewModel ||
+            sender is not FrameworkElement {DataContext: DirectorySettings directory})
+            return;
+
+        var folderBrowser = new VistaFolderBrowserDialog {ShowNewFolderButton = false};
+        if (folderBrowser.ShowDialog() == true)
+        {
+            gameLauncherViewModel.ChangeDirectory(directory, folderBrowser.SelectedPath);
+        }
+    }
+
+    private void OnDeleteItemDirectory(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is not GameSelectorViewModel gameLauncherViewModel ||
+            sender is not FrameworkElement {DataContext: DirectorySettings directory})
+            return;
+
+        gameLauncherViewModel.DeleteDirectory(directory);
+    }
+
+    private void OnDetectedGamesDropDownOpened(object sender, EventArgs e)
+    {
+        if (DataContext is GameSelectorViewModel gameSelectorViewModel)
+            gameSelectorViewModel.RefreshDirectories();
+    }
+
+    private void OnToggleMissingDirectories(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is GameSelectorViewModel gameSelectorViewModel)
+            gameSelectorViewModel.IsMissingDirectoriesVisible = !gameSelectorViewModel.IsMissingDirectoriesVisible;
     }
 
     private void OnDeleteDirectory(object sender, RoutedEventArgs e)

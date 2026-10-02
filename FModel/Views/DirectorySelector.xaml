@@ -47,7 +47,7 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Detected Game" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Grid Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5">
+                    <Grid Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Margin="0 0 0 5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="5" />
@@ -57,10 +57,28 @@
                         <controls:FilterableComboBox Grid.Column="0" ItemsSource="{Binding DetectedDirectories}"
                                                      Style="{StaticResource UComboBox}"
                                                      adonisExtensions:WatermarkExtension.Watermark="Search for a game..."
-                                                     VerticalAlignment="Center" SelectedItem="{Binding SelectedDirectory, Mode=TwoWay}">
+                                                     VerticalAlignment="Center" SelectedItem="{Binding SelectedDirectory, Mode=TwoWay}"
+                                                     DropDownOpened="OnDetectedGamesDropDownOpened">
+                            <controls:FilterableComboBox.ItemContainerStyle>
+                                <Style TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
+                                    <Setter Property="IsEnabled" Value="{Binding IsDirectoryMissing, Converter={x:Static converters:InvertBooleanConverter.Instance}}" />
+                                </Style>
+                            </controls:FilterableComboBox.ItemContainerStyle>
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding GameName, Converter={x:Static converters:StringToGameConverter.Instance}}" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Column="0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                                   Text="{Binding GameName, Converter={x:Static converters:StringToGameConverter.Instance}}" />
+
+                                        <TextBlock Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center" Text="(directory not found)"
+                                                   Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"
+                                                   Visibility="{Binding IsDirectoryMissing, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                    </Grid>
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </controls:FilterableComboBox>
@@ -73,7 +91,7 @@
                                 Visibility="{Binding IsDetectingGames, Converter={StaticResource BoolToVisibilityConverter}}" />
                     </Grid>
 
-                    <Grid x:Name="GameDetectionControls" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5">
+                    <Grid x:Name="GameDetectionControls" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Margin="0 0 0 5">
                         <Grid.Style>
                             <Style TargetType="Grid">
                                 <Style.Triggers>
@@ -101,8 +119,20 @@
                                    Text="{Binding DetectionStatus}" TextWrapping="Wrap" />
                     </Grid>
 
+                    <Button Grid.Row="0" Grid.Column="4" Width="24" Height="24" Margin="0 0 0 5" Padding="0"
+                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                            ToolTip="Show missing game directories"
+                            Visibility="{Binding MissingDirectories.Count, Converter={x:Static converters:IntGreaterThanZeroToVisibilityConverter.Instance}}"
+                            Click="OnToggleMissingDirectories">
+                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource WarningIcon}" />
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="UE Versions" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <controls:FilterableComboBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
+                    <controls:FilterableComboBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="0 0 0 5"
                                                  ItemsSource="{Binding UeGames}"
                                                  Style="{StaticResource UComboBox}"
                                                  VerticalAlignment="Center" SelectedItem="{Binding SelectedDirectory.UeVersion, Mode=TwoWay}">
@@ -127,8 +157,76 @@
                     </Button>
                 </Grid>
 
+                <Border Margin="0 10 0 0" Padding="10" CornerRadius="4" BorderThickness="1"
+                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
+                        BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
+                        Visibility="{Binding IsMissingDirectoriesVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <StackPanel>
+                        <Grid>
+                            <TextBlock Text="{Binding MissingDirectories.Count, StringFormat='Missing game directories ({0})'}"
+                                       FontWeight="SemiBold" VerticalAlignment="Center" />
+                            <Button Content="Remove all" HorizontalAlignment="Right" Padding="8 2" MinWidth="0"
+                                    ToolTip="Remove every game directory that no longer exists"
+                                    Click="OnClearDirectories" />
+                        </Grid>
+
+                        <TextBlock Text="Point them to another folder, or remove the ones you don't have anymore"
+                                   TextWrapping="Wrap" Margin="0 2 0 0"
+                                   Foreground="{DynamicResource {x:Static adonisUi:Brushes.Layer3InteractionForegroundBrush}}" />
+
+                        <ScrollViewer MaxHeight="{Binding Source={x:Static SystemParameters.PrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.20'}"
+                                      VerticalScrollBarVisibility="Auto" CanContentScroll="False" Focusable="False" Margin="0 4 0 0">
+                            <ItemsControl ItemsSource="{Binding MissingDirectories}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderThickness="0,1,0,0" Padding="0,5"
+                                                BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <StackPanel Grid.Column="0" Margin="0 0 8 0" VerticalAlignment="Center">
+                                                    <TextBlock TextTrimming="CharacterEllipsis"
+                                                               Text="{Binding GameName, Converter={x:Static converters:StringToGameConverter.Instance}}" />
+                                                    <TextBlock TextTrimming="CharacterEllipsis" FontSize="11"
+                                                               Text="{Binding GameDirectory}"
+                                                               Foreground="{DynamicResource {x:Static adonisUi:Brushes.Layer3InteractionForegroundBrush}}" />
+                                                </StackPanel>
+
+                                                <Button Grid.Column="1" Width="22" Height="22" Padding="0"
+                                                        ToolTip="Point to another directory"
+                                                        Click="OnChangeItemDirectory">
+                                                    <Viewbox Width="12" Height="12" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource FolderIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </Button>
+
+                                                <Button Grid.Column="2" Width="22" Height="22" Margin="4 0 0 0" Padding="0"
+                                                        Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
+                                                        ToolTip="Remove game"
+                                                        Click="OnDeleteItemDirectory">
+                                                    <Viewbox Width="12" Height="12" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TrashIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </Button>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </StackPanel>
+                </Border>
+
                 <Separator Style="{StaticResource CustomSeparator}" Tag="ADD UNDETECTED GAME" Margin="0,0,0,0"/>
-                <TextBlock Text="Drag &amp; drop folder to quickly configure new game" 
+                <TextBlock Text="Drag &amp; drop folder to quickly configure new game"
                            HorizontalAlignment="Center"
                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                            Margin="0,0,0,5" />
@@ -173,18 +271,14 @@
                 adonisExtensions:LayerExtension.IncreaseLayer="True">
             <Grid Margin="30, 12, 6, 12">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0" MinWidth="78" Margin="0 0 12 0"
-                        HorizontalAlignment="Left" VerticalAlignment="Bottom" Content="Clear"
-                        ToolTip="Remove game directories that no longer exist" Click="OnClearDirectories" />
-                <Button Grid.Column="2" MinWidth="78" Margin="0 0 12 0" IsDefault="True" IsCancel="False"
+                <Button Grid.Column="1" MinWidth="78" Margin="0 0 12 0" IsDefault="True" IsCancel="False"
                         HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK" Click="OnClick" />
-                <Button Grid.Column="3" MinWidth="78" Margin="0 0 12 0" IsDefault="False"  IsCancel="True"
+                <Button Grid.Column="2" MinWidth="78" Margin="0 0 12 0" IsDefault="False"  IsCancel="True"
                         HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Cancel" />
             </Grid>
         </Border>

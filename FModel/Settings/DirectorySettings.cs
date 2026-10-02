@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Versions;
 using FModel.Framework;
 using FModel.ViewModels.ApiEndpoints.Models;
+using Newtonsoft.Json;
 
 namespace FModel.Settings;
 
@@ -41,8 +43,25 @@ public class DirectorySettings : ViewModel, ICloneable
     public string GameDirectory
     {
         get => _gameDirectory;
-        set => SetProperty(ref _gameDirectory, value);
+        set
+        {
+            if (SetProperty(ref _gameDirectory, value))
+                IsDirectoryMissing = !IsDirectoryAvailable(value);
+        }
     }
+
+    private bool _isDirectoryMissing;
+    [JsonIgnore]
+    public bool IsDirectoryMissing
+    {
+        get => _isDirectoryMissing;
+        private set => SetProperty(ref _isDirectoryMissing, value);
+    }
+
+    public static bool IsDirectoryAvailable(string gameDirectory)
+        => gameDirectory is Constants._FN_LIVE_TRIGGER or Constants._VAL_LIVE_TRIGGER || Directory.Exists(gameDirectory);
+
+    public void RefreshDirectoryAvailability() => IsDirectoryMissing = !IsDirectoryAvailable(GameDirectory);
 
     private bool _isManual;
     public bool IsManual
