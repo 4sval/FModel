@@ -220,13 +220,15 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
         var audioDevices = new ObservableCollection<MMDevice>(EnumerateDevices());
         AudioDevicesView = new ListCollectionView(audioDevices) { SortDescriptions = { new SortDescription("FriendlyName", ListSortDirection.Ascending) } };
-        SelectedAudioDevice = audioDevices.FirstOrDefault(x => x.DeviceID == UserSettings.Default.AudioDeviceId) ?? GetDefaultAudioDevice() ?? audioDevices.FirstOrDefault();
+        SelectedAudioDevice = audioDevices.FirstOrDefault(x => x.DeviceID == UserSettings.Default.AudioDeviceId)
+                              ?? GetDefaultAudioDevice(audioDevices)
+                              ?? audioDevices.FirstOrDefault();
     }
 
-    private MMDevice GetDefaultAudioDevice()
+    private static MMDevice GetDefaultAudioDevice(IEnumerable<MMDevice> audioDevices)
     {
-        using var enumerator = new MMDeviceEnumerator();
-        return enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+        using var defaultDevice = MMDeviceEnumerator.TryGetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+        return defaultDevice == null ? null : audioDevices.FirstOrDefault(x => x.DeviceID == defaultDevice.DeviceID);
     }
 
     public void Load()
@@ -591,9 +593,6 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         using var deviceCollection = deviceEnumerator.EnumAudioEndpoints(DataFlow.Render, DeviceState.Active);
         foreach (var device in deviceCollection)
         {
-            if (device.DeviceID == UserSettings.Default.AudioDeviceId)
-                SelectedAudioDevice = device;
-
             yield return device;
         }
     }
