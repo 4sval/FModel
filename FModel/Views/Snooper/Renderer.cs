@@ -4,15 +4,18 @@ using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Windows;
+using CUE4Parse.GameTypes.Nascar.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Component.SplineMesh;
 using CUE4Parse.UE4.Assets.Exports.Component.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
+using CUE4Parse.UE4.Assets.Exports.Houdini;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
+using CUE4Parse.GameTypes.Nascar.Assets.Exports;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Objects.Engine;
@@ -22,6 +25,7 @@ using CUE4Parse_Conversion.Animations;
 using CUE4Parse_Conversion.Dto;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Options;
+using CUE4Parse.UE4.Assets.Exports.Component;
 using FModel.Creator;
 using FModel.Settings;
 using FModel.Views.Snooper.Animations;
@@ -89,6 +93,15 @@ public class Renderer : IDisposable
         {
             case UStaticMesh when export.Value is UStaticMesh st:
                 LoadStaticMesh(st, UserSettings.Default.NaniteMeshExportFormat);
+                break;
+            case UIRMesh when export.Value is UIRMesh irmc:
+                LoadIRMeshCollection(irmc);
+                break;
+            case UIRMeshComponent when export.Value is UIRMeshComponent meshcomp:
+                LoadIRMeshComponent(meshcomp);
+                break;
+            case UHoudiniStaticMesh when export.Value is UHoudiniStaticMesh hst:
+                LoadHoudiniStaticMesh(hst);
                 break;
             case UGeometryCollection when export.Value is UGeometryCollection gc:
                 LoadStaticMesh(gc, UserSettings.Default.NaniteMeshExportFormat);
@@ -366,13 +379,72 @@ public class Renderer : IDisposable
         Options.SelectModel(guid);
     }
 
+    private void LoadIRMeshCollection(UIRMesh original, FPackageIndex[]? materials = null)
+    {
+        var hash = (uint) original.GetFullName().GetHashCode();
+        var guid = new FGuid(hash);
+        if (Options.TryGetModel(guid, out var model))
+            return;
+
+        if (materials is not null && original.Info.MaterialCount == materials.Length)
+            original.SetMaterials(materials);
+        for (int i = 0; i < original.Info.PartCount; i++)
+        {
+            try
+            {
+                var mesh = new StaticMeshDto(original, i);
+                Options.Models[new FGuid(hash ^ (uint) i)] = new StaticModel(original, mesh, i) { IsVisible = true };
+                mesh.Dispose();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Failed to convert IR static mesh part {PartIndex}", i);
+            }
+        }
+
+        Options.SelectModel(guid);
+    }
+
+    private void LoadIRMeshComponent(UIRMeshComponent original)
+    {
+        if (original.Mesh is { IsNull: false } meshref && meshref.TryLoad(out UIRMesh mesh))
+        {
+            LoadIRMeshCollection(mesh, original.OverrideMaterials);
+        }
+    }
+
+    private void LoadHoudiniStaticMesh(UHoudiniStaticMesh original)
+    {
+        var guid = new FGuid((uint) original.GetFullName().GetHashCode());
+        if (Options.TryGetModel(guid, out var model))
+        {
+            model.AddInstance(Transform.Identity);
+            Application.Current.Dispatcher.Invoke(model.SetupInstances);
+            return;
+        }
+
+        StaticMeshDto mesh;
+        try
+        {
+            mesh = new StaticMeshDto(original);
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "Failed to convert houdini static mesh");
+            return;
+        }
+
+        Options.Models[guid] = new StaticModel(original, mesh);
+        Options.SelectModel(guid);
+    }
+
     private void LoadStaticMesh(UGeometryCollection original, ENaniteMeshFormat naniteFormat = ENaniteMeshFormat.NoNanite)
     {
         var guid = new FGuid((uint) original.GetFullName().GetHashCode());
         if (Options.TryGetModel(guid, out var model))
         {
             model.AddInstance(Transform.Identity);
-            Application.Current.Dispatcher.Invoke(() => model.SetupInstances());
+            Application.Current.Dispatcher.Invoke(model.SetupInstances);
             return;
         }
 
@@ -397,7 +469,7 @@ public class Renderer : IDisposable
         if (Options.TryGetModel(guid, out var model))
         {
             model.AddInstance(Transform.Identity);
-            Application.Current.Dispatcher.Invoke(() => model.SetupInstances());
+            Application.Current.Dispatcher.Invoke(model.SetupInstances);
             return;
         }
 
@@ -408,7 +480,7 @@ public class Renderer : IDisposable
         }
         catch (Exception e)
         {
-            Log.Error(e, "Failed to convert chaos cloth asset");
+            Log.Error(e, "Failed to convert skinned asset");
             return;
         }
 
@@ -456,7 +528,7 @@ public class Renderer : IDisposable
         if (Options.TryGetModel(guid, out var model))
         {
             model.AddInstance(Transform.Identity);
-            Application.Current.Dispatcher.Invoke(() => model.SetupInstances());
+            Application.Current.Dispatcher.Invoke(model.SetupInstances);
             return;
         }
 
@@ -581,26 +653,33 @@ public class Renderer : IDisposable
         {
             foreach (var component in instanceComponents)
             {
-                if (!component.TryLoad(out UStaticMeshComponent staticMeshComp) ||
-                    !staticMeshComp.GetStaticMesh().TryLoad(out UStaticMesh m) || m.Materials.Length < 1)
-                    continue;
+                if (!component.TryLoad(out UMeshComponent meshComponent)) continue;
 
-                var relation = CalculateTransform(staticMeshComp, transform);
-                if (staticMeshComp is UInstancedStaticMeshComponent { PerInstanceSMData.Length: > 0 } instancedStaticMeshComp)
+                if (meshComponent is UStaticMeshComponent staticMeshComp)
                 {
+                    if (!staticMeshComp.GetStaticMesh().TryLoad(out UStaticMesh m) || m.Materials.Length < 1)
+                        continue;
 
-                    foreach (var perInstanceData in instancedStaticMeshComp.PerInstanceSMData)
+                    var relation = CalculateTransform(staticMeshComp, transform);
+                    if (staticMeshComp is UInstancedStaticMeshComponent { PerInstanceSMData.Length: > 0 } instancedStaticMeshComp)
                     {
-                        ProcessMesh(actor, instancedStaticMeshComp, m, new Transform
+                        foreach (var perInstanceData in instancedStaticMeshComp.PerInstanceSMData)
                         {
-                            Relation = relation.Matrix,
-                            Position = perInstanceData.TransformData.Translation * Constants.SCALE_DOWN_RATIO,
-                            Rotation = perInstanceData.TransformData.Rotation,
-                            Scale = perInstanceData.TransformData.Scale3D
-                        });
+                            ProcessMesh(actor, instancedStaticMeshComp, m, new Transform
+                            {
+                                Relation = relation.Matrix,
+                                Position = perInstanceData.TransformData.Translation * Constants.SCALE_DOWN_RATIO,
+                                Rotation = perInstanceData.TransformData.Rotation,
+                                Scale = perInstanceData.TransformData.Scale3D
+                            });
+                        }
                     }
+                    else ProcessMesh(actor, staticMeshComp, m, relation);
                 }
-                else ProcessMesh(actor, staticMeshComp, m, relation);
+                else if (meshComponent is UIRMeshComponent irMeshComponent)
+                {
+                    LoadIRMeshComponent(irMeshComponent);
+                }
             }
         }
         else if (actor.TryGetValue(out FPackageIndex componentTemplate, "ComponentTemplate") &&

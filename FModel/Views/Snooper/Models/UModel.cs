@@ -46,7 +46,7 @@ public abstract class UModel<TVertex> : IRenderableModel where TVertex : struct,
     public VertexArrayObject<float, uint> Vao { get; set; }
 
     public string Path { get; }
-    public string Name { get; }
+    public string Name { get; protected set; }
     public string Type { get; protected set; }
     public int UvCount { get; }
     public uint[] Indices { get; set; }

@@ -23,17 +23,6 @@ public sealed class FolderTree : ListBox
 
     public event EventHandler OpenAssets;
 
-    public FolderTree()
-    {
-        IsVisibleChanged += (_, e) =>
-        {
-            if (e.NewValue is true)
-            {
-                RevealSelection();
-            }
-        };
-    }
-
     public void SelectFolder(TreeItem folder)
     {
         Folders.Reveal(folder);
@@ -50,14 +39,6 @@ public sealed class FolderTree : ListBox
         else
         {
             Focus();
-        }
-    }
-
-    public void RevealSelection()
-    {
-        if (SelectedItem is TreeItem folder)
-        {
-            this.RevealItem(folder, alignToTop: true);
         }
     }
 

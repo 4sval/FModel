@@ -47,14 +47,12 @@ public class BaseIcon : UCreator
         {
             if (isUsingDisplayAsset && Utils.TryGetDisplayAsset(Object, out var preview))
                 Preview = preview;
-            else if (Object.TryGetValue(out FPackageIndex itemDefinition, "HeroDefinition", "WeaponDefinition"))
+            else if (Object.TryGetValue(out ILoadableObject itemDefinition, "HeroDefinition", "WeaponDefinition"))
                 Preview = Utils.GetBitmap(itemDefinition);
-            else if (Object.TryGetValue(out FSoftObjectPath largePreview, "LargePreviewImage", "EntryListIcon", "SmallPreviewImage", "BundleImage", "ItemDisplayAsset", "LargeIcon", "ToastIcon", "SmallIcon", "CartridgeIcon", "EffectIcon"))
+            else if (Object.TryGetValue(out ILoadableObject largePreview, "LargePreviewImage", "EntryListIcon", "SmallPreviewImage", "BundleImage", "ItemDisplayAsset", "LargeIcon", "ToastIcon", "SmallIcon", "CartridgeIcon", "EffectIcon", "ToastIcon", "access_item"))
                 Preview = Utils.GetBitmap(largePreview);
             else if (Object.TryGetValue(out string s, "LargePreviewImage") && !string.IsNullOrEmpty(s))
                 Preview = Utils.GetBitmap(s);
-            else if (Object.TryGetValue(out FPackageIndex otherPreview, "SmallPreviewImage", "ToastIcon", "access_item"))
-                Preview = Utils.GetBitmap(otherPreview);
             else if (Object.TryGetValue(out UMaterialInstanceConstant materialInstancePreview, "EventCalloutImage"))
                 Preview = Utils.GetBitmap(materialInstancePreview);
             else if (Object.TryGetValue(out FStructFallback brush, "IconBrush", "BuildingSymbolNormal") && brush.TryGetValue(out UTexture2D res, "ResourceObject"))
