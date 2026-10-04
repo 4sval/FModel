@@ -60,11 +60,11 @@ public static class Utils
         return preview != null;
     }
 
-    public static SKBitmap GetBitmap(FPackageIndex packageIndex)
+    public static SKBitmap GetBitmap(ILoadableObject loadableObject)
     {
         while (true)
         {
-            if (!TryGetPackageIndexExport(packageIndex, out UObject export)) return null;
+            if (!loadableObject.TryLoad(out UObject export)) return null;
             switch (export)
             {
                 case UTexture2D texture:
@@ -74,13 +74,8 @@ public static class Utils
                 default:
                 {
                     if (export.TryGetValue(out FInstancedStruct[] dataList, "DataList")) return GetBitmap(dataList);
-                    if (export.TryGetValue(out FSoftObjectPath previewImage, "LargePreviewImage", "SmallPreviewImage")) return GetBitmap(previewImage);
+                    if (export.TryGetValue(out ILoadableObject previewImage, "LargePreviewImage", "SmallPreviewImage")) return GetBitmap(previewImage);
                     if (export.TryGetValue(out string largePreview, "LargePreviewImage")) return GetBitmap(largePreview);
-                    if (export.TryGetValue(out FPackageIndex smallPreview, "SmallPreviewImage"))
-                    {
-                        packageIndex = smallPreview;
-                        continue;
-                    }
 
                     return null;
                 }
@@ -128,7 +123,6 @@ public static class Utils
     }
 
     public static SKBitmap GetB64Bitmap(string b64) => SKBitmap.Decode(new MemoryStream(Convert.FromBase64String(b64)) { Position = 0 });
-    public static SKBitmap GetBitmap(FSoftObjectPath softObjectPath) => GetBitmap(softObjectPath.Load<UTexture2D>());
     public static SKBitmap GetBitmap(string fullPath) => TryLoadObject(fullPath, out UTexture2D texture) ? GetBitmap(texture) : null;
     public static SKBitmap GetBitmap(UTexture2D texture) => texture.Decode(UserSettings.Default.CurrentDir.TexturePlatform).ToSkBitmap();
     public static SKBitmap GetBitmap(byte[] data) => SKBitmap.Decode(data);

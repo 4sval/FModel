@@ -19,6 +19,8 @@ using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
+using CUE4Parse.GameTypes.ACE8.Assets.Exports;
+using CUE4Parse.GameTypes.ACE8.Encryption;
 using CUE4Parse.GameTypes.Aion2.Objects;
 using CUE4Parse.GameTypes.AoC.Objects;
 using CUE4Parse.GameTypes.AshEchoes.FileProvider;
@@ -749,6 +751,11 @@ public class CUE4ParseViewModel : ViewModel
                 ProcessAion2DatFile(entry, updateUi, saveProperties);
                 break;
             }
+            case "dat" when Provider.Versions.Game is GAME_AceCombat8WingsofTheve:
+            {
+                ProcessACE8DatFile(entry, updateUi, saveProperties);
+                break;
+            }
             case "bytes" when Provider.Versions.Game is GAME_RocoKingdomWorld:
             {
                 ProcessRocoBinFile(entry, updateUi, saveProperties);
@@ -1067,6 +1074,7 @@ public class CUE4ParseViewModel : ViewModel
             }
             case "res": // just skip
             case "bytes": // wuthering waves
+            case "ffxanim": // dead island 2
                 break;
             default:
             {
@@ -1190,6 +1198,43 @@ public class CUE4ParseViewModel : ViewModel
 
             TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(dbc, Formatting.Indented), saveProperties, updateUi);
         }
+
+        // Ace Combat 8
+        void ProcessACE8DatFile(GameFile entry, bool updateUi, bool saveProperties)
+        {
+            TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("json");
+
+            if (entry.NameWithoutExtension.EndsWith("_Cmn"))
+            {
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ACE8LocDecrypt.ReadKeysDatFile(entry), Formatting.Indented), saveProperties, updateUi);
+            }
+            else
+            {
+                if (Provider.TryGetGameFile(entry.PathWithoutExtension[..^1] + "Cmn." + entry.Extension, out var keysDatFile))
+                {
+                    var keys = ACE8LocDecrypt.ReadKeysDatFile(keysDatFile);
+                    var values = ACE8LocDecrypt.ReadDatFile(entry);
+                    var locTable = new Dictionary<string, string>(Math.Max(keys.Count, values.Length));
+                    var k = 0;
+                    for (var i = 0; i < values.Length; i++)
+                    {
+                        if (keys.TryGetValue(i, out var key))
+                        {
+                            locTable[key] = values[i];
+                        }
+                        else
+                        {
+                            locTable[$"UnknownKey_{k++}"] = values[i];
+                        }
+                    }
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(locTable, Formatting.Indented), saveProperties, updateUi);
+                }
+                else
+                {
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ACE8LocDecrypt.ReadDatFile(entry), Formatting.Indented), saveProperties, updateUi);
+                }
+            }
+        }
     }
 
     private byte[] ProcessLuaFile(byte[] data)
@@ -1259,6 +1304,8 @@ public class CUE4ParseViewModel : ViewModel
             if (CheckExport(cancellationToken, result.Package, i, ref showSnooper))
                 break;
         }
+
+        if (showSnooper) SnooperViewer.Run();
     }
 
     private bool CheckExport(CancellationToken cancellationToken, IPackage pkg, int index, ref bool showSnooper, EBulkType bulk = EBulkType.None) // return true once you want to stop searching for exports
@@ -1276,11 +1323,21 @@ public class CUE4ParseViewModel : ViewModel
         {
             case UVerseDigest when isNone && pointer.Object.Value is UVerseDigest verseDigest:
             {
-                if (!TabControl.CanAddTabs) return false;
+                if (verseDigest.ReadableCode is null || !TabControl.CanAddTabs) return false;
 
                 TabControl.AddTab($"{verseDigest.Name}.verse");
                 TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("verse");
-                TabControl.SelectedTab.SetDocumentText(verseDigest.ReadableCode, false, false);
+                TabControl.SelectedTab.SetDocumentText(Encoding.UTF8.GetString(verseDigest.ReadableCode), false, false);
+                return true;
+            }
+            // Ace Combat 8
+            case ULuaScript when isNone && pointer.Object.Value is ULuaScript luaScript:
+            {
+                if (!TabControl.CanAddTabs) return false;
+
+                TabControl.AddTab($"{luaScript.Name}.lua");
+                TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("lua");
+                TabControl.SelectedTab.SetDocumentText(luaScript.Code, false, false);
                 return true;
             }
             case UTexture when (isNone || saveTextures) && pointer.Object.Value is UTexture texture:
