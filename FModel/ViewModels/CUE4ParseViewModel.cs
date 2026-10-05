@@ -1231,7 +1231,7 @@ public class CUE4ParseViewModel : ViewModel
 
                 TabControl.AddTab($"{verseDigest.Name}.verse");
                 TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("verse");
-                TabControl.SelectedTab.SetDocumentText(verseDigest.ReadableCode, false, false);
+                TabControl.SelectedTab.SetDocumentText(Encoding.UTF8.GetString(verseDigest.ReadableCode), false, false);
                 return true;
             }
             case UTexture when (isNone || saveTextures) && pointer.Object.Value is UTexture texture:

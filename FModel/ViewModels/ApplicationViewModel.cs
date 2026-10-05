@@ -285,7 +285,7 @@ public class ApplicationViewModel : ViewModel
 
     public static async Task InitImGuiSettings(bool forceDownload)
     {
-        const string imgui = "imgui.ini";
+        const string imgui = "snooper.ini";
         var imguiPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", imgui);
 
         if (File.Exists(imgui)) File.Move(imgui, imguiPath, true);

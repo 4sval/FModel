@@ -10,13 +10,13 @@ using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Objects.Engine;
 using Editor;
+using Editor.Managers;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
 using Snooper.Hosting;
 using Snooper.Rendering.Actors;
 using Snooper.Rendering.Components;
-using Snooper.Rendering.Components.Light;
 using Snooper.Rendering.Components.Mesh;
 using Snooper.Rendering.Components.Primitive;
 using Snooper.Rendering.Components.Transforms;
@@ -28,6 +28,8 @@ public class SnooperViewModel : ViewModel, IDisposable
     public static SnooperViewModel Instance { get; } = new();
 
     private readonly SnooperHost _host;
+    private readonly SunActor _sun;
+    private readonly EnvironmentActor _environment;
 
     /// <summary>
     /// Mirrors <see cref="Bridge.PendingRequest"/> for bindings.
@@ -49,6 +51,8 @@ public class SnooperViewModel : ViewModel, IDisposable
         Bridge.PendingRequestChanged += request => PendingRequest = request;
 
         _host = new SnooperHost(() => new EditorWindow(htz, width, height, ApplicationService.ApplicationView.CUE4Parse.Provider, false, true));
+        _sun = new SunActor();
+        _environment = new EnvironmentActor();
     }
 
     public void Load(UObject? obj)
@@ -76,7 +80,12 @@ public class SnooperViewModel : ViewModel, IDisposable
         editor.Invoke(() =>
         {
             if (editor.Manager.RootActor == null)
+            {
+                // FIFO load the scene
                 editor.Manager.LoadScene(CreateScene(actor is not MeshActor));
+                editor.Manager.LoadScene(_sun);
+                editor.Manager.LoadScene(_environment);
+            }
 
             if (actor != null)
                 editor.Manager.LoadScene(actor);
@@ -88,6 +97,9 @@ public class SnooperViewModel : ViewModel, IDisposable
                 if (mesh.SnapToGround())
                     mesh.UpdateWorldMatrix(); // just so teleport works properly
                 mesh.TeleportTo();
+
+                if (editor.Manager is InterfaceManager ui)
+                    ui.SelectComponent(mesh);
             }
         });
     }
@@ -113,11 +125,6 @@ public class SnooperViewModel : ViewModel, IDisposable
         var camera = new CameraActor("Camera");
         camera.CameraComponent.SetLocalTransform(new Transform(new Vector3(0, 1.14f, 3.5f), new Vector3(180, 18, 0)));
         scene.Children.Add(camera);
-
-        const float distance = 500;
-        var sun = new Actor("Sun Light");
-        sun.Components.Add(new DirectionalLightComponent(MathF.PI, new Vector3(1.00f, 0.96f, 0.90f), new Transform(new Vector3(-distance, distance, distance), new Vector3(140, 37, 0)), "Directional Light"));
-        scene.Children.Add(sun);
 
         return scene;
     }
