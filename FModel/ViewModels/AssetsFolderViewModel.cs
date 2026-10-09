@@ -348,7 +348,7 @@ public class AssetsFolderViewModel : ViewModel
 
     public void BulkPopulate(IReadOnlyCollection<GameFile> entries)
     {
-        if (entries == null || entries.Count == 0)
+        if (entries == null)
             return;
 
         Application.Current.Dispatcher.Invoke(() =>
