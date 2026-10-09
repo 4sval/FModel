@@ -275,13 +275,6 @@ public sealed class UserSettings : ViewModel
         set => SetProperty(ref _convertAudioOnBulkExport, value);
     }
 
-    private bool _mergeEditorOnlyDataExports = false;
-    public bool MergeEditorOnlyDataExports
-    {
-        get => _mergeEditorOnlyDataExports;
-        set => SetProperty(ref _mergeEditorOnlyDataExports, value);
-    }
-
     private bool _decompileLua;
     public bool DecompileLua
     {
