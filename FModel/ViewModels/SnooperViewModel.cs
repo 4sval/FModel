@@ -3,10 +3,12 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
+using CUE4Parse.GameTypes.Nascar.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
+using CUE4Parse.UE4.Assets.Exports.Houdini;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Objects.Engine;
 using Editor;
@@ -62,6 +64,8 @@ public class SnooperViewModel : ViewModel, IDisposable
         Actor? actor = obj switch
         {
             UStaticMesh sm => new MeshActor(sm),
+            UIRMesh ir => new MeshActor(ir),
+            UHoudiniStaticMesh hsm => new MeshActor(hsm),
             USkinnedAsset sa => new MeshActor(sa),
             UGeometryCollection gc => new MeshActor(gc),
             UAnimationAsset anim => new MeshActor(anim),
@@ -82,9 +86,13 @@ public class SnooperViewModel : ViewModel, IDisposable
             if (editor.Manager.RootActor == null)
             {
                 // FIFO load the scene
-                editor.Manager.LoadScene(CreateScene(actor is not MeshActor));
+                var scene = new Actor("Scene");
+                scene.Components.Add(new BoxComponent(Vector3.Zero, Vector3.One)); // just so debug system is always loaded
+                editor.Manager.LoadScene(scene);
                 editor.Manager.LoadScene(_sun);
                 editor.Manager.LoadScene(_environment);
+                editor.Manager.LoadScene(new GridActor(actor is not MeshActor));
+                editor.Manager.LoadScene(new CameraActor());
             }
 
             if (actor != null)
@@ -111,22 +119,6 @@ public class SnooperViewModel : ViewModel, IDisposable
         var editor = _host.Window;
         editor.Invoke(editor.Show);
         return true;
-    }
-
-    private Actor CreateScene(bool transparentGrid)
-    {
-        var scene = new Actor("Scene");
-        scene.Components.Add(new BoxComponent(Vector3.Zero, Vector3.One));
-
-        var grid = new Actor("Grid");
-        grid.Components.Add(transparentGrid ? new GridComponent() : new OpaqueGridComponent());
-        scene.Children.Add(grid);
-
-        var camera = new CameraActor("Camera");
-        camera.CameraComponent.SetLocalTransform(new Transform(new Vector3(0, 1.14f, 3.5f), new Vector3(180, 18, 0)));
-        scene.Children.Add(camera);
-
-        return scene;
     }
 
     private void SetOptions()
