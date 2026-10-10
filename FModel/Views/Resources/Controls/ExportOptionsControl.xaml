@@ -216,10 +216,37 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
 
-        <TextBlock Grid.Row="13" Grid.Column="0" Text="Texture Quality" VerticalAlignment="Center" Margin="0 0 0 12" />
+        <TextBlock Grid.Row="13" Grid.Column="0" Text="Texture Quality" VerticalAlignment="Center" Margin="0 0 0 12"
+                   Visibility="{Binding ShowTextureQuality, Converter={StaticResource BoolToVisibilityConverter}}" />
         <Slider Grid.Row="13" Grid.Column="2" Grid.ColumnSpan="3" Minimum="1" Maximum="100" TickPlacement="None"
                 AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" Margin="0 0 0 12"
-                Value="{Binding TextureQuality, Mode=TwoWay}" />
+                Value="{Binding TextureQuality, Mode=TwoWay}"
+                Visibility="{Binding ShowTextureQuality, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+        <TextBlock x:Name="PngCompressionText" Grid.Row="13" Grid.Column="0" Text="PNG Compression" VerticalAlignment="Center" Margin="0 0 0 12"
+                   ToolTip="Lossless compression. Level 3 is recommended for speed."
+                   Visibility="{Binding ShowPngCompression, Converter={StaticResource BoolToVisibilityConverter}}" />
+        <Grid Grid.Row="13" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 12"
+              ToolTip="{Binding ToolTip, ElementName=PngCompressionText}"
+              Visibility="{Binding ShowPngCompression, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Slider x:Name="PngCompressionSlider" Minimum="0" Maximum="9" TickFrequency="1" TickPlacement="None"
+                    AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True"
+                    Value="{Binding PngCompressionLevel, Mode=TwoWay}" />
+            <TextBlock Grid.Column="1" Text="{Binding PngCompressionLevel}" VerticalAlignment="Center" Margin="8 0 0 0" />
+        </Grid>
+
+        <TextBlock Grid.Row="13" Grid.Column="0" Text="TGA RLE Compression" VerticalAlignment="Center" Margin="0 0 0 12"
+                   ToolTip="Lossless compression of repeated pixels. File size depends on the image."
+                   Visibility="{Binding ShowTgaCompression, Converter={StaticResource BoolToVisibilityConverter}}" />
+        <CheckBox Grid.Row="13" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 12"
+                  IsChecked="{Binding TgaRleCompression, Mode=TwoWay}"
+                  Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                  Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
+                  Visibility="{Binding ShowTgaCompression, Converter={StaticResource BoolToVisibilityConverter}}" />
 
         <TextBlock Grid.Row="14" Grid.Column="0" Text="Save HDR as .hdr" VerticalAlignment="Center" Margin="0 0 0 12" />
         <CheckBox Grid.Row="14" Grid.Column="2" Grid.ColumnSpan="3"

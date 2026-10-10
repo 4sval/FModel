@@ -69,7 +69,9 @@ public sealed class UserSettings : ViewModel
             Default.SaveEmbeddedMaterials,
             Default.SaveMorphTargets,
             Default.SocketExportFormat,
-            Default.CompressionFormat
+            Default.CompressionFormat,
+            Default.PngCompressionLevel,
+            Default.TgaRleCompression
         );
     }
 
@@ -520,6 +522,20 @@ public sealed class UserSettings : ViewModel
     {
         get => _textureQuality;
         set => SetProperty(ref _textureQuality, value);
+    }
+
+    private int _pngCompressionLevel = 3;
+    public int PngCompressionLevel
+    {
+        get => _pngCompressionLevel;
+        set => SetProperty(ref _pngCompressionLevel, Math.Clamp(value, 0, 9));
+    }
+
+    private bool _tgaRleCompression = true;
+    public bool TgaRleCompression
+    {
+        get => _tgaRleCompression;
+        set => SetProperty(ref _tgaRleCompression, value);
     }
 
     private ESocketFormat _socketExportFormat = ESocketFormat.Bone;
