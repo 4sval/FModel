@@ -1574,7 +1574,6 @@ public class CUE4ParseViewModel : ViewModel
             }
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:
             case UBlueprintGeneratedClass when isNone && UserSettings.Default.PreviewWorlds:
-            // case UPaperSprite when isNone && UserSettings.Default.PreviewMaterials:
             case UStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
             case UIRMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
             case UHoudiniStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
@@ -1582,11 +1581,11 @@ public class CUE4ParseViewModel : ViewModel
             case USkinnedAsset when isNone && UserSettings.Default.PreviewSkeletalMeshes:
             case USkeleton when isNone && UserSettings.Default.SaveSkeletonAsMesh:
             case UAnimationAsset when isNone && UserSettings.Default.PreviewAnimations:
-            // case UMaterialInstance when isNone && UserSettings.Default.PreviewMaterials &&
-            //                             !(Provider.ProjectName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase) &&
-            //                               (pkg.Name.Contains("/MI_OfferImages/", StringComparison.OrdinalIgnoreCase) ||
-            //                                pkg.Name.Contains("/RenderSwitch_Materials/", StringComparison.OrdinalIgnoreCase) ||
-            //                                pkg.Name.Contains("/MI_BPTile/", StringComparison.OrdinalIgnoreCase))):
+            case UMaterialInterface when isNone && UserSettings.Default.PreviewMaterials &&
+                                         !(Provider.ProjectName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase) &&
+                                           (pkg.Name.Contains("/MI_OfferImages/", StringComparison.OrdinalIgnoreCase) ||
+                                            pkg.Name.Contains("/RenderSwitch_Materials/", StringComparison.OrdinalIgnoreCase) ||
+                                            pkg.Name.Contains("/MI_BPTile/", StringComparison.OrdinalIgnoreCase))):
             {
                 SnooperViewModel.Instance.Load(pointer.Object.Value);
                 return true;

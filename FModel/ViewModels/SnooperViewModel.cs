@@ -9,8 +9,10 @@ using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
 using CUE4Parse.UE4.Assets.Exports.Houdini;
+using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Objects.Engine;
+using CUE4Parse_Conversion.Options;
 using Editor;
 using Editor.Managers;
 using FModel.Framework;
@@ -18,10 +20,8 @@ using FModel.Services;
 using FModel.Settings;
 using Snooper.Hosting;
 using Snooper.Rendering.Actors;
-using Snooper.Rendering.Components;
 using Snooper.Rendering.Components.Mesh;
 using Snooper.Rendering.Components.Primitive;
-using Snooper.Rendering.Components.Transforms;
 
 namespace FModel.ViewModels;
 
@@ -57,11 +57,11 @@ public class SnooperViewModel : ViewModel, IDisposable
         _environment = new EnvironmentActor();
     }
 
-    public void Load(UObject? obj)
+    public void Load(UObject obj)
     {
-        SetOptions();
+        SetOptions(obj);
 
-        Actor? actor = obj switch
+        Actor actor = obj switch
         {
             UStaticMesh sm => new MeshActor(sm),
             UIRMesh ir => new MeshActor(ir),
@@ -69,8 +69,9 @@ public class SnooperViewModel : ViewModel, IDisposable
             USkinnedAsset sa => new MeshActor(sa),
             UGeometryCollection gc => new MeshActor(gc),
             UAnimationAsset anim => new MeshActor(anim),
+            UMaterialInterface mat => new MaterialActor(mat),
             UBlueprintGeneratedClass bp => new BlueprintActor(bp),
-            UWorld w => new WorldActor(w),
+            UWorld w => new WorldActor(w, ApplicationService.ApplicationView.Status),
             _ => null
         };
 
@@ -89,10 +90,15 @@ public class SnooperViewModel : ViewModel, IDisposable
                 var scene = new Actor("Scene");
                 scene.Components.Add(new BoxComponent(Vector3.Zero, Vector3.One)); // just so debug system is always loaded
                 editor.Manager.LoadScene(scene);
-                editor.Manager.LoadScene(_sun);
-                editor.Manager.LoadScene(_environment);
-                editor.Manager.LoadScene(new GridActor(actor is not MeshActor));
-                editor.Manager.LoadScene(new CameraActor());
+                editor.Manager.LoadScene(_sun); // persistent
+                editor.Manager.LoadScene(_environment); // persistent
+                editor.Manager.LoadScene(new GridActor(actor is null or MeshActor));
+                editor.Manager.LoadScene(new CameraActor(actor switch
+                {
+                    BlueprintActor => 5,
+                    WorldActor => 10,
+                    _ => 1
+                }));
             }
 
             if (actor != null)
@@ -121,12 +127,12 @@ public class SnooperViewModel : ViewModel, IDisposable
         return true;
     }
 
-    private void SetOptions()
+    private void SetOptions(UObject obj)
     {
         var settings = UserSettings.Default;
         var options = Bridge.Options;
 
-        options.NaniteMeshFormat = settings.NaniteMeshExportFormat;
+        options.NaniteMeshFormat = obj is UWorld ? ENaniteMeshFormat.NoNanite : settings.NaniteMeshExportFormat;
         options.MaterialDepth = settings.MaterialExportFormat;
         options.TexturePlatform = settings.CurrentDir.TexturePlatform;
         options.LoadMorphTargets = settings.SaveMorphTargets;
