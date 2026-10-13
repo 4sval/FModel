@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
 using CUE4Parse.GameTypes.Nascar.Assets.Exports;
@@ -57,7 +58,7 @@ public class SnooperViewModel : ViewModel, IDisposable
         _environment = new EnvironmentActor();
     }
 
-    public void Load(UObject obj)
+    public void Load(UObject obj, CancellationToken ct = default)
     {
         SetOptions(obj);
 
@@ -71,7 +72,7 @@ public class SnooperViewModel : ViewModel, IDisposable
             UAnimationAsset anim => new MeshActor(anim),
             UMaterialInterface mat => new MaterialActor(mat),
             UBlueprintGeneratedClass bp => new BlueprintActor(bp),
-            UWorld w => new WorldActor(w, ApplicationService.ApplicationView.Status),
+            UWorld w => new WorldActor(w, ApplicationService.ApplicationView.Status, ct),
             _ => null
         };
 

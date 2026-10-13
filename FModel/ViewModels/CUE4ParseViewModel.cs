@@ -1587,7 +1587,7 @@ public class CUE4ParseViewModel : ViewModel
                                             pkg.Name.Contains("/RenderSwitch_Materials/", StringComparison.OrdinalIgnoreCase) ||
                                             pkg.Name.Contains("/MI_BPTile/", StringComparison.OrdinalIgnoreCase))):
             {
-                SnooperViewModel.Instance.Load(pointer.Object.Value);
+                SnooperViewModel.Instance.Load(pointer.Object.Value, cancellationToken);
                 return true;
             }
             case UStaticMesh when HasFlag(bulk, EBulkType.Meshes):

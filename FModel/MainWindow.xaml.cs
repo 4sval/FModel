@@ -122,7 +122,6 @@ public partial class MainWindow
             _applicationView.CUE4Parse.InitMappings(),
             ApplicationViewModel.InitDetex(),
             ApplicationViewModel.InitVgmStream(),
-            ApplicationViewModel.InitImGuiSettings(newOrUpdated),
             Task.Run(() =>
             {
                 if (UserSettings.Default.DiscordRpc == EDiscordRpc.Always)
