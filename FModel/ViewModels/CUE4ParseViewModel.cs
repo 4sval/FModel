@@ -11,8 +11,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using AdonisUI.Controls;
-using CUE4Parse_Conversion.Exporters;
-using CUE4Parse_Conversion.Sounds;
 using CUE4Parse;
 using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
@@ -32,11 +30,12 @@ using CUE4Parse.GameTypes.DFHO.Assets.Objects;
 using CUE4Parse.GameTypes.HonorOfKings.FileProvider;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
 using CUE4Parse.GameTypes.LegoBatman.Assets;
-using CUE4Parse.GameTypes.Nascar.Assets.Exports;
 using CUE4Parse.GameTypes.LordOfMysteries.FileProvider;
-using CUE4Parse.GameTypes.Tencent.RocoKingdomWorld.Assets.Objects;
+using CUE4Parse.GameTypes.MarchOfGiants.FileProvider;
+using CUE4Parse.GameTypes.Nascar.Assets.Exports;
 using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
 using CUE4Parse.GameTypes.SquareEnix.UE4.Assets.Exports;
+using CUE4Parse.GameTypes.Tencent.RocoKingdomWorld.Assets.Objects;
 using CUE4Parse.GameTypes.Theia.FileProvider;
 using CUE4Parse.GameTypes.WarnerBros.GothamKnights.Assets.Exports.Wwise;
 using CUE4Parse.MappingsProvider;
@@ -76,6 +75,9 @@ using CUE4Parse.UE4.Shaders;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
 using CUE4Parse.Utils;
+using CUE4Parse_Conversion.Exporters;
+using CUE4Parse_Conversion.Dto;
+using CUE4Parse_Conversion.Sounds;
 using EpicManifestParser;
 using EpicManifestParser.UE;
 using FModel.Creator;
@@ -219,6 +221,7 @@ public class CUE4ParseViewModel : ViewModel
                     GAME_HonorofKingsWorld => new HoKWDefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
                     GAME_LordOfMysteries => new LoMDefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
                     GAME_ArcRaiders or GAME_Highguard or GAME_MARVELTokonFightingSouls => new TheiaFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
+                    GAME_MarchofGiants => new MogFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
                     _ => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer)
                 };
 
@@ -700,7 +703,10 @@ public class CUE4ParseViewModel : ViewModel
                 }
 
                 var showSnooper = false;
-                for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
+                var exportEmbeddedFiles = HasFlag(bulk, EBulkType.EmbeddedFiles);
+                var start = exportEmbeddedFiles ? 0 : result.InclusiveStart;
+                var end = exportEmbeddedFiles ? result.Package.ExportMapLength : result.ExclusiveEnd;
+                for (var i = start; i < end; i++)
                 {
                     if (CheckExport(cancellationToken, result.Package, i, ref showSnooper, bulk))
                         break;
@@ -1295,6 +1301,14 @@ public class CUE4ParseViewModel : ViewModel
         var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class, pkg);
         switch (dummy)
         {
+            case UObject when HasFlag(bulk, EBulkType.EmbeddedFiles):
+            {
+                if (EmbeddedFilesDto.Supports(dummy) && new EmbeddedFilesDto(pointer.Object.Value).Files.Count > 0)
+                {
+                    SaveExport(pointer.Object.Value);
+                }
+                return false; // Don't stop, a package may contain several exports with embedded files
+            }
             case UVerseDigest when isNone && pointer.Object.Value is UVerseDigest verseDigest:
             {
                 if (verseDigest.ReadableCode is null || !TabControl.CanAddTabs) return false;
@@ -1667,7 +1681,6 @@ public class CUE4ParseViewModel : ViewModel
             }
             case UStaticMesh when HasFlag(bulk, EBulkType.Meshes):
             case UIRMesh when HasFlag(bulk, EBulkType.Meshes):
-            case UHoudiniAsset when HasFlag(bulk, EBulkType.Meshes):
             case UHoudiniStaticMesh when HasFlag(bulk, EBulkType.Meshes):
             case UGeometryCollection when HasFlag(bulk, EBulkType.Meshes):
             case USkinnedAsset when HasFlag(bulk, EBulkType.Meshes):

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Windows;
 using System.Windows.Data;
 using CUE4Parse.UE4.IO.Objects;
 using FModel.Extensions;
@@ -21,9 +22,6 @@ public class AnyItemMeetsConditionConverter : IValueConverter
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value is not IEnumerable items || Conditions.Count == 0)
-            return false;
-
         Func<GameFileViewModel, bool> predicate = ConditionMode switch
         {
             EConditionMode.And => item => Conditions.All(condition => condition.Matches(item)),
@@ -31,7 +29,8 @@ public class AnyItemMeetsConditionConverter : IValueConverter
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        return items.OfType<GameFileViewModel>().Any(predicate);
+        var matches = value is IEnumerable items && Conditions.Count > 0 && items.OfType<GameFileViewModel>().Any(predicate);
+        return targetType == typeof(Visibility) ? (matches ? Visibility.Visible : Visibility.Collapsed) : matches;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -431,6 +431,13 @@ public sealed class UserSettings : ViewModel
         set => SetProperty(ref _exportData, value);
     }
 
+    private Hotkey _exportEmbeddedFiles = new(Key.None);
+    public Hotkey ExportEmbeddedFiles
+    {
+        get => _exportEmbeddedFiles;
+        set => SetProperty(ref _exportEmbeddedFiles, value);
+    }
+
     private Hotkey _exportProperties = new(Key.None);
     public Hotkey ExportProperties
     {

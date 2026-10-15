@@ -64,6 +64,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
             "Assets_Decompile" => (EAction.Show, EShowAssetType.Decompile, EBulkType.Code),
 
             "Save_Data" => (EAction.Export, EShowAssetType.None, EBulkType.Raw),
+            "Save_EmbeddedFiles" => (EAction.Export, EShowAssetType.None, EBulkType.EmbeddedFiles),
             "Save_Properties" => (EAction.Export, EShowAssetType.None, EBulkType.Properties),
             "Save_Textures" => (EAction.Export, EShowAssetType.None, EBulkType.Textures),
             "Save_Models" => (EAction.Export, EShowAssetType.None, EBulkType.Meshes),
@@ -106,6 +107,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
             var (dirType, filetype) = bulktype switch
             {
                 EBulkType.Raw => (UserSettings.Default.RawDataDirectory, "files"),
+                EBulkType.EmbeddedFiles => (UserSettings.Default.RawDataDirectory, "embedded files"),
                 EBulkType.Properties => (UserSettings.Default.PropertiesDirectory, "json files"),
                 EBulkType.Textures => (UserSettings.Default.TextureDirectory, "textures"),
                 EBulkType.Meshes => (UserSettings.Default.ModelDirectory, "models"),
