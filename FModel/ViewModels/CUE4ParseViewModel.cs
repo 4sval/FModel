@@ -1600,6 +1600,7 @@ public class CUE4ParseViewModel : ViewModel
             // case UMaterialInterface when HasFlag(bulk, EBulkType.Materials):
             case UAnimationAsset when HasFlag(bulk, EBulkType.Animations):
             case UWorld when HasFlag(bulk, EBulkType.Worlds):
+            case UBlueprintGeneratedClass when HasFlag(bulk, EBulkType.Worlds):
             {
                 SaveExport(pointer.Object.Value);
                 return true;
