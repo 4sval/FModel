@@ -121,40 +121,37 @@ public partial class UpdateViewModel : ViewModel
         });
     }
 
-    private Task LoadAssets()
+    private async Task LoadAssets()
     {
-        return Task.Run(async () =>
+        var qa = await _apiEndpointView.GitHubApi.GetReleaseAsync("qa");
+        var assets = qa.Assets.OrderByDescending(x => x.CreatedAt).ToList();
+
+        for (var i = 0; i < assets.Count; i++)
         {
-            var qa = await _apiEndpointView.GitHubApi.GetReleaseAsync("qa");
-            var assets = qa.Assets.OrderByDescending(x => x.CreatedAt).ToList();
+            var asset = assets[i];
+            asset.IsLatest = i == 0;
 
-            for (var i = 0; i < assets.Count; i++)
+            var commitSha = asset.Name.SubstringBeforeLast(".zip");
+            var commit = Commits.FirstOrDefault(x => x.Sha == commitSha);
+            if (commit != null)
             {
-                var asset = assets[i];
-                asset.IsLatest = i == 0;
-
-                var commitSha = asset.Name.SubstringBeforeLast(".zip");
-                var commit = Commits.FirstOrDefault(x => x.Sha == commitSha);
-                if (commit != null)
-                {
-                    commit.Asset = asset;
-                }
-                else
-                {
-                    Commits.Add(new GitHubCommit
-                    {
-                        Sha = commitSha,
-                        Commit = new Commit
-                        {
-                            Message = $"FModel ({commitSha[..7]})",
-                            Author = new Author { Name = asset.Uploader.Login, Date = asset.CreatedAt }
-                        },
-                        Author = asset.Uploader,
-                        Asset = asset
-                    });
-                }
+                commit.Asset = asset;
             }
-        });
+            else
+            {
+                Commits.Add(new GitHubCommit
+                {
+                    Sha = commitSha,
+                    Commit = new Commit
+                    {
+                        Message = $"FModel ({commitSha[..7]})",
+                        Author = new Author { Name = asset.Uploader.Login, Date = asset.CreatedAt }
+                    },
+                    Author = asset.Uploader,
+                    Asset = asset
+                });
+            }
+        }
     }
 
     public void DownloadLatest()
