@@ -37,34 +37,6 @@ public class CreatorPackage : IDisposable
         switch (_exportType)
         {
             // Fortnite
-            case "AthenaConsumableEmoteItemDefinition":
-            case "AthenaSkyDiveContrailItemDefinition":
-            case "AthenaLoadingScreenItemDefinition":
-            case "AthenaVictoryPoseItemDefinition":
-            case "AthenaPetCarrierItemDefinition":
-            case "AthenaMusicPackItemDefinition":
-            case "AthenaBattleBusItemDefinition":
-            case "AthenaCharacterItemDefinition":
-            case "ExtractableItemDefinition":
-            case "AthenaMapMarkerItemDefinition":
-            case "AthenaBackpackItemDefinition":
-            case "CosmeticShoesItemDefinition":
-            case "CosmeticCompanionItemDefinition":
-            case "CosmeticCompanionReactFXItemDefinition":
-            case "MagpieEntitlementRewardDefinition":
-            case "FortDeferredItemGrantDefinition":
-            case "BattleLabDeviceItemDefinition":
-            case "PiggybackDanceItemDefinition":
-            case "MyTownBuildingDefinitionData":
-            case "AthenaPickaxeItemDefinition":
-            case "AthenaGadgetItemDefinition":
-            case "AthenaGliderItemDefinition":
-            case "AthenaHatItemDefinition":
-            case "AthenaSprayItemDefinition":
-            case "AthenaDanceItemDefinition":
-            case "AthenaEmojiItemDefinition":
-            case "AthenaItemWrapDefinition":
-            case "AthenaToyItemDefinition":
             case "FortHackData":
             case "FortHeroType":
             case "FortTokenType":
@@ -72,96 +44,125 @@ public class CreatorPackage : IDisposable
             case "FortWorkerType":
             case "FortMissionInfo":
             case "RewardGraphToken":
-            case "JunoKnowledgeBundle":
-            case "FortHackDataMinimal":
             case "FortBannerTokenType":
+            case "FortHackDataMinimal":
             case "FortHackKeyCoreData":
+            case "JunoKnowledgeBundle":
             case "FortVariantTokenType":
+            case "FortAmmoItemDefinition":
             case "FortDecoItemDefinition":
             case "FortStatItemDefinition":
-            case "FortAmmoItemDefinition":
-            case "FortEmoteItemDefinition":
-            case "FortBadgeItemDefinition":
-            case "SparksMicItemDefinition":
+            case "AthenaHatItemDefinition":
+            case "AthenaToyItemDefinition":
             case "FortAwardItemDefinition":
+            case "FortBadgeItemDefinition":
+            case "FortEmoteItemDefinition":
             case "FortStackItemDefinition":
             case "FortWorldItemDefinition":
-            case "SparksAuraItemDefinition":
-            case "SparksDrumItemDefinition":
-            case "SparksBassItemDefinition":
+            case "SparksMicItemDefinition":
+            case "AthenaItemWrapDefinition":
             case "FortGadgetItemDefinition":
+            case "SparksAuraItemDefinition":
+            case "SparksBassItemDefinition":
+            case "SparksDrumItemDefinition":
             case "AthenaCharmItemDefinition":
-            case "FortHackKeyItemDefinition":
-            case "FortPlaysetItemDefinition":
-            case "FortGiftBoxItemDefinition":
-            case "FortOutpostItemDefinition":
-            case "FortVehicleItemDefinition":
-            case "FortMissionItemDefinition":
+            case "AthenaDanceItemDefinition":
+            case "AthenaEmojiItemDefinition":
+            case "AthenaSprayItemDefinition":
+            case "ExtractableItemDefinition":
             case "FortAccountItemDefinition":
-            case "SparksGuitarItemDefinition":
-            case "FortCardPackItemDefinition":
-            case "FortDefenderItemDefinition":
-            case "FortCurrencyItemDefinition":
-            case "FortResourceItemDefinition":
+            case "FortGiftBoxItemDefinition":
+            case "FortHackKeyItemDefinition":
+            case "FortMissionItemDefinition":
+            case "FortOutpostItemDefinition":
+            case "FortPlaysetItemDefinition":
+            case "FortVehicleItemDefinition":
+            case "AthenaGadgetItemDefinition":
+            case "AthenaGliderItemDefinition":
             case "FortBackpackItemDefinition":
-            case "FortEventQuestMapDataAsset":
             case "FortBuildingItemDefinition":
-            case "FortItemCacheItemDefinition":
-            case "FortWeaponModItemDefinition":
-            case "FortCodeTokenItemDefinition":
-            case "FortSchematicItemDefinition":
+            case "FortCardPackItemDefinition":
+            case "FortCurrencyItemDefinition":
+            case "FortDefenderItemDefinition":
+            case "FortEventQuestMapDataAsset":
+            case "FortResourceItemDefinition":
+            case "SparksGuitarItemDefinition":
+            case "AthenaPickaxeItemDefinition":
+            case "CosmeticShoesItemDefinition":
             case "FortAlterableItemDefinition":
+            case "FortCodeTokenItemDefinition":
+            case "FortItemCacheItemDefinition":
+            case "FortSchematicItemDefinition":
+            case "FortWeaponModItemDefinition":
             case "SproutHousingItemDefinition":
-            case "SparksKeyboardItemDefinition":
-            case "FortWorldMultiItemDefinition":
+            case "AthenaBackpackItemDefinition":
             case "FortAlterationItemDefinition":
+            case "FortConsumableItemDefinition":
             case "FortExpeditionItemDefinition":
             case "FortIngredientItemDefinition":
-            case "FortConsumableItemDefinition":
+            case "FortWorldMultiItemDefinition":
+            case "MyTownBuildingDefinitionData":
+            case "PiggybackDanceItemDefinition":
+            case "SparksKeyboardItemDefinition":
             case "SproutBuildingItemDefinition":
-            case "StWFortAccoladeItemDefinition":
+            case "AthenaBattleBusItemDefinition":
+            case "AthenaCharacterItemDefinition":
+            case "AthenaMapMarkerItemDefinition":
+            case "AthenaMusicPackItemDefinition":
+            case "BattleLabDeviceItemDefinition":
             case "FortAccountBuffItemDefinition":
             case "FortFOBCoreDecoItemDefinition":
             case "FortPlayerPerksItemDefinition":
             case "FortPlaysetPropItemDefinition":
             case "FortPrerollDataItemDefinition":
-            case "JunoRecipeBundleItemDefinition":
+            case "StWFortAccoladeItemDefinition":
+            case "AthenaPetCarrierItemDefinition":
             case "FortHomebaseNodeItemDefinition":
             case "FortNeverPersistItemDefinition":
+            case "JunoRecipeBundleItemDefinition":
+            case "AthenaVictoryPoseItemDefinition":
+            case "CosmeticCompanionItemDefinition":
+            case "FortDeferredItemGrantDefinition":
+            case "FortGiftBoxUnlockItemDefinition":
             case "FortHackCartridgeItemDefinition":
             case "FortPlayerAugmentItemDefinition":
             case "FortSmartBuildingItemDefinition":
-            case "FortGiftBoxUnlockItemDefinition":
             case "FortCreativeGadgetItemDefinition":
-            case "FortWeaponModItemDefinitionOptic":
-            case "RadioContentSourceItemDefinition":
-            case "FortPlaysetGrenadeItemDefinition":
-            case "JunoWeaponCreatureItemDefinition":
             case "FortEventDependentItemDefinition":
+            case "FortPlaysetGrenadeItemDefinition":
+            case "FortWeaponModItemDefinitionOptic":
+            case "JunoWeaponCreatureItemDefinition":
+            case "RadioContentSourceItemDefinition":
+            case "AthenaLoadingScreenItemDefinition":
             case "FortPersonalVehicleItemDefinition":
+            case "MagpieEntitlementRewardDefinition":
             case "FortGameplayModifierItemDefinition":
             case "FortHardcoreModifierItemDefinition":
-            case "FortWeaponModItemDefinitionMagazine":
+            case "AthenaConsumableEmoteItemDefinition":
+            case "AthenaSkyDiveContrailItemDefinition":
+            case "FortAccountBuffCreditItemDefinition":
+            case "FortCharacterCosmeticItemDefinition":
             case "FortConsumableAccountItemDefinition":
             case "FortConversionControlItemDefinition":
-            case "FortAccountBuffCreditItemDefinition":
+            case "FortWeaponModItemDefinitionMagazine":
             case "JunoBuildInstructionsItemDefinition":
-            case "FortCharacterCosmeticItemDefinition":
-            case "JunoBuildingSetAccountItemDefinition":
             case "FortEventCurrencyItemDefinitionRedir":
-            case "FortPersistentResourceItemDefinition":
-            case "FortWeaponMeleeOffhandItemDefinition":
             case "FortHomebaseBannerIconItemDefinition":
+            case "FortPersistentResourceItemDefinition":
             case "FortVehicleCosmeticsVariantTokenType":
-            case "JunoBuildingPropAccountItemDefinition":
+            case "FortWeaponMeleeOffhandItemDefinition":
+            case "JunoBuildingSetAccountItemDefinition":
             case "FortCampaignHeroLoadoutItemDefinition":
-            case "FortConditionalResourceItemDefinition":
             case "FortChallengeBundleScheduleDefinition":
+            case "FortConditionalResourceItemDefinition":
+            case "BattleLabDeviceAccountItemDefinition":
+            case "JunoBuildingPropAccountItemDefinition":
+            case "CosmeticCompanionReactFXItemDefinition":
             case "FortDailyRewardScheduleTokenDefinition":
             case "FortVehicleCosmeticsItemDefinition_Body":
             case "FortVehicleCosmeticsItemDefinition_Skin":
-            case "FortVehicleCosmeticsItemDefinition_Wheel":
             case "FortCreativeRealEstatePlotItemDefinition":
+            case "FortVehicleCosmeticsItemDefinition_Wheel":
             case "FortDeployableBaseCloudSaveItemDefinition":
             case "FortVehicleCosmeticsItemDefinition_Booster":
             case "AthenaDanceItemDefinition_AdHocSquadsJoin_C":
@@ -272,6 +273,59 @@ public class CreatorPackage : IDisposable
             default:
                 creator = null;
                 return false;
+                            // Spyjinx
+            case "OcnPlaylist":
+            case "OcnItemReward":
+            case "OcnMtxOfferData":
+            case "OcnSetDefinition":
+            case "OcnElimDefinition":
+            case "OcnBombDefinition":
+            case "OcnLogoDefinition":
+            case "OcnRoomDefinition":
+            case "OcnRaceDefinition":
+            case "OcnEmoteDefinition":
+            case "OcnTokenDefinition":
+            case "OcnDailyLeadQuests":
+            case "OcnGadgetDefinition":
+            case "OcnGenderDefinition":
+            case "OcnDailyLeadRewards":
+            case "OcnMissionDefinition":
+            case "OcnDefenseDefinition":
+            case "OcnHideoutDefinition":
+            case "OcnArtifactDefinition":
+            case "OcnCampaignDefinition":
+            case "OcnCoolDownDefinition":
+            case "OcnCurrencyDefinition":
+            case "OcnStatPerkDefinition":
+            case "OcnSwapPerkDefinition":
+            case "OcnOperativeDefinition":
+            case "OcnConcealedDefinition":
+            case "OcnQuestListDefinition":
+            case "OcnNpcAgencyDefinition":
+            case "OcnDailyGoalDefinition":
+            case "OcnDecorCustomizerData":
+            case "OcnNpcHideoutDefinition":
+            case "OcnContentPackDefinition":
+            case "OcnArtifactPerkDefinition":
+            case "OcnRelationshipDefinition":
+            case "OcnNpcOperativeDefinition":
+            case "OcnMastermindPerkDefinition":
+            case "OcnMastermindChairDefinition":
+            case "OcnOperativeGadgetDefinition":
+            case "OcnScriptedTournamentDefinition":
+                creator = new BaseSpyjinxIcon(_object.Value, _style);
+                return true;
+            // Battle Breakers
+            case "WExpGearAffix":
+            case "WExpZoneDefinition":
+            case "WExpEventDefinition":
+            case "WExpRegionDefinition":
+            case "WExpLevelArtDefinition":
+            case "WExpCharacterDefinition":
+            case "WExpAccountRewardDefinition":
+            case "WExpGearAccountItemDefinition":
+                creator = new BaseBreakersIcon(_object.Value, _style);
+                return true;
         }
     }
 
