@@ -110,6 +110,7 @@ public enum EBulkType
     Code =          1 << 6,
     Raw =           1 << 7,
     Worlds =        1 << 8,
+    EmbeddedFiles = 1 << 9,
 }
 
 public enum EAssetCategory : uint
@@ -171,6 +172,8 @@ public enum EAssetCategory : uint
         GothamKnights = GameSpecific + 7,
         Nascar = GameSpecific + 8,
         DeadByDaylight = GameSpecific + 9,
+    Proprietary = AssetCategoryExtensions.CategoryBase + (11 << 16),
+        Flash = Proprietary + 1
 }
 
 public enum EAssetFamily

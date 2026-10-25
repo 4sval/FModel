@@ -1,12 +1,13 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CUE4Parse_Conversion.Textures;
-using CUE4Parse.UE4.Assets.Exports.Paper2D;
+using CUE4Parse_Conversion.Dto;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.GameTypes.Borderlands3.Assets.Exports;
 using CUE4Parse.GameTypes.Borderlands4.Assets.Exports;
@@ -29,12 +30,14 @@ using CUE4Parse.UE4.Assets.Exports.Criware.Media;
 using CUE4Parse.UE4.Assets.Exports.CustomizableObject;
 using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.Engine.Font;
+using CUE4Parse.UE4.Assets.Exports.Flash;
 using CUE4Parse.UE4.Assets.Exports.Fmod;
 using CUE4Parse.UE4.Assets.Exports.FMod;
 using CUE4Parse.UE4.Assets.Exports.Foliage;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
 using CUE4Parse.UE4.Assets.Exports.Houdini;
 using CUE4Parse.UE4.Assets.Exports.Internationalization;
+using CUE4Parse.UE4.Assets.Exports.Paper2D;
 using CUE4Parse.UE4.Assets.Exports.LevelSequence;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Material.Editor;
@@ -116,6 +119,13 @@ public class GameFileViewModel(GameFile asset) : ViewModel
         {
             SetProperty(ref _assetActions, value);
         }
+    }
+
+    private string _embeddedFileExtensions = string.Empty;
+    public string EmbeddedFileExtensions
+    {
+        get => _embeddedFileExtensions;
+        private set => SetProperty(ref _embeddedFileExtensions, value);
     }
 
     private ImageSource _previewImage;
@@ -217,7 +227,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                     or USoundAtomConfig or UAtomDspBusSetting or UAtomRackBase => EAssetFamily.Criware,
 
                 UAkAudioType or UAkAssetData or UAkAssetPlatformData or UAkMediaAssetData
-                    or UAkMediaAsset or UWwiseAssetLibrary or UExternalSource or UExternalSourceBank => EAssetFamily.Wwise,
+                    or UAkMediaAsset or UWwiseAssetLibrary or UWwiseAssetLibraryGroup or UExternalSource or UExternalSourceBank => EAssetFamily.Wwise,
 
                 UFMODEvent or UFMODBank or UFMODBankLookup or UFMODBus
                     or UFMODSnapshot or UFMODSnapshotReverb or UFMODVCA => EAssetFamily.FMod,
@@ -250,7 +260,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 UNaniteDisplacedMesh => (EAssetCategory.NaniteDisplacedMesh, EBulkType.None),
                 UGeometryCollection => (EAssetCategory.GeometryCollection, EBulkType.Meshes),
 
-                UHoudiniAsset => (EAssetCategory.Data, EBulkType.Meshes),
+                UHoudiniAsset => (EAssetCategory.Data, EBulkType.None),
 
                 UTexture => (EAssetCategory.Texture, EBulkType.Textures),
 
@@ -289,7 +299,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 UFMODBank or UAkAudioBank or UAtomSoundBank or USoundAtomCueSheet
                     or UAkInitBank or USQEXSEADSoundBank => (EAssetCategory.SoundBank, EBulkType.Audio),
 
-                UWwiseAssetLibrary or UAtomSoundBase or USoundBase or UAkMediaAssetData
+                UWwiseAssetLibrary or UWwiseAssetLibraryGroup or UAtomSoundBase or USoundBase or UAkMediaAssetData
                     or UExternalSource or UExternalSourceBank or UAkMediaAsset => (EAssetCategory.Audio, EBulkType.Audio),
 
                 UAkAudioType => (EAssetCategory.Data, EBulkType.None),
@@ -298,6 +308,8 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 UFont or UFontFace or USMGLocaleFontUMG => (EAssetCategory.Font, EBulkType.None),
 
                 UNiagaraSystem or UNiagaraScriptBase or UParticleSystem => (EAssetCategory.Particle, EBulkType.None),
+
+                USwfMovie => (EAssetCategory.Flash, EBulkType.None),
 
                 // Game specific assets below
                 UBorderlandsDialogObject when GameVersion is EGame.GAME_Borderlands3 => (EAssetCategory.Borderlands, EBulkType.None), // Borderlands 3;
@@ -311,6 +323,14 @@ public class GameFileViewModel(GameFile asset) : ViewModel
 
                 _ => (EAssetCategory.All, EBulkType.None),
             };
+
+            if (EmbeddedFilesDto.Supports(dummy))
+            {
+                var files = new EmbeddedFilesDto(pointer.Object.Value).Files;
+                EmbeddedFileExtensions = string.Join(", ", files.Select(file => "." + file.Extension).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(extension => extension, StringComparer.OrdinalIgnoreCase));
+                if (files.Count > 0)
+                    AssetActions |= EBulkType.EmbeddedFiles;
+            }
 
             switch (AssetCategory)
             {
@@ -499,6 +519,9 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                     bitmap.Dispose();
                 });
             }
+            case "swf":
+                AssetCategory = EAssetCategory.Flash;
+                break;
             // Game specific extensions below
             case "ace" when GameVersion is EGame.GAME_Borderlands3:
             case "ncs" when GameVersion is EGame.GAME_Borderlands4:

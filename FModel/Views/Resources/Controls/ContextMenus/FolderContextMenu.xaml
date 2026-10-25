@@ -39,6 +39,28 @@
                     </Viewbox>
                 </MenuItem.Icon>
             </MenuItem>
+            <MenuItem Header="Embedded Files"
+                      Command="{Binding RightClickMenuCommand}"
+                      InputGestureText="{Binding ExportEmbeddedFiles, Source={x:Static settings:UserSettings.Default}}">
+                <MenuItem.CommandParameter>
+                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                        <Binding Source="Save_EmbeddedFiles" />
+                        <Binding Path="Tag"
+                                 RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
+                    </MultiBinding>
+                </MenuItem.CommandParameter>
+                <MenuItem.Icon>
+                    <Viewbox Width="16"
+                             Height="16">
+                        <Canvas Width="24"
+                                Height="24">
+                            <Path Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                  StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                  Data="{StaticResource EmbeddedFilesIcon}" />
+                        </Canvas>
+                    </Viewbox>
+                </MenuItem.Icon>
+            </MenuItem>
             <MenuItem Header="Properties (.json)"
                       Command="{Binding RightClickMenuCommand}"
                       InputGestureText="{Binding ExportProperties, Source={x:Static settings:UserSettings.Default}}">

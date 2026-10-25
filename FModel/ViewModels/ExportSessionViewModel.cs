@@ -254,7 +254,7 @@ public class ExportSessionViewModel : ViewModel
 
     private static void LogSummary(IReadOnlyList<ExportResult> results)
     {
-        if (results.Count == 1)
+        if (results.Count == 1 && results[0].DiskFilePaths is not { Count: > 1 })
         {
             var result = results[0];
             switch (result.Success)
@@ -289,7 +289,7 @@ public class ExportSessionViewModel : ViewModel
             foreach (var file in result.DiskFilePaths)
             {
                 var extension = Path.GetExtension(file).TrimStart('.');
-                var source = SplitDirectory(result.ObjectPath);
+                var source = SplitDirectory(result.ObjectPath.TrimStart('/', '\\'));
                 var directory = SplitDirectory(file);
                 groups[extension] = groups.TryGetValue(extension, out var group)
                     ? (group.Count + 1, CommonPrefix(group.Source, source), CommonPrefix(group.Directory, directory))
@@ -301,6 +301,9 @@ public class ExportSessionViewModel : ViewModel
         {
             var source = string.Join('/', group.Source);
             var directory = string.Join(Path.DirectorySeparatorChar, group.Directory);
+            if (source.Length == 0)
+                source = "multiple folders";
+
             FLogger.Append(ELog.Information, () =>
             {
                 FLogger.Text($"Successfully exported {group.Count} {extension} from ", Constants.WHITE);
@@ -315,7 +318,7 @@ public class ExportSessionViewModel : ViewModel
         }
     }
 
-    private static string[] SplitDirectory(string path) => Path.GetDirectoryName(path)?.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) ?? [];
+    private static string[] SplitDirectory(string path) => Path.GetDirectoryName(path)?.Split([Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar]) ?? [];
     private static string[] CommonPrefix(string[] a, string[] b)
     {
         var i = 0;

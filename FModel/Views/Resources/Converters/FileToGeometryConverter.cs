@@ -90,10 +90,13 @@ public class FileToGeometryConverter : IMultiValueConverter
                 "sql" => ("SQLIcon", "SQLBrush"),
                 "py" => ("PythonIcon", "PythonBrush"),
                 "cs" => ("CSharpIcon", "CSharpBrush"),
+                "swf" => ("FlashIcon", "FlashBrush"),
                 _ => ("DataTableIcon", "NeutralBrush")
             },
 
             EAssetCategory.ByteCode => ("CodeIcon", "CodeBrush"),
+
+            EAssetCategory.Flash => ("FlashIcon", "FlashBrush"),
 
             // Game specific below
             EAssetCategory.Borderlands => ("BorderlandsIcon", "BorderlandsBrush"),
