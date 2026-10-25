@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CUE4Parse_Conversion.Textures;
+using CUE4Parse.UE4.Assets.Exports.Paper2D;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.GameTypes.Borderlands3.Assets.Exports;
 using CUE4Parse.GameTypes.Borderlands4.Assets.Exports;
@@ -223,6 +224,8 @@ public class GameFileViewModel(GameFile asset) : ViewModel
 
                 UHoudiniAsset or UHoudiniStaticMesh => EAssetFamily.Houdini,
 
+                UPaperTileMap or UPaperTileLayer or UPaperTileSet or UPaperSprite => EAssetFamily.Paper2D,
+
                 _ => EAssetFamily.None,
             };
 
@@ -232,7 +235,8 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 UAnimBlueprintGeneratedClass => (EAssetCategory.AnimBlueprintGeneratedClass, EBulkType.Code),
                 UWidgetBlueprintGeneratedClass => (EAssetCategory.WidgetBlueprintGeneratedClass, EBulkType.Code),
                 UFunction => (EAssetCategory.BlueprintGeneratedClass, EBulkType.Code),
-                UBlueprintGeneratedClass => (EAssetCategory.BlueprintGeneratedClass, EBulkType.Worlds),
+                UBlueprintGeneratedClass => (EAssetCategory.BlueprintGeneratedClass, EBulkType.Code | EBulkType.Worlds),
+
                 UUserDefinedEnum => (EAssetCategory.UserDefinedEnum, EBulkType.None),
                 UUserDefinedStruct => (EAssetCategory.UserDefinedStruct, EBulkType.Code),
                 UBlueprintCore => (EAssetCategory.Blueprint, EBulkType.Code),
@@ -303,6 +307,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 UREDBinaryObject => (EAssetCategory.ArcSys, EBulkType.None), // Arc System Works games;
                 UOrpheusBank or UOrpheusEvent => (EAssetCategory.GothamKnights, EBulkType.Audio), // Gotham Knights;
                 UIRMesh => (EAssetCategory.Nascar, EBulkType.Meshes), // iRacing games;
+                UPaperTileMap when GameVersion is EGame.GAME_DeadByDaylight => (EAssetCategory.DeadByDaylight, EBulkType.Worlds), // DBD; UPaperTileMap isn't game specific, its use is just non typical
 
                 _ => (EAssetCategory.All, EBulkType.None),
             };

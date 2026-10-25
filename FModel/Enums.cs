@@ -170,6 +170,7 @@ public enum EAssetCategory : uint
         ArcSys = GameSpecific + 6,
         GothamKnights = GameSpecific + 7,
         Nascar = GameSpecific + 8,
+        DeadByDaylight = GameSpecific + 9,
 }
 
 public enum EAssetFamily
@@ -179,6 +180,7 @@ public enum EAssetFamily
     Wwise,
     FMod,
     Houdini,
+    Paper2D,
 }
 
 public enum EUnluacMode

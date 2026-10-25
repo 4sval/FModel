@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -11,8 +11,10 @@ using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
 using CUE4Parse.UE4.Assets.Exports.Houdini;
 using CUE4Parse.UE4.Assets.Exports.Material;
+using CUE4Parse.UE4.Assets.Exports.Paper2D;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Objects.Engine;
+using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Options;
 using Editor;
 using Editor.Managers;
@@ -21,8 +23,12 @@ using FModel.Services;
 using FModel.Settings;
 using Snooper.Hosting;
 using Snooper.Rendering.Actors;
+using Snooper.Rendering.Components.Camera;
 using Snooper.Rendering.Components.Mesh;
 using Snooper.Rendering.Components.Primitive;
+using Snooper.Rendering.Components.Transforms;
+using Snooper.Rendering.Systems;
+using Snooper.Rendering.Actors.Custom;
 
 namespace FModel.ViewModels;
 
@@ -73,6 +79,7 @@ public class SnooperViewModel : ViewModel, IDisposable
             UMaterialInterface mat => new MaterialActor(mat),
             UBlueprintGeneratedClass bp => new BlueprintActor(bp),
             UWorld w => new WorldActor(w, ApplicationService.ApplicationView.Status, ct),
+            UPaperTileMap map when map.Game is EGame.GAME_DeadByDaylight => new DeadByDaylightMapActor(map, ApplicationService.ApplicationView.Status, ct: ct),
             _ => null
         };
 
@@ -89,6 +96,8 @@ public class SnooperViewModel : ViewModel, IDisposable
             {
                 // FIFO load the scene
                 var scene = new Actor("Scene");
+                _sun.IsVisible = true;
+                _environment.IsVisible = true;
                 scene.Components.Add(new BoxComponent(Vector3.Zero, Vector3.One)); // just so debug system is always loaded
                 editor.Manager.LoadScene(scene);
                 editor.Manager.LoadScene(_sun); // persistent
@@ -97,7 +106,7 @@ public class SnooperViewModel : ViewModel, IDisposable
                 editor.Manager.LoadScene(new CameraActor(actor switch
                 {
                     BlueprintActor => 5,
-                    WorldActor => 10,
+                    WorldActor or DeadByDaylightMapActor => 10,
                     _ => 1
                 }));
             }
@@ -106,6 +115,24 @@ public class SnooperViewModel : ViewModel, IDisposable
                 editor.Manager.LoadScene(actor);
 
             editor.Show();
+
+            if (actor is DeadByDaylightMapActor map)
+            {
+                if (editor.Manager is EditorManager ui)
+                    ui.DeadByDaylightMap = map;
+
+                if (map.HasMapLighting)
+                {
+                    _sun.IsVisible = false;
+                    _environment.IsVisible = false;
+                }
+
+                if (editor.Manager.GetSystem<CameraSystem>()?.Active is InteractiveCameraComponent camera)
+                {
+                    camera.SetLocalTransform(new Transform(Vector3.Zero, new Vector3(135, 50, 0)));
+                    camera.TeleportTo(Vector3.Zero, map.OverviewDistance);
+                }
+            }
 
             if (actor?.RootComponent is MeshComponent mesh)
             {
@@ -133,7 +160,7 @@ public class SnooperViewModel : ViewModel, IDisposable
         var settings = UserSettings.Default;
         var options = Bridge.Options;
 
-        options.NaniteMeshFormat = obj is UWorld ? ENaniteMeshFormat.NoNanite : settings.NaniteMeshExportFormat;
+        options.NaniteMeshFormat = obj is UWorld or UPaperTileMap { Game: EGame.GAME_DeadByDaylight } ? ENaniteMeshFormat.NoNanite : settings.NaniteMeshExportFormat;
         options.MaterialDepth = settings.MaterialExportFormat;
         options.TexturePlatform = settings.CurrentDir.TexturePlatform;
         options.LoadMorphTargets = settings.SaveMorphTargets;

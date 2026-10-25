@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AdonisUI.Controls;
 using CUE4Parse_Conversion.Exporters;
+using CUE4Parse.UE4.Assets.Exports.Paper2D;
 using CUE4Parse_Conversion.Sounds;
 using CUE4Parse;
 using CUE4Parse.Compression;
@@ -1574,6 +1575,7 @@ public class CUE4ParseViewModel : ViewModel
             }
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:
             case UBlueprintGeneratedClass when isNone && UserSettings.Default.PreviewWorlds:
+            case UPaperTileMap when isNone && UserSettings.Default.PreviewWorlds && Provider.Versions.Game is GAME_DeadByDaylight:
             case UStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
             case UIRMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
             case UHoudiniStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
@@ -1601,6 +1603,7 @@ public class CUE4ParseViewModel : ViewModel
             case UAnimationAsset when HasFlag(bulk, EBulkType.Animations):
             case UWorld when HasFlag(bulk, EBulkType.Worlds):
             case UBlueprintGeneratedClass when HasFlag(bulk, EBulkType.Worlds):
+            case UPaperTileMap when HasFlag(bulk, EBulkType.Worlds) && Provider.Versions.Game is GAME_DeadByDaylight:
             {
                 SaveExport(pointer.Object.Value);
                 return true;
