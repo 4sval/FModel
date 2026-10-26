@@ -27,13 +27,13 @@ public class BaseBreakersIcon : BaseIcon
         if (eventBanner != null)
             Preview = eventBanner;
 
-        if (Object.TryGetValue(out FSoftObjectPath iconTextureAssetData, "IconTextureAssetData", "UnlockPortraitGuideImage") &&
+        if (Object.TryGetValue(out FSoftObjectPath iconTextureAssetData, "IconTextureAssetData", "UnlockPortraitGuideImage", "ImageAssetData") &&
             Preview == null)
         {
             Preview = Utils.GetBitmap(iconTextureAssetData);
         }
 
-        if (Object.TryGetValue(out FText displayName, "DisplayName", "RegionDisplayName", "ZoneName", "EventName", "NickName"))
+        if (Object.TryGetValue(out FText displayName, "DisplayName", "RegionDisplayName", "ZoneName", "EventName", "NickName", "Title"))
             DisplayName = displayName.Text;
 
         if (Object.TryGetValue(out FText description, "Description", "RegionShortName", "ZoneDescription", "EventDescription"))
