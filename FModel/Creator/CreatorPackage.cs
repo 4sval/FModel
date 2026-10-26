@@ -316,14 +316,37 @@ public class CreatorPackage : IDisposable
                 creator = new BaseSpyjinxIcon(_object.Value, _style);
                 return true;
             // Battle Breakers
+            case "WExpHelpData":
             case "WExpGearAffix":
+            case "WExpItemDefinition":
             case "WExpZoneDefinition":
             case "WExpEventDefinition":
+            case "WExpTokenDefinition":
+            case "WExpHQMineDefinition":
             case "WExpRegionDefinition":
+            case "WExpXpBookDefinition":
+            case "WExpGiftboxDefinition":
+            case "WExpStandInDefinition":
+            case "WExpHQMarketDefinition":
             case "WExpLevelArtDefinition":
             case "WExpCharacterDefinition":
+            case "WExpContainerDefinition":
+            case "WExpHQSmelterDefinition":
+            case "WExpUnlockableDefinition":
+            case "WExpHQWorkshopDefinition":
+            case "WExpHammerChestDefinition":
+            case "WExpHQHeroTowerDefinition":
+            case "WExpTreasureMapDefinition":
+            case "WExpVoucherItemDefinition":
+            case "WExpHQBlacksmithDefinition":
+            case "WExpHQMonsterPitDefinition":
+            case "WExpHQSecretShopDefinition":
             case "WExpAccountRewardDefinition":
+            case "WExpPersonalEventDefinition":
+            case "WExpUpgradePotionDefinition":
+            case "WExpHQWorkerLodgesDefinition":
             case "WExpGearAccountItemDefinition":
+            case "WExpGenericAccountItemDefinition":
                 creator = new BaseBreakersIcon(_object.Value, _style);
                 return true;
         }
