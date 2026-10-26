@@ -79,7 +79,7 @@ public class SnooperViewModel : ViewModel, IDisposable
             UMaterialInterface mat => new MaterialActor(mat),
             UBlueprintGeneratedClass bp => new BlueprintActor(bp),
             UWorld w => new WorldActor(w, ApplicationService.ApplicationView.Status, ct),
-            UPaperTileMap map when map.Game is EGame.GAME_DeadByDaylight => new DeadByDaylightMapActor(map, ApplicationService.ApplicationView.Status, ct: ct),
+            UPaperTileMap { Game: EGame.GAME_DeadByDaylight } map => new DeadByDaylightMapActor(map, ApplicationService.ApplicationView.Status, ct: ct),
             _ => null
         };
 
@@ -96,8 +96,6 @@ public class SnooperViewModel : ViewModel, IDisposable
             {
                 // FIFO load the scene
                 var scene = new Actor("Scene");
-                _sun.IsVisible = true;
-                _environment.IsVisible = true;
                 scene.Components.Add(new BoxComponent(Vector3.Zero, Vector3.One)); // just so debug system is always loaded
                 editor.Manager.LoadScene(scene);
                 editor.Manager.LoadScene(_sun); // persistent
@@ -123,7 +121,6 @@ public class SnooperViewModel : ViewModel, IDisposable
 
                 if (map.HasMapLighting)
                 {
-                    _sun.IsVisible = false;
                     _environment.IsVisible = false;
                 }
 
