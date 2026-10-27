@@ -20,6 +20,8 @@ public sealed class UserSettings : ViewModel
 {
     public static UserSettings Default { get; set; }
 #if DEBUG
+    public bool SuppressViewerLogs { get; set; }
+
     public static readonly string FilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FModel", "AppSettings_Debug.json");
 #else
     public static readonly string FilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FModel", "AppSettings.json");

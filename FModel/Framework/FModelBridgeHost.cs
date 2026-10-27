@@ -26,4 +26,16 @@ public sealed class FModelBridgeHost : IBridgeHost
             window.Topmost = false;
         });
     }
+
+#if DEBUG
+    public bool SuppressViewerLogs
+    {
+        get => UserSettings.Default.SuppressViewerLogs;
+        set
+        {
+            UserSettings.Default.SuppressViewerLogs = value;
+            UserSettings.Save();
+        }
+    }
+#endif
 }

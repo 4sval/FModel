@@ -4,6 +4,7 @@ using Serilog;
 using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;
@@ -114,17 +115,30 @@ public partial class App
 
 #if DEBUG
         var filePath = Path.Combine(UserSettings.Default.OutputDirectory, "Logs", $"FModel-Debug-Log-{DateTime.Now:yyyy-MM-dd}.log");
+
+        var viewerContexts = typeof(Snooper.Hosting.Bridge).Assembly.GetTypes()
+            .Concat(typeof(EditorWindow).Assembly.GetTypes())
+            .Select(type => type.Name)
+            .Append("Snooper")
+            .ToHashSet(StringComparer.Ordinal);
 #else
         var filePath = Path.Combine(UserSettings.Default.OutputDirectory, "Logs", $"FModel-Log-{DateTime.Now:yyyy-MM-dd}.log");
 #endif
         const string template1 = "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {SourceContext}: {Message:lj}{NewLine}{Exception}";
         const string template2 = "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] [{ClassName}] {ObjectPath}: {Message:lj}{NewLine}{Exception}";
+
         Log.Logger = new LoggerConfiguration()
 #if DEBUG
             .MinimumLevel.Verbose()
 #endif
             .Enrich.FromLogContext()
             .Enrich.WithProperty("SourceContext", "FModel")
+#if DEBUG
+            .Filter.ByExcluding(e => UserSettings.Default.SuppressViewerLogs && e.Level < LogEventLevel.Fatal &&
+                e.Properties.TryGetValue("SourceContext", out var source) &&
+                source is ScalarValue { Value: string context } &&
+                viewerContexts.Contains(context))
+#endif
             .WriteTo.Logger(lc => lc
                 .Filter.ByExcluding(IsConversionLibrary)
                 .WriteTo.Console(outputTemplate: template1, theme: AnsiConsoleTheme.Literate)
