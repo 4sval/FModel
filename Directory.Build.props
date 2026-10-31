@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup>
+    <CUE4ParseDir>$(MSBuildThisFileDirectory)CUE4Parse\</CUE4ParseDir>
+  </PropertyGroup>
+</Project>

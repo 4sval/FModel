@@ -11,6 +11,7 @@ insert_final_newline = true
 # C# files
 [*.cs]
 indent_size = 4
+dotnet_diagnostic.IDE0008.severity = none
 # New line preferences
 csharp_new_line_before_open_brace = all
 csharp_new_line_before_else = true

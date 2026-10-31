@@ -1,6 +1,7 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using FModel.ViewModels;
 using Ookii.Dialogs.Wpf;
@@ -12,6 +13,16 @@ public partial class ExportOptionsControl
     public ExportOptionsControl()
     {
         InitializeComponent();
+        PngCompressionSlider.AddHandler(Thumb.DragStartedEvent, new DragStartedEventHandler(OnPngCompressionDrag), true);
+        PngCompressionSlider.AddHandler(Thumb.DragDeltaEvent, new DragDeltaEventHandler(OnPngCompressionDrag), true);
+    }
+
+    private void OnPngCompressionDrag(object sender, RoutedEventArgs e)
+    {
+        if (PngCompressionSlider.Value == 3 && e.OriginalSource is Thumb { ToolTip: ToolTip tooltip })
+        {
+            tooltip.Content = "3 (Recommended)";
+        }
     }
 
     private void OnBrowseOutputDirectory(object sender, RoutedEventArgs e)

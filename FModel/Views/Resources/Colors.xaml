@@ -69,4 +69,5 @@
     <SolidColorBrush x:Key="BatmanBrush" Color="Gold" />
     <SolidColorBrush x:Key="ArcSysBrush" Color="Red" />
     <SolidColorBrush x:Key="NascarBrush" Color="#dd002a" />
+    <SolidColorBrush x:Key="DbdBrush" Color="#8fa1d0"/>
 </ResourceDictionary>

@@ -8,7 +8,11 @@ FModel - An Unreal Engine Archives Explorer in C#
 ***
 
 ### Description:
-FModel is an archive explorer for [Unreal Engine](https://www.unrealengine.com/en-US/) games that uses [CUE4Parse](https://github.com/FabianFG/CUE4Parse) as its core parsing library, providing robust support for the latest UE4 and UE5 archive formats. It aims to deliver a modern and intuitive user interface, powerful features, and a comprehensive set of tools for previewing and converting game packages, empowering YOU to understand games' inner workings with ease.
+FModel is an archive explorer for [Unreal Engine](https://www.unrealengine.com/en-US/) games. It opens UE4 and UE5 game archives so you can browse their packages, inspect their data as JSON, and preview or export meshes, maps, textures, animations and audio.
+
+It's built on two projects:
+- [CUE4Parse](https://github.com/FabianFG/CUE4Parse), the library that parses UE archives and assets
+- [Snooper](https://github.com/FModel/Snooper), the standalone 3D viewer that renders them
 
 FModel is actively maintained and developed by a dedicated community of contributors, and welcomes all new contributions and feedback.
 

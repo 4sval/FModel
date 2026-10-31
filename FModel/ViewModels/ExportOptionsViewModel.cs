@@ -136,8 +136,18 @@ public class ExportOptionsViewModel : ViewModel
     public ETextureFormat SelectedTextureFormat
     {
         get;
-        set => SetProperty(ref field, value);
+        set
+        {
+            if (!SetProperty(ref field, value)) return;
+            RaisePropertyChanged(nameof(ShowTextureQuality));
+            RaisePropertyChanged(nameof(ShowPngCompression));
+            RaisePropertyChanged(nameof(ShowTgaCompression));
+        }
     }
+
+    public bool ShowTextureQuality => SelectedTextureFormat is ETextureFormat.Jpeg or ETextureFormat.Webp;
+    public bool ShowPngCompression => SelectedTextureFormat is ETextureFormat.Png;
+    public bool ShowTgaCompression => SelectedTextureFormat is ETextureFormat.Tga;
 
     private ETextureFormat? _preUsdTextureFormat;
     public bool TextureFormatsEnabled => SelectedMeshFormat != EMeshFormat.USD;
@@ -149,6 +159,18 @@ public class ExportOptionsViewModel : ViewModel
     }
 
     public int TextureQuality
+    {
+        get;
+        set => SetProperty(ref field, value);
+    }
+
+    public int PngCompressionLevel
+    {
+        get;
+        set => SetProperty(ref field, Math.Clamp(value, 0, 9));
+    }
+
+    public bool TgaRleCompression
     {
         get;
         set => SetProperty(ref field, value);
@@ -184,9 +206,16 @@ public class ExportOptionsViewModel : ViewModel
         ExportMaterials = UserSettings.Default.SaveEmbeddedMaterials;
         SelectedTexturePlatform = UserSettings.Default.CurrentDir.TexturePlatform;
         SelectedTextureFormat = UserSettings.Default.TextureExportFormat;
+        if (SelectedMeshFormat is EMeshFormat.USD)
+        {
+            _preUsdTextureFormat = SelectedTextureFormat;
+            SelectedTextureFormat = ETextureFormat.Png;
+        }
         ExportHdrTexturesAsHdr = UserSettings.Default.SaveHdrTexturesAsHdr;
         ExportMorphTargets = UserSettings.Default.SaveMorphTargets;
         TextureQuality = UserSettings.Default.TextureQuality;
+        PngCompressionLevel = UserSettings.Default.PngCompressionLevel;
+        TgaRleCompression = UserSettings.Default.TgaRleCompression;
         ExportAllTextureMips = UserSettings.Default.ExportAllTextureMips;
         ExportImmediately = UserSettings.Default.ExportImmediately;
 
@@ -209,6 +238,8 @@ public class ExportOptionsViewModel : ViewModel
         UserSettings.Default.SaveHdrTexturesAsHdr = ExportHdrTexturesAsHdr;
         UserSettings.Default.SaveMorphTargets = ExportMorphTargets;
         UserSettings.Default.TextureQuality = TextureQuality;
+        UserSettings.Default.PngCompressionLevel = PngCompressionLevel;
+        UserSettings.Default.TgaRleCompression = TgaRleCompression;
         UserSettings.Default.ExportAllTextureMips = ExportAllTextureMips;
         UserSettings.Default.ExportImmediately = ExportImmediately;
         UserSettings.Save();
@@ -230,6 +261,8 @@ public class ExportOptionsViewModel : ViewModel
         ExportMaterials,
         ExportMorphTargets,
         SelectedSocketFormat,
-        SelectedCompressionFormat
+        SelectedCompressionFormat,
+        PngCompressionLevel,
+        TgaRleCompression
     );
 }

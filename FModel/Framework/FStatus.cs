@@ -1,6 +1,8 @@
+using System;
+
 namespace FModel.Framework;
 
-public class FStatus : ViewModel
+public class FStatus : ViewModel, IProgress<string>
 {
     private bool _isReady;
     public bool IsReady
@@ -42,4 +44,6 @@ public class FStatus : ViewModel
     {
         Label = Kind == EStatusKind.Loading ? $"{prefix ?? Kind.ToString()} {label}".Trim() : Kind.ToString();
     }
+
+    public void Report(string value) => UpdateStatusLabel(value);
 }

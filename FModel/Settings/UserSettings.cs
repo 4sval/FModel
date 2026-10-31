@@ -12,7 +12,6 @@ using FModel.Extensions.Themes;
 using FModel.Framework;
 using FModel.ViewModels;
 using FModel.ViewModels.ApiEndpoints.Models;
-using FModel.Views.Snooper;
 using Newtonsoft.Json;
 
 namespace FModel.Settings;
@@ -21,6 +20,8 @@ public sealed class UserSettings : ViewModel
 {
     public static UserSettings Default { get; set; }
 #if DEBUG
+    public bool SuppressViewerLogs { get; set; }
+
     public static readonly string FilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FModel", "AppSettings_Debug.json");
 #else
     public static readonly string FilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FModel", "AppSettings.json");
@@ -69,7 +70,9 @@ public sealed class UserSettings : ViewModel
             Default.SaveEmbeddedMaterials,
             Default.SaveMorphTargets,
             Default.SocketExportFormat,
-            Default.CompressionFormat
+            Default.CompressionFormat,
+            Default.PngCompressionLevel,
+            Default.TgaRleCompression
         );
     }
 
@@ -529,6 +532,20 @@ public sealed class UserSettings : ViewModel
         set => SetProperty(ref _textureQuality, value);
     }
 
+    private int _pngCompressionLevel = 3;
+    public int PngCompressionLevel
+    {
+        get => _pngCompressionLevel;
+        set => SetProperty(ref _pngCompressionLevel, Math.Clamp(value, 0, 9));
+    }
+
+    private bool _tgaRleCompression = true;
+    public bool TgaRleCompression
+    {
+        get => _tgaRleCompression;
+        set => SetProperty(ref _tgaRleCompression, value);
+    }
+
     private ESocketFormat _socketExportFormat = ESocketFormat.Bone;
     public ESocketFormat SocketExportFormat
     {
@@ -562,13 +579,6 @@ public sealed class UserSettings : ViewModel
     {
         get => _animateWithRotationOnly;
         set => SetProperty(ref _animateWithRotationOnly, value);
-    }
-
-    private Camera.WorldMode _cameraMode = Camera.WorldMode.Arcball;
-    public Camera.WorldMode CameraMode
-    {
-        get => _cameraMode;
-        set => SetProperty(ref _cameraMode, value);
     }
 
     private int _previewMaxTextureSize = 1024;

@@ -171,6 +171,7 @@ public enum EAssetCategory : uint
         ArcSys = GameSpecific + 6,
         GothamKnights = GameSpecific + 7,
         Nascar = GameSpecific + 8,
+        DeadByDaylight = GameSpecific + 9,
     Proprietary = AssetCategoryExtensions.CategoryBase + (11 << 16),
         Flash = Proprietary + 1
 }
@@ -182,6 +183,7 @@ public enum EAssetFamily
     Wwise,
     FMod,
     Houdini,
+    Paper2D,
 }
 
 public enum EUnluacMode

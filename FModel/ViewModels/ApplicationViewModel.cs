@@ -283,21 +283,6 @@ public class ApplicationViewModel : ViewModel
         }
     }
 
-    public static async Task InitImGuiSettings(bool forceDownload)
-    {
-        const string imgui = "imgui.ini";
-        var imguiPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", imgui);
-
-        if (File.Exists(imgui)) File.Move(imgui, imguiPath, true);
-        if (File.Exists(imguiPath) && !forceDownload) return;
-
-        await ApplicationService.ApiEndpointView.DownloadFileAsync($"https://cdn.fmodel.app/d/configurations/{imgui}", imguiPath);
-        if (new FileInfo(imguiPath).Length == 0)
-        {
-            FLogger.Append(ELog.Error, () => FLogger.Text("Could not download ImGui settings", Constants.WHITE, true));
-        }
-    }
-
     public static async Task InitOodle()
     {
         if (!Avx2.IsSupported)

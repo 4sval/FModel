@@ -106,6 +106,7 @@ public class FileToGeometryConverter : IMultiValueConverter
             EAssetCategory.LegoBatman or EAssetCategory.GothamKnights => ("BatmanIcon", "BatmanBrush"),
             EAssetCategory.ArcSys => ("ArcSysIcon", "ArcSysBrush"),
             EAssetCategory.Nascar => ("NascarIcon", "NascarBrush"),
+            EAssetCategory.DeadByDaylight => ("DbdIcon", "DbdBrush"),
 
             _ => ("AssetIcon", "NeutralBrush")
         };
@@ -122,6 +123,8 @@ public class FileToGeometryConverter : IMultiValueConverter
             (EAssetFamily.FMod, _) => ("FModIcon", brush),
 
             (EAssetFamily.Houdini, _) => ("HoudiniIcon", "HoudiniBrush"),
+
+            (EAssetFamily.Paper2D, not EAssetCategory.DeadByDaylight) => ("Paper2DIcon", brush),
 
             _ => (geometry, brush),
         };

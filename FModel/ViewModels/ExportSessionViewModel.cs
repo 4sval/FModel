@@ -13,12 +13,12 @@ using System.Windows.Threading;
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Options;
 using CUE4Parse.Utils;
+using Editor;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
-using FModel.Views.Snooper;
 using Serilog.Events;
 
 namespace FModel.ViewModels;
