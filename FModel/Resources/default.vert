@@ -4,7 +4,7 @@ layout (location = 1) in vec3 vPos;
 layout (location = 2) in vec3 vNormal;
 layout (location = 3) in vec3 vTangent;
 layout (location = 4) in vec2 vTexCoords;
-layout (location = 5) in int vTexLayer;
+layout (location = 5) in float vTexLayer;
 layout (location = 6) in float vColor;
 layout (location = 7) in vec4 vBoneInfluence;
 layout (location = 8) in vec4 vBoneInfluenceExtra;
@@ -106,6 +106,6 @@ void main()
     fNormal = vec3(transpose(inverse(vInstanceMatrix)) * finalNormal);
     fTangent = vec3(transpose(inverse(vInstanceMatrix)) * finalTangent);
     fTexCoords = vTexCoords;
-    fTexLayer = vTexLayer;
+    fTexLayer = int(round(vTexLayer));
     fColor = unpackARGB(int(vColor)) / 255.0;
 }

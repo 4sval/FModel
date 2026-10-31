@@ -4,9 +4,11 @@ using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Windows;
+using CUE4Parse.GameTypes.GhostwireTokyo.Assets;
 using CUE4Parse.GameTypes.Nascar.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
+using CUE4Parse.UE4.Assets.Exports.Component;
 using CUE4Parse.UE4.Assets.Exports.Component.SplineMesh;
 using CUE4Parse.UE4.Assets.Exports.Component.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Engine;
@@ -16,10 +18,14 @@ using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.GameTypes.Nascar.Assets.Exports;
+using CUE4Parse.UE4.Assets.Objects;
+using CUE4Parse.UE4.Assets.Objects.Properties;
+using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
+using CUE4Parse.UE4.Versions;
 using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Animations;
 using CUE4Parse_Conversion.Dto;
@@ -57,6 +63,7 @@ public class Renderer : IDisposable
     private Shader _bone;
     private Shader _collision;
     private bool _saveCameraMode;
+    private readonly HashSet<string> _loadedGhostwireRootWorlds = new(StringComparer.OrdinalIgnoreCase);
 
     public bool ShowSkybox;
     public bool ShowGrid;
@@ -68,7 +75,6 @@ public class Renderer : IDisposable
     public Camera CameraOp { get; }
     public PickingTexture Picking { get; }
     public Options Options { get; }
-
     public Renderer(int width, int height)
     {
         _skybox = new Skybox();
@@ -88,6 +94,7 @@ public class Renderer : IDisposable
     {
         ShowLights = false;
         Color = VertexColor.Default;
+        _loadedGhostwireRootWorlds.Clear();
         _saveCameraMode = dummy is not UWorld and not UBlueprintGeneratedClass;
         switch (dummy)
         {
@@ -572,6 +579,47 @@ public class Renderer : IDisposable
             AdditionalWorlds(actor, transform.Matrix, cancellationToken);
         }
         Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} ... {length}/{length}");
+        LoadGhostwireStreamingLevels(cancellationToken, original, transform);
+        LoadGhostwireRootBlocks(cancellationToken, original, transform);
+    }
+
+    private void LoadGhostwireStreamingLevels(CancellationToken cancellationToken, UWorld original, Transform transform)
+    {
+        if (Services.ApplicationService.ApplicationView.CUE4Parse.Provider.Versions.Game != EGame.GAME_GhostwireTokyo ||
+            original.StreamingLevels is not { Length: > 0 } streamingLevels)
+            return;
+
+        var loadedWorlds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        for (var i = 0; i < streamingLevels.Length; i++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} ... sublevel {i}/{streamingLevels.Length}");
+
+            if (streamingLevels[i].Load() is not UObject streaming)
+                continue;
+            if (!streaming.TryGetValue(out FSoftObjectPath worldAsset, "WorldAsset") ||
+                worldAsset.AssetPathName.IsNone ||
+                !loadedWorlds.Add(worldAsset.AssetPathName.Text) ||
+                !Utils.TryLoadObject(worldAsset.AssetPathName.Text, out UWorld subWorld) || subWorld is null)
+                continue;
+
+            LoadWorld(cancellationToken, subWorld, transform);
+        }
+    }
+
+    private void LoadGhostwireRootBlocks(CancellationToken cancellationToken, UWorld original, Transform transform)
+    {
+        if (Services.ApplicationService.ApplicationView.CUE4Parse.Provider.Versions.Game != EGame.GAME_GhostwireTokyo ||
+            original.StreamingLevels is { Length: > 0 } || !original.Name.EndsWith("_Root", StringComparison.OrdinalIgnoreCase))
+            return;
+
+        foreach (var world in GhostwireWorldResolver.ResolveRootChildren(original, cancellationToken))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var key = world.Owner?.Name ?? world.GetPathName();
+            if (_loadedGhostwireRootWorlds.Add(key))
+                LoadWorld(cancellationToken, world, transform);
+        }
     }
 
     private void LoadJunoWorld(CancellationToken cancellationToken, UBlueprintGeneratedClass original, Transform transform)
@@ -649,9 +697,27 @@ public class Renderer : IDisposable
 
     private void WorldMesh(IPropertyHolder actor, Transform transform, bool forceShow = false)
     {
+        var components = new HashSet<FPackageIndex>();
+        if (actor.TryGetValue(out FPackageIndex rootComponent, "RootComponent") && !rootComponent.IsNull)
+            components.Add(rootComponent);
         if (actor.TryGetValue(out FPackageIndex[] instanceComponents, "InstanceComponents"))
-        {
             foreach (var component in instanceComponents)
+                if (component is { IsNull: false })
+                    components.Add(component);
+        if (actor.TryGetValue(out FPackageIndex[] blueprintCreatedComponents, "BlueprintCreatedComponents"))
+            foreach (var component in blueprintCreatedComponents)
+                if (component is { IsNull: false })
+                    components.Add(component);
+        foreach (var name in new[] { "StaticMeshComponent", "Mesh", "SplineMesh" })
+            if (actor.TryGetValue(out FPackageIndex directComponent, name) && !directComponent.IsNull)
+                components.Add(directComponent);
+        foreach (var component in EnumerateObjectReferences(actor))
+            AddMeshComponent(component);
+
+        var processed = false;
+        if (components.Count > 0)
+        {
+            foreach (var component in components)
             {
                 if (!component.TryLoad(out UMeshComponent meshComponent)) continue;
 
@@ -661,9 +727,11 @@ public class Renderer : IDisposable
                         continue;
 
                     var relation = CalculateTransform(staticMeshComp, transform);
-                    if (staticMeshComp is UInstancedStaticMeshComponent { PerInstanceSMData.Length: > 0 } instancedStaticMeshComp)
+                    // an instanced component without instance data is still a single placement at its own transform
+                    if (staticMeshComp is UInstancedStaticMeshComponent instancedStaticMeshComp &&
+                        instancedStaticMeshComp.GetInstances() is { Length: > 0 } perInstanceDatas)
                     {
-                        foreach (var perInstanceData in instancedStaticMeshComp.PerInstanceSMData)
+                        foreach (var perInstanceData in perInstanceDatas)
                         {
                             ProcessMesh(actor, instancedStaticMeshComp, m, new Transform
                             {
@@ -672,9 +740,14 @@ public class Renderer : IDisposable
                                 Rotation = perInstanceData.TransformData.Rotation,
                                 Scale = perInstanceData.TransformData.Scale3D
                             });
+                            processed = true;
                         }
                     }
-                    else ProcessMesh(actor, staticMeshComp, m, relation);
+                    else
+                    {
+                        ProcessMesh(actor, staticMeshComp, m, relation);
+                        processed = true;
+                    }
                 }
                 else if (meshComponent is UIRMeshComponent irMeshComponent)
                 {
@@ -682,7 +755,7 @@ public class Renderer : IDisposable
                 }
             }
         }
-        else if (actor.TryGetValue(out FPackageIndex componentTemplate, "ComponentTemplate") &&
+        if (!processed && actor.TryGetValue(out FPackageIndex componentTemplate, "ComponentTemplate") &&
                  componentTemplate.TryLoad(out UObject compTemplate))
         {
             UGeometryCollection geometryCollection = null;
@@ -699,11 +772,36 @@ public class Renderer : IDisposable
                 ProcessMesh(actor, compTemplate, m, CalculateTransform(compTemplate, transform), forceShow);
             }
         }
-        else if (actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent", "ComponentTemplate", "StaticMesh", "Mesh", "LightMesh", "SplineMesh") &&
+        else if (!processed && actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent", "ComponentTemplate", "StaticMesh", "Mesh", "LightMesh", "SplineMesh") &&
                  staticMeshComponent.TryLoad(out UStaticMeshComponent staticMeshComp) &&
                  staticMeshComp.GetStaticMesh().TryLoad(out UStaticMesh m) && m.Materials.Length > 0)
         {
             ProcessMesh(actor, staticMeshComp, m, CalculateTransform(staticMeshComp, transform));
+        }
+
+        void AddMeshComponent(FPackageIndex component)
+        {
+            // components live in the same package as their actor, imports point at unrelated assets
+            if (component is { IsNull: false, IsExport: true } && component.TryLoad(out UStaticMeshComponent _))
+                components.Add(component);
+        }
+    }
+
+    private static IEnumerable<FPackageIndex> EnumerateObjectReferences(IPropertyHolder holder)
+    {
+        foreach (var property in holder.Properties)
+        {
+            switch (property.Tag?.GenericValue)
+            {
+                case FPackageIndex reference:
+                    yield return reference;
+                    break;
+                case UScriptArray array:
+                    foreach (var element in array.Properties)
+                        if (element is FPropertyTagType<FPackageIndex> { Value: { } arrayReference })
+                            yield return arrayReference;
+                    break;
+            }
         }
     }
 
@@ -804,6 +902,18 @@ public class Renderer : IDisposable
             relation = CalculateTransform(component, relation);
         }
 
+        if (staticMeshComp is USceneComponent scene)
+        {
+            var localTransform = scene.GetRelativeTransform();
+            return new Transform
+            {
+                Relation = relation.Matrix,
+                Position = localTransform.Translation * Constants.SCALE_DOWN_RATIO,
+                Rotation = localTransform.Rotation,
+                Scale = localTransform.Scale3D
+            };
+        }
+
         return new Transform
         {
             Relation = relation.Matrix,
@@ -894,12 +1004,7 @@ public class Renderer : IDisposable
             staticMeshComponent.Load() is not { } staticMeshComp)
             return;
 
-        var transform = new Transform
-        {
-            Relation = relation,
-            Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO,
-            Rotation = staticMeshComp.GetOrDefault("RelativeRotation", FRotator.ZeroRotator).Quaternion()
-        };
+        var transform = CalculateTransform(staticMeshComp, new Transform { Relation = relation });
 
         for (int j = 0; j < additionalWorlds.Length; j++)
             if (Utils.TryLoadObject(additionalWorlds[j].AssetPathName.Text, out UWorld w))
