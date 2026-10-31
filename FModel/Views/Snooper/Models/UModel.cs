@@ -107,10 +107,10 @@ public abstract class UModel<TVertex> : IRenderableModel where TVertex : struct,
                         _vertexAttributes[(int) EAttribute.Layer].Enabled = true;
     }
 
-    protected UModel(UObject export, MeshLodDto<TVertex> lod, IReadOnlyList<FPackageIndex> materials, IReadOnlyList<TVertex> vertices, int numLods, Transform transform = null) : this(export)
+    protected UModel(UObject export, MeshLodDto<TVertex> lod, IReadOnlyList<FPackageIndex> materials, IReadOnlyList<TVertex> vertices, int _, Transform transform = null) : this(export)
     {
         var hasCustomUvs = lod.ExtraUvs.Length > 0;
-        UvCount = hasCustomUvs ? Math.Max(lod.ExtraUvs.Length, numLods) : lod.ExtraUvs.Length + 1;
+        UvCount = Math.Clamp(lod.ExtraUvs.Length + 1, 1, 8);
         IsTwoSided = lod.IsTwoSided;
 
         Indices = new uint[lod.Indices.Length];
@@ -125,6 +125,10 @@ public abstract class UModel<TVertex> : IRenderableModel where TVertex : struct,
             if ((materials[m]?.TryLoad(out var material) ?? false) && material is UMaterialInterface unrealMaterial)
                 Materials[m] = new Material(unrealMaterial); else Materials[m] = new Material();
         }
+        var hasTextureLayers = Materials.Any(material =>
+            CMaterialParams2.Diffuse.Skip(1).Any(names => names.Any(material.Parameters.Textures.ContainsKey)) ||
+            CMaterialParams2.Normals.Skip(1).Any(names => names.Any(material.Parameters.Textures.ContainsKey)) ||
+            CMaterialParams2.SpecularMasks.Skip(1).Any(names => names.Any(material.Parameters.Textures.ContainsKey)));
 
         _vertexAttributes[(int) EAttribute.Colors].Enabled = lod.VertexColors is { Length: > 0 };
         _vertexAttributes[(int) EAttribute.BonesId].Enabled =
@@ -148,7 +152,7 @@ public abstract class UModel<TVertex> : IRenderableModel where TVertex : struct,
             Vertices[baseIndex + count++] = vert.Tangent.Y;
             Vertices[baseIndex + count++] = vert.Uv.U;
             Vertices[baseIndex + count++] = vert.Uv.V;
-            Vertices[baseIndex + count++] = hasCustomUvs ? lod.ExtraUvs[0][i].U - 1 : .5f;
+            Vertices[baseIndex + count++] = hasTextureLayers && hasCustomUvs ? lod.ExtraUvs[0][i].U - 1 : 0f;
 
             if (HasVertexColors)
             {
@@ -174,7 +178,7 @@ public abstract class UModel<TVertex> : IRenderableModel where TVertex : struct,
         {
             var section = lod.Sections[s];
             Sections[s] = new Section(section.MaterialIndex, section.NumFaces * 3, section.FirstIndex);
-            if (section.IsValid) Sections[s].SetupMaterial(Materials[section.MaterialIndex]);
+            if (section.IsValid && section.MaterialIndex < Materials.Length) Sections[s].SetupMaterial(Materials[section.MaterialIndex]);
         }
 
         AddInstance(transform ?? Transform.Identity);
@@ -275,6 +279,7 @@ public abstract class UModel<TVertex> : IRenderableModel where TVertex : struct,
             if (!section.Show) continue;
             if (!outline)
             {
+                if (section.MaterialIndex < 0 || section.MaterialIndex >= Materials.Length) continue;
                 if (checker != null)
                 {
                     shader.SetUniform("uParameters.Diffuse[0].Sampler", 0);
