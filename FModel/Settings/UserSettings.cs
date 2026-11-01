@@ -72,7 +72,8 @@ public sealed class UserSettings : ViewModel
             Default.SocketExportFormat,
             Default.CompressionFormat,
             Default.PngCompressionLevel,
-            Default.TgaRleCompression
+            Default.TgaRleCompression,
+            Default.IncludeDisabledMeshSections
         );
     }
 
@@ -502,6 +503,13 @@ public sealed class UserSettings : ViewModel
     {
         get => _naniteMeshExportFormat;
         set => SetProperty(ref _naniteMeshExportFormat, value);
+    }
+
+    private bool _includeDisabledMeshSections;
+    public bool IncludeDisabledMeshSections
+    {
+        get => _includeDisabledMeshSections;
+        set => SetProperty(ref _includeDisabledMeshSections, value);
     }
 
     private EMeshQuality _meshQuality = EMeshQuality.Highest;

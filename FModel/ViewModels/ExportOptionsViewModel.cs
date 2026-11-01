@@ -90,6 +90,12 @@ public class ExportOptionsViewModel : ViewModel
 
     public bool ShowNaniteWarning => SelectedNaniteMeshFormat != ENaniteMeshFormat.NoNanite;
 
+    public bool IncludeDisabledMeshSections
+    {
+        get;
+        set => SetProperty(ref field, value);
+    }
+
     public IEnumerable<EMeshQuality> MeshQualities { get; } = Enum.GetValues<EMeshQuality>();
     public EMeshQuality SelectedMeshQuality
     {
@@ -199,6 +205,7 @@ public class ExportOptionsViewModel : ViewModel
         OutputDirectory = UserSettings.Default.ModelDirectory;
         SelectedMeshFormat = UserSettings.Default.MeshExportFormat;
         SelectedNaniteMeshFormat = UserSettings.Default.NaniteMeshExportFormat;
+        IncludeDisabledMeshSections = UserSettings.Default.IncludeDisabledMeshSections;
         SelectedMeshQuality = UserSettings.Default.MeshQuality;
         SelectedSocketFormat = UserSettings.Default.SocketExportFormat;
         SelectedCompressionFormat = UserSettings.Default.CompressionFormat;
@@ -228,6 +235,7 @@ public class ExportOptionsViewModel : ViewModel
         UserSettings.Default.ModelDirectory = OutputDirectory;
         UserSettings.Default.MeshExportFormat = SelectedMeshFormat;
         UserSettings.Default.NaniteMeshExportFormat = SelectedNaniteMeshFormat;
+        UserSettings.Default.IncludeDisabledMeshSections = IncludeDisabledMeshSections;
         UserSettings.Default.MeshQuality = SelectedMeshQuality;
         UserSettings.Default.SocketExportFormat = SelectedSocketFormat;
         UserSettings.Default.CompressionFormat = SelectedCompressionFormat;
@@ -243,6 +251,8 @@ public class ExportOptionsViewModel : ViewModel
         UserSettings.Default.ExportAllTextureMips = ExportAllTextureMips;
         UserSettings.Default.ExportImmediately = ExportImmediately;
         UserSettings.Save();
+
+        SnooperViewModel.Instance.Dispose();
 
         OverrideOptions = false;
         FeedbackMessage = "Saved as default";
@@ -263,6 +273,7 @@ public class ExportOptionsViewModel : ViewModel
         SelectedSocketFormat,
         SelectedCompressionFormat,
         PngCompressionLevel,
-        TgaRleCompression
+        TgaRleCompression,
+        IncludeDisabledMeshSections
     );
 }

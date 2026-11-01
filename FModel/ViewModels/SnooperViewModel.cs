@@ -161,6 +161,7 @@ public class SnooperViewModel : ViewModel, IDisposable
         options.MaterialDepth = settings.MaterialExportFormat;
         options.TexturePlatform = settings.CurrentDir.TexturePlatform;
         options.LoadMorphTargets = settings.SaveMorphTargets;
+        options.IncludeDisabledMeshSections = settings.IncludeDisabledMeshSections;
         options.MaxTextureMipSize = settings.PreviewMaxTextureSize;
     }
 
