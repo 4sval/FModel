@@ -528,6 +528,7 @@
                         <Border Grid.Column="2" BorderBrush="#3b3d4a" BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center"
                                 Visibility="{Binding SelectedItem.HasImage, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}">
                             <Image VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform"
+                                   controls:ImageAnimation.Frames="{Binding SelectedItem.SelectedImage.AnimationFrames, ElementName=TabControlName}"
                                    Visibility="{Binding SelectedItem.HasImage, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}"
                                    Source="{Binding SelectedItem.SelectedImage.Image, ElementName=TabControlName}" RenderOptions.BitmapScalingMode="{Binding SelectedItem.SelectedImage.RenderNearestNeighbor, ElementName=TabControlName, Converter={x:Static converters:BoolToRenderModeConverter.Instance}}">
                                 <Image.InputBindings>
@@ -535,8 +536,7 @@
                                 </Image.InputBindings>
                                 <Image.ContextMenu>
                                     <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
-                                        <MenuItem Header="Disable Alpha Channel" IsCheckable="True" IsChecked="{Binding DataContext.SelectedImage.NoAlpha}" />
-                                        <MenuItem Header="Open Image" Command="{Binding DataContext.ImageCommand}" CommandParameter="Open">
+                                        <MenuItem Header="Open in New Window" Command="{Binding DataContext.ImageCommand}" CommandParameter="Open">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -547,7 +547,7 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Copy Image" Command="{Binding DataContext.ImageCommand}" CommandParameter="Copy">
+                                        <MenuItem Header="Copy Image" Command="{Binding DataContext.ImageCommand}" CommandParameter="{Binding Source}">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -556,7 +556,7 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Save Image" Command="{Binding DataContext.ImageCommand}" CommandParameter="Save">
+                                        <MenuItem Header="Export Image" Command="{Binding DataContext.ImageCommand}" CommandParameter="Save">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -565,6 +565,9 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
+                                        <Separator />
+                                        <MenuItem Header="Ignore Alpha in Preview" IsCheckable="True" IsChecked="{Binding DataContext.SelectedImage.NoAlpha}"
+                                                  IsEnabled="{Binding DataContext.SelectedImage.CanDisableAlpha}" />
                                     </ContextMenu>
                                 </Image.ContextMenu>
                             </Image>

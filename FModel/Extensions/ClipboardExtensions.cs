@@ -6,11 +6,21 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace FModel.Extensions;
 
 public static class ClipboardExtensions
 {
+    public static void SetImage(BitmapSource image, string fileName = null)
+    {
+        var encoder = new PngBitmapEncoder();
+        encoder.Frames.Add(BitmapFrame.Create(image));
+        using var stream = new MemoryStream();
+        encoder.Save(stream);
+        SetImage(stream.ToArray(), fileName);
+    }
+
     public static void SetImage(byte[] pngBytes, string fileName = null)
     {
         Clipboard.Clear();

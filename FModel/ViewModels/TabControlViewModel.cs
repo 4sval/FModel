@@ -7,9 +7,11 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using CUE4Parse_Conversion.Options;
 using CUE4Parse.FileProvider.Objects;
+using CUE4Parse.UE4.Assets.Exports.Paper2D;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Textures;
+using CUE4Parse_Conversion.Textures.Paper2D;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
@@ -25,31 +27,62 @@ namespace FModel.ViewModels;
 
 public class TabImage : ViewModel
 {
+    private readonly string _name;
+    private readonly object _source;
+
     public string ExportName { get; set; }
 
     public byte[] ImageBuffer { get; set; }
 
+    public ImageAnimation.Frame[] AnimationFrames { get; }
+    public bool CanDisableAlpha => AnimationFrames == null;
+
+    public TabImage(string name, CFlipbook flipbook)
+    {
+        _name = name;
+        _source = flipbook;
+        RenderNearestNeighbor = true;
+        Encode(UserSettings.GetExportOptions());
+        AnimationFrames = ImageAnimation.CreateFrames(flipbook);
+        Image = ImageAnimation.CreateSource(AnimationFrames);
+    }
+
     public TabImage(string name, bool rnn, SKBitmap img)
     {
-        ExportName = name;
+        _name = name;
+        _source = img;
         RenderNearestNeighbor = rnn;
         SetImage(img);
+        Encode(UserSettings.GetExportOptions());
     }
 
     public TabImage(string name, bool rnn, CTexture img)
     {
-        ExportName = name;
+        _name = name;
+        _source = img;
         RenderNearestNeighbor = rnn;
-        SetImage(img);
+        SetImage(img?.ToSkBitmap());
+        Encode(UserSettings.GetExportOptions());
     }
 
-    private BitmapImage _image;
-    public BitmapImage Image
+    public TabImage(string exportName, byte[] data, SKBitmap preview)
+    {
+        _name = Path.GetFileNameWithoutExtension(exportName);
+        _source = data;
+        ExportName = exportName;
+        ImageBuffer = data;
+        SetImage(preview);
+    }
+
+    private BitmapSource _image;
+    public BitmapSource Image
     {
         get => _image;
         set
         {
-            if (_image == value) return;
+            if (_image == value)
+                return;
+
             SetProperty(ref _image, value);
         }
     }
@@ -67,6 +100,9 @@ public class TabImage : ViewModel
         get => _noAlpha;
         set
         {
+            if (!CanDisableAlpha)
+                return;
+
             SetProperty(ref _noAlpha, value);
             ResetImage();
         }
@@ -82,49 +118,54 @@ public class TabImage : ViewModel
         }
 
         _bmp = bitmap;
-        ExportName += "." + (NoAlpha ? "jpg" : "png");
-        using var data = _bmp.Encode(NoAlpha ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
-        using var stream = new MemoryStream(ImageBuffer = data.ToArray(), false);
-        var image = new BitmapImage();
-        image.BeginInit();
-        image.CacheOption = BitmapCacheOption.OnLoad;
-        image.StreamSource = stream;
-        image.EndInit();
-        image.Freeze();
-        Image = image;
+        using var opaque = NoAlpha ? _bmp.Copy(SKColorType.Rgb888x) : null;
+        using var data = (opaque ?? _bmp).Encode(SKEncodedImageFormat.Png, 100);
+        using var stream = new MemoryStream(data.ToArray(), false);
+        Image = CreateImage(stream);
     }
 
-    private void SetImage(CTexture bitmap)
+    public void Encode(ExportOptions options)
     {
-        if (bitmap is null)
+        string ext;
+        switch (_source)
         {
-            ImageBuffer = null;
-            Image = null;
-            return;
+            case byte[] data:
+                ImageBuffer = data;
+                return;
+            case CFlipbook flipbook:
+                ImageBuffer = flipbook.Encode(options, out ext);
+                break;
+            case CTexture texture:
+                ImageBuffer = texture.Encode(options, out ext);
+                break;
+            case SKBitmap source:
+            {
+                using var bitmap = new SKBitmap(new SKImageInfo(source.Width, source.Height, SKColorType.Rgba8888, SKAlphaType.Unpremul));
+                using var pixels = source.PeekPixels();
+                if (!pixels.ReadPixels(bitmap.Info, bitmap.GetPixels(), bitmap.RowBytes))
+                    throw new InvalidOperationException("Failed to read image pixels for export.");
+
+                var converted = new CTexture(bitmap.Width, bitmap.Height, EPixelFormat.PF_R8G8B8A8, bitmap.Bytes);
+                ImageBuffer = converted.Encode(options, out ext);
+                break;
+            }
+            default:
+                return;
         }
 
-        _bmp = bitmap.ToSkBitmap();
-        byte[] imageData = _bmp.Encode(NoAlpha ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100).ToArray();
+        ExportName = _name + "." + ext;
+    }
 
-        if (PixelFormatUtils.IsHDR(bitmap.PixelFormat) || (UserSettings.Default.TextureExportFormat != ETextureFormat.Jpeg && UserSettings.Default.TextureExportFormat != ETextureFormat.Png))
-        {
-            ImageBuffer = bitmap.Encode(UserSettings.Default.TextureExportFormat, UserSettings.Default.SaveHdrTexturesAsHdr, out var ext);
-            ExportName += "." + ext;
-        }
-        else
-        {
-            ImageBuffer = imageData;
-            ExportName += "." + (NoAlpha || UserSettings.Default.TextureExportFormat == ETextureFormat.Jpeg ? "jpg" : "png");
-        }
-
-        using var stream = new MemoryStream(imageData);
+    private static BitmapImage CreateImage(Stream stream)
+    {
+        stream.Position = 0;
         var image = new BitmapImage();
         image.BeginInit();
         image.CacheOption = BitmapCacheOption.OnLoad;
         image.StreamSource = stream;
         image.EndInit();
         image.Freeze();
-        Image = image;
+        return image;
     }
 
     private SKBitmap _bmp;
@@ -231,7 +272,9 @@ public class TabItem : ViewModel
         get => _highlighter;
         set
         {
-            if (_highlighter == value) return;
+            if (_highlighter == value)
+                return;
+
             SetProperty(ref _highlighter, value);
         }
     }
@@ -242,10 +285,12 @@ public class TabItem : ViewModel
         get => _selectedImage;
         set
         {
-            if (_selectedImage == value) return;
+            if (_selectedImage == value)
+                return;
+
             SetProperty(ref _selectedImage, value);
-            RaisePropertyChanged("HasImage");
-            RaisePropertyChanged("Page");
+            RaisePropertyChanged(nameof(HasImage));
+            RaisePropertyChanged(nameof(Page));
         }
     }
 
@@ -269,7 +314,7 @@ public class TabItem : ViewModel
     public TabItem(GameFile entry)
     {
         Entry = entry;
-        _images = new ObservableCollection<TabImage>();
+        _images = [];
     }
 
     public void SoftReset(GameFile entry)
@@ -281,11 +326,29 @@ public class TabItem : ViewModel
         {
             _images.Clear();
             SelectedImage = null;
-            RaisePropertyChanged("HasMultipleImages");
+            RaisePropertyChanged(nameof(HasMultipleImages));
 
             Document ??= new TextDocument();
             Document.Text = string.Empty;
         });
+    }
+
+    public void AddImage(UPaperSprite sprite, bool save, bool updateUi)
+    {
+        var decoded = sprite.Decode(UserSettings.GetExportOptions());
+        if (decoded == null)
+            return;
+
+        AddImage(sprite.Name, true, decoded, save, updateUi);
+    }
+
+    public void AddImage(UPaperFlipbook flipbook, bool save, bool updateUi)
+    {
+        var decoded = flipbook.Decode(UserSettings.GetExportOptions());
+        if (decoded == null)
+            return;
+
+        AddImage(new TabImage(flipbook.Name, decoded), save, updateUi);
     }
 
     public void AddImage(UTexture texture, bool save, bool updateUi)
@@ -294,12 +357,12 @@ public class TabItem : ViewModel
         var img = new CTexture[1];
         if (texture is UTexture2DArray textureArray)
         {
-            img = textureArray.DecodeTextureArray(UserSettings.Default.CurrentDir.TexturePlatform);
+            img = textureArray.DecodeTextureArray(UserSettings.GetExportOptions());
             appendLayerNumber = true;
         }
         else
         {
-            img[0] = texture.Decode(UserSettings.Default.CurrentDir.TexturePlatform);
+            img[0] = texture.Decode(UserSettings.GetExportOptions());
             if (texture is UTextureCube)
             {
                 img[0] = img[0].ToPanorama();
@@ -326,32 +389,27 @@ public class TabItem : ViewModel
     }
 
     public void AddImage(string name, bool rnn, CTexture img, bool save, bool updateUi)
-    {
-        Application.Current.Dispatcher.Invoke(() =>
-        {
-            var t = new TabImage(name, rnn, img);
-            if (save) SaveImage(t, updateUi);
-            if (!updateUi) return;
-
-            _images.Add(t);
-            SelectedImage ??= t;
-            RaisePropertyChanged("Page");
-            RaisePropertyChanged("HasMultipleImages");
-        });
-    }
+        => AddImage(new TabImage(name, rnn, img), save, updateUi);
 
     public void AddImage(string name, bool rnn, SKBitmap img, bool save, bool updateUi)
+        => AddImage(new TabImage(name, rnn, img), save, updateUi);
+
+    public void AddImage(string exportName, byte[] data, SKBitmap preview, bool save, bool updateUi)
+        => AddImage(new TabImage(exportName, data, preview), save, updateUi);
+
+    private void AddImage(TabImage image, bool save, bool updateUi)
     {
         Application.Current.Dispatcher.Invoke(() =>
         {
-            var t = new TabImage(name, rnn, img);
-            if (save) SaveImage(t, updateUi);
-            if (!updateUi) return;
+            if (save)
+                SaveImage(image, updateUi);
+            if (!updateUi)
+                return;
 
-            _images.Add(t);
-            SelectedImage ??= t;
-            RaisePropertyChanged("Page");
-            RaisePropertyChanged("HasMultipleImages");
+            _images.Add(image);
+            SelectedImage ??= image;
+            RaisePropertyChanged(nameof(Page));
+            RaisePropertyChanged(nameof(HasMultipleImages));
         });
     }
 
@@ -366,15 +424,18 @@ public class TabItem : ViewModel
             Document.Text = text;
             Document.UndoStack.ClearAll();
 
-            if (save) SaveProperty(updateUi);
+            if (save)
+                SaveProperty(updateUi);
         });
     }
 
     public void SaveImage() => SaveImage(SelectedImage, true);
     private void SaveImage(TabImage image, bool updateUi)
     {
-        if (image is null) return;
+        if (image is null)
+            return;
 
+        image.Encode(UserSettings.GetExportOptions());
         var path = Path.Combine(UserSettings.Default.TextureDirectory, UserSettings.Default.KeepDirectoryStructure ? Entry.Directory : "", image.ExportName).Replace('\\', '/');
 
         Directory.CreateDirectory(path.SubstringBeforeLast('/'));
@@ -390,7 +451,9 @@ public class TabItem : ViewModel
 
     private void SaveImage(TabImage image, string path)
     {
-        if (image.ImageBuffer is null)  return;
+        if (image.ImageBuffer is null)
+            return;
+
         using var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read);
         fs.Write(image.ImageBuffer, 0, image.ImageBuffer.Length);
     }
@@ -477,7 +540,9 @@ public class TabControlViewModel : ViewModel
             return;
         }
 
-        if (!CanAddTabs) return;
+        if (!CanAddTabs)
+            return;
+
         Application.Current.Dispatcher.Invoke(() =>
         {
             _tabItems.Add(new TabItem(entry));

@@ -423,6 +423,7 @@
                         <DockPanel>
 
                             <inputs:SearchTextBox DockPanel.Dock="Top" x:Name="AssetsSearchTextBox"
+                                                  Watermark="Filter assets in current folder..."
                                                   Text="{Binding CUE4Parse.AssetsFolder.SelectedFolder.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                   ClearButtonClick="OnClearFilterClick" />
 
@@ -510,6 +511,7 @@
                                     </Grid.ColumnDefinitions>
 
                                     <inputs:SearchTextBox x:Name="AssetsExplorerSearch" Grid.Column="0"
+                                                          Watermark="Filter assets in current folder..."
                                                           Text="{Binding CUE4Parse.AssetsFolder.SelectedFolder.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                           ClearButtonClick="OnClearFilterClick" />
 

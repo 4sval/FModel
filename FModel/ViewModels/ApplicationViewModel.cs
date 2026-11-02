@@ -314,21 +314,6 @@ public class ApplicationViewModel : ViewModel
         await ZlibHelper.InitializeAsync(zlibPath);
     }
 
-    public static async Task InitDetex()
-    {
-        var detexPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", DetexHelper.DLL_NAME);
-        if (File.Exists(DetexHelper.DLL_NAME))
-        {
-            File.Move(DetexHelper.DLL_NAME, detexPath, true);
-        }
-        else if (!File.Exists(detexPath))
-        {
-            await DetexHelper.LoadDllAsync(detexPath);
-        }
-
-        DetexHelper.Initialize(detexPath);
-    }
-
     public static async Task InitUnluac()
     {
         var unluacPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", UnluacHelper.DllName);

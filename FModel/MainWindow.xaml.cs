@@ -120,7 +120,6 @@ public partial class MainWindow
             _applicationView.CUE4Parse.VerifyConsoleVariables(),
             _applicationView.CUE4Parse.VerifyOnDemandArchives(),
             _applicationView.CUE4Parse.InitMappings(),
-            ApplicationViewModel.InitDetex(),
             ApplicationViewModel.InitVgmStream(),
             Task.Run(() =>
             {

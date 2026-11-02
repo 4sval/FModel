@@ -1,20 +1,21 @@
-using System.Collections;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using FModel.Extensions;
 
 namespace FModel.Views.Resources.Controls.Explorer;
 
 public class AssetExplorerListBox : ListBox
 {
-    protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
+    public AssetExplorerListBox()
     {
-        base.OnItemsSourceChanged(oldValue, newValue);
+        AddHandler(ScrollViewer.ScrollChangedEvent, new ScrollChangedEventHandler(OnScrollChanged));
+    }
 
-        // Always start at the top, otherwise inherited offset can cause items not to be visible when we change folder
-        if (this.FindVisualChild<VirtualizingPanel>() is IScrollInfo scroll)
+    // This is important, when we scroll and then change folder, scroll offset won't be adjusted and we will end up with missing items
+    // Same applies to filtering assets as that also changes scroll offset
+    private void OnScrollChanged(object sender, ScrollChangedEventArgs e)
+    {
+        if (e.OriginalSource is ScrollViewer scroll && scroll.VerticalOffset > scroll.ScrollableHeight)
         {
-            scroll.SetVerticalOffset(0);
+            scroll.ScrollToVerticalOffset(scroll.ScrollableHeight);
         }
     }
 }

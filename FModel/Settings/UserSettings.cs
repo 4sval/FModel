@@ -73,7 +73,8 @@ public sealed class UserSettings : ViewModel
             Default.CompressionFormat,
             Default.PngCompressionLevel,
             Default.TgaRleCompression,
-            Default.IncludeDisabledMeshSections
+            Default.IncludeDisabledMeshSections,
+            Default.AnimatedTextureExportFormat
         );
     }
 
@@ -531,6 +532,13 @@ public sealed class UserSettings : ViewModel
     {
         get => _textureExportFormat;
         set => SetProperty(ref _textureExportFormat, value);
+    }
+
+    private EAnimatedTextureFormat _animatedTextureExportFormat = EAnimatedTextureFormat.Png;
+    public EAnimatedTextureFormat AnimatedTextureExportFormat
+    {
+        get => _animatedTextureExportFormat;
+        set => SetProperty(ref _animatedTextureExportFormat, value);
     }
 
     private int _textureQuality = 100;

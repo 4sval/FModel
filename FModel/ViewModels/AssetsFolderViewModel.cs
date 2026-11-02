@@ -60,6 +60,7 @@ public class TreeItem : ViewModel
     }
 
     private string _searchText = string.Empty;
+    private string[] _searchTerms = [];
     public string SearchText
     {
         get => _searchText;
@@ -67,6 +68,7 @@ public class TreeItem : ViewModel
         {
             if (SetProperty(ref _searchText, value))
             {
+                _searchTerms = value.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 RefreshFilters();
             }
         }
@@ -104,7 +106,7 @@ public class TreeItem : ViewModel
             // BulkPopulate sorts Folders before this view is created
             _filteredFoldersView ??= new ListCollectionView(Folders)
             {
-                Filter = e => ItemFilter(e, SearchText.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries))
+                Filter = ItemFilter
             };
             return _filteredFoldersView;
         }
@@ -132,7 +134,7 @@ public class TreeItem : ViewModel
         }
         PathAtThisPoint = pathHere;
 
-        AssetsList.AssetsView.Filter = o => ItemFilter(o, SearchText.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries));
+        AssetsList.AssetsView.Filter = ItemFilter;
     }
 
     private void RefreshFilters()
@@ -141,27 +143,22 @@ public class TreeItem : ViewModel
         FilteredFoldersView?.Refresh();
     }
 
-    private bool ItemFilter(object item, IEnumerable<string> filters)
+    private bool ItemFilter(object item) => item switch
     {
-        var f = filters.ToArray();
-        switch (item)
+        GameFileViewModel entry => (SelectedCategory == EAssetCategory.All || entry.AssetCategory.IsOfCategory(SelectedCategory)) && MatchesSearch(entry.Asset.Name),
+        TreeItem folder => SelectedCategory == EAssetCategory.All && MatchesSearch(folder.Header),
+        _ => false
+    };
+
+    private bool MatchesSearch(string name)
+    {
+        foreach (var term in _searchTerms)
         {
-            case GameFileViewModel entry:
-            {
-                bool matchesSearch = f.Length == 0 || f.All(x => entry.Asset.Name.Contains(x, StringComparison.OrdinalIgnoreCase));
-                bool matchesCategory = SelectedCategory == EAssetCategory.All || entry.AssetCategory.IsOfCategory(SelectedCategory);
-
-                return matchesSearch && matchesCategory;
-            }
-            case TreeItem folder:
-            {
-                bool matchesSearch = f.Length == 0 || f.All(x => folder.Header.Contains(x, StringComparison.OrdinalIgnoreCase));
-                bool matchesCategory = SelectedCategory == EAssetCategory.All;
-
-                return matchesSearch && matchesCategory;
-            }
+            if (!name.Contains(term, StringComparison.OrdinalIgnoreCase))
+                return false;
         }
-        return false;
+
+        return true;
     }
 
     private async Task OnSelectedCategoryChanged()
@@ -333,7 +330,7 @@ public class AssetsFolderViewModel : ViewModel
         }
     }
 
-    private static void SortFolders(RangeObservableCollection<TreeItem> folders)
+    private static void SortEntries(RangeObservableCollection<TreeItem> folders)
     {
         if (folders.Count > 1)
         {
@@ -342,7 +339,13 @@ public class AssetsFolderViewModel : ViewModel
 
         foreach (var folder in folders)
         {
-            SortFolders(folder.Folders);
+            // Keep the source ordered so filtering does not sort the same assets on every edit
+            if (folder.AssetsList.Assets.Count > 1)
+            {
+                folder.AssetsList.Assets.ReplaceRange([.. folder.AssetsList.Assets.OrderBy(x => x.Asset.Path, StringComparer.CurrentCulture)]);
+            }
+
+            SortEntries(folder.Folders);
         }
     }
 
@@ -420,7 +423,7 @@ public class AssetsFolderViewModel : ViewModel
                 lastNode?.AssetsList.Add(entry);
             }
 
-            SortFolders(treeItems);
+            SortEntries(treeItems);
 
             Folders.AddRange(treeItems);
             VisibleFolders.AddRange(treeItems);

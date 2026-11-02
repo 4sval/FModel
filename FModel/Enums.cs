@@ -134,6 +134,7 @@ public enum EAssetCategory : uint
         GeometryCollection = Mesh + 5,
         ChaosClothAsset = Mesh + 6,
     Texture = AssetCategoryExtensions.CategoryBase + (3 << 16),
+        AnimatedTexture = Texture + 1,
     Materials = AssetCategoryExtensions.CategoryBase + (4 << 16),
         Material = Materials + 1,
         MaterialEditorData = Materials + 2,
