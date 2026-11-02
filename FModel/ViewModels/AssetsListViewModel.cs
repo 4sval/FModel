@@ -14,10 +14,7 @@ public class AssetsListViewModel
     {
         get
         {
-            _assetsView ??= new ListCollectionView(Assets)
-            {
-                SortDescriptions = { new SortDescription("Asset.Path", ListSortDirection.Ascending) }
-            };
+            _assetsView ??= new ListCollectionView(Assets);
             return _assetsView;
         }
     }

@@ -151,6 +151,13 @@ public class ExportOptionsViewModel : ViewModel
         }
     }
 
+    public IEnumerable<EAnimatedTextureFormat> AnimatedTextureFormats { get; } = Enum.GetValues<EAnimatedTextureFormat>();
+    public EAnimatedTextureFormat SelectedAnimatedTextureFormat
+    {
+        get;
+        set => SetProperty(ref field, value);
+    }
+
     public bool ShowTextureQuality => SelectedTextureFormat is ETextureFormat.Jpeg or ETextureFormat.Webp;
     public bool ShowPngCompression => SelectedTextureFormat is ETextureFormat.Png;
     public bool ShowTgaCompression => SelectedTextureFormat is ETextureFormat.Tga;
@@ -213,6 +220,7 @@ public class ExportOptionsViewModel : ViewModel
         ExportMaterials = UserSettings.Default.SaveEmbeddedMaterials;
         SelectedTexturePlatform = UserSettings.Default.CurrentDir.TexturePlatform;
         SelectedTextureFormat = UserSettings.Default.TextureExportFormat;
+        SelectedAnimatedTextureFormat = UserSettings.Default.AnimatedTextureExportFormat;
         if (SelectedMeshFormat is EMeshFormat.USD)
         {
             _preUsdTextureFormat = SelectedTextureFormat;
@@ -243,6 +251,7 @@ public class ExportOptionsViewModel : ViewModel
         UserSettings.Default.SaveEmbeddedMaterials = ExportMaterials;
         UserSettings.Default.CurrentDir.TexturePlatform = SelectedTexturePlatform;
         UserSettings.Default.TextureExportFormat = SelectedTextureFormat;
+        UserSettings.Default.AnimatedTextureExportFormat = SelectedAnimatedTextureFormat;
         UserSettings.Default.SaveHdrTexturesAsHdr = ExportHdrTexturesAsHdr;
         UserSettings.Default.SaveMorphTargets = ExportMorphTargets;
         UserSettings.Default.TextureQuality = TextureQuality;
@@ -274,6 +283,7 @@ public class ExportOptionsViewModel : ViewModel
         SelectedCompressionFormat,
         PngCompressionLevel,
         TgaRleCompression,
-        IncludeDisabledMeshSections
+        IncludeDisabledMeshSections,
+        SelectedAnimatedTextureFormat
     );
 }

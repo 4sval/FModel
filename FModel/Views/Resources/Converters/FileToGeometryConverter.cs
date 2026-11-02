@@ -28,7 +28,7 @@ public class FileToGeometryConverter : IMultiValueConverter
             EAssetCategory.UserDefinedStruct => ("BlueprintIcon", "UserDefinedStructBrush"),
             EAssetCategory.CookedMetaData => ("BlueprintIcon", "CookedMetaDataBrush"),
 
-            EAssetCategory.Texture => ("TextureIconAlt", "TextureBrush"),
+            EAssetCategory.Texture or EAssetCategory.AnimatedTexture => ("TextureIconAlt", "TextureBrush"),
 
             EAssetCategory.StaticMesh => ("StaticMeshIconAlt", "NeutralBrush"),
             EAssetCategory.SkeletalMesh => ("SkeletalMeshIconAlt", "NeutralBrush"),

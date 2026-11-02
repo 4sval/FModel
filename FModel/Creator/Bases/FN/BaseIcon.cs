@@ -170,7 +170,7 @@ public class BaseIcon : UCreator
     {
         if (uObject is UTexture2D texture2D)
         {
-            SeriesBackground = texture2D.Decode().ToSkBitmap();
+            SeriesBackground = texture2D.Decode(UserSettings.GetExportOptions()).ToSkBitmap();
             return;
         }
 
