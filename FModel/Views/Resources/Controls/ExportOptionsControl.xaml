@@ -152,7 +152,7 @@
         </ComboBox>
 
         <TextBlock Grid.Row="8" Grid.Column="0" Text="Nanite Format" VerticalAlignment="Center" Margin="0 0 0 5" />
-        <ComboBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 12"
+        <ComboBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
                   ItemsSource="{Binding NaniteMeshFormats}"
                   SelectedItem="{Binding SelectedNaniteMeshFormat, Mode=TwoWay}">
             <ComboBox.ItemTemplate>
@@ -166,11 +166,11 @@
                    Grid.Column="0"
                    Text="Include Disabled Sections"
                    VerticalAlignment="Center"
-                   Margin="0 0 0 15" />
+                   Margin="0 8 0 0" />
         <Grid Grid.Row="9"
               Grid.Column="2"
               Grid.ColumnSpan="3"
-              Margin="0 0 0 13">
+              Margin="0 8 0 0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />

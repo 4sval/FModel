@@ -155,14 +155,17 @@ public class SnooperViewModel : ViewModel, IDisposable
     private void SetOptions(UObject obj)
     {
         var settings = UserSettings.Default;
-        var options = Bridge.Options;
-
-        options.NaniteMeshFormat = obj is UWorld or UPaperTileMap { Game: EGame.GAME_DeadByDaylight } ? ENaniteMeshFormat.NoNanite : settings.NaniteMeshExportFormat;
-        options.MaterialDepth = settings.MaterialExportFormat;
-        options.TexturePlatform = settings.CurrentDir.TexturePlatform;
-        options.LoadMorphTargets = settings.SaveMorphTargets;
-        options.IncludeDisabledMeshSections = settings.IncludeDisabledMeshSections;
-        options.MaxTextureMipSize = settings.PreviewMaxTextureSize;
+        Bridge.Options = new SnooperOptions(
+            obj is UWorld or UPaperTileMap { Game: EGame.GAME_DeadByDaylight }
+                ? ENaniteMeshFormat.NoNanite
+                : settings.NaniteMeshExportFormat,
+            settings.MaterialExportFormat,
+            settings.CurrentDir.TexturePlatform,
+            settings.SaveMorphTargets,
+            settings.SocketExportFormat,
+            settings.IncludeDisabledMeshSections,
+            settings.PreviewMaxTextureSize
+        );
     }
 
     [DllImport("user32.dll")]
