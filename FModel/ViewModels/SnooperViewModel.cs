@@ -125,7 +125,7 @@ public class SnooperViewModel : ViewModel, IDisposable
                 }));
             }
 
-            WindowRequests.Request(Snooper.Settings.ViewportWindow);
+            WindowRequests.Request(actor is MaterialActor ? Snooper.Settings.MaterialInspectorWindow : Snooper.Settings.ViewportWindow);
             if (actor != null)
                 editor.Manager.LoadScene(actor);
 

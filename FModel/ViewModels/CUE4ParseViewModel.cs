@@ -1644,7 +1644,7 @@ public class CUE4ParseViewModel : ViewModel
             case UPaperTileMap when HasFlag(bulk, EBulkType.Worlds) && Provider.Versions.Game is GAME_DeadByDaylight:
             {
                 SaveExport(pointer.Object.Value);
-                return true;
+                return false;
             }
             default:
             {
