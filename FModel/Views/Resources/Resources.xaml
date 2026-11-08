@@ -559,7 +559,6 @@
                                         Margin="0 2"
                                         Cursor="Hand"
                                         VerticalAlignment="Center"
-                                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
                                         ToolTip="Open in Texture Inspector"
                                         Command="{Binding ImageCommand}"
                                         CommandParameter="InspectTexture"
@@ -574,6 +573,8 @@
                                                     Value="24" />
                                             <Setter Property="Padding"
                                                     Value="5" />
+                                            <Setter Property="Background"
+                                                    Value="Transparent" />
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding HasMultipleImages}"
                                                              Value="True">
@@ -583,6 +584,8 @@
                                                             Value="18" />
                                                     <Setter Property="Padding"
                                                             Value="4" />
+                                                    <Setter Property="Background"
+                                                            Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
