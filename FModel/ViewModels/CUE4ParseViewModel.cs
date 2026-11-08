@@ -402,7 +402,7 @@ public class CUE4ParseViewModel : ViewModel
             return new JmapTypeMappingsProvider(path);
         }
 
-        return new FileUsmapTypeMappingsProvider(path);
+        return new FileUsmapTypeMappingsProvider(path, StringComparer.Ordinal);
     }
 
     public Task InitMappings(bool force = false)
@@ -455,7 +455,7 @@ public class CUE4ParseViewModel : ViewModel
                     if (latestUsmaps.Length <= 0) return;
 
                     var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
-                    Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
+                    Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName, StringComparer.Ordinal);
                     l = ELog.Warning;
                 }
             }

@@ -520,7 +520,7 @@ public sealed class UserSettings : ViewModel
         set => SetProperty(ref _meshQuality, value);
     }
 
-    private EMaterialDepth _materialExportFormat = EMaterialDepth.TopLayerOnly;
+    private EMaterialDepth _materialExportFormat = EMaterialDepth.AllLayers;
     public EMaterialDepth MaterialExportFormat
     {
         get => _materialExportFormat;
