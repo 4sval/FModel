@@ -419,7 +419,6 @@ public class GameFileViewModel(GameFile asset) : ViewModel
 
     private Task ResolveByExtensionAsync(EResolveCompute resolve)
     {
-        Resolved |= EResolveCompute.Preview;
         var lowercaseExtension = Asset.Extension.ToLowerInvariant();
 
         AssetFamily = lowercaseExtension switch
@@ -504,11 +503,10 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             case "bmp":
             case "svg":
             {
-                Resolved |= ~EResolveCompute.Preview;
                 AssetCategory = EAssetCategory.Texture;
                 AssetActions = EBulkType.Textures;
                 if (!resolve.HasFlag(EResolveCompute.Preview))
-                    break;
+                    return Task.CompletedTask;
 
                 return Task.Run(() =>
                 {
@@ -568,6 +566,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 break;
         }
 
+        Resolved |= EResolveCompute.Preview;
         return Task.CompletedTask;
     }
 

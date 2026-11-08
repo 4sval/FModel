@@ -14,7 +14,7 @@ public class ImageCommand(TabItem contextViewModel) : ViewModelCommand<TabItem>(
 {
     public override void Execute(TabItem tabViewModel, object parameter)
     {
-        if (parameter == null || !tabViewModel.HasImage)
+        if (parameter == null || tabViewModel?.SelectedImage is not { } image)
             return;
 
         switch (parameter)
@@ -37,6 +37,15 @@ public class ImageCommand(TabItem contextViewModel) : ViewModelCommand<TabItem>(
                 });
                 break;
             }
+            case "InspectTexture" when image.InspectorTexture is { } texture:
+                SnooperViewModel.Instance.InspectTexture(texture, image.Name, image.RenderNearestNeighbor);
+                break;
+            case "PreviousImage":
+                tabViewModel.GoPreviousImage();
+                break;
+            case "NextImage":
+                tabViewModel.GoNextImage();
+                break;
             case "Copy":
             case BitmapSource:
                 ClipboardExtensions.SetImage(parameter as BitmapSource ?? tabViewModel.SelectedImage.Image, Path.ChangeExtension(tabViewModel.SelectedImage.ExportName, "png"));

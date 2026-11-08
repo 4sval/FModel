@@ -16,11 +16,14 @@ using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Options;
+using CUE4Parse_Conversion.Textures;
 using Editor;
 using Editor.Managers;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
+using FModel.Views.Resources.Controls;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using Snooper.Hosting;
 using Snooper.Rendering.Actors;
 using Snooper.Rendering.Components.Camera;
@@ -29,6 +32,8 @@ using Snooper.Rendering.Components.Primitive;
 using Snooper.Rendering.Components.Transforms;
 using Snooper.Rendering.Systems;
 using Snooper.Rendering.Actors.Custom;
+using Snooper.UI;
+using GlfwErrorCode = OpenTK.Windowing.GraphicsLibraryFramework.ErrorCode;
 
 namespace FModel.ViewModels;
 
@@ -39,6 +44,12 @@ public class SnooperViewModel : ViewModel, IDisposable
     private readonly SnooperHost _host;
     private readonly SunActor _sun;
     private readonly EnvironmentActor _environment;
+
+    public bool CanOpenSnooper
+    {
+        get;
+        private set => SetProperty(ref field, value);
+    } = true;
 
     /// <summary>
     /// Mirrors <see cref="Bridge.PendingRequest"/> for bindings.
@@ -59,13 +70,16 @@ public class SnooperViewModel : ViewModel, IDisposable
         Bridge.Host = new FModelBridgeHost();
         Bridge.PendingRequestChanged += request => PendingRequest = request;
 
-        _host = new SnooperHost(() => new EditorWindow(htz, width, height, ApplicationService.ApplicationView.CUE4Parse.Provider, false, true));
+        _host = new SnooperHost(() => new EditorWindow(htz, width, height, ApplicationService.ApplicationView.CUE4Parse.Provider, startVisible: false, closeHides: true), OnStartupFailure);
         _sun = new SunActor();
         _environment = new EnvironmentActor();
     }
 
     public void Load(UObject obj, CancellationToken ct = default)
     {
+        if (!CanOpenSnooper)
+            return;
+
         SetOptions(obj);
 
         Actor actor = obj switch
@@ -89,7 +103,9 @@ public class SnooperViewModel : ViewModel, IDisposable
             return;
         }
 
-        var editor = _host.Window;
+        if (_host.GetWindow() is not { } editor)
+            return;
+
         editor.Invoke(() =>
         {
             if (editor.Manager.RootActor == null)
@@ -109,6 +125,7 @@ public class SnooperViewModel : ViewModel, IDisposable
                 }));
             }
 
+            WindowRequests.Request(Snooper.Settings.ViewportWindow);
             if (actor != null)
                 editor.Manager.LoadScene(actor);
 
@@ -145,11 +162,27 @@ public class SnooperViewModel : ViewModel, IDisposable
 
     public bool TryDeliver(UObject obj)
     {
-        if (!Bridge.TryDeliver(obj)) return false;
+        if (!CanOpenSnooper || !Bridge.TryDeliver(obj) || _host.GetWindow() is not { } editor)
+            return false;
 
-        var editor = _host.Window;
         editor.Invoke(editor.Show);
         return true;
+    }
+
+    public void InspectTexture(CTexture texture, string name, bool nearestNeighbor)
+    {
+        if (CanOpenSnooper)
+        {
+            _host.GetWindow()?.InspectTexture(texture, name, nearestNeighbor);
+        }
+    }
+
+    private void OnStartupFailure(Exception e)
+    {
+        if (e.InnerException is GLFWException { ErrorCode: GlfwErrorCode.ApiUnavailable or GlfwErrorCode.VersionUnavailable })
+            CanOpenSnooper = false;
+
+        FLogger.Append(e);
     }
 
     private void SetOptions(UObject obj)

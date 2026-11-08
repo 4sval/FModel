@@ -30,12 +30,18 @@ public class TabImage : ViewModel
     private readonly string _name;
     private readonly object _source;
 
+    public string Name => _name;
     public string ExportName { get; set; }
 
     public byte[] ImageBuffer { get; set; }
 
     public ImageAnimation.Frame[] AnimationFrames { get; }
     public bool CanDisableAlpha => AnimationFrames == null;
+
+    public EPixelFormat? TextureFormat { get; }
+    public int? MipCount { get; }
+    public CTexture InspectorTexture => TextureFormat.HasValue ? _source as CTexture : null;
+    public bool HasTexture => InspectorTexture != null;
 
     public TabImage(string name, CFlipbook flipbook)
     {
@@ -56,10 +62,22 @@ public class TabImage : ViewModel
         Encode(UserSettings.GetExportOptions());
     }
 
-    public TabImage(string name, bool rnn, CTexture img)
+    public TabImage(string name, bool rnn, CTexture img, UTexture sourceTexture = null)
     {
         _name = name;
         _source = img;
+        if (img != null && sourceTexture != null)
+        {
+            TextureFormat = sourceTexture.Format == EPixelFormat.PF_Unknown ? img.PixelFormat : sourceTexture.Format;
+
+            var platformData = sourceTexture.PlatformData;
+            var mipCount = platformData.Mips.Length;
+            if (platformData is { FirstMipToSerialize: >= 0, VTData: { } virtualTexture } && virtualTexture.IsInitialized())
+                mipCount = (int) virtualTexture.NumMips;
+
+            if (mipCount > 1)
+                MipCount = mipCount;
+        }
         RenderNearestNeighbor = rnn;
         SetImage(img?.ToSkBitmap());
         Encode(UserSettings.GetExportOptions());
@@ -369,7 +387,7 @@ public class TabItem : ViewModel
             }
         }
 
-        AddImage(texture.Name, texture.RenderNearestNeighbor, img, save, updateUi, appendLayerNumber);
+        AddImage(texture.Name, texture.RenderNearestNeighbor, img, save, updateUi, appendLayerNumber, texture);
     }
 
     public void AddImage(string name, bool rnn, SKBitmap[] img, bool save, bool updateUi, bool appendLayerNumber = false)
@@ -380,11 +398,12 @@ public class TabItem : ViewModel
         }
     }
 
-    public void AddImage(string name, bool rnn, CTexture[] img, bool save, bool updateUi, bool appendLayerNumber = false)
+    public void AddImage(string name, bool rnn, CTexture[] img, bool save, bool updateUi, bool appendLayerNumber = false, UTexture sourceTexture = null)
     {
         for (var i = 0; i < img.Length; i++)
         {
-            AddImage($"{name}{(appendLayerNumber ? $"_{i}" : "")}", rnn, img[i], save, updateUi);
+            var layerName = appendLayerNumber ? $"{name}_{i}" : name;
+            AddImage(new TabImage(layerName, rnn, img[i], sourceTexture), save, updateUi);
         }
     }
 

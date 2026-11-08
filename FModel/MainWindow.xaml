@@ -149,7 +149,8 @@
                     </MenuItem>
                 </MenuItem>
                 <MenuItem Header="Views">
-                    <MenuItem Header="3D Viewer" Command="{Binding MenuCommand}" CommandParameter="Views_3dViewer">
+                    <MenuItem Header="3D Viewer" Command="{Binding MenuCommand}" CommandParameter="Views_3dViewer"
+                              IsEnabled="{Binding CanOpenSnooper, Source={x:Static viewModels:SnooperViewModel.Instance}}">
                         <MenuItem.Icon>
                             <Viewbox Width="16" Height="16">
                                 <Canvas Width="24" Height="24">
