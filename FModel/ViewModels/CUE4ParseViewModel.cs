@@ -402,7 +402,7 @@ public class CUE4ParseViewModel : ViewModel
             return new JmapTypeMappingsProvider(path);
         }
 
-        return new FileUsmapTypeMappingsProvider(path);
+        return new FileUsmapTypeMappingsProvider(path, StringComparer.Ordinal);
     }
 
     public Task InitMappings(bool force = false)
@@ -455,7 +455,7 @@ public class CUE4ParseViewModel : ViewModel
                     if (latestUsmaps.Length <= 0) return;
 
                     var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
-                    Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
+                    Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName, StringComparer.Ordinal);
                     l = ELog.Warning;
                 }
             }
@@ -964,7 +964,7 @@ public class CUE4ParseViewModel : ViewModel
                 canvas.Translate(-bounds.Left, -bounds.Top);
                 canvas.DrawPicture(svg.Picture);
 
-                TabControl.SelectedTab.AddImage(entry.NameWithoutExtension, false, bitmap, saveTextures, updateUi);
+                TabControl.SelectedTab.AddImage(entry.Name, data, bitmap, saveTextures, updateUi);
 
                 break;
             }
@@ -1277,6 +1277,34 @@ public class CUE4ParseViewModel : ViewModel
                 TabControl.SelectedTab.SetDocumentText(luaScript.Code, false, false);
                 return true;
             }
+            case UPaperSprite when (isNone || saveTextures) && pointer.Object.Value is UPaperSprite paperSprite:
+            {
+                if (saveTextures)
+                {
+                    SaveExport(paperSprite);
+                }
+
+                if (updateUi)
+                {
+                    TabControl.SelectedTab.AddImage(paperSprite, false, true);
+                }
+
+                return false;
+            }
+            case UPaperFlipbook when (isNone || saveTextures) && pointer.Object.Value is UPaperFlipbook paperFlipbook:
+            {
+                if (saveTextures)
+                {
+                    SaveExport(paperFlipbook);
+                }
+
+                if (updateUi)
+                {
+                    TabControl.SelectedTab.AddImage(paperFlipbook, false, true);
+                }
+
+                return false;
+            }
             case UTexture when (isNone || saveTextures) && pointer.Object.Value is UTexture texture:
             {
                 if (saveTextures)
@@ -1345,7 +1373,7 @@ public class CUE4ParseViewModel : ViewModel
                     }
                 }
 
-                TabControl.SelectedTab.AddImage(sourceFile.SubstringAfterLast('/'), false, bitmap, false, updateUi);
+                TabControl.SelectedTab.AddImage(Path.GetFileName(sourceFile) ?? svgasset.Name + ".svg", data, bitmap, false, updateUi);
                 return false;
             }
             case UBiomesMaskTextureData when (isNone || saveTextures) && pointer.Object.Value is UBiomesMaskTextureData biomes && biomes.MaskData is { } maskData:
@@ -1616,7 +1644,7 @@ public class CUE4ParseViewModel : ViewModel
             case UPaperTileMap when HasFlag(bulk, EBulkType.Worlds) && Provider.Versions.Game is GAME_DeadByDaylight:
             {
                 SaveExport(pointer.Object.Value);
-                return true;
+                return false;
             }
             default:
             {

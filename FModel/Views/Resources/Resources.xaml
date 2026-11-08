@@ -7,6 +7,7 @@
                     xmlns:audioControls="clr-namespace:FModel.Views.Resources.Controls.Aup"
                     xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
                     xmlns:settings="clr-namespace:FModel.Settings"
+                    xmlns:viewModels="clr-namespace:FModel.ViewModels"
                     xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
                     xmlns:folding="clr-namespace:ICSharpCode.AvalonEdit.Folding;assembly=ICSharpCode.AvalonEdit"
                     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
@@ -521,13 +522,223 @@
                             <ColumnDefinition Width="{Binding AvalonImageSize, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" />
                         </Grid.ColumnDefinitions>
 
-                        <controls:AvalonEditor x:Name="DynamicArea" Grid.Column="0" DataContext="{Binding SelectedItem, ElementName=TabControlName}" />
-                        <GridSplitter Grid.Column="1" Width="4" VerticalAlignment="Stretch" ResizeDirection="Columns" KeyboardIncrement="0"
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <controls:AvalonEditor x:Name="DynamicArea" Grid.Column="0" Grid.RowSpan="2" DataContext="{Binding SelectedItem, ElementName=TabControlName}" />
+                        <GridSplitter Grid.Column="1" Grid.RowSpan="2" Width="4" VerticalAlignment="Stretch" ResizeDirection="Columns" KeyboardIncrement="0"
                                       Visibility="{Binding SelectedItem.HasImage, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}"
                                       Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
-                        <Border Grid.Column="2" BorderBrush="#3b3d4a" BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        <Border Grid.Column="2"
+                                Padding="10 6 8 8"
+                                BorderThickness="0 0 0 1"
+                                DataContext="{Binding SelectedItem, ElementName=TabControlName}"
+                                BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}"
+                                TextElement.Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Visibility="{Binding HasImage, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Margin="0 0 4 0"
+                                           Text="{Binding SelectedImage.Name}"
+                                           VerticalAlignment="Center"
+                                           ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}"
+                                           FontSize="12"
+                                           FontWeight="Bold"
+                                           TextTrimming="CharacterEllipsis" />
+                                <Button Grid.Column="1"
+                                        Margin="0 2"
+                                        Cursor="Hand"
+                                        VerticalAlignment="Center"
+                                        ToolTip="Open in Texture Inspector"
+                                        Command="{Binding ImageCommand}"
+                                        CommandParameter="InspectTexture"
+                                        IsEnabled="{Binding CanOpenSnooper, Source={x:Static viewModels:SnooperViewModel.Instance}}"
+                                        Visibility="{Binding SelectedImage.HasTexture, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
+                                    <Button.Style>
+                                        <Style TargetType="Button"
+                                               BasedOn="{StaticResource {x:Type Button}}">
+                                            <Setter Property="Width"
+                                                    Value="24" />
+                                            <Setter Property="Height"
+                                                    Value="24" />
+                                            <Setter Property="Padding"
+                                                    Value="5" />
+                                            <Setter Property="Background"
+                                                    Value="Transparent" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding HasMultipleImages}"
+                                                             Value="True">
+                                                    <Setter Property="Width"
+                                                            Value="18" />
+                                                    <Setter Property="Height"
+                                                            Value="18" />
+                                                    <Setter Property="Padding"
+                                                            Value="4" />
+                                                    <Setter Property="Background"
+                                                            Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    Padding="{TemplateBinding Padding}"
+                                                    CornerRadius="3">
+                                                <Path x:Name="InspectorIcon"
+                                                      Stretch="Uniform"
+                                                      Fill="{TemplateBinding Foreground}"
+                                                      Data="{StaticResource TextureInspectorIcon}">
+                                                    <Path.Effect>
+                                                        <DropShadowEffect Color="Black"
+                                                                          BlurRadius="2"
+                                                                          ShadowDepth="1"
+                                                                          Opacity="0.35" />
+                                                    </Path.Effect>
+                                                </Path>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver"
+                                                         Value="True">
+                                                    <Setter TargetName="InspectorIcon"
+                                                            Property="Fill"
+                                                            Value="#B79AF4" />
+                                                </Trigger>
+                                                <Trigger Property="IsEnabled"
+                                                         Value="False">
+                                                    <Setter TargetName="InspectorIcon"
+                                                            Property="Fill"
+                                                            Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                                <DockPanel Grid.Row="1"
+                                           Grid.ColumnSpan="2"
+                                           Margin="0 1 0 0"
+                                           TextElement.Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}">
+                                    <StackPanel DockPanel.Dock="Right"
+                                                Orientation="Horizontal"
+                                                Margin="6 0 0 0"
+                                                VerticalAlignment="Center"
+                                                Visibility="{Binding HasMultipleImages, Converter={StaticResource BoolToVisibilityConverter}}">
+                                        <StackPanel.Resources>
+                                            <Style TargetType="RepeatButton">
+                                                <Setter Property="Width"
+                                                        Value="18" />
+                                                <Setter Property="Height"
+                                                        Value="18" />
+                                                <Setter Property="Cursor"
+                                                        Value="Hand" />
+                                                <Setter Property="Background"
+                                                        Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}" />
+                                                <Setter Property="Foreground"
+                                                        Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="RepeatButton">
+                                                            <Border Background="{TemplateBinding Background}"
+                                                                    CornerRadius="3">
+                                                                <ContentPresenter HorizontalAlignment="Center"
+                                                                                  VerticalAlignment="Center" />
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver"
+                                                             Value="True">
+                                                        <Setter Property="Background"
+                                                                Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2HighlightBrush}}" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Resources>
+                                        <RepeatButton ToolTip="Previous image"
+                                                      Command="{Binding ImageCommand}"
+                                                      CommandParameter="PreviousImage">
+                                            <Path Data="M4,0 L0,4 4,8"
+                                                  Width="6"
+                                                  Height="9"
+                                                  Stretch="Uniform"
+                                                  StrokeThickness="1.3"
+                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RepeatButton}}" />
+                                        </RepeatButton>
+                                        <Border Height="18"
+                                                Margin="1 0"
+                                                Padding="5 0"
+                                                CornerRadius="3"
+                                                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}">
+                                            <TextBlock FontSize="11"
+                                                       VerticalAlignment="Center"
+                                                       Text="{Binding Page}"
+                                                       Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                                        </Border>
+                                        <RepeatButton ToolTip="Next image"
+                                                      Command="{Binding ImageCommand}"
+                                                      CommandParameter="NextImage">
+                                            <Path Data="M0,0 L4,4 0,8"
+                                                  Width="6"
+                                                  Height="9"
+                                                  Stretch="Uniform"
+                                                  StrokeThickness="1.3"
+                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RepeatButton}}" />
+                                        </RepeatButton>
+                                    </StackPanel>
+                                    <TextBlock DockPanel.Dock="Left"
+                                               FontSize="11"
+                                               VerticalAlignment="Center"
+                                               Visibility="{Binding SelectedImage.HasTexture, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
+                                        <Run Text="{Binding SelectedImage.TextureFormat, Mode=OneWay}"
+                                             Foreground="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}" />
+                                        <Run Text="&#160;/&#160;"
+                                             Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                        <Run Text="{Binding SelectedImage.InspectorTexture.Data.Length, Mode=OneWay, Converter={x:Static converters:SizeToStringConverter.Instance}}" />
+                                        <Run Text="&#160;/&#160;"
+                                             Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                    </TextBlock>
+                                    <TextBlock FontSize="11"
+                                               VerticalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis">
+                                        <Run>
+                                            <Run.Text>
+                                                <MultiBinding Mode="OneWay"
+                                                              StringFormat="{}{0} × {1}px"
+                                                              FallbackValue="">
+                                                    <Binding Path="SelectedImage.Image.PixelWidth" />
+                                                    <Binding Path="SelectedImage.Image.PixelHeight" />
+                                                </MultiBinding>
+                                            </Run.Text>
+                                        </Run>
+                                        <Run>
+                                            <Run.Text>
+                                                <Binding Path="SelectedImage.MipCount"
+                                                         Mode="OneWay"
+                                                         StringFormat="{}&#160;/&#160;{0} mips"
+                                                         TargetNullValue=""
+                                                         FallbackValue="" />
+                                            </Run.Text>
+                                        </Run>
+                                    </TextBlock>
+                                </DockPanel>
+                            </Grid>
+                        </Border>
+                        <Border Grid.Column="2" Grid.Row="1" Margin="8" BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer2BorderBrush}}"
                                 Visibility="{Binding SelectedItem.HasImage, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}">
                             <Image VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform"
+                                   controls:ImageAnimation.Frames="{Binding SelectedItem.SelectedImage.AnimationFrames, ElementName=TabControlName}"
                                    Visibility="{Binding SelectedItem.HasImage, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}"
                                    Source="{Binding SelectedItem.SelectedImage.Image, ElementName=TabControlName}" RenderOptions.BitmapScalingMode="{Binding SelectedItem.SelectedImage.RenderNearestNeighbor, ElementName=TabControlName, Converter={x:Static converters:BoolToRenderModeConverter.Instance}}">
                                 <Image.InputBindings>
@@ -535,8 +746,20 @@
                                 </Image.InputBindings>
                                 <Image.ContextMenu>
                                     <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
-                                        <MenuItem Header="Disable Alpha Channel" IsCheckable="True" IsChecked="{Binding DataContext.SelectedImage.NoAlpha}" />
-                                        <MenuItem Header="Open Image" Command="{Binding DataContext.ImageCommand}" CommandParameter="Open">
+                                        <MenuItem Header="Open in Texture Inspector"
+                                                  Command="{Binding DataContext.ImageCommand}"
+                                                  CommandParameter="InspectTexture"
+                                                  IsEnabled="{Binding CanOpenSnooper, Source={x:Static viewModels:SnooperViewModel.Instance}}"
+                                                  Visibility="{Binding DataContext.SelectedImage.HasTexture, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
+                                            <MenuItem.Icon>
+                                                <Path Width="12"
+                                                      Height="12"
+                                                      Stretch="Uniform"
+                                                      Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                      Data="{StaticResource TextureInspectorIcon}" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Open in New Window" Command="{Binding DataContext.ImageCommand}" CommandParameter="Open">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -547,7 +770,7 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Copy Image" Command="{Binding DataContext.ImageCommand}" CommandParameter="Copy">
+                                        <MenuItem Header="Copy Image" Command="{Binding DataContext.ImageCommand}" CommandParameter="{Binding Source}">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -556,7 +779,7 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Save Image" Command="{Binding DataContext.ImageCommand}" CommandParameter="Save">
+                                        <MenuItem Header="Export Image" Command="{Binding DataContext.ImageCommand}" CommandParameter="Save">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -565,19 +788,13 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
+                                        <Separator />
+                                        <MenuItem Header="Ignore Alpha in Preview" IsCheckable="True" IsChecked="{Binding DataContext.SelectedImage.NoAlpha}"
+                                                  IsEnabled="{Binding DataContext.SelectedImage.CanDisableAlpha}" />
                                     </ContextMenu>
                                 </Image.ContextMenu>
                             </Image>
                         </Border>
-                        <StackPanel Grid.Column="2" VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                            <TextBlock HorizontalAlignment="Center"
-                                       Text="{Binding SelectedItem.SelectedImage.ExportName, Converter={x:Static converters:FileNameWithoutExtensionConverter.Instance}, ElementName=TabControlName}"
-                                       FontSize="10" FontWeight="SemiBold"
-                                       Visibility="{Binding SelectedItem.HasImage, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}" />
-                            <TextBlock HorizontalAlignment="Center"
-                                       Visibility="{Binding SelectedItem.HasMultipleImages, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}"
-                                       Text="{Binding SelectedItem.Page, ElementName=TabControlName}" />
-                        </StackPanel>
                     </Grid>
                     <DataTemplate.Triggers>
                         <DataTrigger Binding="{Binding SelectedItem.HasImage, ElementName=TabControlName}" Value="False">

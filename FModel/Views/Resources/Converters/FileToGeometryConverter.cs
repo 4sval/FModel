@@ -28,7 +28,7 @@ public class FileToGeometryConverter : IMultiValueConverter
             EAssetCategory.UserDefinedStruct => ("BlueprintIcon", "UserDefinedStructBrush"),
             EAssetCategory.CookedMetaData => ("BlueprintIcon", "CookedMetaDataBrush"),
 
-            EAssetCategory.Texture => ("TextureIconAlt", "TextureBrush"),
+            EAssetCategory.Texture or EAssetCategory.AnimatedTexture => ("TextureIconAlt", "TextureBrush"),
 
             EAssetCategory.StaticMesh => ("StaticMeshIconAlt", "NeutralBrush"),
             EAssetCategory.SkeletalMesh => ("SkeletalMeshIconAlt", "NeutralBrush"),
@@ -36,6 +36,7 @@ public class FileToGeometryConverter : IMultiValueConverter
             EAssetCategory.CustomizableObject => ("StaticMeshIconAlt", "CustomizableObjectBrush"),
             EAssetCategory.NaniteDisplacedMesh => ("StaticMeshIconAlt", "NaniteDisplacedMeshBrush"),
             EAssetCategory.GeometryCollection => ("GeometryCollectionIcon", "NeutralBrush"),
+            EAssetCategory.GroomAsset => ("GroomAssetIcon", "GroomAssetBrush"),
 
             EAssetCategory.Material => ("MaterialIcon", "MaterialBrush"),
             EAssetCategory.MaterialEditorData => ("MaterialIcon", "MaterialEditorBrush"),

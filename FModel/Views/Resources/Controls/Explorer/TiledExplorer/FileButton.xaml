@@ -7,6 +7,7 @@
              d:DataContext="{d:DesignInstance Type=vm:GameFileViewModel, IsDesignTimeCreatable=False}"
 
              xmlns:vm="clr-namespace:FModel.ViewModels"
+             xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              Width="128" Height="192"
@@ -19,7 +20,7 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Height="128" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}">
-            <Image Stretch="Uniform" Source="{Binding PreviewImage}" />
+            <Image Stretch="Uniform" Source="{Binding PreviewImage}" controls:ImageAnimation.Frames="{Binding PreviewImage.(controls:ImageAnimation.Frames)}" />
             <Path x:Name="FallbackIcon" Width="64" Stretch="Uniform">
                 <Path.Style>
                     <Style TargetType="{x:Type Path}">

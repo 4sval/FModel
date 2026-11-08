@@ -17,7 +17,7 @@ namespace FModel.Framework;
 /// dying: GLFW and the GL driver keep per-thread state there. So the thread Snooper is created on never dies until
 /// FModel itself closes, it just loops back to waiting for the next window to build.
 /// </summary>
-public sealed class SnooperHost(Func<EditorWindow> build) : IDisposable
+public sealed class SnooperHost(Func<EditorWindow> build, Action<Exception> onStartupFailure) : IDisposable
 {
     private readonly Lock _lock = new();
     private readonly SemaphoreSlim _wanted = new(0);
@@ -27,22 +27,25 @@ public sealed class SnooperHost(Func<EditorWindow> build) : IDisposable
     private Exception? _failure;
     private Thread? _thread;
 
-    public EditorWindow Window
+    public EditorWindow? GetWindow()
     {
-        get
+        Exception? failure;
+        lock (_lock)
         {
-            lock (_lock)
-            {
-                if (_window is { } current) return current;
+            if (_window is { } current) return current;
 
-                _thread ??= StartThread();
-                _ready.Reset();
-                _wanted.Release();
-                _ready.Wait();
+            _thread ??= StartThread();
+            _ready.Reset();
+            _wanted.Release();
+            _ready.Wait();
 
-                return _window ?? throw new InvalidOperationException("Snooper failed to start", _failure);
-            }
+            if (_window is { } window) return window;
+
+            failure = _failure;
         }
+
+        onStartupFailure(new InvalidOperationException("Snooper failed to start", failure));
+        return null;
     }
 
     private Thread StartThread()

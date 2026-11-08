@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:FModel.ViewModels"
+             xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              mc:Ignorable="d"
@@ -24,6 +25,7 @@
                   Height="20"
                   Margin="0 0 8 0">
                 <Image Stretch="Uniform"
+                       controls:ImageAnimation.Frames="{Binding PreviewImage.(controls:ImageAnimation.Frames)}"
                        Source="{Binding PreviewImage}" />
                 <Path x:Name="FallbackIcon"
                       Stretch="Uniform">

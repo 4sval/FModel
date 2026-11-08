@@ -4,19 +4,18 @@ using FModel.Framework;
 using FModel.Views.Resources.Controls;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.IO;
 using FModel.Views.Resources.Converters;
 
 namespace FModel.ViewModels.Commands;
 
-public class ImageCommand : ViewModelCommand<TabItem>
+public class ImageCommand(TabItem contextViewModel) : ViewModelCommand<TabItem>(contextViewModel)
 {
-    public ImageCommand(TabItem contextViewModel) : base(contextViewModel)
-    {
-    }
-
     public override void Execute(TabItem tabViewModel, object parameter)
     {
-        if (parameter == null || !tabViewModel.HasImage) return;
+        if (parameter == null || tabViewModel?.SelectedImage is not { } image)
+            return;
 
         switch (parameter)
         {
@@ -33,12 +32,23 @@ public class ImageCommand : ViewModelCommand<TabItem>
                         ImageCtrl = { Source = tabViewModel.SelectedImage.Image }
                     };
                     RenderOptions.SetBitmapScalingMode(popout.ImageCtrl, BoolToRenderModeConverter.Instance.Convert(tabViewModel.SelectedImage.RenderNearestNeighbor));
+                    ImageAnimation.SetFrames(popout.ImageCtrl, tabViewModel.SelectedImage.AnimationFrames);
                     popout.Show();
                 });
                 break;
             }
+            case "InspectTexture" when image.InspectorTexture is { } texture:
+                SnooperViewModel.Instance.InspectTexture(texture, image.Name, image.RenderNearestNeighbor);
+                break;
+            case "PreviousImage":
+                tabViewModel.GoPreviousImage();
+                break;
+            case "NextImage":
+                tabViewModel.GoNextImage();
+                break;
             case "Copy":
-                ClipboardExtensions.SetImage(tabViewModel.SelectedImage.ImageBuffer, $"{tabViewModel.SelectedImage.ExportName}.png");
+            case BitmapSource:
+                ClipboardExtensions.SetImage(parameter as BitmapSource ?? tabViewModel.SelectedImage.Image, Path.ChangeExtension(tabViewModel.SelectedImage.ExportName, "png"));
                 break;
             case "Save":
                 tabViewModel.SaveImage();
