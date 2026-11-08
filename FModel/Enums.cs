@@ -133,6 +133,7 @@ public enum EAssetCategory : uint
         NaniteDisplacedMesh = Mesh + 4,
         GeometryCollection = Mesh + 5,
         ChaosClothAsset = Mesh + 6,
+        GroomAsset = Mesh + 7,
     Texture = AssetCategoryExtensions.CategoryBase + (3 << 16),
         AnimatedTexture = Texture + 1,
     Materials = AssetCategoryExtensions.CategoryBase + (4 << 16),

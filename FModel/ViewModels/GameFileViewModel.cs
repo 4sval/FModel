@@ -36,6 +36,7 @@ using CUE4Parse.UE4.Assets.Exports.Fmod;
 using CUE4Parse.UE4.Assets.Exports.FMod;
 using CUE4Parse.UE4.Assets.Exports.Foliage;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
+using CUE4Parse.UE4.Assets.Exports.HairStrands;
 using CUE4Parse.UE4.Assets.Exports.Houdini;
 using CUE4Parse.UE4.Assets.Exports.Internationalization;
 using CUE4Parse.UE4.Assets.Exports.Paper2D;
@@ -262,6 +263,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 UCustomizableObject => (EAssetCategory.CustomizableObject, EBulkType.None),
                 UNaniteDisplacedMesh => (EAssetCategory.NaniteDisplacedMesh, EBulkType.None),
                 UGeometryCollection => (EAssetCategory.GeometryCollection, EBulkType.Meshes),
+                UGroomAsset or UGroomBindingAsset => (EAssetCategory.GroomAsset, EBulkType.None),
 
                 UHoudiniAsset => (EAssetCategory.Data, EBulkType.None),
 
