@@ -229,8 +229,14 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
                         cancellationToken.ThrowIfCancellationRequested();
 
                         archive.Position += sizeof(long) + sizeof(byte);
-                        var fullPath = archive.ReadString();
+                        var fullPath = archive.ReadFUtf8String(archive.Read7BitEncodedInt());
                         if (version < EBackupVersion.PerfectPath) fullPath = fullPath[1..];
+                        if (version >= EBackupVersion.Vfs)
+                        {
+                            //readint advances Position, directly doing += overrides it
+                            var length = archive.Read7BitEncodedInt();
+                            archive.Position += length;
+                        }
 
                         paths.Add(fullPath);
                     }
@@ -276,10 +282,11 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
 
                         var uncompressedSize = archive.Read<long>();
                         var isEncrypted = archive.ReadFlag();
-                        var fullPath = archive.ReadString();
+                        var fullPath = archive.ReadFUtf8String(archive.Read7BitEncodedInt());
                         if (version < EBackupVersion.PerfectPath) fullPath = fullPath[1..];
+                        var vfsName = version >= EBackupVersion.Vfs ? archive.ReadString() : null;
 
-                        AddEntry(fullPath, uncompressedSize, isEncrypted, entries);
+                        AddEntry(fullPath, uncompressedSize, isEncrypted, entries, vfsName);
                     }
                 }
                 break;
@@ -289,10 +296,15 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
         return entries;
     }
 
-    private void AddEntry(string path, long uncompressedSize, bool isEncrypted, List<GameFile> entries)
+    private void AddEntry(string path, long uncompressedSize, bool isEncrypted, List<GameFile> entries, string vfsName = null)
     {
-        if (!_applicationView.CUE4Parse.Provider.Files.TryGetValue(path, out var asset) ||
-            asset.IsUePackagePayload || asset.Size == uncompressedSize && asset.IsEncrypted == isEncrypted)
+        if (!_applicationView.CUE4Parse.Provider.Files.TryGetValues(path, out var assets))
+            return;
+
+        GameFile asset = vfsName is null || vfsName == BackupManagerViewModel.FBKP_NONVFS ?
+            assets[0] : assets.Find(x => (x as VfsEntry).Vfs.Name == vfsName);
+
+        if (asset is null || asset.IsUePackagePayload || asset.Size == uncompressedSize && asset.IsEncrypted == isEncrypted)
             return;
 
         entries.Add(asset);
