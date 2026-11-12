@@ -61,7 +61,8 @@ public class GameSelectorViewModel : ViewModel
         else if (IsGameDirectoryAvailable(gameDirectory))
             AddUndetectedDir(gameDirectory);
         else
-            SelectedDirectory = DetectedDirectories.FirstOrDefault();
+            SelectedDirectory = DetectedDirectories.FirstOrDefault(x => !IsLiveGameDirectory(x.GameDirectory) && IsGameDirectoryAvailable(x.GameDirectory))
+                ?? DetectedDirectories.FirstOrDefault();
 
         UeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(EnumerateUeGames()));
     }
@@ -220,7 +221,10 @@ public class GameSelectorViewModel : ViewModel
     }
 
     public static bool IsGameDirectoryAvailable(string gameDirectory)
-        => gameDirectory is Constants._FN_LIVE_TRIGGER or Constants._VAL_LIVE_TRIGGER || Directory.Exists(gameDirectory);
+        => IsLiveGameDirectory(gameDirectory) || Directory.Exists(gameDirectory);
+
+    private static bool IsLiveGameDirectory(string gameDirectory)
+        => gameDirectory is Constants._FN_LIVE_TRIGGER or Constants._VAL_LIVE_TRIGGER;
 
     private IEnumerable<EGame> EnumerateUeGames()
         => Enum.GetValues<EGame>()
