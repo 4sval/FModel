@@ -45,6 +45,7 @@ using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Material.Editor;
 using CUE4Parse.UE4.Assets.Exports.Nanite;
 using CUE4Parse.UE4.Assets.Exports.Niagara;
+using CUE4Parse.UE4.Assets.Exports.Rig;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.Sound;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
@@ -87,6 +88,13 @@ public class GameFileViewModel(GameFile asset) : ViewModel
     {
         get => _resolvedAssetType;
         private set => SetProperty(ref _resolvedAssetType, value);
+    }
+
+    private (string Geometry, string Brush) _iconStyle;
+    public (string Geometry, string Brush) IconStyle
+    {
+        get => _iconStyle;
+        private set => SetProperty(ref _iconStyle, value);
     }
 
     private bool _isSelected;
@@ -260,10 +268,11 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 UHoudiniStaticMesh => (EAssetCategory.StaticMesh, EBulkType.Meshes),
                 USkeletalMesh => (EAssetCategory.SkeletalMesh, EBulkType.Meshes),
                 UChaosClothAsset => (EAssetCategory.ChaosClothAsset, EBulkType.Meshes),
-                UCustomizableObject => (EAssetCategory.CustomizableObject, EBulkType.None),
+                UCustomizableObject => (EAssetCategory.CustomizableObject, EBulkType.None), // TODO: Add support
                 UNaniteDisplacedMesh => (EAssetCategory.NaniteDisplacedMesh, EBulkType.None),
                 UGeometryCollection => (EAssetCategory.GeometryCollection, EBulkType.Meshes),
-                UGroomAsset or UGroomBindingAsset => (EAssetCategory.GroomAsset, EBulkType.None),
+                UGroomAsset => (EAssetCategory.GroomAsset, EBulkType.Meshes), // TODO: Add full support
+                UGroomBindingAsset => (EAssetCategory.GroomAsset, EBulkType.None), // TODO: Add support
 
                 UHoudiniAsset => (EAssetCategory.Data, EBulkType.None),
 
@@ -331,6 +340,14 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             };
 
             var obj = pointer.Object.Value;
+            IconStyle = obj switch
+            {
+                UGroomBindingAsset => (null, "GroomBindingAssetBrush"),
+                USkeletalMesh mesh when mesh.AssetUserData?.Any(data => data?.ResolvedObject is { } reference &&
+                    (reference.IsA<UDNAAsset>() || reference.Class?.Name.Text == "DNAAssetUserData")) == true => ("MetaHumanIcon", null), // Way to detect MetaHumans, for >UE 5.8 DNAAssetUserData is needed since DNAAsset can be standalone asset
+                _ => default
+            };
+
             if (EmbeddedFilesDto.Supports(dummy))
             {
                 var files = new EmbeddedFilesDto(obj).Files;

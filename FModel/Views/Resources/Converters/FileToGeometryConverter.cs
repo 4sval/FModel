@@ -12,7 +12,7 @@ public class FileToGeometryConverter : IMultiValueConverter
 
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
-        if (values.Length < 3 || values[0] is not EAssetCategory category || values[1] is not string resolvedAssetType || values[2] is not EAssetFamily family)
+        if (values is not [EAssetCategory category, string resolvedAssetType, EAssetFamily family, ValueTuple<string, string> iconStyle])
             return null;
 
         resolvedAssetType = resolvedAssetType.ToLowerInvariant();
@@ -130,10 +130,12 @@ public class FileToGeometryConverter : IMultiValueConverter
             _ => (geometry, brush),
         };
 
+        var (geometryOverride, brushOverride) = iconStyle;
+
         if (targetType == typeof(Geometry))
-            return Application.Current.FindResource(geometry) as Geometry;
+            return Application.Current.FindResource(geometryOverride ?? geometry) as Geometry;
         if (targetType == typeof(Brush))
-            return Application.Current.FindResource(brush) as Brush;
+            return Application.Current.FindResource(brushOverride ?? brush) as Brush;
 
         return null;
     }

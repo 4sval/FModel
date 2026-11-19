@@ -11,7 +11,8 @@
     <SolidColorBrush x:Key="UserDefinedEnumBrush" Color="DarkGoldenrod" />
     <SolidColorBrush x:Key="UserDefinedStructBrush" Color="Tan" />
 
-    <SolidColorBrush x:Key="GroomAssetBrush" Color="RosyBrown " />
+    <SolidColorBrush x:Key="GroomAssetBrush" Color="RosyBrown" />
+    <SolidColorBrush x:Key="GroomBindingAssetBrush" Color="CadetBlue" />
     <SolidColorBrush x:Key="ChaosClothBrush" Color="LightSlateGray" />
     <SolidColorBrush x:Key="CustomizableObjectBrush" Color="DarkRed" />
     <SolidColorBrush x:Key="NaniteDisplacedMeshBrush" Color="ForestGreen" />

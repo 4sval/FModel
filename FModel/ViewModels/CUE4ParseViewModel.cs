@@ -51,6 +51,7 @@ using CUE4Parse.UE4.Assets.Exports.Criware;
 using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.Fmod;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
+using CUE4Parse.UE4.Assets.Exports.HairStrands;
 using CUE4Parse.UE4.Assets.Exports.Houdini;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Sound;
@@ -1636,6 +1637,7 @@ public class CUE4ParseViewModel : ViewModel
             case UHoudiniStaticMesh when HasFlag(bulk, EBulkType.Meshes):
             case UGeometryCollection when HasFlag(bulk, EBulkType.Meshes):
             case USkinnedAsset when HasFlag(bulk, EBulkType.Meshes):
+            case UGroomAsset when HasFlag(bulk, EBulkType.Meshes):
             case USkeleton when UserSettings.Default.SaveSkeletonAsMesh && HasFlag(bulk, EBulkType.Meshes):
             // case UMaterialInterface when HasFlag(bulk, EBulkType.Materials):
             case UAnimationAsset when HasFlag(bulk, EBulkType.Animations):
