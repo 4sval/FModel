@@ -27,6 +27,8 @@ namespace FModel;
 /// </summary>
 public partial class App
 {
+    public string LogFilePath { get; private set; }
+
     [DllImport("kernel32.dll")]
     private static extern bool AttachConsole(int dwProcessId);
 
@@ -115,7 +117,7 @@ public partial class App
         CacheManager.EnsureDirectories();
 
 #if DEBUG
-        var filePath = Path.Combine(UserSettings.Default.LogsDirectory, $"FModel-Debug-Log-{DateTime.Now:yyyy-MM-dd}.log");
+        LogFilePath = Path.Combine(UserSettings.Default.LogsDirectory, $"FModel-Debug-Log-{DateTime.Now:yyyy-MM-dd}.log");
 
         var viewerContexts = typeof(Snooper.Hosting.Bridge).Assembly.GetTypes()
             .Concat(typeof(EditorWindow).Assembly.GetTypes())
@@ -123,7 +125,7 @@ public partial class App
             .Append("Snooper")
             .ToHashSet(StringComparer.Ordinal);
 #else
-        var filePath = Path.Combine(UserSettings.Default.LogsDirectory, $"FModel-Log-{DateTime.Now:yyyy-MM-dd}.log");
+        LogFilePath = Path.Combine(UserSettings.Default.LogsDirectory, $"FModel-Log-{DateTime.Now:yyyy-MM-dd}.log");
 #endif
         const string template1 = "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {SourceContext}: {Message:lj}{NewLine}{Exception}";
         const string template2 = "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] [{ClassName}] {ObjectPath}: {Message:lj}{NewLine}{Exception}";
@@ -143,11 +145,11 @@ public partial class App
             .WriteTo.Logger(lc => lc
                 .Filter.ByExcluding(IsConversionLibrary)
                 .WriteTo.Console(outputTemplate: template1, theme: AnsiConsoleTheme.Literate)
-                .WriteTo.File(outputTemplate: template1, path: filePath, shared: true))
+                .WriteTo.File(outputTemplate: template1, path: LogFilePath, shared: true))
             .WriteTo.Logger(lc => lc
                 .Filter.ByIncludingOnly(IsConversionLibrary)
                 .WriteTo.Console(outputTemplate: template2, theme: AnsiConsoleTheme.Literate)
-                .WriteTo.File(outputTemplate: template2, path: filePath, shared: true))
+                .WriteTo.File(outputTemplate: template2, path: LogFilePath, shared: true))
             .MinimumLevel.Override("CUE4Parse_Conversion", LogEventLevel.Verbose)
             .WriteTo.Sink(ImGuiSink.Instance)
             .CreateLogger();

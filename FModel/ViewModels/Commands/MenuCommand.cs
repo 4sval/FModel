@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO;
 using AdonisUI.Controls;
 using FModel.Extensions;
 using FModel.Framework;
@@ -67,6 +68,10 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
                 break;
             case "ToolBox_Clear_Logs":
                 FLogger.ClearLogs();
+                break;
+            case "ToolBox_Open_Log":
+                if (App.Current is App app && File.Exists(app.LogFilePath))
+                    Process.Start(new ProcessStartInfo { FileName = app.LogFilePath, UseShellExecute = true });
                 break;
             case "ToolBox_Open_Output_Directory":
                 Process.Start(new ProcessStartInfo { FileName = UserSettings.Default.OutputDirectory, UseShellExecute = true });
