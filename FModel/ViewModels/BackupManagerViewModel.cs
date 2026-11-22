@@ -63,7 +63,7 @@ public class BackupManagerViewModel : ViewModel
     {
         await _threadWorkerView.Begin(_ =>
         {
-            var backupFolder = Path.Combine(UserSettings.Default.OutputDirectory, "Backups");
+            var backupFolder = UserSettings.Default.BackupsDirectory;
             var fileName = $"{_gameName}_{DateTime.Now:MM'_'dd'_'yyyy}.fbkp";
             var fullPath = Path.Combine(backupFolder, fileName);
             var func = new Func<GameFile, bool>(x => !x.IsUePackagePayload);
@@ -92,7 +92,7 @@ public class BackupManagerViewModel : ViewModel
         if (SelectedBackup == null) return;
         await _threadWorkerView.Begin(_ =>
         {
-            var fullPath = Path.Combine(Path.Combine(UserSettings.Default.OutputDirectory, "Backups"), SelectedBackup.FileName);
+            var fullPath = Path.Combine(UserSettings.Default.BackupsDirectory, SelectedBackup.FileName);
             _apiEndpointView.DownloadFile(SelectedBackup.Url, fullPath);
             SaveCheck(fullPath, SelectedBackup.FileName, "downloaded", "download");
         });

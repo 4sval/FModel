@@ -74,47 +74,48 @@ public partial class App
         if (!Directory.Exists(UserSettings.Default.RawDataDirectory))
         {
             createMe = true;
-            UserSettings.Default.RawDataDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports");
+            UserSettings.Default.RawDataDirectory = UserSettings.Default.ExportsDirectory;
         }
 
         if (!Directory.Exists(UserSettings.Default.PropertiesDirectory))
         {
             createMe = true;
-            UserSettings.Default.PropertiesDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports");
+            UserSettings.Default.PropertiesDirectory = UserSettings.Default.ExportsDirectory;
         }
 
         if (!Directory.Exists(UserSettings.Default.TextureDirectory))
         {
             createMe = true;
-            UserSettings.Default.TextureDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports");
+            UserSettings.Default.TextureDirectory = UserSettings.Default.ExportsDirectory;
         }
 
         if (!Directory.Exists(UserSettings.Default.AudioDirectory))
         {
             createMe = true;
-            UserSettings.Default.AudioDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports");
+            UserSettings.Default.AudioDirectory = UserSettings.Default.ExportsDirectory;
         }
 
         if (!Directory.Exists(UserSettings.Default.CodeDirectory))
         {
             createMe = true;
-            UserSettings.Default.CodeDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports");
+            UserSettings.Default.CodeDirectory = UserSettings.Default.ExportsDirectory;
         }
 
         if (!Directory.Exists(UserSettings.Default.ModelDirectory))
         {
             createMe = true;
-            UserSettings.Default.ModelDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports");
+            UserSettings.Default.ModelDirectory = UserSettings.Default.ExportsDirectory;
         }
 
         Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FModel"));
-        Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Backups"));
-        if (createMe) Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Exports"));
-        Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Logs"));
+        Directory.CreateDirectory(UserSettings.Default.BackupsDirectory);
+        if (createMe) Directory.CreateDirectory(UserSettings.Default.ExportsDirectory);
+        Directory.CreateDirectory(UserSettings.Default.LogsDirectory);
+        Directory.CreateDirectory(UserSettings.Default.MappingsDirectory);
         CacheManager.EnsureDirectories();
 
 #if DEBUG
-        var filePath = Path.Combine(UserSettings.Default.OutputDirectory, "Logs", $"FModel-Debug-Log-{DateTime.Now:yyyy-MM-dd}.log");
+        var filePath = Path.Combine(UserSettings.Default.LogsDirectory, $"FModel-Debug-Log-{DateTime.Now:yyyy-MM-dd}.log");
 
         var viewerContexts = typeof(Snooper.Hosting.Bridge).Assembly.GetTypes()
             .Concat(typeof(EditorWindow).Assembly.GetTypes())
@@ -122,7 +123,7 @@ public partial class App
             .Append("Snooper")
             .ToHashSet(StringComparer.Ordinal);
 #else
-        var filePath = Path.Combine(UserSettings.Default.OutputDirectory, "Logs", $"FModel-Log-{DateTime.Now:yyyy-MM-dd}.log");
+        var filePath = Path.Combine(UserSettings.Default.LogsDirectory, $"FModel-Log-{DateTime.Now:yyyy-MM-dd}.log");
 #endif
         const string template1 = "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {SourceContext}: {Message:lj}{NewLine}{Exception}";
         const string template2 = "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] [{ClassName}] {ObjectPath}: {Message:lj}{NewLine}{Exception}";
@@ -150,6 +151,7 @@ public partial class App
             .MinimumLevel.Override("CUE4Parse_Conversion", LogEventLevel.Verbose)
             .WriteTo.Sink(ImGuiSink.Instance)
             .CreateLogger();
+        CUE4Parse.CUE4ParseLog.UseLogger(Log.Logger);
 
         CacheManager.MigrateLegacyFiles();
         Log.Information("Version {Version} ({CommitId})", Constants.APP_VERSION, Constants.APP_COMMIT_ID);

@@ -710,7 +710,7 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
     private static bool TryConvertRada(string inputFilePath, byte[] inputFileData, string extension, out string rawFilePath, bool updateUi = false)
     {
         rawFilePath = string.Empty;
-        var decoderPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", $"{extension}dec.exe");
+        var decoderPath = Path.Combine(UserSettings.Default.CacheDirectory, $"{extension}dec.exe");
         if (!File.Exists(decoderPath))
         {
             Log.Error("Failed to convert {FilePath}, {Extension} decoder is missing", inputFilePath, extension);
@@ -763,10 +763,10 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     private static string TryGetVgmstreamPath()
     {
-        var vgmFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "test.exe");
+        var vgmFilePath = Path.Combine(UserSettings.Default.CacheDirectory, "test.exe");
         if (!File.Exists(vgmFilePath))
         {
-            vgmFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "vgmstream-cli.exe");
+            vgmFilePath = Path.Combine(UserSettings.Default.CacheDirectory, "vgmstream-cli.exe");
             if (!File.Exists(vgmFilePath))
             {
                 Log.Error("Failed to convert audio, vgmstream is missing");

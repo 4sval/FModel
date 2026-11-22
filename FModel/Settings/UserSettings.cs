@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
+using CUE4Parse.MappingsProvider.Usmap;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Options;
@@ -92,6 +93,12 @@ public sealed class UserSettings : ViewModel
         set => SetProperty(ref _outputDirectory, value);
     }
 
+    [JsonIgnore] public string ExportsDirectory => Path.Combine(OutputDirectory, "Exports");
+    [JsonIgnore] public string BackupsDirectory => Path.Combine(OutputDirectory, "Backups");
+    [JsonIgnore] public string LogsDirectory => Path.Combine(OutputDirectory, "Logs");
+    [JsonIgnore] public string MappingsDirectory => Path.Combine(OutputDirectory, "Mappings");
+    [JsonIgnore] public string CacheDirectory => Path.Combine(OutputDirectory, ".data");
+
     private string _rawDataDirectory;
     public string RawDataDirectory
     {
@@ -146,6 +153,16 @@ public sealed class UserSettings : ViewModel
     {
         get => _lastOpenedSettingTab;
         set => SetProperty(ref _lastOpenedSettingTab, value);
+    }
+
+    // Without Oodle
+    private EUsmapCompressionMethod _mappingCompression = EUsmapCompressionMethod.ZStandard;
+    public EUsmapCompressionMethod MappingCompression
+    {
+        get => _mappingCompression;
+        set => SetProperty(ref _mappingCompression, value is not (EUsmapCompressionMethod.Oodle or EUsmapCompressionMethod.Unknown) && Enum.IsDefined(value)
+            ? value
+            : EUsmapCompressionMethod.ZStandard);
     }
 
     private bool _isLoggerExpanded = true;

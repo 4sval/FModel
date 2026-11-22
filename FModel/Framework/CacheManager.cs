@@ -9,7 +9,7 @@ namespace FModel.Framework;
 public static class CacheManager
 {
     public static string DataDirectory =>
-        Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data")).FullName;
+        Directory.CreateDirectory(UserSettings.Default.CacheDirectory).FullName;
 
     public static string ChunksDirectory =>
         Directory.CreateDirectory(Path.Combine(DataDirectory, "chunks")).FullName;

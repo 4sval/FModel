@@ -142,7 +142,7 @@ public partial class ImageMerger
         var fileBrowser = new OpenFileDialog
         {
             Title = "Add image(s)",
-            InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports"),
+            InitialDirectory = UserSettings.Default.ExportsDirectory,
             Multiselect = true,
             Filter = "Image Files (*.png,*.bmp,*.jpg,*.jpeg,*.jfif,*.jpe,*.tiff,*.tif)|*.png;*.bmp;*.jpg;*.jpeg;*.jfif;*.jpe;*.tiff;*.tif|All Files (*.*)|*.*"
         };

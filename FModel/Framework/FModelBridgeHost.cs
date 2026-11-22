@@ -12,7 +12,7 @@ namespace FModel.Framework;
 public sealed class FModelBridgeHost : IBridgeHost
 {
     public string Name => "FModel";
-    public string ImGuiIniPath => Path.Combine(UserSettings.Default.OutputDirectory, ".data", "snooper.ini");
+    public string ImGuiIniPath => Path.Combine(UserSettings.Default.CacheDirectory, "snooper.ini");
 
     public bool CanBrowseAssets => true;
 

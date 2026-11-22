@@ -1,11 +1,14 @@
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using CUE4Parse.MappingsProvider.Usmap;
 using CUE4Parse.UE4.Lua.unluac;
 using FModel.Extensions;
 using FModel.Extensions.Themes;
@@ -17,6 +20,7 @@ using FModel.Views.Resources.Controls;
 using ICSharpCode.AvalonEdit;
 using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
+using Serilog;
 
 namespace FModel.Views;
 
@@ -44,6 +48,8 @@ public partial class SettingsView
     private async void OnClick(object sender, RoutedEventArgs e)
     {
         var restart = _applicationView.SettingsView.Save(out var whatShouldIDo);
+        if (_applicationView.CUE4Parse.HasMappingSettingsChanged())
+            whatShouldIDo.Add(SettingsOut.ReloadMappings);
         if (restart)
             _applicationView.RestartWithWarning();
 
@@ -73,13 +79,19 @@ public partial class SettingsView
         ExportSessionViewModel.Instance.Options.ResetToUserDefaults();
     }
 
+    private void OnClosing(object sender, CancelEventArgs e)
+    {
+        if (_settingsView.IsGeneratingMapping)
+            e.Cancel = true;
+    }
+
     private void OnBrowseOutput(object sender, RoutedEventArgs e)
     {
         if (!TryBrowse(out var path)) return;
         UserSettings.Default.OutputDirectory = path;
         if (_applicationView.SettingsView.UseCustomOutputFolders) return;
 
-        path = Path.Combine(path, "Exports");
+        path = UserSettings.Default.ExportsDirectory;
         UserSettings.Default.RawDataDirectory = path;
         UserSettings.Default.PropertiesDirectory = path;
         UserSettings.Default.TextureDirectory = path;
@@ -119,17 +131,90 @@ public partial class SettingsView
 
     private void OnBrowseMappings(object sender, RoutedEventArgs e)
     {
+        var mappingsDirectory = UserSettings.Default.MappingsDirectory;
         var openFileDialog = new OpenFileDialog
         {
             Title = "Select a mapping file",
-            InitialDirectory = CacheManager.MappingsDirectory,
+            InitialDirectory = Directory.Exists(mappingsDirectory) ? mappingsDirectory : CacheManager.MappingsDirectory,
             Filter = "USMAP Files (*.usmap, *.jmap, *.jmap.gz)|*.usmap;*.jmap;*.jmap.gz|All Files (*.*)|*.*"
         };
 
         if (!openFileDialog.ShowDialog().GetValueOrDefault())
             return;
 
-        _applicationView.SettingsView.MappingEndpoint.FilePath = openFileDialog.FileName;
+        try
+        {
+            _applicationView.CUE4Parse.ApplyMappingFile(openFileDialog.FileName);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to load mapping file {Path}", openFileDialog.FileName);
+            FLogger.Append(ELog.Error, () => FLogger.Text($"Failed to load mapping file: {ex.Message}", Constants.WHITE, true));
+        }
+    }
+
+    private async void OnGenerateMapping(object sender, RoutedEventArgs e)
+    {
+        if (_settingsView.IsGeneratingMapping || !_settingsView.CanGenerateMapping || _settingsView.MappingEndpoint?.Overwrite != true)
+            return;
+
+        var directory = UserSettings.Default.CurrentDir;
+        var archiveDirectory = directory.GameDirectory;
+        var mappingsDirectory = UserSettings.Default.MappingsDirectory;
+        var game = directory.UeVersion;
+        var compression = _settingsView.SelectedMappingCompression;
+        _settingsView.IsGeneratingMapping = true;
+
+        try
+        {
+            string executable;
+            try
+            {
+                executable = await Task.Run(() => StaticMappingGenerator.FindShippingExe(archiveDirectory));
+            }
+            catch (IOException ex) when (ex is FileNotFoundException or DirectoryNotFoundException)
+            {
+                Log.Warning("Could not locate the shipping executable automatically. {Reason}", ex.Message);
+                var openFileDialog = new OpenFileDialog
+                {
+                    Title = "Select Unreal Engine shipping executable (.exe)",
+                    InitialDirectory = Directory.Exists(archiveDirectory) ? archiveDirectory : string.Empty,
+                    Filter = "Executables (*.exe)|*.exe"
+                };
+
+                if (openFileDialog.ShowDialog(this) != true)
+                    return;
+
+                executable = openFileDialog.FileName;
+            }
+
+            var gameDisplayName = _applicationView.CUE4Parse.Provider.GameDisplayName;
+            var path = await Task.Run(() => StaticMappingGenerator.Generate(executable, mappingsDirectory, game, compression, gameDisplayName));
+
+            if (ReferenceEquals(directory, UserSettings.Default.CurrentDir))
+                _applicationView.CUE4Parse.ApplyMappingFile(path);
+
+            var mappingType = compression == EUsmapCompressionMethod.None ? "mapping" : $"{compression} mapping";
+            Log.Information("Generated {MappingType} from {Executable} at {Path}", mappingType, executable, path);
+            FLogger.Append(ELog.Information, () =>
+            {
+                FLogger.Text($"Generated {mappingType} ", Constants.WHITE);
+                FLogger.Link(Path.GetFileName(path), path, true);
+            });
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to generate a static mapping for {ArchiveDirectory}", archiveDirectory);
+            FLogger.Append(ELog.Error, () =>
+            {
+                FLogger.Text("Failed to generate mapping. See: ", Constants.WHITE);
+                FLogger.Link("→ link ←", Constants.MAPPING_ISSUE_LINK, true);
+            });
+        }
+        finally
+        {
+            _settingsView.IsGeneratingMapping = false;
+        }
     }
 
     private bool TryBrowse(out string path)
