@@ -253,24 +253,69 @@ public class GameSelectorViewModel : ViewModel
         yield return GetLevelInfiniteGame("tof_launcher", "\\Hotta\\Content\\Paks", EGame.GAME_TowerOfFantasy);
     }
 
-    private LauncherInstalled _launcherInstalled;
+    private IEnumerable<Installation> _epicLauncherInstallations;
     private DirectorySettings GetUnrealEngineGame(string gameName, string pakDirectory, EGame ueVersion)
     {
-        _launcherInstalled ??= GetDriveLauncherInstalls<LauncherInstalled>("ProgramData\\Epic\\UnrealEngineLauncher\\LauncherInstalled.dat");
-        if (_launcherInstalled?.InstallationList != null)
+        _epicLauncherInstallations ??= GetEglV1Installations()
+            .Concat(GetEglV2Installations())
+            .DistinctBy(x => x.AppName);
+
+        foreach (Installation installationList in _epicLauncherInstallations)
         {
-            foreach (var installationList in _launcherInstalled.InstallationList)
+            if (!string.Equals(installationList.AppName, gameName, StringComparison.OrdinalIgnoreCase))
             {
-                var gameDir = $"{installationList.InstallLocation}{pakDirectory}";
-                if (installationList.AppName.Equals(gameName, StringComparison.OrdinalIgnoreCase) && Directory.Exists(gameDir))
-                {
-                    Log.Debug("Found {GameName} in LauncherInstalled.dat", gameName);
-                    return DirectorySettings.Default(installationList.AppName, gameDir, ue: ueVersion);
-                }
+                continue;
+            }
+
+            string gameDir = $"{installationList.InstallLocation}{pakDirectory}";
+
+            if (Directory.Exists(gameDir))
+            {
+                Log.Debug("Found {GameName} in Epic launcher installations", gameName);
+
+                return DirectorySettings.Default(installationList.AppName, gameDir, ue: ueVersion);
             }
         }
 
         return null;
+    }
+
+    private IEnumerable<Installation> GetEglV1Installations()
+        => GetDriveLauncherInstalls<LauncherInstalled>("ProgramData\\Epic\\UnrealEngineLauncher\\LauncherInstalled.dat")?.InstallationList ?? [];
+
+    private IEnumerable<Installation> GetEglV2Installations()
+    {
+        string eglv2InstallationsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "com.epicgames.eglv2", "installations.jsonl");
+
+        if (!File.Exists(eglv2InstallationsFile))
+            yield break;
+
+        using StreamReader reader = File.OpenText(eglv2InstallationsFile);
+
+        // Skip the file metadata header
+        reader.ReadLine();
+
+        while (reader.ReadLine() is { } line)
+        {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                continue;
+            }
+
+            EglV2Installation installation = JsonConvert.DeserializeObject<EglV2Installation>(line);
+
+            if (string.IsNullOrEmpty(installation?.InstallDir) || string.IsNullOrEmpty(installation.ArtifactId))
+            {
+                continue;
+            }
+
+            yield return new Installation
+            {
+                InstallLocation = installation.InstallDir,
+                AppName = installation.ArtifactId,
+                AppVersion = installation.AppVersion
+            };
+        }
     }
 
     private RiotClientInstalls _riotClientInstalls;
@@ -376,6 +421,18 @@ public class GameSelectorViewModel : ViewModel
     {
         public string InstallLocation;
         public string AppName;
+        public string AppVersion;
+    }
+
+    private class EglV2Installation
+    {
+        [JsonProperty("dir")]
+        public string InstallDir;
+
+        [JsonProperty("artifactId")]
+        public string ArtifactId;
+
+        [JsonProperty("version")]
         public string AppVersion;
     }
 
