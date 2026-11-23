@@ -12,10 +12,16 @@
                              WindowStartupLocation="CenterScreen" ResizeMode="NoResize" IconVisibility="Collapsed" SizeToContent="Height"
                              MinHeight="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.10'}"
                              Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.45'}"
-                             AllowDrop="True">
+                             Closing="OnClosing">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
             <Setter Property="Title" Value="Settings" />
+            <Setter Property="AllowDrop" Value="True" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding SettingsView.IsGeneratingMapping}" Value="True">
+                    <Setter Property="AllowDrop" Value="False" />
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
     </adonisControls:AdonisWindow.Style>
     <adonisControls:AdonisWindow.Resources>
@@ -158,7 +164,6 @@
                               Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SettingsView.MappingEndpoint.Overwrite, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-
                     <TextBlock Grid.Row="10" Grid.Column="0" Text="Mapping File Path" VerticalAlignment="Center" Margin="0 10 0 0"
                                DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                                Visibility="{Binding SettingsView.MappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
@@ -169,10 +174,93 @@
                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                             Visibility="{Binding SettingsView.MappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-                    <Separator Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="ADVANCED"></Separator>
+                    <TextBlock Grid.Row="11"
+                               Grid.Column="0"
+                               Text="Mapping Generation Compression"
+                               VerticalAlignment="Center"
+                               Margin="0 5 0 0"
+                               Visibility="{Binding Visibility, ElementName=MappingGenerationControls}" />
+                    <Grid x:Name="MappingGenerationControls"
+                          Grid.Row="11"
+                          Grid.Column="2"
+                          Grid.ColumnSpan="5"
+                          Margin="0 5 0 0"
+                          DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}">
+                        <Grid.Style>
+                            <Style TargetType="Grid">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding SettingsView.CanGenerateMapping}" Value="True" />
+                                            <Condition Binding="{Binding SettingsView.MappingEndpoint.Overwrite}" Value="True" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="5" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Row="12" Grid.Column="0" Text="Versioning Configuration *" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Grid Grid.Row="12" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5">
+                        <ComboBox Grid.Column="0"
+                                  ItemsSource="{Binding SettingsView.MappingCompressions}"
+                                  SelectedItem="{Binding SettingsView.SelectedMappingCompression, Mode=TwoWay}" />
+                        <Button Grid.Column="2"
+                                Click="OnGenerateMapping"
+                                Cursor="Hand">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Width="12"
+                                      Height="12"
+                                      Margin="0 0 5 0"
+                                      VerticalAlignment="Center"
+                                      Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      StrokeThickness="2"
+                                      Data="M 6,1 A 5,5 0 1 1 1,6"
+                                      RenderTransformOrigin="0.5,0.5">
+                                    <Path.RenderTransform>
+                                        <RotateTransform />
+                                    </Path.RenderTransform>
+                                    <Path.Style>
+                                        <Style TargetType="Path">
+                                            <Setter Property="Visibility"
+                                                    Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SettingsView.IsGeneratingMapping}"
+                                                             Value="True">
+                                                    <Setter Property="Visibility"
+                                                            Value="Visible" />
+                                                    <DataTrigger.EnterActions>
+                                                        <BeginStoryboard Name="MappingSpinner">
+                                                            <Storyboard>
+                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle"
+                                                                                 From="0"
+                                                                                 To="360"
+                                                                                 Duration="0:0:0.8"
+                                                                                 RepeatBehavior="Forever" />
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </DataTrigger.EnterActions>
+                                                    <DataTrigger.ExitActions>
+                                                        <RemoveStoryboard BeginStoryboardName="MappingSpinner" />
+                                                    </DataTrigger.ExitActions>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Path.Style>
+                                </Path>
+                                <TextBlock Text="Generate Mapping" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                    <Separator Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="ADVANCED"></Separator>
+
+                    <TextBlock Grid.Row="13" Grid.Column="0" Text="Versioning Configuration *" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <Grid Grid.Row="13" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="5" />
@@ -186,10 +274,10 @@
                         <Button Grid.Column="4" Content="MapStructTypes" Click="OpenMapStructTypes" />
                     </Grid>
 
-                    <TextBlock Grid.Row="13" Grid.Column="0" Text="AES Reload at Launch" VerticalAlignment="Center" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="14" Grid.Column="0" Text="AES Reload at Launch" VerticalAlignment="Center" Margin="0 0 0 5"
                                DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                                Visibility="{Binding SettingsView.AesEndpoint.IsValid, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <ComboBox Grid.Row="13" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
+                    <ComboBox Grid.Row="14" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                               ItemsSource="{Binding SettingsView.AesReloads}" SelectedItem="{Binding SettingsView.SelectedAesReload, Mode=TwoWay}"
                               Visibility="{Binding SettingsView.AesEndpoint.IsValid, Converter={StaticResource BoolToVisibilityConverter}}">
@@ -200,8 +288,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="14" Grid.Column="0" Text="Endpoint Configuration" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Grid Grid.Row="14" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="15" Grid.Column="0" Text="Endpoint Configuration" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <Grid Grid.Row="15" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
                           DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -213,33 +301,33 @@
                         <Button Grid.Column="2" Content="Mapping" Click="OpenMappingEndpoint" />
                     </Grid>
 
-                    <TextBlock Grid.Row="15" Grid.Column="0" Text="Serialize Script Bytecode" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="15" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="16" Grid.Column="0" Text="Serialize Script Bytecode" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="16" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding ReadScriptData, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
 
-                    <TextBlock Grid.Row="16" Grid.Column="0" Text="Serialize Inlined Shader Maps" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="16" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="17" Grid.Column="0" Text="Serialize Inlined Shader Maps" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="17" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding ReadShaderMaps, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
 
-                    <TextBlock Grid.Row="17" Grid.Column="0" Text="Decompile Blueprint to Pseudo C++" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Adds a right click option to decompile UClass packages into a pseudo C++ friendly format" />
-                    <CheckBox Grid.Row="17" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="18" Grid.Column="0" Text="Decompile Blueprint to Pseudo C++" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Adds a right click option to decompile UClass packages into a pseudo C++ friendly format" />
+                    <CheckBox Grid.Row="18" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding ShowDecompileOption, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
 
-                    <TextBlock Grid.Row="18" Grid.Column="0" Text="Decompile Lua" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Decompile/Disassemble compiled lua files with an unluac." />
-                    <CheckBox Grid.Row="18" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="19" Grid.Column="0" Text="Decompile Lua" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Decompile/Disassemble compiled lua files with an unluac." />
+                    <CheckBox Grid.Row="19" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding DecompileLua, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
                               Checked="OnDecompileLuaChanged" />
 
-                    <TextBlock Grid.Row="19"
+                    <TextBlock Grid.Row="20"
                                Grid.Column="0"
                                Text="Convert Audio During Export (.wav)"
                                VerticalAlignment="Center"
                                Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="19"
+                    <CheckBox Grid.Row="20"
                               Grid.Column="2"
                               Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding ConvertAudioOnBulkExport, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
@@ -645,6 +733,15 @@
         </ResourceDictionary>
     </adonisControls:AdonisWindow.Resources>
     <Grid>
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding SettingsView.IsGeneratingMapping}" Value="True">
+                        <Setter Property="IsEnabled" Value="False" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />

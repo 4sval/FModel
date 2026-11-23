@@ -6,7 +6,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using FModel.Services;
-using FModel.Settings;
 using FModel.ViewModels;
 
 namespace FModel.Views.Resources.Controls;
@@ -97,17 +96,12 @@ public partial class DropOverlay : UserControl
                 await Dispatcher.InvokeAsync(() => _applicationView.AddGameDirectory(_path));
                 break;
             case DragStatus.File:
-                UserSettings.IsEndpointValid(EEndpointType.Mapping, out var oldMappingsEndpoint);
                 try
                 {
-                    var newMappingsEndpoint = new EndpointSettings() { Overwrite = true, FilePath = _path };
-                    UserSettings.Default.CurrentDir.Endpoints[(int) EEndpointType.Mapping] = newMappingsEndpoint;
-                    await _applicationView.CUE4Parse.InitMappings();
-                    _applicationView.SettingsView.MappingEndpoint = newMappingsEndpoint;
+                    _applicationView.CUE4Parse.ApplyMappingFile(_path);
                 }
                 catch (Exception ex)
                 {
-                    UserSettings.Default.CurrentDir.Endpoints[(int) EEndpointType.Mapping] = oldMappingsEndpoint;
                     FLogger.Append(ELog.Error, () =>
                     {
                         FLogger.Text($"Failed to load mapping file: {ex.Message}", Constants.WHITE, true);

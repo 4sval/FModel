@@ -261,7 +261,7 @@ public class ApplicationViewModel : ViewModel
 
     public static async Task InitVgmStream()
     {
-        var vgmZipFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "vgmstream-win.zip");
+        var vgmZipFilePath = Path.Combine(UserSettings.Default.CacheDirectory, "vgmstream-win.zip");
         var vgmFileInfo = new FileInfo(vgmZipFilePath);
 
         if (!vgmFileInfo.Exists || vgmFileInfo.LastWriteTimeUtc < DateTime.UtcNow.AddMonths(-4))
@@ -288,10 +288,10 @@ public class ApplicationViewModel : ViewModel
         if (!Avx2.IsSupported)
             return;
 
-        var oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_NAME_OLD);
+        var oodlePath = Path.Combine(UserSettings.Default.CacheDirectory, OodleHelper.OODLE_NAME_OLD);
         if (!File.Exists(oodlePath))
         {
-            oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_NAME_CURRENT);
+            oodlePath = Path.Combine(UserSettings.Default.CacheDirectory, OodleHelper.OODLE_NAME_CURRENT);
         }
 
         await OodleHelper.InitializeAsync(oodlePath);
@@ -299,7 +299,7 @@ public class ApplicationViewModel : ViewModel
 
     public static async Task InitZlib()
     {
-        var zlibPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", ZlibHelper.DLL_NAME);
+        var zlibPath = Path.Combine(UserSettings.Default.CacheDirectory, ZlibHelper.DLL_NAME);
         var zlibFileInfo = new FileInfo(zlibPath);
 
         if (!zlibFileInfo.Exists || zlibFileInfo.LastWriteTimeUtc < DateTime.UtcNow.AddMonths(-4))
@@ -316,7 +316,7 @@ public class ApplicationViewModel : ViewModel
 
     public static async Task InitUnluac()
     {
-        var unluacPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", UnluacHelper.DllName);
+        var unluacPath = Path.Combine(UserSettings.Default.CacheDirectory, UnluacHelper.DllName);
         await UnluacHelper.InitializeAsync(unluacPath).ConfigureAwait(false);
         if (UnluacHelper.Instance is null)
             FLogger.Append(ELog.Error, () => FLogger.Text("Failed to download unluac", Constants.WHITE, true));

@@ -108,6 +108,7 @@ public class CUE4ParseViewModel : ViewModel
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private static readonly HttpClient _chunkClient = ManifestParseOptions.CreateDefaultClient();
+    private string _appliedLocalMappingPath;
 
     public AbstractVfsFileProvider Provider { get; }
     public GameDirectoryViewModel GameDirectory { get; }
@@ -406,67 +407,99 @@ public class CUE4ParseViewModel : ViewModel
         return new FileUsmapTypeMappingsProvider(path, StringComparer.Ordinal);
     }
 
+    public void ApplyMappingFile(string path)
+    {
+        var mappings = SelectMappingsProvider(path);
+        var endpoint = UserSettings.Default.CurrentDir.Endpoints[(int) EEndpointType.Mapping];
+        Provider.MappingsContainer = mappings;
+        endpoint.FilePath = path;
+        endpoint.Overwrite = true;
+        _appliedLocalMappingPath = path;
+        LogLoadedMappings(ELog.Information);
+    }
+
+    public bool HasMappingSettingsChanged()
+    {
+        var endpoint = UserSettings.Default.CurrentDir.Endpoints[(int) EEndpointType.Mapping];
+        return !string.Equals(_appliedLocalMappingPath, GetLocalMappingPath(endpoint), StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetLocalMappingPath(EndpointSettings endpoint) => endpoint.Overwrite && File.Exists(endpoint.FilePath) ? endpoint.FilePath : null;
+
     public Task InitMappings(bool force = false)
     {
-        if (!UserSettings.IsEndpointValid(EEndpointType.Mapping, out var endpoint))
+        var endpoint = UserSettings.Default.CurrentDir.Endpoints[(int) EEndpointType.Mapping];
+        if (GetLocalMappingPath(endpoint) is { } path)
+        {
+            ApplyMappingFile(path);
+            return Task.CompletedTask;
+        }
+
+        if (!endpoint.IsValid)
         {
             Provider.MappingsContainer = null;
+            _appliedLocalMappingPath = null;
             return Task.CompletedTask;
         }
 
         return Task.Run(() =>
         {
             var l = ELog.Information;
-            if (endpoint.Overwrite && File.Exists(endpoint.FilePath))
+            var mappingsProvider = _appliedLocalMappingPath == null ? Provider.MappingsContainer : null;
+
+            // deprecated values
+            if (endpoint.Path == "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']") endpoint.Path = "$.[0].['url','fileName']";
+            if (endpoint.Url == "https://fortnitecentral.genxgames.gg/api/v1/mappings")
             {
-                Provider.MappingsContainer = SelectMappingsProvider(endpoint.FilePath);
+                endpoint.Url = "https://uedb.dev/svc/api/v1/fortnite/mappings";
+                endpoint.Path = "$.mappings.ZStandard";
             }
-            else if (endpoint.IsValid)
+
+            var mappingsFolder = CacheManager.MappingsDirectory;
+            var mappings = _apiEndpointView.DynamicApi.GetMappings(CancellationToken.None, endpoint.Url, endpoint.Path);
+            if (mappings is { Length: > 0 })
             {
-                // deprecated values
-                if (endpoint.Path == "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']") endpoint.Path = "$.[0].['url','fileName']";
-                if (endpoint.Url == "https://fortnitecentral.genxgames.gg/api/v1/mappings")
+                foreach (var mapping in mappings)
                 {
-                    endpoint.Url = "https://uedb.dev/svc/api/v1/fortnite/mappings";
-                    endpoint.Path = "$.mappings.ZStandard";
-                }
+                    if (!mapping.IsValid) continue;
 
-                var mappingsFolder = CacheManager.MappingsDirectory;
-                var mappings = _apiEndpointView.DynamicApi.GetMappings(CancellationToken.None, endpoint.Url, endpoint.Path);
-                if (mappings is { Length: > 0 })
-                {
-                    foreach (var mapping in mappings)
+                    var mappingPath = Path.Combine(mappingsFolder, mapping.FileName);
+                    if (force || !File.Exists(mappingPath) || new FileInfo(mappingPath).Length == 0)
                     {
-                        if (!mapping.IsValid) continue;
-
-                        var mappingPath = Path.Combine(mappingsFolder, mapping.FileName);
-                        if (force || !File.Exists(mappingPath) || new FileInfo(mappingPath).Length == 0)
-                        {
-                            _apiEndpointView.DownloadFile(mapping.Url, mappingPath);
-                        }
-
-                        Provider.MappingsContainer = SelectMappingsProvider(mappingPath);
-                        break;
+                        _apiEndpointView.DownloadFile(mapping.Url, mappingPath);
                     }
+
+                    mappingsProvider = SelectMappingsProvider(mappingPath);
+                    break;
                 }
+            }
 
-                if (Provider.MappingsContainer == null)
+            if (mappingsProvider == null)
+            {
+                var latestUsmaps = new DirectoryInfo(mappingsFolder).GetFiles("*_oo.usmap");
+                if (latestUsmaps.Length > 0)
                 {
-                    var latestUsmaps = new DirectoryInfo(mappingsFolder).GetFiles("*_oo.usmap");
-                    if (latestUsmaps.Length <= 0) return;
-
                     var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
-                    Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName, StringComparer.Ordinal);
+                    mappingsProvider = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName, StringComparer.Ordinal);
                     l = ELog.Warning;
                 }
             }
 
-            if (Provider.MappingsContainer is FileUsmapTypeMappingsProvider m)
-            {
-                Log.Information($"Mappings pulled from '{m.FileName}'");
-                FLogger.Append(l, () => FLogger.Text($"Mappings pulled from '{m.FileName}'", Constants.WHITE, true));
-            }
+            if (GetLocalMappingPath(endpoint) != null) return;
+
+            Provider.MappingsContainer = mappingsProvider;
+            _appliedLocalMappingPath = null;
+            LogLoadedMappings(l);
         });
+    }
+
+    private void LogLoadedMappings(ELog level)
+    {
+        if (Provider.MappingsContainer is FileUsmapTypeMappingsProvider m)
+        {
+            Log.Information($"Mappings pulled from '{m.FileName}'");
+            FLogger.Append(level, () => FLogger.Text($"Mappings pulled from '{m.FileName}'", Constants.WHITE, true));
+        }
     }
 
     public Task VerifyConsoleVariables()

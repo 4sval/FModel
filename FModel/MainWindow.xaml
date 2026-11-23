@@ -692,6 +692,24 @@
 
                             <controls:CustomRichTextBox Grid.Column="0" Grid.ColumnSpan="3" x:Name="LogRtbName" Style="{StaticResource CustomRichTextBox}" />
                             <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Bottom" Margin="-5 -5 5 5">
+                                <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}"
+                                        ToolTip="Open Log"
+                                        Padding="0,4,0,4"
+                                        Command="{Binding MenuCommand}"
+                                        CommandParameter="ToolBox_Open_Log"
+                                        Focusable="False">
+                                    <Viewbox Width="16"
+                                             Height="16"
+                                             HorizontalAlignment="Center">
+                                        <Canvas Width="24"
+                                                Height="24">
+                                            <Path StrokeThickness="2"
+                                                  Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                  StrokeLineJoin="Round"
+                                                  Data="M5 3h9l5 5v13H5z M14 3v5h5 M8 12h8 M8 16h8" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </Button>
                                 <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Open Output Folder" Padding="0,4,0,4"
                                         Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Output_Directory" Focusable="False">
                                     <Viewbox Width="16" Height="16" HorizontalAlignment="Center">

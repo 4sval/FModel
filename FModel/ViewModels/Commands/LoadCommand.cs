@@ -168,7 +168,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
         var openFileDialog = new OpenFileDialog
         {
             Title = "Select a backup file older than your current game version",
-            InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Backups"),
+            InitialDirectory = UserSettings.Default.BackupsDirectory,
             Filter = "FBKP Files (*.fbkp)|*.fbkp|All Files (*.*)|*.*",
             Multiselect = false
         };
