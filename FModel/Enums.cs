@@ -199,3 +199,13 @@ public enum EExplorerViewMode
     Grid,
     List
 }
+
+public enum EMeshPreviewMode
+{
+    [Description("Automatic")]
+    Automatic,
+    [Description("On-Hover")]
+    OnHover,
+    [Description("None")]
+    None
+}

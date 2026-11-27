@@ -698,6 +698,20 @@ public sealed class UserSettings : ViewModel
         set => SetProperty(ref _previewTexturesAssetExplorer, value);
     }
 
+    private EMeshPreviewMode _meshPreviewMode = EMeshPreviewMode.Automatic;
+    public EMeshPreviewMode MeshPreviewMode
+    {
+        get => _meshPreviewMode;
+        set => SetProperty(ref _meshPreviewMode, value);
+    }
+
+    private bool _previewMaterialThumbnails = true;
+    public bool PreviewMaterialThumbnails
+    {
+        get => _previewMaterialThumbnails;
+        set => SetProperty(ref _previewMaterialThumbnails, value);
+    }
+
     private EExplorerViewMode _explorerViewMode = EExplorerViewMode.Grid;
 
     public EExplorerViewMode ExplorerViewMode

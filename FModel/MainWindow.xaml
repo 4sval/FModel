@@ -650,7 +650,6 @@
                             <ToggleButton Width="32"
                                           Height="32"
                                           Cursor="Hand"
-                                          Checked="OnPreviewTexturesToggled"
                                           Focusable="False"
                                           IsChecked="{Binding PreviewTexturesAssetExplorer, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}">
                                 <ToggleButton.Style>

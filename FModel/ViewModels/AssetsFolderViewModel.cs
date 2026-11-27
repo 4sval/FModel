@@ -88,7 +88,7 @@ public class TreeItem : ViewModel
                 }
                 else
                 {
-                    _ = OnSelectedCategoryChanged();
+                    ResolveCategoryFilter();
                 }
             }
         }
@@ -106,7 +106,7 @@ public class TreeItem : ViewModel
             // BulkPopulate sorts Folders before this view is created
             _filteredFoldersView ??= new ListCollectionView(Folders)
             {
-                Filter = ItemFilter
+                Filter = HasFilter ? ItemFilter : null
             };
             return _filteredFoldersView;
         }
@@ -133,14 +133,27 @@ public class TreeItem : ViewModel
             Version = vfsEntry.Vfs.Ver;
         }
         PathAtThisPoint = pathHere;
-
-        AssetsList.AssetsView.Filter = ItemFilter;
     }
+
+    private bool HasFilter => SelectedCategory != EAssetCategory.All || _searchTerms.Length != 0;
 
     private void RefreshFilters()
     {
-        AssetsList.AssetsView.Refresh();
-        FilteredFoldersView?.Refresh();
+        Predicate<object> filter = HasFilter ? ItemFilter : null;
+        UpdateFilter(AssetsList.AssetsView, filter);
+        if (_filteredFoldersView != null) UpdateFilter(_filteredFoldersView, filter);
+    }
+
+    private static void UpdateFilter(ICollectionView view, Predicate<object> filter)
+    {
+        if (view.Filter != filter)
+        {
+            view.Filter = filter;
+        }
+        else if (filter != null)
+        {
+            view.Refresh();
+        }
     }
 
     private bool ItemFilter(object item) => item switch
@@ -161,10 +174,51 @@ public class TreeItem : ViewModel
         return true;
     }
 
-    private async Task OnSelectedCategoryChanged()
+    private bool _resolvingCategory;
+
+    private void ResolveCategoryFilter()
     {
-        await Task.WhenAll(AssetsList.Assets.Select(asset => asset.ResolveAsync(EResolveCompute.Category)));
-        RefreshFilters();
+        if (_resolvingCategory)
+            return;
+
+        var assets = AssetsList.Assets.Where(file => file.NeedsResolution(EResolveCompute.Category)).ToArray();
+        if (assets.Length == 0)
+        {
+            RefreshFilters();
+            return;
+        }
+
+        _resolvingCategory = true;
+        var provider = ApplicationService.ApplicationView.CUE4Parse?.Provider;
+        _ = Task.Run(() =>
+        {
+            var interrupted = false;
+            foreach (var asset in assets)
+            {
+                if (_selectedCategory is EAssetCategory.All)
+                {
+                    interrupted = true;
+                    break;
+                }
+                asset.Resolve(EResolveCompute.Category, provider);
+            }
+
+            Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                _resolvingCategory = false;
+                if (SelectedCategory is EAssetCategory.All)
+                    return;
+
+                if (interrupted)
+                {
+                    ResolveCategoryFilter();
+                }
+                else
+                {
+                    RefreshFilters();
+                }
+            });
+        });
     }
 
     public override string ToString() => $"{Header} | {Folders.Count} Folders | {AssetsList.Assets.Count} Files";

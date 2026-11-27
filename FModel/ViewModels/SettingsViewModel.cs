@@ -106,6 +106,20 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedDiscordRpc, value);
     }
 
+    private EMeshPreviewMode _selectedMeshPreviewMode;
+    public EMeshPreviewMode SelectedMeshPreviewMode
+    {
+        get => _selectedMeshPreviewMode;
+        set => SetProperty(ref _selectedMeshPreviewMode, value);
+    }
+
+    private bool _previewMaterialThumbnails;
+    public bool PreviewMaterialThumbnails
+    {
+        get => _previewMaterialThumbnails;
+        set => SetProperty(ref _previewMaterialThumbnails, value);
+    }
+
     private ECompressedAudio _selectedCompressedAudio;
     public ECompressedAudio SelectedCompressedAudio
     {
@@ -147,6 +161,7 @@ public class SettingsViewModel : ViewModel
     public ReadOnlyObservableCollection<ELanguage> AssetLanguages { get; private set; }
     public ReadOnlyObservableCollection<EAesReload> AesReloads { get; private set; }
     public ReadOnlyObservableCollection<EDiscordRpc> DiscordRpcs { get; private set; }
+    public ReadOnlyObservableCollection<EMeshPreviewMode> MeshPreviewModes { get; private set; }
     public ReadOnlyObservableCollection<ECompressedAudio> CompressedAudios { get; private set; }
     public ReadOnlyObservableCollection<EUsmapCompressionMethod> MappingCompressions { get; private set; }
     public ReadOnlyObservableCollection<EIconStyle> CosmeticStyles { get; private set; }
@@ -190,11 +205,14 @@ public class SettingsViewModel : ViewModel
         SelectedJsonHighlightTheme = UserSettings.Default.JsonHighlightTheme;
         SelectedAesReload = UserSettings.Default.AesReload;
         SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
+        SelectedMeshPreviewMode = UserSettings.Default.MeshPreviewMode;
+        PreviewMaterialThumbnails = UserSettings.Default.PreviewMaterialThumbnails;
 
         UeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(EnumerateUeGames()));
         AssetLanguages = new ReadOnlyObservableCollection<ELanguage>(new ObservableCollection<ELanguage>(EnumerateAssetLanguages()));
         AesReloads = new ReadOnlyObservableCollection<EAesReload>(new ObservableCollection<EAesReload>(EnumerateAesReloads()));
         DiscordRpcs = new ReadOnlyObservableCollection<EDiscordRpc>(new ObservableCollection<EDiscordRpc>(EnumerateDiscordRpcs()));
+        MeshPreviewModes = new ReadOnlyObservableCollection<EMeshPreviewMode>(new ObservableCollection<EMeshPreviewMode>(EnumerateMeshPreviewModes()));
         CompressedAudios = new ReadOnlyObservableCollection<ECompressedAudio>(new ObservableCollection<ECompressedAudio>(EnumerateCompressedAudios()));
         MappingCompressions = new ReadOnlyObservableCollection<EUsmapCompressionMethod>(new ObservableCollection<EUsmapCompressionMethod>(EnumerateMappingCompressions()));
         CosmeticStyles = new ReadOnlyObservableCollection<EIconStyle>(new ObservableCollection<EIconStyle>(EnumerateCosmeticStyles()));
@@ -229,6 +247,8 @@ public class SettingsViewModel : ViewModel
         UserSettings.Default.AesReload = SelectedAesReload;
         UserSettings.Default.DiscordRpc = SelectedDiscordRpc;
         UserSettings.Default.JsonHighlightTheme = SelectedJsonHighlightTheme;
+        UserSettings.Default.MeshPreviewMode = SelectedMeshPreviewMode;
+        UserSettings.Default.PreviewMaterialThumbnails = PreviewMaterialThumbnails;
 
         Options.SaveAsUserDefaults();
 
@@ -246,6 +266,7 @@ public class SettingsViewModel : ViewModel
     private IEnumerable<ELanguage> EnumerateAssetLanguages() => Enum.GetValues<ELanguage>();
     private IEnumerable<EAesReload> EnumerateAesReloads() => Enum.GetValues<EAesReload>();
     private IEnumerable<EDiscordRpc> EnumerateDiscordRpcs() => Enum.GetValues<EDiscordRpc>();
+    private IEnumerable<EMeshPreviewMode> EnumerateMeshPreviewModes() => Enum.GetValues<EMeshPreviewMode>();
     private IEnumerable<ECompressedAudio> EnumerateCompressedAudios() => Enum.GetValues<ECompressedAudio>();
     private IEnumerable<EUsmapCompressionMethod> EnumerateMappingCompressions() => Enum.GetValues<EUsmapCompressionMethod>()
             .Where(value => value is not (EUsmapCompressionMethod.Oodle or EUsmapCompressionMethod.Unknown))

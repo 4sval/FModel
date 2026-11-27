@@ -24,21 +24,27 @@
             <Grid Width="20"
                   Height="20"
                   Margin="0 0 8 0">
-                <Image Stretch="Uniform"
-                       controls:ImageAnimation.Frames="{Binding PreviewImage.(controls:ImageAnimation.Frames)}"
-                       Source="{Binding PreviewImage}" />
+                <Image x:Name="Preview" Stretch="Uniform" Source="{Binding DisplayPreviewImage}"
+                       controls:ImageAnimation.Frames="{Binding DisplayPreviewImage.(controls:ImageAnimation.Frames)}" />
                 <Path x:Name="FallbackIcon"
-                      Stretch="Uniform">
+                      Stretch="Uniform" IsHitTestVisible="False">
                     <Path.Style>
                         <Style TargetType="{x:Type Path}">
                             <Setter Property="Visibility"
                                     Value="Collapsed" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding PreviewImage}"
+                                <DataTrigger Binding="{Binding Source, ElementName=Preview}"
                                              Value="{x:Null}">
                                     <Setter Property="Visibility"
                                             Value="Visible" />
                                 </DataTrigger>
+                            <DataTrigger Binding="{Binding MeshPreviewImage, Converter={x:Static converters:IsNullToBoolReversedConverter.Instance}}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                                <Setter Property="Width" Value="8" />
+                                <Setter Property="Height" Value="8" />
+                                <Setter Property="HorizontalAlignment" Value="Right" />
+                                <Setter Property="VerticalAlignment" Value="Bottom" />
+                            </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Path.Style>

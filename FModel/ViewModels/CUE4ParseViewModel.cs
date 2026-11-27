@@ -184,6 +184,7 @@ public class CUE4ParseViewModel : ViewModel
         Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
         Provider.ReadShaderMaps = UserSettings.Default.ReadShaderMaps;
         Provider.ReadNaniteData = true;
+        Provider.CachePackages = true;
         PropertyUtil.SearchPropertyInTemplate = true; // search template properties when looking for a prop via GetOrDefault and cie
 
         GameDirectory = new GameDirectoryViewModel();

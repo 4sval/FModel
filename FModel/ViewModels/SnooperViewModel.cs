@@ -2,9 +2,12 @@ using System;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using CUE4Parse.GameTypes.Nascar.Assets.Exports;
+using CUE4Parse.FileProvider;
+using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Engine;
@@ -13,6 +16,7 @@ using CUE4Parse.UE4.Assets.Exports.Houdini;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Paper2D;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
+using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Options;
@@ -74,6 +78,10 @@ public class SnooperViewModel : ViewModel, IDisposable
         _sun = new SunActor();
         _environment = new EnvironmentActor();
     }
+
+    public Task<byte[]> RenderMeshPreviewAsync(IFileProvider provider, GameFile asset, ETexturePlatform platform) => _host.RenderMeshPreviewAsync(provider, asset, platform);
+
+    public void CloseMeshPreviews() => _host.CloseMeshPreviews();
 
     public void Load(UObject obj, CancellationToken ct = default)
     {

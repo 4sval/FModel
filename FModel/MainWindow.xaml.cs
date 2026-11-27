@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -27,6 +26,7 @@ public partial class MainWindow
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
     private DiscordHandler _discordHandler => DiscordService.DiscordHandler;
+    private readonly AssetExplorerPreviewResolver _previewResolver;
 
     public MainWindow()
     {
@@ -55,9 +55,8 @@ public partial class MainWindow
         DataContext = _applicationView;
         InitializeComponent();
 
-        AssetsExplorer.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
-        AssetsListExplorer.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
-        AssetsListName.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
+        _previewResolver = new AssetExplorerPreviewResolver(_applicationView, AssetsExplorer, AssetsListExplorer, AssetsListName);
+
         AssetsExplorer.SelectionChanged += (_, e) => SyncSelection(AssetsListName, e);
         AssetsListExplorer.SelectionChanged += (_, e) => SyncSelection(AssetsListName, e);
         AssetsListName.SelectionChanged += (_, e) => SyncSelection(AssetsExplorer, e);
@@ -83,6 +82,7 @@ public partial class MainWindow
 
     private void OnClosing(object sender, CancelEventArgs e)
     {
+        _previewResolver.Dispose();
         _discordHandler.Dispose();
     }
 
@@ -273,28 +273,6 @@ public partial class MainWindow
     }
 
     private void OnFolderOpenAssets(object sender, EventArgs e) => _applicationView.SelectedLeftTabIndex = 2;
-
-    private void OnPreviewTexturesToggled(object sender, RoutedEventArgs e) => ItemContainerGenerator_StatusChanged(AssetsExplorer.ItemContainerGenerator, EventArgs.Empty);
-    private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
-    {
-        if (sender is not ItemContainerGenerator { Status: GeneratorStatus.ContainersGenerated } generator)
-            return;
-
-        var list = ReferenceEquals(generator, AssetsExplorer.ItemContainerGenerator) ? AssetsExplorer
-            : ReferenceEquals(generator, AssetsListExplorer.ItemContainerGenerator) ? AssetsListExplorer
-            : AssetsListName;
-
-        if (!list.IsVisible || list.FindVisualChild<VirtualizingPanel>() is not { } panel)
-            return;
-
-        foreach (var container in panel.Children.OfType<ListBoxItem>())
-        {
-            if (container is FrameworkElement { IsVisible: true, DataContext: GameFileViewModel file })
-            {
-                file.OnIsVisible();
-            }
-        }
-    }
 
     private void OnAssetsTreeSelectedItemChanged(object sender, SelectionChangedEventArgs e)
     {

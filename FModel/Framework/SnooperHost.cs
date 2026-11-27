@@ -1,10 +1,16 @@
 using System;
+using System.Collections.Concurrent;
 using System.Threading;
+using System.Threading.Tasks;
+using CUE4Parse.FileProvider;
+using CUE4Parse.FileProvider.Objects;
+using CUE4Parse.UE4.Assets.Exports.Texture;
 using Editor;
 using FModel.Views.Resources.Controls;
 using OpenTK.Windowing.Desktop;
 using Serilog;
 using Serilog.Context;
+using Snooper.Rendering;
 
 namespace FModel.Framework;
 
@@ -20,10 +26,13 @@ namespace FModel.Framework;
 public sealed class SnooperHost(Func<EditorWindow> build, Action<Exception> onStartupFailure) : IDisposable
 {
     private readonly Lock _lock = new();
-    private readonly SemaphoreSlim _wanted = new(0);
+    private readonly AutoResetEvent _wanted = new(false);
     private readonly ManualResetEventSlim _ready = new();
+    private readonly ConcurrentQueue<Action> _renderRequests = new();
+    private readonly MeshPreviewRenderer _meshPreviews = new();
 
     private volatile EditorWindow? _window;
+    private volatile bool _openRequested;
     private Exception? _failure;
     private Thread? _thread;
 
@@ -36,7 +45,8 @@ public sealed class SnooperHost(Func<EditorWindow> build, Action<Exception> onSt
 
             _thread ??= StartThread();
             _ready.Reset();
-            _wanted.Release();
+            _openRequested = true;
+            _wanted.Set();
             _ready.Wait();
 
             if (_window is { } window) return window;
@@ -46,6 +56,55 @@ public sealed class SnooperHost(Func<EditorWindow> build, Action<Exception> onSt
 
         onStartupFailure(new InvalidOperationException("Snooper failed to start", failure));
         return null;
+    }
+
+    public Task<byte[]> RenderMeshPreviewAsync(IFileProvider provider, GameFile file, ETexturePlatform platform)
+    {
+        if (_meshPreviews.IsReady)
+            return _meshPreviews.RenderAsync(provider, file, platform);
+
+        var completion = new TaskCompletionSource<Task<byte[]>>(TaskCreationOptions.RunContinuationsAsynchronously);
+        QueueGraphicsWork(() =>
+        {
+            try
+            {
+                _meshPreviews.Initialize(loadBindings: _window == null);
+                completion.SetResult(_meshPreviews.RenderAsync(provider, file, platform));
+            }
+            catch (Exception exception)
+            {
+                completion.SetException(exception);
+            }
+        });
+
+        return completion.Task.Unwrap();
+    }
+
+    public void CloseMeshPreviews()
+    {
+        if (_thread is not null)
+            QueueGraphicsWork(_meshPreviews.Dispose);
+    }
+
+    private void QueueGraphicsWork(Action action)
+    {
+        lock (_lock)
+        {
+            _thread ??= StartThread();
+            _renderRequests.Enqueue(action);
+            if (_window is { } window)
+                window.Invoke(RunGraphicsWork);
+            else
+                _wanted.Set();
+        }
+    }
+
+    private void RunGraphicsWork()
+    {
+        if (_renderRequests.TryDequeue(out var action))
+            action();
+        if (!_renderRequests.IsEmpty && _window is { } window)
+            window.Invoke(RunGraphicsWork);
     }
 
     private Thread StartThread()
@@ -66,12 +125,22 @@ public sealed class SnooperHost(Func<EditorWindow> build, Action<Exception> onSt
 
         while (true)
         {
-            _wanted.Wait();
+            if (!_openRequested && _renderRequests.IsEmpty)
+                _wanted.WaitOne();
+
+            if (!_openRequested)
+            {
+                RunGraphicsWork();
+                continue;
+            }
+            _openRequested = false;
 
             try
             {
                 _failure = null;
                 _window = build();
+                if (!_renderRequests.IsEmpty)
+                    _window.Invoke(RunGraphicsWork);
             }
             catch (Exception e)
             {
